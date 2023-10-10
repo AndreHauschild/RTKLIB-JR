@@ -196,14 +196,46 @@ void utest5(void)
                 rs1[0],rs1[1],rs1[2],dts1[0]*1E9,rs2[0],rs2[1],rs2[2],dts2[0]*1E9);
     }
     fclose(fp);
-    printf("%s utest4 : OK\n",__FILE__);
+    printf("%s utest5 : OK\n",__FILE__);
+}
+/* readbiaf() */
+void utest6(void)
+{
+    FILE *fp;
+    char *file1="../data/biassinex/COD0MGXFIN_20232230000_01D_01D_OSB.BIA";
+    nav_t nav={0};
+    int i,j,k;
+    char *sat[3];
+    const double ns2m = 1E-9*CLIGHT;
+    double osbias,fcbias;
+
+    assert(readdcb(file1,&nav,0)>0);
+        assert(nav.bias_type==1);
+
+    fp=fopen("testpeph3.out","w");
+
+    for (i=0;i<MAXSAT;i++) for (j=0;j<MAX_CODE_BIAS_FREQS;j++) for (k=0;k<MAX_CODE_BIASES+1;k++) {
+
+      satno2id(i+1,sat);
+
+      osbias = nav.osbias[i][j][k];
+      fcbias = nav.fcbias[i][j][k];
+
+      fprintf(fp,"%3s %6d %6d %6d %14.3f %14.3f\n",
+              sat,i,j,k,osbias/ns2m,fcbias/ns2m);
+    }
+    fclose(fp);
+    printf("%s utest6 : OK\n",__FILE__);
 }
 int main(int argc, char **argv)
 {
+    /*
     utest1();
     utest2();
     utest3();
     utest4();
     utest5();
+     */
+    utest6();
     return 0;
 }
