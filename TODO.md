@@ -37,6 +37,10 @@ Computes position, clock offset, etc. for single satellite. Uses a switch `opt` 
 
 Computes the satellite position based on SP3. Here, the reference can be set either to CoM or APC using the `opt` switch. Calls the function `preceph.c:satantoff()` to compute the iono-free PCO.
 
+## Ephemeris Option QZSS LEX
+
+A ephemeris option `QZSS LEX` is defined in the GUIs, but does not seem to be included in the RTKLIB option set.
+
 ## Carrier-phase biases in Bias-SINEX
 
 Carrier-phase biases are currently not supported. A data-structure for such biases is missing.
