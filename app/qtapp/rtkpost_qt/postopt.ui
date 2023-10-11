@@ -808,6 +808,11 @@
          </item>
          <item>
           <property name="text">
+           <string>Precise (Com)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
            <string>QZSS LEX</string>
           </property>
          </item>

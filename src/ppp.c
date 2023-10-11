@@ -623,7 +623,7 @@ static void udclk_ppp(rtk_t *rtk)
 
     /* initialize every epoch for clock (white noise) */
     for (i=0;i<NSYS;i++) {
-        if (rtk->opt.sateph==EPHOPT_PREC) {
+        if (rtk->opt.sateph==EPHOPT_PREC || rtk->opt.sateph==EPHOPT_PRECCOM) {
             /* time of prec ephemeris is based gpst */
             /* neglect receiver inter-system bias  */
             dtr=rtk->sol.dtr[0];

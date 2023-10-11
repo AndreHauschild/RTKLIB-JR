@@ -280,6 +280,7 @@ object OptDialog: TOptDialog
           'Broadcast+SBAS'
           'Broadcast+SSR APC'
           'Broadcast+SSR CoM'
+          'Precise (CoM)'
           'QZSS LEX')
       end
       object ExSats: TEdit
