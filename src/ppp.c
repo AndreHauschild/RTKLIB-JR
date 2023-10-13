@@ -436,12 +436,12 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
             else frq=i;  /* other biases are L1/L2 */
             if (frq>=MAX_CODE_BIAS_FREQS) continue;  /* only 2 freqs per system supported in code bias table */
             bias_ix=code2bias_ix(sys,obs->code[i]); /* look up bias index in table */
-            if (nav->bias_type==0) {
+            if (nav->bias_type==0) { /* relative biases (DCB) */
               if (bias_ix>0) {  /*  0=ref code */
                   P[i]+=nav->cbias[obs->sat-1][frq][bias_ix-1]; /* code bias */
               }
             }
-            else {
+            else { /* absolute biases (OSB,FCB) */
               P[i]-=nav->osbias[obs->sat-1][frq][bias_ix]; /* code bias */
               L[i]-=nav->fcbias[obs->sat-1][frq][bias_ix]; /* phase bias */
             }
@@ -973,9 +973,26 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
             continue;
         }
         /* satellite and receiver antenna model */
+        if (opt->sateph==EPHOPT_PRECCOM) {
+            /* Apply satellite PCO correction here for orbit in CoM */
+            if (opt->ionoopt==IONOOPT_IFLC) {
+                double danto[3];
+                satantoff(obs[i].time,rs,sat,nav,danto);
+                for (j=0;j<NFREQ;j++) {
+                  dants[j]=dot(e,danto,3);
+                }
+            }
+            else {
+              /*FIXME: test implementation!! */
+              double danto[NFREQ][3];
+              satantoff_s(obs[i].time,rs,sat,nav,danto);
+              for (j=0;j<NFREQ;j++) {
+                dants[j]=dot(e,danto[j],3);
+              }
 
-        /* TODO: add code for optional correction of satellite PCO! */
-
+          };
+        }
+        /* Apply satellite PCV and receiver PCO(+PCV)correction */
         if (opt->posopt[0]) satantpcv(rs+i*6,rr,nav->pcvs+sat-1,dants);
         antmodel(opt->pcvr,opt->antdel[0],azel+i*2,opt->posopt[1],dantr);
 
