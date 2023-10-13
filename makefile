@@ -100,6 +100,7 @@ install_:
 
 clean:
 	if [ -d "$(RTKLIB_bin)" ]; then cd $(RTKLIB_bin); rm -f *_qt; fi
+	for F in $$(ls -d $(CONSAPP)/*/gcc); do P=$$(echo $$F | cut -d "/" -f 4); rm $(RTKLIB_bin)/$$P; done
 	cd $(IERS);     make clean
 	cd $(CONSAPP);  make clean
 	cd $(QTAPP);    make clean

@@ -14,10 +14,34 @@ For `rnx2rtkp`, the command line option uses a single hyphen and no quotation ma
 rnx2rtkp -ts 2023/01/01 01:00:00 -te 2023/01/01 02:00:00
 ```
 
-
 ## Binary files in repository
 
 The folders 'dll' and 'lib' contain binary files. 
+
+## Processing of PCO/PCV from ANTEX
+
+Review the processing of PCOs and PCVs in `rtkcmn.c:readantex()` and make sure, that the correct values are processed.
+
+The data structure defines frequency numbers 1,2 and 5 for the three GPS frequencies L1,L2 and L5. For Galileo 1 and 5 are used for E1 and E5a, 2 is used for E5b, E6 is ignored. For the other GNSSs, frequencies which match the numbers 1,2 and 5 are stored, others are ignored. This may cause issue in particular for BeiDou.
+
+  | Number | 1 | 2 | 3 |  
+  | GNSS   | Column 2 | Column 3 | Column 4 |  
+  |:-|:-|:-|:-|  
+  | GPS          | L1 | L2 | L5 |  
+  | Galileo      | E1 | E5b | E5a |  
+  | GLONASS      | G1 | G2 | - |  
+  | BeiDou       | ?? | ?? | ?? |  
+  | QZSS         | L1 | L2 | L5 |  
+
+## Satellite and receiver PCO/PCV handling
+
+The satellite PCO and PCV corrections are applied in different places in the source code.
+
+Satellite PCO corrections are directly applied to the computed satellite position as a 3-dimensional vector in ECEF for positions from SP3 files. The default implementation in `preceph.c:satantoff()` forms the ionosphere-free combination of two preselected signals and computes the combined PCO correction. (NOTE: this can be turned off by setting a flag `OPT`.)
+
+Satellite PCV corrections are computed through two functions: the function `ppp.c:satantpcv()` computes the nadir angle and then calls `rtkcmn.c:antmodel_s()` to compute teh interpolated PCV correction as a scalar value for each frequency. 
+
+Receiver PCO and PCV corrections are jointly computed in the function `rtkcmn.c:antmodel()`. The PCO is projected onto the LOS vector and the PCV is interpolated depending on the satellite elevation angle. Applying the PCV correction can optionally be turned off. This function also applies the eccentricity correction.
 
 ## Satellite position and APC handling
 
