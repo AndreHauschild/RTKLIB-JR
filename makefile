@@ -93,7 +93,7 @@ utest_:
 	cd $(UTEST); $(PMAKE)
 	
 install_:
-	cd $(CONSAPP); make install
+	for F in $$(ls -d $(CONSAPP)/*/gcc); do P=$$(echo $$F | cut -d "/" -f 4); mv $$F/$$P $(RTKLIB_bin); done 
 	for F in $$(ls -d $(QTAPP)/*/*_qt); do cp $$F $(RTKLIB_bin); done
 
 # Clean up
