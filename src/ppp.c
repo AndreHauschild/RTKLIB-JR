@@ -957,6 +957,7 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
     for (i=0;i<n&&i<MAXOBS;i++) {
         sat=obs[i].sat;
 
+        /* line-of-sight vector from receiver to satellite */
         if ((r=geodist(rs+i*6,rr,e))<=0.0||
             satazel(pos,e,azel+i*2)<opt->elmin) {
             exc[i]=1;
@@ -983,16 +984,14 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
                 }
             }
             else {
-              /*FIXME: test implementation!! */
               double danto[NFREQ][3];
               satantoff_s(obs[i].time,rs,sat,nav,danto);
               for (j=0;j<NFREQ;j++) {
                 dants[j]=dot(e,danto[j],3);
               }
-
           };
         }
-        /* Apply satellite PCV and receiver PCO(+PCV)correction */
+        /* Apply satellite PCV and receiver PCO(+PCV) correction */
         if (opt->posopt[0]) satantpcv(rs+i*6,rr,nav->pcvs+sat-1,dants);
         antmodel(opt->pcvr,opt->antdel[0],azel+i*2,opt->posopt[1],dantr);
 
