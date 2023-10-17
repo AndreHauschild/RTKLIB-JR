@@ -479,7 +479,10 @@ static int readbiaf(const char *file, nav_t *nav)
             freq=1;
         else
           continue;
-        if (!(code1=obs2code(&obs1[1]))) continue; /* skip if code not valid */
+        /* skip if code not valid */
+        if (!(code1=obs2code(&obs1[1]))) continue;
+        /* skip GPS C1P biases */
+        if (sys==SYS_GPS&&strcmp(obs1,"C1P")==0) continue;
         bias_ix1=code2bias_ix(sys,code1);
         if (strcmp(bias,"OSB")==0) {
             /* absolute biases are used */
@@ -812,6 +815,12 @@ extern void satantoff_s(gtime_t time, const double *rs, int sat, const nav_t *na
 
     trace(4,"satantoff_s: time=%s sat=%2d\n",time_str(time,3),sat);
 
+    for (j=0;j<NFREQ;j++) {
+        for (i=0;i<3;i++) {
+            dant[j*NFREQ+i]=0.0;
+        }
+    }
+
     /* sun position in ecef */
     sunmoonpos(gpst2utc(time),erpv,rsun,NULL,&gmst);
 
@@ -829,7 +838,6 @@ extern void satantoff_s(gtime_t time, const double *rs, int sat, const nav_t *na
             dant[j*NFREQ+i]=pcv->off[j][0]*ex[i]+pcv->off[j][1]*ey[i]+pcv->off[j][2]*ez[i];
         }
     }
-
 }
 /* satellite position/clock by precise ephemeris/clock -------------------------
 * compute satellite position/clock with precise ephemeris/clock
