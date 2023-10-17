@@ -227,15 +227,60 @@ void utest6(void)
     fclose(fp);
     printf("%s utest6 : OK\n",__FILE__);
 }
+/* satantoff_s() */
+void utest7(void)
+{
+    FILE *fp;
+    char *file1="../data/sp3/igs1590*.sp3"; /* 2010/7/1 */
+    char *file3="../../data/ant/igs14.atx";
+    char *file4="../data/rinex/brdc*.10n";
+    pcvs_t pcvs={0};
+    pcv_t *pcv;
+    nav_t nav={0};
+    int i,j,stat,sat,svh;
+    double ep[]={2010,7,1,0,0,0};
+    double rs1[6]={0},dts1[2]={0},rs2[6]={0},dts2[2]={0};
+    double var;
+    gtime_t t,time;
+    double danto[NFREQ][3];
+
+    time=epoch2time(ep);
+
+    readsp3(file1,&nav,0);
+        assert(nav.ne>0);
+    stat=readpcv(file3,&pcvs);
+        assert(stat);
+    readrnx(file4,1,"",NULL,&nav,NULL);
+        assert(nav.n>0);
+    for (i=0;i<MAXSAT;i++) {
+        if (!(pcv=searchpcv(i+1,"",time,&pcvs))) continue;
+        nav.pcvs[i]=*pcv;
+    }
+    fp=fopen("testpeph3.out","w");
+
+    sat=3;
+
+    for (i=0;i<86400;i+=30) {
+        t=timeadd(time,(double)i);
+        satpos(t,t,sat,EPHOPT_PRECCOM,&nav,rs1,dts1,&var,&svh);
+        satantoff_s(t,rs1,sat,&nav,danto);
+        for (j=0;j<3;j++) rs1[j]+=danto[0][j];
+        satpos(t,t,sat,EPHOPT_PREC,   &nav,rs2,dts2,&var,&svh);
+        fprintf(fp,"%02d %6d %14.3f %14.3f %14.3f %14.3f %14.3f %14.3f %14.3f %14.3f\n",
+                sat,i,
+                rs1[0],rs1[1],rs1[2],dts1[0]*1E9,rs2[0],rs2[1],rs2[2],dts2[0]*1E9);
+    }
+    fclose(fp);
+    printf("%s utest7 : OK\n",__FILE__);
+}
 int main(int argc, char **argv)
 {
-    /*
     utest1();
     utest2();
     utest3();
     utest4();
     utest5();
-     */
     utest6();
+    utest7();
     return 0;
 }
