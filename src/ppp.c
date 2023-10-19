@@ -981,18 +981,18 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
         if (opt->sateph==EPHOPT_PRECCOM) {
             if (opt->ionoopt==IONOOPT_IFLC) {
                 double danto[3];
-                satantoff(obs[i].time,rs,sat,nav,danto);
+                satantoff(obs[i].time,rs+i*6,sat,nav,danto);
                 for (j=0;j<NFREQ;j++) {
                   dants[j]+=dot(e,danto,3);
                 }
             }
             else {
                 double danto[NFREQ][3];
-                satantoff_s(obs[i].time,rs,sat,nav,danto);
+                satantoff_s(obs[i].time,rs+i*6,sat,nav,danto);
                 for (j=0;j<NFREQ;j++) {
                     dants[j]+=dot(e,danto[j],3);
                 }
-          };
+            }
         }
 
         /* phase windup model */
