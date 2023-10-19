@@ -817,7 +817,7 @@ extern void satantoff_s(gtime_t time, const double *rs, int sat, const nav_t *na
 
     for (j=0;j<NFREQ;j++) {
         for (i=0;i<3;i++) {
-            dant[j*NFREQ+i]=0.0;
+            dant[j*3+i]=0.0;
         }
     }
 
@@ -835,7 +835,7 @@ extern void satantoff_s(gtime_t time, const double *rs, int sat, const nav_t *na
 
     for (j=0;j<NFREQ;j++) {
         for (i=0;i<3;i++) {
-            dant[j*NFREQ+i]=pcv->off[j][0]*ex[i]+pcv->off[j][1]*ey[i]+pcv->off[j][2]*ez[i];
+            dant[j*3+i]=pcv->off[j][0]*ex[i]+pcv->off[j][1]*ey[i]+pcv->off[j][2]*ez[i];
         }
     }
 }
