@@ -974,26 +974,26 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
             continue;
         }
         /* satellite and receiver antenna model */
+        if (opt->posopt[0]) satantpcv(rs+i*6,rr,nav->pcvs+sat-1,dants);
+        antmodel(opt->pcvr,opt->antdel[0],azel+i*2,opt->posopt[1],dantr);
+
+        /* Apply satellite PCO correction here for orbit in CoM */
         if (opt->sateph==EPHOPT_PRECCOM) {
-            /* Apply satellite PCO correction here for orbit in CoM */
             if (opt->ionoopt==IONOOPT_IFLC) {
                 double danto[3];
                 satantoff(obs[i].time,rs,sat,nav,danto);
                 for (j=0;j<NFREQ;j++) {
-                  dants[j]=dot(e,danto,3);
+                  dants[j]+=dot(e,danto,3);
                 }
             }
             else {
-              double danto[NFREQ][3];
-              satantoff_s(obs[i].time,rs,sat,nav,danto);
-              for (j=0;j<NFREQ;j++) {
-                dants[j]=dot(e,danto[j],3);
-              }
+                double danto[NFREQ][3];
+                satantoff_s(obs[i].time,rs,sat,nav,danto);
+                for (j=0;j<NFREQ;j++) {
+                    dants[j]+=dot(e,danto[j],3);
+                }
           };
         }
-        /* Apply satellite PCV and receiver PCO(+PCV) correction */
-        if (opt->posopt[0]) satantpcv(rs+i*6,rr,nav->pcvs+sat-1,dants);
-        antmodel(opt->pcvr,opt->antdel[0],azel+i*2,opt->posopt[1],dantr);
 
         /* phase windup model */
         if (!model_phw(rtk->sol.time,sat,nav->pcvs[sat-1].type,
