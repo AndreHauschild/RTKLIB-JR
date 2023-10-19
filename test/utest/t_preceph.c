@@ -266,9 +266,9 @@ void utest7(void)
         satantoff_s(t,rs1,sat,&nav,danto);
         for (j=0;j<3;j++) rs1[j]+=danto[0][j];
         satpos(t,t,sat,EPHOPT_PREC,   &nav,rs2,dts2,&var,&svh);
-        fprintf(fp,"%02d %6d %14.3f %14.3f %14.3f %14.3f %14.3f %14.3f %14.3f %14.3f\n",
+        fprintf(fp,"%02d %6d com+pco %14.3f %14.3f %14.3f apc %14.3f %14.3f %14.3f\n",
                 sat,i,
-                rs1[0],rs1[1],rs1[2],dts1[0]*1E9,rs2[0],rs2[1],rs2[2],dts2[0]*1E9);
+                rs1[0],rs1[1],rs1[2],rs2[0],rs2[1],rs2[2]);
     }
     fclose(fp);
     printf("%s utest7 : OK\n",__FILE__);
