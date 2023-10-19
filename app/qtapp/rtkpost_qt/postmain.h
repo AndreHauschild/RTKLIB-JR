@@ -61,7 +61,7 @@ public slots:
     void BtnAbortClick();
     void BtnExitClick();
     void BtnAboutClick();
-	
+
     void BtnTime1Click();
     void BtnTime2Click();
     void BtnInputFile1Click();
@@ -80,12 +80,12 @@ public slots:
     void BtnInputPlot1Click();
     void BtnInputPlot2Click();
     void BtnKeywordClick();
-	
+
     void TimeStartClick();
     void TimeEndClick();
     void TimeIntFClick();
     void TimeUnitFClick();
-	
+
     void InputFile1Change();
     void OutDirEnaClick();
     void BtnOutDirClick();
@@ -111,13 +111,13 @@ private:
     void ExecProc (void);
     int  GetOption(prcopt_t &prcopt, solopt_t &solopt, filopt_t &filopt);
     int  ObsToNav (const QString &obsfile, QString &navfile);
-	
+
     QString FilePath(const QString &file);
     void ReadList(QComboBox *, QSettings *ini,  const QString &key);
     void WriteList(QSettings *ini, const QString &key, const QComboBox *combo);
     void AddHist(QComboBox *combo);
     int ExecCmd(const QString &cmd, const QStringList &opt, int show);
-	
+
     gtime_t GetTime1(void);
     gtime_t GetTime2(void);
     void SetOutFile(void);
@@ -126,12 +126,12 @@ private:
     void UpdateEnable(void);
     void LoadOpt(void);
     void SaveOpt(void);
-	
+
 public:
     QString IniFile;
     bool AbortFlag;
-	
-	// options
+
+    // options
     int PosMode, Freq, Solution, DynamicModel, IonoOpt, TropOpt, RcvBiasEst;
     int ARIter, NumIter, CodeSmooth, TideCorr;
     int OutCntResetAmb, FixCntHoldAmb, LockCntFixAmb, RovPosType, RefPosType;
@@ -142,7 +142,7 @@ public:
     int SolFormat, TimeFormat, LatLonFormat, IntpRefObs, NetRSCorr, SatClkCorr;
     int SbasCorr, SbasCorr1, SbasCorr2, SbasCorr3, SbasCorr4, TimeDecimal;
     int SolStatic, SbasSat, MapFunc;
-	int PosOpt[6];
+    int PosOpt[6];
     double ElMask, MaxAgeDiff, RejectPhase, RejectCode;
     double MeasErrR1, MeasErrR2, MeasErr2, MeasErr3, MeasErr4, MeasErr5;
     double SatClkStab, RovAntE, RovAntN, RovAntU, RefAntE, RefAntN, RefAntU;
@@ -151,15 +151,15 @@ public:
     double ThresAR2, ThresAR3;
     double RovPos[3], RefPos[3], BaseLine[2];
     double MaxSolStd;
-	snrmask_t SnrMask;
-	
+    snrmask_t SnrMask;
+
     QString RnxOpts1, RnxOpts2, PPPOpts;
     QString FieldSep, RovAnt, RefAnt, AntPcvFile, StaPosFile, PrecEphFile;
     QString NetRSCorrFile1, NetRSCorrFile2, SatClkCorrFile, GoogleEarthFile;
     QString GeoidDataFile, IonoFile, DCBFile, EOPFile, BLQFile;
     QString SbasCorrFile, SatPcvFile, ExSats;
     QString RovList, BaseList;
-	
+
     void ViewFile(const QString &file);
 
     explicit MainForm(QWidget *parent = 0);
