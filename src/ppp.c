@@ -363,7 +363,7 @@ static double varerr(int sat, int sys, double el, double snr_rover,
         if (code) var+=SQR(opt->err[7]*0.01*(1<<(obs->Pstd[frq]+5))); /* 0.01*2^(n+5) */
         else var+=SQR(opt->err[7]*obs->Lstd[frq]*0.004*0.2); /* 0.004 cycles -> m) */
     }
-
+    /* FIXME: the scaling factor is not 3 for other signals/constellations than GPS L1/L2 */
     var*=(opt->ionoopt==IONOOPT_IFLC)?SQR(3.0):1.0;
     return var;
 }

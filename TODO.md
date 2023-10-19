@@ -99,6 +99,10 @@ QObject::connect:  (receiver name: 'Plot')
 
 The pre-fit measurement residuals in `ppp_res()` are not corrected for by common offset due to receiver clock errors. This requires a unreasonably large editing threshold to keep the observations in.
 
+## Variance of ionosphere-free combination
+
+A fixed scaling factor of 3 is used for the observation standard deviation of the IF combination.
+
 ## Definition of compilation options
 
 The following options (c.f. `rtklib.h`) must be defined at compilation time:
