@@ -81,6 +81,9 @@ static void init_bias_ix() {
     code_bias_ix[0][CODE_L2L]=1;
     code_bias_ix[0][CODE_L2S]=2;
     code_bias_ix[0][CODE_L2X]=3;
+    code_bias_ix[0][CODE_L5Q]=0;
+    code_bias_ix[0][CODE_L5I]=1;
+    code_bias_ix[0][CODE_L5X]=2;
     /* GLONASS */
     code_bias_ix[1][CODE_L1P]=0;
     code_bias_ix[1][CODE_L1C]=1;
@@ -92,6 +95,15 @@ static void init_bias_ix() {
     code_bias_ix[2][CODE_L5Q]=0;
     code_bias_ix[2][CODE_L5I]=1;
     code_bias_ix[2][CODE_L5X]=2;
+    code_bias_ix[2][CODE_L6B]=0;
+    code_bias_ix[2][CODE_L6C]=1;
+    code_bias_ix[2][CODE_L6X]=2;
+    code_bias_ix[2][CODE_L7Q]=0;
+    code_bias_ix[2][CODE_L7I]=1;
+    code_bias_ix[2][CODE_L7X]=2;
+    code_bias_ix[2][CODE_L8Q]=0;
+    code_bias_ix[2][CODE_L8I]=1;
+    code_bias_ix[2][CODE_L8X]=2;
     /* Beidou */
     code_bias_ix[3][CODE_L2I]=0;
     code_bias_ix[3][CODE_L6I]=0;
