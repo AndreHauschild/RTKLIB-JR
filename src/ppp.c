@@ -400,7 +400,7 @@ static double mwmeas(const obsd_t *obs, const nav_t *nav)
     return (obs->L[0]-obs->L[1])*CLIGHT/(freq1-freq2)-
            (freq1*obs->P[0]+freq2*obs->P[1])/(freq1+freq2);
 }
-/* antenna corrected measurements --------------------------------------------*/
+/* antenna and bias corrected measurements -----------------------------------*/
 static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
                       const prcopt_t *opt, const double *dantr,
                       const double *dants, double phw, double *L, double *P,
@@ -432,20 +432,24 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
             P[i]+=(nav->ssr[obs->sat-1].cbias[obs->code[i]-1]-nav->ssr[obs->sat-1].cbias[ix]);
         }
         else {   /* apply code bias corrections from file */
+            bias_ix=code2bias_ix(sys,obs->code[i]); /* look up bias index in table */
             if (nav->bias_type==0) { /* relative biases (DCB) */
-              if (sys==SYS_GAL&&(i==1||i==2)) frq=3-i;  /* GAL biases are L1/L5 */
-              else frq=i;  /* other biases are L1/L2 */
-              if (frq>=MAX_CODE_BIAS_FREQS) continue;  /* only 2 freqs per system supported in code bias table */
-              bias_ix=code2bias_ix(sys,obs->code[i]); /* look up bias index in table */
-              if (bias_ix>0) {  /*  0=ref code */
-                  P[i]+=nav->cbias[obs->sat-1][frq][bias_ix-1]; /* code bias */
-              }
+                if (sys==SYS_GAL&&(i==1||i==2)) frq=3-i;  /* GAL biases are L1/L5 */
+                else frq=i;  /* other biases are L1/L2 */
+                if (frq>=MAX_CODE_BIAS_FREQS) continue;  /* only 2 freqs per system supported in code bias table */
+                if (bias_ix>0) {  /*  0=ref code */
+                    P[i]+=nav->cbias[obs->sat-1][frq][bias_ix-1]; /* code bias */
+                }
             }
-            else { /* absolute biases (OSB,FCB) */
-              frq=i;
-              bias_ix=code2bias_ix(sys,obs->code[i]); /* look up bias index in table */
-              P[i]-=nav->osbias[obs->sat-1][frq][bias_ix]; /* code bias */
-              L[i]-=nav->fcbias[obs->sat-1][frq][bias_ix]; /* phase bias */
+            else if (nav->bias_type==1) { /* absolute biases (OSB,FCB) */
+                frq=i;
+                if ( !nav->osbvld[obs->sat-1][frq][bias_ix] ||
+                    (!nav->fcbvld[obs->sat-1][frq][bias_ix] && opt->modear!=ARMODE_OFF)) {
+                    P[i]=L[i]=0.0;
+                    continue;
+                }
+                P[i]-=nav->osbias[obs->sat-1][frq][bias_ix]; /* code bias */
+                L[i]-=nav->fcbias[obs->sat-1][frq][bias_ix]; /* phase bias */
             }
         }
     }

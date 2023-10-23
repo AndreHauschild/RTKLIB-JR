@@ -498,12 +498,13 @@ static int readbiaf(const char *file, nav_t *nav)
               return 0;
             };
             /* Select frequency slot */
-            if (obs1[1]=='1')
+            if ((sys!=SYS_CMP && obs1[1]=='1') ||
+                (sys==SYS_CMP && obs1[1]=='2')) /* TODO: check!! */
                 freq = 0;
             else if ((sys==SYS_GPS && obs1[1]=='2') ||
                      (sys==SYS_GLO && obs1[1]=='2') ||
                      (sys==SYS_GAL && obs1[1]=='7') ||
-                     (sys==SYS_CMP && obs1[1]=='7') || /* TODO: check!! */
+                     (sys==SYS_CMP && obs1[1]=='6') || /* TODO: check!! */
                      (sys==SYS_QZS && obs1[1]=='2'))
                 freq = 1;
             else if (obs1[1]=='5')
@@ -514,11 +515,18 @@ static int readbiaf(const char *file, nav_t *nav)
             /* check if max number of frequencies is exceeded */
             if (freq>=NFREQ) continue;
 
-            if (obs1[0]=='C')
+            if (obs1[0]=='C') {
+              nav->osbvld[sat-1][freq][bias_ix1]=1;
               nav->osbias[sat-1][freq][bias_ix1]=cbias*1E-9*CLIGHT; /* ns -> m */
-            else
+            }
+            else if (obs1[0]=='L') {
+              nav->fcbvld[sat-1][freq][bias_ix1]=1;
               nav->fcbias[sat-1][freq][bias_ix1]=cbias*1E-9*CLIGHT; /* ns -> m */
-
+            }
+            else {
+              continue;
+            }
+            /* ------------------- start obsolete --------------------------- */
             /* other code biases are L1/L2, Galileo is L1/L5 */
             if (obs1[1]=='1')
                 freq=0;
@@ -594,9 +602,11 @@ extern int readdcb(const char *file, nav_t *nav, const sta_t *sta)
     for (i=0;i<MAXSAT;i++) for (j=0;j<MAX_CODE_BIAS_FREQS;j++) for (k=0;k<MAX_CODE_BIASES;k++) {
         nav->cbias[i][j][k]=0.0;
     }
-    for (i=0;i<MAXSAT;i++) for (j=0;j<MAX_CODE_BIAS_FREQS;j++) for (k=0;k<MAX_CODE_BIASES+1;k++) {
-        nav->osbias[i][j][k]=0.0; /* FIXME: use a different value to detect missing biases! */
+    for (i=0;i<MAXSAT;i++) for (j=0;j<NFREQ;j++) for (k=0;k<MAX_CODE_BIASES+1;k++) {
+        nav->osbias[i][j][k]=0.0;
+        nav->osbvld[i][j][k]=0;
         nav->fcbias[i][j][k]=0.0;
+        nav->fcbvld[i][j][k]=0;
     }
     for (i=0;i<MAXEXFILE;i++) {
         if (!(efiles[i]=(char *)malloc(1024))) {
