@@ -13,9 +13,11 @@ static void dumpobs(obs_t *obs)
     printf("obs : n=%d\n",obs->n);
     for (i=0;i<obs->n;i++) {
         time2str(obs->data[i].time,str,3);
-        printf("%s : %2d %2d %13.3f %13.3f %13.3f %13.3f  %d %d\n",str,obs->data[i].sat,
-               obs->data[i].rcv,obs->data[i].L[0],obs->data[i].L[1],
-               obs->data[i].P[0],obs->data[i].P[1],obs->data[i].LLI[0],obs->data[i].LLI[1]);
+        printf("%s : %2d %2d %2s: %13.3f %13.3f %d, %2s: %13.3f %13.3f %d, %2s: %13.3f %13.3f %d\n",
+               str,obs->data[i].sat,obs->data[i].rcv,
+               code2obs(obs->data[i].code[0]),obs->data[i].L[0],obs->data[i].P[0],obs->data[i].LLI[0],
+               code2obs(obs->data[i].code[1]),obs->data[i].L[1],obs->data[i].P[1],obs->data[i].LLI[1],
+               code2obs(obs->data[i].code[2]),obs->data[i].L[2],obs->data[i].P[2],obs->data[i].LLI[2]);
 
         assert(1<=obs->data[i].sat&&obs->data[i].sat<=32);
         assert(timediff(obs->data[i].time,time)>=-DTTOL);

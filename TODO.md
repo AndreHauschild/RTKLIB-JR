@@ -14,6 +14,24 @@ For `rnx2rtkp`, the command line option uses a single hyphen and no quotation ma
 rnx2rtkp -ts 2023/01/01 01:00:00 -te 2023/01/01 02:00:00
 ```
 
+## Inconsistencies of solution *.stat file content
+
+There are inconsistencies between the pdf documentation and the sourcecode comments and the implementaiton of the output ot the `*.stat file.
+
+The output of the solution happens in `rtkpos.c:rtkoutstat()`. In case the positioning mode `PMODE_PPP_KINEMA` or higher is selected, the function `ppp.c:pppoutstat()` is used for the output instead.
+
+## Meaning of PPP modes and associated process noise setting for position states
+
+1. `PMODE_PPP_FIXED`: the position is reset at each epoch to the pre-defined user position in the configuration file `ant2-pos1` (#TBC!#) with a small variance of 1.0e8 m^2^.
+
+1. `PMODE_PPP_STATIC`: a process noise with a variance defined in `stats-prnpos` in the configuration file is applied to the position state. The default value is 0.0  m^2^/s, it cannot be changed in the GUI!
+
+1. `PMODE_PPP_KINEMA`: if receiver dynamics are not activated, a hard-coded process noise with a variance of 60 m^2^/s is applied to the variance of the position states. This value is also used for the intial variance of the position state. If receiver dynamics are used, process noise with a variances defined in `stats-prnaccelh` and `stats-prnaccelv` in the configuraiton file is applied to the acceleration state.
+
+## Selection of observation types
+
+Review the selection of observations in `rinex.c:decode_obsdata` with respect to code priorities!
+
 ## Binary files in repository
 
 The folders 'dll' and 'lib' contain binary files. 
@@ -25,7 +43,7 @@ Review the processing of PCOs and PCVs in `rtkcmn.c:readantex()` and make sure, 
 The data structure defines frequency numbers 1,2 and 5 for the three GPS frequencies L1,L2 and L5. For Galileo 1 and 5 are used for E1 and E5a, 2 is used for E5b, E6 is ignored. For the other GNSSs, frequencies which match the numbers 1,2 and 5 are stored, others are ignored. This may cause issue in particular for BeiDou.
 
   | Number | 1 | 2 | 3 |  
-  | GNSS   | Column 2 | Column 3 | Column 4 |  
+  | GNSS   |  |  |  |  
   |:-|:-|:-|:-|  
   | GPS          | L1 | L2 | L5 |  
   | Galileo      | E1 | E5b | E5a |  

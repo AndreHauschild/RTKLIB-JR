@@ -362,7 +362,7 @@ static void decode_obsh(FILE *fp, char *buff, double ver, int *tsys,
     const char *defcodes[]={
         "CWX    ",  /* GPS: L125____ */
         "CCXX X ",  /* GLO: L1234_6_ */
-        "CXXXXX ",  /* GAL: L125678_ */
+        "CXXXXX ",  /* GAL: L125678_ */ /* FIXME: Galileo should not have L2! */
         "CXXX   ",  /* QZS: L1256___ */
         "C X    ",  /* SBS: L1_5____ */
         "XIXIIX ",  /* BDS: L125678_ */
@@ -891,7 +891,7 @@ static int decode_obsdata(FILE *fp, char *buff, double ver, int mask,
             case 2: obs->D[p[i]]=(float)val[i];                     break;
             case 3: obs->SNR[p[i]]=(uint16_t)(val[i]/SNR_UNIT+0.5); break;
         }
-        trace(4, "obs: i=%d f=%d P=%10.3f L=%10.3f LLI=%d code=%d\n",i,p[i],obs->P[p[i]],
+        trace(4, "obs: i=%d f=%d P=%14.3f L=%14.3f LLI=%d code=%d\n",i,p[i],obs->P[p[i]],
         obs->L[p[i]],obs->LLI[p[i]],obs->code[p[i]]);
     }
     trace(4,"decode_obsdata: time=%s sat=%2d\n",time_str(obs->time,0),obs->sat);
