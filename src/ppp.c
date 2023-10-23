@@ -1048,6 +1048,7 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
                 if (rtk->x[II(sat,opt)]==0.0) continue;
                 H[II(sat,opt)+nx*nv]=C;
             }
+            /* FIXME: only estimate if frq==1 is populated! */
             if (frq==2&&code==1) { /* L5-receiver-dcb */
                 dcb+=rtk->x[ID(opt)];
                 H[ID(opt)+nx*nv]=1.0;
