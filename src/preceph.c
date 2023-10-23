@@ -537,7 +537,9 @@ static int readbiaf(const char *file, nav_t *nav)
             } else {
                 nav->cbias[sat-1][freq][bias_ix1-1]-=cbias*1E-9*CLIGHT; /* ns -> m */
             }
+            /* ------------------- end obsolete --------------------------- */
         }
+        /* ------------------- start obsolete --------------------------- */
         else if (strcmp(bias,"DSB")==0) {
             /* other code biases are L1/L2, Galileo is L1/L5 */
             if (obs1[1]=='1')
@@ -563,6 +565,7 @@ static int readbiaf(const char *file, nav_t *nav)
               return 0;
             };
         }
+        /* ------------------- end obsolete --------------------------- */
 
     }
     fclose(fp);
