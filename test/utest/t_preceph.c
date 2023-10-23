@@ -214,14 +214,14 @@ void utest6(void)
 
     fp=fopen("testpeph3.out","w");
 
-    for (i=0;i<MAXSAT;i++) for (j=0;j<MAX_CODE_BIAS_FREQS;j++) for (k=0;k<MAX_CODE_BIASES+1;k++) {
+    for (i=0;i<MAXSAT;i++) for (j=0;j<NFREQ;j++) for (k=0;k<MAX_CODE_BIASES+1;k++) {
 
       satno2id(i+1,sat);
 
       osbias = nav.osbias[i][j][k];
       fcbias = nav.fcbias[i][j][k];
 
-      fprintf(fp,"%3s %6d %6d %6d %14.3f %14.3f\n",
+      fprintf(fp,"%3s %6d %6d %6d %8.4f %8.4f\n",
               sat,i,j,k,osbias/ns2m,fcbias/ns2m);
     }
     fclose(fp);
@@ -256,7 +256,7 @@ void utest7(void)
         if (!(pcv=searchpcv(i+1,"",time,&pcvs))) continue;
         nav.pcvs[i]=*pcv;
     }
-    fp=fopen("testpeph3.out","w");
+    fp=fopen("testpeph4.out","w");
 
     sat=3;
 
