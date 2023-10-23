@@ -35,7 +35,7 @@
 *                           move eci2ecef() to rtkcmn.c
 *           2013/05/08 1.9  fix bug on computing std-dev of precise clocks
 *           2013/11/20 1.10 modify option for api readsp3()
-*           2014/04/03 1.11 accept extenstion including sp3,eph,SP3,EPH
+*           2014/04/03 1.11 accept extension including sp3,eph,SP3,EPH
 *           2014/05/23 1.12 add function to read sp3 velocity records
 *                           change api: satantoff()
 *           2014/08/31 1.13 add member cov and vco in peph_t sturct
@@ -471,14 +471,6 @@ static int readbiaf(const char *file, nav_t *nav)
         cbias=str2num(buff,82,10);
         sat=satid2no(prn);
         sys=satsys(sat,NULL);
-        /* other code biases are L1/L2, Galileo is L1/L5 */
-        /* FIXME: extend this to support other frequencies and constellations */
-        if (obs1[1]=='1')
-            freq=0;
-        else if ((sys!=SYS_GAL&&obs1[1]=='2')||(sys==SYS_GAL&&obs1[1]=='5'))
-            freq=1;
-        else
-          continue;
         /* skip if code not valid */
         if (!(code1=obs2code(&obs1[1]))) continue;
         /* skip GPS C1P biases */
@@ -493,10 +485,36 @@ static int readbiaf(const char *file, nav_t *nav)
               trace(0,"readbiaf: error, mix of absolute and relative biases!\n");
               return 0;
             };
+            /* Select frequency slot */
+            if (obs1[1]=='1')
+                freq = 0;
+            else if ((sys==SYS_GPS && obs1[1]=='2') ||
+                     (sys==SYS_GLO && obs1[1]=='2') ||
+                     (sys==SYS_GAL && obs1[1]=='7') ||
+                     (sys==SYS_CMP && obs1[1]=='7') || /* TODO: check!! */
+                     (sys==SYS_QZS && obs1[1]=='2'))
+                freq = 1;
+            else if (obs1[1]=='5')
+                freq = 2;
+            else
+              continue;
+
+            /* check if max number of frequencies is exceeded */
+            if (freq>=NFREQ) continue;
+
             if (obs1[0]=='C')
               nav->osbias[sat-1][freq][bias_ix1]=cbias*1E-9*CLIGHT; /* ns -> m */
             else
               nav->fcbias[sat-1][freq][bias_ix1]=cbias*1E-9*CLIGHT; /* ns -> m */
+
+            /* other code biases are L1/L2, Galileo is L1/L5 */
+            if (obs1[1]=='1')
+                freq=0;
+            else if ((sys!=SYS_GAL&&obs1[1]=='2')||(sys==SYS_GAL&&obs1[1]=='5'))
+                freq=1;
+            else
+              continue;
+
             /* observed signal bias */
             if (obs1[0]!='C') continue;  /* skip phase biases for now */
             if (cbias==0.0) continue;
@@ -509,6 +527,13 @@ static int readbiaf(const char *file, nav_t *nav)
             }
         }
         else if (strcmp(bias,"DSB")==0) {
+            /* other code biases are L1/L2, Galileo is L1/L5 */
+            if (obs1[1]=='1')
+                freq=0;
+            else if ((sys!=SYS_GAL&&obs1[1]=='2')||(sys==SYS_GAL&&obs1[1]=='5'))
+                freq=1;
+            else
+              continue;
             /* differential signal bias */
             if (obs1[1]!=obs2[1]) continue; /* skip biases between freqs for now */
             if (!(code2=obs2code(&obs2[1]))) continue; /* skip if code not valid */
