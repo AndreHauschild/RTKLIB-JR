@@ -451,6 +451,7 @@ static void corr_meas(const obsd_t *obs, const nav_t *nav, const double *azel,
                 frq=i;
                 if ( !nav->osbvld[obs->sat-1][frq][bias_ix] ||
                     (!nav->fcbvld[obs->sat-1][frq][bias_ix] && opt->modear!=ARMODE_OFF)) {
+                    trace(3,"corr_meas: invalid bias sat=%2d f=%d c=%d\n",obs->sat,frq,obs->code[i]);
                     P[i]=L[i]=0.0;
                     continue;
                 }
@@ -1022,6 +1023,13 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
             dcb=bias=0.0;
             code=j%2; /* 0=phase, 1=code */
             frq=j/2;
+
+            /* TODO: skip GPS L5 for now */
+            /*
+            if (sys==SYS_GPS && frq==2) {
+              continue;
+            }
+             */
 
             if (opt->ionoopt==IONOOPT_IFLC) {
                 if ((y=code==0?Lc:Pc)==0.0) continue;
