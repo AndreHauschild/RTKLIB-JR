@@ -208,6 +208,7 @@ const prcopt_t prcopt_default={ /* defaults processing options */
     0,3,3,1,0,1,                /* sateph,modear,glomodear,gpsmodear,bdsmodear,arfilter */
     20,0,4,5,10,20,             /* maxout,minlock,minfixsats,minholdsats,mindropsats,minfix */
     1,1,1,1,0,                  /* armaxiter,estion,esttrop,dynamics,tidecorr */
+    0,                          /* receiver L5 bias estimation */
     1,0,0,0,0,                  /* niter,codesmooth,intpref,sbascorr,sbassatsel */
     0,0,                        /* rovpos,refpos */
     {300.0,300.0,300.0},        /* eratio[] */
@@ -216,8 +217,8 @@ const prcopt_t prcopt_default={ /* defaults processing options */
     {1E-4,1E-3,1E-4,1E-1,1E-2,0.0}, /* prn[] */
     5E-12,                      /* sclkstab */
     {3.0,0.25,0.0,1E-9,1E-5,3.0,3.0,0.0}, /* thresar */
-	0.0,0.0,0.05,0,             /* elmaskar,elmaskhold,thresslip,thresdop, */
-	0.1,0.01,30.0,              /* varholdamb,gainholdamb,maxtdif */
+    0.0,0.0,0.05,0,             /* elmaskar,elmaskhold,thresslip,thresdop, */
+    0.1,0.01,30.0,              /* varholdamb,gainholdamb,maxtdif */
     {5.0,30.0},                 /* maxinno {phase,code} */
     {0},{0},{0},                /* baseline,ru,rb */
     {"",""},                    /* anttype */

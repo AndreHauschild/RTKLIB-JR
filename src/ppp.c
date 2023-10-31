@@ -107,7 +107,7 @@
 #define NC(opt)     (NSYS)
 #define NT(opt)     ((opt)->tropopt<TROPOPT_EST?0:((opt)->tropopt==TROPOPT_EST?1:3))
 #define NI(opt)     ((opt)->ionoopt==IONOOPT_EST?MAXSAT:0)
-#define ND(opt)     ((opt)->nf>=3?1:0)
+#define ND(opt)     ((opt)->nf>=3&&(opt)->rcvBiasL5?1:0)
 #define NR(opt)     (NP(opt)+NC(opt)+NT(opt)+NI(opt)+ND(opt))
 #define NB(opt)     (NF(opt)*MAXSAT)
 #define NX(opt)     (NR(opt)+NB(opt))
@@ -184,6 +184,12 @@ extern int pppoutstat(rtk_t *rtk, char *buff)
                        rtk->ssat[i].azel[1]*R2D,x[j],STD(rtk,j));
         }
     }
+    /* L5 receiver bias */
+    if (rtk->opt.nf>=3 && rtk->opt.rcvBiasL5) {
+      i=ID(&rtk->opt);
+      p+=sprintf(p,"$DCB,%d,%.3f,%d,%d,%.4f,%.4f\n",week,tow,rtk->sol.stat,
+                 1,x[i],STD(rtk,i));
+    };
 #ifdef OUTSTAT_AMB
     /* ambiguity parameters */
     int k;
@@ -834,7 +840,7 @@ static void udstate_ppp(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav)
         udiono_ppp(rtk,obs,n,nav);
     }
     /* temporal update of L5-receiver-dcb parameters */
-    if (rtk->opt.nf>=3) {
+    if (rtk->opt.nf>=3 && rtk->opt.rcvBiasL5) {
         uddcb_ppp(rtk);
     }
     /* temporal update of phase-bias */
@@ -1049,7 +1055,7 @@ static int ppp_res(int post, const obsd_t *obs, int n, const double *rs,
                 H[II(sat,opt)+nx*nv]=C;
             }
             /* FIXME: only estimate if frq==1 is populated! */
-            if (frq==2&&code==1) { /* L5-receiver-dcb */
+            if (frq==2&&code==1&&rtk->opt.rcvBiasL5) { /* L5-receiver-dcb */
                 dcb+=rtk->x[ID(opt)];
                 H[ID(opt)+nx*nv]=1.0;
             }

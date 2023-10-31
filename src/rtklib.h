@@ -1015,6 +1015,7 @@ typedef struct {        /* processing options type */
     int tropopt;        /* troposphere option (TROPOPT_???) */
     int dynamics;       /* dynamics model (0:none,1:velocity,2:accel) */
     int tidecorr;       /* earth tide correction (0:off,1:solid,2:solid+otl+pole) */
+    int rcvBiasL5;      /* estimate L5 receiver bias (0:off,1:on) */
     int niter;          /* number of filter iteration */
     int codesmooth;     /* code smoothing window size (0:none) */
     int intpref;        /* interpolate reference obs (for post mission) */
