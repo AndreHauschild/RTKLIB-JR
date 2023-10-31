@@ -32,6 +32,14 @@ The output of the solution happens in `rtkpos.c:rtkoutstat()`. In case the posit
 
 Review the selection of observations in `rinex.c:decode_obsdata` with respect to code priorities!
 
+## Recevier L5 DCB estimation
+
+An L5 receiver bias is estimated when three or more frequencies are selected. The following issues exist with this approach:
+
+1. Estimating this parameter only makes sense if the second frequency slot is populated with observations.
+2. It must most likely be estimated seperately for each constellation.
+3. Additional parameters must be added for more than 3 frequencies.
+
 ## Binary files in repository
 
 The folders 'dll' and 'lib' contain binary files. 
