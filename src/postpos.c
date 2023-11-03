@@ -741,7 +741,8 @@ static int readobsnav(gtime_t ts, gtime_t te, double ti, char **infile,
         trace(1,"\n");
         return 0;
     }
-    if (nav->n<=0&&nav->ng<=0&&nav->ns<=0) {
+    if (nav->n<=0&&nav->ng<=0&&nav->ns<=0&&(prcopt->sateph!=EPHOPT_PRECCOM&&
+                                            prcopt->sateph!=EPHOPT_PREC)) {
         checkbrk("error : no nav data");
         trace(1,"\n");
         return 0;
