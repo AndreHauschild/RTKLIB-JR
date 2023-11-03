@@ -1492,6 +1492,10 @@ EXPORT double tropmodel(gtime_t time, const double *pos, const double *azel,
                         double humi);
 EXPORT double tropmapf(gtime_t time, const double *pos, const double *azel,
                        double *mapfw);
+EXPORT double tropmodelHpf(gtime_t time, const double *pos, const double *azel,
+                           double humi, double *zwd);
+EXPORT double tropmapfHpf(gtime_t time, const double pos[], const double azel[],
+                          double *mapfw);
 EXPORT int iontec(gtime_t time, const nav_t *nav, const double *pos,
                   const double *azel, int opt, double *delay, double *var);
 EXPORT void readtec(const char *file, nav_t *nav, int opt);
@@ -1553,6 +1557,7 @@ EXPORT int  open_rnxctr (rnxctr_t *rnx, FILE *fp);
 EXPORT int  input_rnxctr(rnxctr_t *rnx, FILE *fp);
 
 /* ephemeris and clock functions ---------------------------------------------*/
+EXPORT int    pephclk (gtime_t time, int sat, const nav_t *nav, double *dts, double *varc);
 EXPORT double eph2clk (gtime_t time, const eph_t  *eph);
 EXPORT double geph2clk(gtime_t time, const geph_t *geph);
 EXPORT double seph2clk(gtime_t time, const seph_t *seph);

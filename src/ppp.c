@@ -872,7 +872,32 @@ static double trop_model_prec(gtime_t time, const double *pos,
                               double *var)
 {
     const double zazel[]={0.0,PI/2.0};
-    double zhd,m_h,m_w,cotz,grad_n,grad_e;
+    double zhd,zwd,m_h,m_w,cotz,grad_n,grad_e;
+
+/*#define TROPO_HOPFIELD*/
+#ifdef TROPO_HOPFIELD
+
+    /* zenith hydrostatic delay */
+    zhd=tropmodelHpf(time,pos,zazel,0.0,&zwd);
+
+    /* mapping function */
+    m_h=tropmapfHpf(time,pos,azel,&m_w);
+
+    if (azel[1]>0.0) {
+
+        /* m_w=m_0+m_0*cot(el)*(Gn*cos(az)+Ge*sin(az)): ref [6] */
+        cotz=1.0/tan(azel[1]);
+        grad_n=m_w*cotz*cos(azel[0]);
+        grad_e=m_w*cotz*sin(azel[0]);
+        m_w+=grad_n*x[1]+grad_e*x[2];
+        dtdx[1]=grad_n*(x[0]-zhd);
+        dtdx[2]=grad_e*(x[0]-zhd);
+    }
+    dtdx[0]=m_w;
+    *var=SQR(0.01);
+    return m_h*zhd+m_w*zwd+m_w*(x[0]-zhd-zwd);
+
+#else
 
     /* zenith hydrostatic delay */
     zhd=tropmodel(time,pos,zazel,0.0);
@@ -893,6 +918,8 @@ static double trop_model_prec(gtime_t time, const double *pos,
     dtdx[0]=m_w;
     *var=SQR(0.01);
     return m_h*zhd+m_w*(x[0]-zhd);
+
+#endif
 }
 /* tropospheric model ---------------------------------------------------------*/
 static int model_trop(gtime_t time, const double *pos, const double *azel,
