@@ -32,13 +32,13 @@ public:
     double ti, tu;
     int n, stat;
     char *infile[6], outfile[1024];
-    char *rov, *base;
+    QString rov, base;
 
     explicit ProcessingThread(QObject *parent);
     ~ProcessingThread();
 
     void addInput(const QString &);
-    void addList(char * &sta, const QString & list);
+    static QString toList(const QString & list);
 
 protected:
     void run();
@@ -53,49 +53,40 @@ class MainForm : public QDialog, public Ui::MainForm
     Q_OBJECT
 
 public slots:
-    void BtnPlotClick();
-    void BtnViewClick();
-    void BtnToKMLClick();
-    void BtnOptionClick();
-    void BtnExecClick();
-    void BtnAbortClick();
-    void BtnExitClick();
-    void BtnAboutClick();
+    void btnPlotClicked();
+    void btnViewClicked();
+    void btnToKMLClicked();
+    void btnOptionClicked();
+    void btnExecClicked();
+    void btnAbortClicked();
+    void btnAboutClicked();
 
-    void BtnTime1Click();
-    void BtnTime2Click();
-    void BtnInputFile1Click();
-    void BtnInputFile3Click();
-    void BtnInputFile2Click();
-    void BtnInputFile4Click();
-    void BtnInputFile5Click();
-    void BtnOutputFileClick();
-    void BtnInputView1Click();
-    void BtnInputView3Click();
-    void BtnInputView2Click();
-    void BtnInputView4Click();
-    void BtnInputView5Click();
-    void BtnOutputView1Click();
-    void BtnOutputView2Click();
-    void BtnInputPlot1Click();
-    void BtnInputPlot2Click();
-    void BtnKeywordClick();
+    void btnTimeStartClicked();
+    void btnTimeStopClicked();
+    void btnInputFile1Clicked();
+    void btnInputFile3Clicked();
+    void btnInputFile2Clicked();
+    void btnInputFile4Clicked();
+    void btnInputFile5Clicked();
+    void btnOutputFileClicked();
+    void btnInputView1Clicked();
+    void btnInputView3Clicked();
+    void btnInputView2Clicked();
+    void btnInputView4Clicked();
+    void btnInputView5Clicked();
+    void btnOutputView1Clicked();
+    void btnOutputView2Clicked();
+    void btnInputPlot1Clicked();
+    void btnInputPlot2Clicked();
+    void btnKeywordClicked();
 
-    void TimeStartClick();
-    void TimeEndClick();
-    void TimeIntFClick();
-    void TimeUnitFClick();
+    void outputDirectoryEnableClicked();
+    void btnOutputDirectoryClicked();
+    void btnInputFile6Clicked();
+    void btnInputView6Clicked();
 
-    void InputFile1Change();
-    void OutDirEnaClick();
-    void BtnOutDirClick();
-    void OutDirChange();
-    void BtnInputFile6Click();
-    void BtnInputView6Click();
-
-    void FormCreate();
-    void ProcessingFinished(int);
-    void ShowMsg(const QString  &msg);
+    void processingFinished(int);
+    void showMessage(const QString  &msg);
 
 protected:
     void showEvent(QShowEvent*);
@@ -108,59 +99,63 @@ private:
     ConvDialog *convDialog;
     TextViewer *textViewer;
 
-    void ExecProc (void);
-    int  GetOption(prcopt_t &prcopt, solopt_t &solopt, filopt_t &filopt);
-    int  ObsToNav (const QString &obsfile, QString &navfile);
+    ProcessingThread *processingThread;
 
-    QString FilePath(const QString &file);
-    void ReadList(QComboBox *, QSettings *ini,  const QString &key);
-    void WriteList(QSettings *ini, const QString &key, const QComboBox *combo);
-    void AddHist(QComboBox *combo);
-    int ExecCmd(const QString &cmd, const QStringList &opt, int show);
+    void execProcessing();
+    int  getOption(prcopt_t &prcopt, solopt_t &solopt, filopt_t &filopt);
+    int  obsToNav (const QString &obsfile, QString &navfile);
 
-    gtime_t GetTime1(void);
-    gtime_t GetTime2(void);
-    void SetOutFile(void);
-    void SetTime1(gtime_t time);
-    void SetTime2(gtime_t time);
-    void UpdateEnable(void);
-    void LoadOpt(void);
-    void SaveOpt(void);
+    QString filePath(const QString &file);
+    void readList(QComboBox *, QSettings *ini,  const QString &key);
+    void writeList(QSettings *ini, const QString &key, const QComboBox *combo);
+    void addHistory(QComboBox *combo);
+    int execCommand(const QString &cmd, const QStringList &opt, int show);
+
+    gtime_t getTimeStart();
+    gtime_t getTimeStop();
+    void setOutputFile();
+    void setTimeStart(gtime_t time);
+    void setTimeStop(gtime_t time);
+    void updateEnable();
+    void loadOptions();
+    void saveOptions();
 
 public:
-    QString IniFile;
-    bool AbortFlag;
+    QString iniFile;
+    bool abortFlag;
 
     // options
-    int PosMode, Freq, Solution, DynamicModel, IonoOpt, TropOpt, RcvBiasEst;
-    int ARIter, NumIter, CodeSmooth, TideCorr;
-    int OutCntResetAmb, FixCntHoldAmb, LockCntFixAmb, RovPosType, RefPosType;
-    int SatEphem, NavSys;
-    int RovAntPcv, RefAntPcv, AmbRes, GloAmbRes, BdsAmbRes;
-    int OutputHead, OutputOpt, OutputVel, OutputSingle, OutputDatum;
-    int OutputHeight, OutputGeoid, DebugTrace, DebugStatus, BaseLineConst;
-    int SolFormat, TimeFormat, LatLonFormat, IntpRefObs, NetRSCorr, SatClkCorr;
-    int SbasCorr, SbasCorr1, SbasCorr2, SbasCorr3, SbasCorr4, TimeDecimal;
-    int SolStatic, SbasSat, MapFunc;
-    int PosOpt[6];
-    double ElMask, MaxAgeDiff, RejectPhase, RejectCode;
-    double MeasErrR1, MeasErrR2, MeasErr2, MeasErr3, MeasErr4, MeasErr5;
-    double SatClkStab, RovAntE, RovAntN, RovAntU, RefAntE, RefAntN, RefAntU;
-    double PrNoise1, PrNoise2, PrNoise3, PrNoise4, PrNoise5;
-    double ValidThresAR, ElMaskAR, ElMaskHold, SlipThres;
-    double ThresAR2, ThresAR3;
-    double RovPos[3], RefPos[3], BaseLine[2];
-    double MaxSolStd;
-    snrmask_t SnrMask;
+    int positionMode, frequencies, solution, dynamicModel, ionosphereOption, troposphereOption, receiverBiasEstimation;
+    int ARIter, minFixSats, minHoldSats, minDropSats, ARFilter;
+    int numIter, codeSmooth, tideCorrection;
+    int outputCntResetAmbiguity, fixCntHoldAmbiguity, LockCntFixAmbiguity, roverPositionType, referencePositionType;
+    int satelliteEphemeris, navigationSystems;
+    int roverAntennaPcv, referenceAntennaPcv, ambiguityResolutionGPS, ambiguityResolutionGLO, ambiguityResolutionBDS;
+    int outputHeader, outputOptions, outputVelocity, outputSingle, outputDatum;
+    int outputHeight, outputGeoid, debugTrace, debugStatus, baseLineConstrain;
+    int solutionFormat, timeFormat, latLonFormat, intpolateReferenceObs, netRSCorr, satelliteClockCorrection;
+    int sbasCorrection, sbasCorrection1, sbasCorrection2, sbasCorrection3, sbasCorrection4, timeDecimal;
+    int solutionStatic, sbasSat, mapFunction;
+    int positionOption[6];
+    double elevationMask, maxAgeDiff, varHoldAmb, gainHoldAmb, rejectPhase, rejectCode;
+    double measurementErrorR1, measurementErrorR2, measurementErrorR5, measurementError2, measurementError3, measurementError4, measurementError5;
+    double measurementError6, measurementError7, measurementError8;
+    double satelliteClockStability, roverAntennaE, roverAntennaN, roverAntennaU, referenceAntennaE, referenceAntennaN, referenceAntennaU;
+    double processNoise1, processNoise2, processNoise3, processNoise4, processNoise5;
+    double validThresAR, elevationMaskAR, elevationMaskHold, slipThreshold, dopplerThreshold;
+    double maxPositionVarAR, glonassHwBias, thresAR3, thresAR4, validThresARMin, validThresARMax;
+    double roverPosition[3], referencePosition[3], baseLine[2];
+    double maxSolutionStd;
+    snrmask_t snrMask;
 
-    QString RnxOpts1, RnxOpts2, PPPOpts;
-    QString FieldSep, RovAnt, RefAnt, AntPcvFile, StaPosFile, PrecEphFile;
-    QString NetRSCorrFile1, NetRSCorrFile2, SatClkCorrFile, GoogleEarthFile;
-    QString GeoidDataFile, IonoFile, DCBFile, EOPFile, BLQFile;
-    QString SbasCorrFile, SatPcvFile, ExSats;
-    QString RovList, BaseList;
+    QString rnxOptions1, rnxOptions2, pppOptions;
+    QString fieldSeperator, roverAntenna, referenceAntenna, antennaPcvFile, stationPositionFile, PrecEphFile;
+    QString netRSCorrFile1, netRSCorrFile2, satelliteClockCorrectionFile, googleEarthFile;
+    QString geoidDataFile, ionosphereFile, dcbFile, eopFile, blqFile;
+    QString sbasCorrectionFile, satellitePcvFile, excludedSatellites;
+    QString roverList, baseList;
 
-    void ViewFile(const QString &file);
+    void viewFile(const QString &file);
 
     explicit MainForm(QWidget *parent = 0);
 };

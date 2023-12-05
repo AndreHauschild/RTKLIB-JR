@@ -22,19 +22,19 @@ MapOptDialog::MapOptDialog(QWidget* parent)
     : QDialog(parent)
 {
     setupUi(this);
-    connect(BtnSave, SIGNAL(clicked(bool)), this, SLOT(BtnSaveClick()));
-    connect(BtnClose, SIGNAL(clicked(bool)), this, SLOT(close()));
+    connect(btnSave, SIGNAL(clicked(bool)), this, SLOT(btnSaveClicked()));
+    connect(btnClose, SIGNAL(clicked(bool)), this, SLOT(close()));
 }
 //---------------------------------------------------------------------------
 void MapOptDialog::showEvent(QShowEvent*)
 {
-	UpdateField();
-	UpdateEnable();
+	updateField();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void MapOptDialog::BtnSaveClick()
+void MapOptDialog::btnSaveClicked()
 {
-    QString file=plot->MapImageFile;
+    QString file=plot->mapImageFile;
 	if (file=="") return;
 	file=file+".tag";
 
@@ -44,68 +44,68 @@ void MapOptDialog::BtnSaveClick()
 	}
     QTextStream out(&fp);
     out << QString("%% map image tag file: rtkplot %1 %2\n\n").arg(VER_RTKLIB).arg(PATCH_LEVEL);
-    out << QString("scalex  = %1\n").arg(plot->MapScaleX,0,'g',6);
-    out << QString("scaley  = %1\n").arg(plot->MapScaleEq?plot->MapScaleX:plot->MapScaleY,0,'g',6);
-    out << QString("scaleeq = %1\n").arg(plot->MapScaleEq);
-    out << QString("lat     = %1\n").arg(plot->MapLat,0,'g',9);
-    out << QString("lon     = %1\n").arg(plot->MapLon,0,'g',9);
+    out << QString("scalex  = %1\n").arg(plot->mapScaleX,0,'g',6);
+    out << QString("scaley  = %1\n").arg(plot->mapScaleEqual?plot->mapScaleX:plot->mapScaleY,0,'g',6);
+    out << QString("scaleeq = %1\n").arg(plot->mapScaleEqual);
+    out << QString("lat     = %1\n").arg(plot->mapLatitude,0,'g',9);
+    out << QString("lon     = %1\n").arg(plot->mapLongitude,0,'g',9);
 
 }
 //---------------------------------------------------------------------------
-void MapOptDialog::BtnCenterClick()
+void MapOptDialog::btnCenterClicked()
 {
     QString s;
 	double rr[3],pos[3];
-    if (!plot->GetCenterPos(rr)) return;
+    if (!plot->getCenterPosition(rr)) return;
 	ecef2pos(rr,pos);
-    Lat->setValue(pos[0]*R2D);
-    Lon->setValue(pos[1]*R2D);
-	UpdateMap();
+    sBLatitude->setValue(pos[0]*R2D);
+    sBLongitude->setValue(pos[1]*R2D);
+	updateMap();
 }
 //---------------------------------------------------------------------------
-void MapOptDialog::BtnUpdateClick()
+void MapOptDialog::btnUpdateClicked()
 {
-	UpdateMap();
+	updateMap();
 }
 //---------------------------------------------------------------------------
-void MapOptDialog::BtnCloseClick()
+void MapOptDialog::btnCloseClicked()
 {
     close();
 }
 //---------------------------------------------------------------------------
-void MapOptDialog::ScaleEqClick()
+void MapOptDialog::ScaleEqualClicked()
 {
-	UpdateMap();
-	UpdateEnable();
+	updateMap();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
 //---------------------------------------------------------------------------
-void MapOptDialog::UpdateField(void)
+void MapOptDialog::updateField(void)
 {
     QString s;
-    setWindowTitle(plot->MapImageFile);
-    MapSize1->setValue(plot->MapSize[0]);
-    MapSize2->setValue(plot->MapSize[1]);
-    ScaleX->setValue(plot->MapScaleX);
-    ScaleY->setValue(plot->MapScaleY);
-    Lat->setValue(plot->MapLat);
-    Lon->setValue(plot->MapLon);
-    ScaleEq->setChecked(plot->MapScaleEq);
+    setWindowTitle(plot->mapImageFile);
+    sBMapSize1->setValue(plot->mapSize[0]);
+    sBMapSize2->setValue(plot->mapSize[1]);
+    sBScaleX->setValue(plot->mapScaleX);
+    sBScaleY->setValue(plot->mapScaleY);
+    sBLatitude->setValue(plot->mapLatitude);
+    sBLongitude->setValue(plot->mapLongitude);
+    cBScaleEqual->setChecked(plot->mapScaleEqual);
 }
 //---------------------------------------------------------------------------
-void MapOptDialog::UpdateMap(void)
+void MapOptDialog::updateMap(void)
 {
-    plot->MapScaleX=ScaleX->value();
-    plot->MapScaleY=ScaleY->value();
-    plot->MapLat=Lat->value();
-    plot->MapLon=Lon->value();
-    plot->MapScaleEq=ScaleEq->isChecked();
-    plot->UpdatePlot();
+    plot->mapScaleX=sBScaleX->value();
+    plot->mapScaleY=sBScaleY->value();
+    plot->mapLatitude=sBLatitude->value();
+    plot->mapLongitude=sBLongitude->value();
+    plot->mapScaleEqual=cBScaleEqual->isChecked();
+    plot->updatePlot();
 }
 //---------------------------------------------------------------------------
-void MapOptDialog::UpdateEnable(void)
+void MapOptDialog::updateEnable(void)
 {
-    ScaleY      ->setEnabled(!ScaleEq->isChecked());
+    sBScaleY      ->setEnabled(!cBScaleEqual->isChecked());
 } 
 //---------------------------------------------------------------------------
 

@@ -11,73 +11,99 @@
 class Graph // graph class
 {
 private:
-        double AutoTick(double scale);
-        double AutoTickTime(double scale);
-        void DrawBox(QPainter &c);
-        void DrawLabel(QPainter &c);
-        void DrawGrid(QPainter &c,double xt, double yt);
-        void DrawGridLabel(QPainter &c, double xt, double yt);
-        void RotPoint(QPoint *ps, int n, const QPoint &pc, int rot, QPoint *pr);
-        int ClipPoint(QPoint *p0, int area, QPoint *p1);
+        double autoTick(double scale);
+        double autoTickTime(double scale);
+        void drawBox(QPainter &c);
+        void drawLabel(QPainter &c);
+        void drawGrid(QPainter &c,double xt, double yt);
+        void drawGridLabel(QPainter &c, double xt, double yt);
+        void rotatePoint(QPoint *ps, int n, const QPoint &pc, int rot, QPoint *pr);
+        int clipPoint(QPoint *p0, int area, QPoint *p1);
 
         QPoint p_;
-        QColor color_;
-        QPaintDevice *Parent;
-        int mark_, size_, rot_;
-        int X, Y, Width, Height;
-        double XCent, YCent, XScale, YScale, XTick, YTick;
+        QPaintDevice *parent;
+        int x, y, width, height;
+        double xCenter, yCenter;  // center coordinate (unit)
+        double xScale, yScale;  // scale factor (unit/pixel)
+        double xTick, yTick;   // grid interval (unit) (0:auto)
 
 public:
         explicit Graph(QPaintDevice *parent);
 
-        int IsInArea(QPoint &p);
-        int ToPoint(const double &x, const double &y, QPoint &p);
-        int OnAxis(const QPoint &p);
-        QString NumText(double x, double dx);
-        QString TimeText(double x, double dx);
-        void ToPos(const QPoint &p, double &x, double &y);
-        void SetSize(int width, int height);
-        void resize();
-        void SetPos(const QPoint &p1, const QPoint &p2);
-        void GetPos(QPoint &p1, QPoint &p2);
-        void SetCent(double x, double y);
-        void GetCent(double &x, double &y);
-        void SetRight(double x, double y);
-        void GetRight(double &x, double &y);
-        void SetScale(double xs, double ys);
-        void GetScale(double &xs, double &ys);
-        void SetLim(const double *xl, const double *yl);
-        void GetLim(double *xl, double *yl);
-        void SetTick(double xt, double yt);
-        void GetTick(double &xt, double &yt);
-        void DrawAxis(QPainter &c,int label, int glabel);
-        void DrawMark(QPainter &c,const QPoint &p, int mark, const QColor &color, int size, int rot);
-        void DrawMark(QPainter &c,double x, double y, int mark, const QColor &color, int size, int rot);
-        void DrawMark(QPainter &c,const QPoint &p, int mark, const QColor &color, const QColor &bgcolor, int size,int rot);
-        void DrawMark(QPainter &c,double x, double y, int mark, const QColor &color, const QColor &bgcolor,int size, int rot);
-        void DrawMarks(QPainter &c,const double *x, const double *y,const QVector<QColor> &colors, int n,
-				   int mark, int size, int rot);
-        void DrawCircle(QPainter &c,const QPoint &p, const QColor &color, int rx, int ry, int style);
-        void DrawCircle(QPainter &c,double x, double y, const QColor &color, double rx, double ry, int style);
-        void DrawCircles(QPainter &c,int label);
-        void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha, int va, int rot);
-        void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha, int va, int rot, const QFont &font);
-        void DrawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, int ha, int va,int rot);
-        void DrawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, int ha, int va,int rot, const QFont &font);
-        void DrawText(QPainter &c,double x, double y, const QString &str, const QColor &color, const QColor &bgcolor,int ha, int va, int rot);
-        void DrawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, const QColor &bgcolor,int ha, int va, int rot);
-        void DrawPoly(QPainter &c,QPoint *p, int n, const QColor &color, int style);
-        void DrawPoly(QPainter &c,double *x, double *y, int n, const QColor &color, int style);
-        void DrawPolyline(QPainter &c,QPoint *p, int n);
-        void DrawPatch(QPainter &c,QPoint *p, int n, const QColor &color1, const QColor &color2, int style);
-        void DrawPatch(QPainter &c,double *x, double *y, int n, const QColor &color1, const QColor &color2, int style);
-        void DrawSkyPlot(QPainter &c,const QPoint &p, const QColor &color1, const QColor &color2, int size);
-        void DrawSkyPlot(QPainter &c,double x, double y, const QColor &color1, const QColor &color2, double size);
-        void DrawSkyPlot(QPainter &c,const QPoint &p, const QColor &color1, const QColor &color2, const QColor &bgcolor, int size);
-        void DrawSkyPlot(QPainter &c,double x, double y, const QColor &color1, const QColor &color2, const QColor &bgcolor,double size);
+        enum MarkerTypes {
+            Dot = 0, // (.)
+            Circle = 1, // (o)
+            Rect = 2,  // (#)
+            Cross = 3, // (x)
+            Line = 4, // (-)
+            Plus = 5, // (+)
+            Arrow = 10, // (->)
+            HScale = 11,
+            VScale = 12,
+            Compass = 13
+        };
+        enum LabelPosition {
+            Off = 0,
+            Outer = 1,
+            Inner = 2,
+            OuterRot = 3,
+            InnerRot = 4,
+            Time = 6,
+            Axis = 7
+        };
 
-        int Box, Fit, XGrid, YGrid, XLPos, YLPos, Week;
-        QString Title, XLabel, YLabel;
-        QColor Color[3];
+        bool isInArea(const QPoint &p);
+        int toPoint(double x, double y, QPoint &p);
+        int onAxis(const QPoint &p);
+        QString numText(double x, double dx);
+        QString timeText(double x, double dx);
+        void toPos(const QPoint &p, double &x, double &y);
+        void setSize(int width, int height);
+        void resize();
+        void setPosition(const QPoint &p1, const QPoint &p2);
+        void getPosition(QPoint &p1, QPoint &p2);
+        void setCenter(const double x, const double y);
+        void getCenter(double &x, double &y);
+        void setRight(const double x, const double y);
+        void getRight(double &x, double &y);
+        void setScale(const double xs, const double ys);
+        void getScale(double &xs, double &ys);
+        void setLimits(const double *xl, const double *yl);
+        void getLimits(double *xl, double *yl);
+        void setTick(const double xt, const double yt);
+        void getTick(double &xt, double &yt);
+        void drawAxis(QPainter &c,int label, int glabel);
+        void drawMark(QPainter &c,const QPoint &p, int mark, const QColor &color, int size, int rot);
+        void drawMark(QPainter &c,double x, double y, int mark, const QColor &color, int size, int rot);
+        void drawMark(QPainter &c,const QPoint &p, int mark, const QColor &color, const QColor &bgcolor, int size,int rot);
+        void drawMark(QPainter &c,double x, double y, int mark, const QColor &color, const QColor &bgcolor,int size, int rot);
+        void drawMarks(QPainter &c,const double *x, const double *y,const QColor *colors, int n,
+				   int mark, int size, int rot);
+        void drawCircle(QPainter &c,const QPoint &p, const QColor &color, int rx, int ry, int style);
+        void drawCircle(QPainter &c,double x, double y, const QColor &color, double rx, double ry, int style);
+        void drawCircles(QPainter &c,int label);
+        void drawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha, int va, int rot);
+        void drawText(QPainter &c,double x, double y, const QString &str, const QColor &color, int ha, int va, int rot, const QFont &font);
+        void drawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, int ha, int va,int rot);
+        void drawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, int ha, int va,int rot, const QFont &font);
+        void drawText(QPainter &c,double x, double y, const QString &str, const QColor &color, const QColor &bgcolor,int ha, int va, int rot);
+        void drawText(QPainter &c,const QPoint &p, const QString &str, const QColor &color, const QColor &bgcolor,int ha, int va, int rot);
+        void drawPoly(QPainter &c,QPoint *p, int n, const QColor &color, int style);
+        void drawPoly(QPainter &c,double *x, double *y, int n, const QColor &color, int style);
+        void drawPolyline(QPainter &c,QPoint *p, int n);
+        void drawPatch(QPainter &c,QPoint *p, int n, const QColor &color1, const QColor &color2, int style);
+        void drawPatch(QPainter &c,double *x, double *y, int n, const QColor &color1, const QColor &color2, int style);
+        void drawSkyPlot(QPainter &c,const QPoint &p, const QColor &color1, const QColor &color2, int size);
+        void drawSkyPlot(QPainter &c,double x, double y, const QColor &color1, const QColor &color2, double size);
+        void drawSkyPlot(QPainter &c,const QPoint &p, const QColor &color1, const QColor &color2, const QColor &bgcolor, int size);
+        void drawSkyPlot(QPainter &c,double x, double y, const QColor &color1, const QColor &color2, const QColor &bgcolor,double size);
+
+        int box;  // show box (0:off, 1:on)
+        int fit;  // fit scale on resize (0:off, 1:on)
+        int xGrid, yGrid;  // show grid (0:off, 1:on)
+        int xLabelPosition, yLabelPosition; // grid label pos (0:off, 1:outer, 2:inner, 3:outer-rot, 4:inner-rot, 5/6:time, 7:axis)
+        int week;  // gpsweek no. for time label
+        QString title, xLabel, yLabel;  // lable string ("":no label)
+        QColor color[3];  // background color, grid color, and title/label color
 };
 #endif

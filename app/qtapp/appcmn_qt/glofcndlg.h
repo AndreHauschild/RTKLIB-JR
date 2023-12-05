@@ -11,24 +11,23 @@
 //---------------------------------------------------------------------------
 class GloFcnDialog : public QDialog, private Ui::GloFcnDialog
 {
-        Q_OBJECT
+    Q_OBJECT
 
 public slots:
-        void BtnOkClick();
-        void BtnReadClick();
-        void BtnClearClick();
-        void EnaFcnClick();
-        void UpdateEnable(void);
+    void btnOkClicked();
+    void btnReadClicked();
+    void btnClearClicked();
+    void updateEnable(void);
 private:
-        QLineEdit * GetFcn(int prn);
+    QSpinBox * getFcn(int prn);
 
 protected:
     void showEvent(QShowEvent*);
 
 public:
-        GloFcnDialog(QWidget *parent);
+    GloFcnDialog(QWidget *parent);
 
-	int EnaGloFcn,GloFcn[27];
+    int enableGloFcn, gloFcn[27];
 };
 
 //---------------------------------------------------------------------------

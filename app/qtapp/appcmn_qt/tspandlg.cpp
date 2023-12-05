@@ -3,7 +3,6 @@
 #include <QShowEvent>
 #include <QDateTime>
 
-#define INHIBIT_RTK_LOCK_MACROS
 #include "rtklib.h"
 #include "plotmain.h"
 #include "tspandlg.h"

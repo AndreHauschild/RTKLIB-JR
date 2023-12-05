@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>643</width>
-    <height>481</height>
+    <width>707</width>
+    <height>577</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,61 +17,50 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout_10">
-   <item row="2" column="3" colspan="2">
-    <widget class="QPushButton" name="BtnSave">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+   <item row="2" column="1" colspan="2">
+    <widget class="QPushButton" name="btnLoad">
      <property name="toolTip">
-      <string/>
+      <string>Load options from file</string>
      </property>
      <property name="text">
-      <string>&amp;Save...</string>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
+      <string>&amp;Load...</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="5" colspan="2">
-    <widget class="QPushButton" name="BtnOk">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+   <item row="2" column="5">
+    <widget class="QPushButton" name="btnOk">
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
       <string>&amp;OK</string>
      </property>
-     <property name="flat">
-      <bool>false</bool>
+    </widget>
+   </item>
+   <item row="2" column="3" colspan="2">
+    <widget class="QPushButton" name="btnSave">
+     <property name="toolTip">
+      <string>Save options to file</string>
+     </property>
+     <property name="text">
+      <string>&amp;Save...</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QPushButton" name="BtnLoad">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+   <item row="2" column="6">
+    <widget class="QPushButton" name="btnCancel">
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string>&amp;Load...</string>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
+      <string>&amp;Cancel</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="0" rowspan="2" colspan="8">
-    <widget class="QTabWidget" name="Misc">
+   <item row="0" column="0" rowspan="2" colspan="7">
+    <widget class="QTabWidget" name="tWOptions">
      <property name="toolTip">
       <string/>
-     </property>
-     <property name="tabPosition">
-      <enum>QTabWidget::North</enum>
      </property>
      <property name="currentIndex">
       <number>0</number>
@@ -84,21 +73,60 @@
        <string>Setting&amp;1</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout">
-       <item row="7" column="0">
-        <widget class="QLabel" name="Label32">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="5" column="2" colspan="2">
+        <widget class="QComboBox" name="cBIonosphereOption">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define ionosphere correction method (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-ionoopt&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
-         <property name="text">
-          <string>Satellite Ephemeris/Clock</string>
-         </property>
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Broadcast</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SBAS</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Iono-Free LC</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Estimate TEC</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>IONEX TEC</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>QZSS Broadcast</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>QZSS LEX</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Input TEC</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="11" column="0" colspan="4">
-        <widget class="QWidget" name="widget_2" native="true">
+        <widget class="QWidget" name="widget_4" native="true">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -119,93 +147,255 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QCheckBox" name="PosOpt1">
+           <widget class="QCheckBox" name="cBPositionOption1">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Apply phase center variation to satellite (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-posopt1&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;A &amp;quot;Satellite Antenna PCV Fileʺ has to be specified in the &amp;quot;Files&amp;quot; tab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Sat PCV</string>
             </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="PosOpt2">
+           <widget class="QCheckBox" name="cBPositionOption2">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Apply phase center variation to receiver (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-posopt2&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;A &amp;quot;Receiver Antenna PCV Fileʺ has to be specified in the &amp;quot;Files&amp;quot; tab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Rec PCV</string>
             </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="PosOpt3">
+           <widget class="QCheckBox" name="cBPositionOption3">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Apply phase windup correction in PPP mode (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-posopt3&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>PhWU</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
+             <string>Phase Windup</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="PosOpt4">
+           <widget class="QCheckBox" name="cBPositionOption4">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Exclude GPS Block IIA satellites in eclipse (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-posopt4&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;The eclipsing Block IIA satellitesoften degrade the PPP solutions due to unpredicted behavior of yaw‐attitude.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>Rej Ecl</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
+             <string>Reject Eclipse</string>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="PosOpt5">
+           <widget class="QCheckBox" name="cBPositionOption5">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable RAIM (receiver autonomous integrity monitoring) FDE (fault detection and exclusion) feature (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-posopt5&lt;/span&gt;). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>RAIM FDE</string>
             </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="PosOpt6">
+           <widget class="QCheckBox" name="cBPositionOption6">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Apply correction for day-boundary clock jumps (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-posopt6&lt;/span&gt;). &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
-             <string>DBCorr</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
+             <string>DB Correction</string>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
        </item>
-       <item row="1" column="2" colspan="2">
-        <widget class="QComboBox" name="PosMode">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="5" column="0">
+        <widget class="QLabel" name="Label8">
          <property name="toolTip">
           <string/>
+         </property>
+         <property name="text">
+          <string>Ionosphere Correction</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QComboBox" name="cBDynamicModel">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use dynamic model for rover (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-dynamics&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;Only applicable to DGPS/DGNSS or kinematic modes.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ON</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="13" column="0" colspan="4">
+        <widget class="QGroupBox" name="groupBox">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="title">
+          <string>Navigation Systems:</string>
+         </property>
+         <layout class="QHBoxLayout" name="horizontalLayout">
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QCheckBox" name="cBNavSys1">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>GPS</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cBNavSys2">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>GLONASS</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cBNavSys3">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Galileo</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cBNavSys4">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>QZSS</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cBNavSys6">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>BDS</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cBNavSys7">
+            <property name="text">
+             <string>NavIC</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cBNavSys5">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>SBAS</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QComboBox" name="cBTideCorrection">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable Earth tide correction (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-tidecorr&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;For pole tides an EOP data file has to be specified.&lt;/p&gt;&lt;p&gt;For ocean tide loading an OTL BLQ file has to be given.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Solid</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Solid/OTL</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="4" column="0" colspan="2">
+        <widget class="QLabel" name="Label3">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Receiver Dynamics / Earth Tides Correction</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="lblElevationMask">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Elevation Mask (°) / SNR Mask (dBHz)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0">
+        <widget class="QLabel" name="Label9">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Troposphere Correction</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="lblPosMode">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Positioning Mode</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2" colspan="2">
+        <widget class="QComboBox" name="cBPositionMode">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Positioning Mode (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-posmode&lt;/span&gt;) &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -259,248 +449,97 @@
          </item>
         </widget>
        </item>
-       <item row="4" column="2">
-        <widget class="QComboBox" name="DynamicModel">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="2" column="1">
+        <widget class="QPushButton" name="btnFrequencies">
          <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>OFF</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ON</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="LabelFreq">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
+          <string>Show frequency table</string>
          </property>
          <property name="text">
-          <string>Frequencies / Filter Type</string>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="0" colspan="4">
-        <widget class="QWidget" name="widget_3" native="true">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QCheckBox" name="NavSys1">
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>GPS</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="NavSys2">
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>GLONASS</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="NavSys3">
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Galileo</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="NavSys4">
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>QZSS</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="NavSys6">
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>BDS</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="NavSys7">
-            <property name="text">
-             <string>NavIC</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QCheckBox" name="NavSys5">
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>SBAS</string>
-            </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="Label3">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Rec Dynamics / Earth Tides Correction</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="LabelPosMode">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Positioning Mode</string>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="2" colspan="2">
-        <widget class="QLineEdit" name="ExSats">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3">
-        <widget class="QComboBox" name="TideCorr">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>OFF</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Solid</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Solid/OTL</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="3" column="3">
-        <widget class="QPushButton" name="BtnMask">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>...</string>
+          <string>?</string>
          </property>
          <property name="flat">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="12" column="0">
-        <widget class="QLabel" name="Label35">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="2" column="2">
+        <widget class="QComboBox" name="cBFrequencies">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Used carrier frequencies (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-frequency&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
-         <property name="text">
-          <string>Excluded Satellites (+PRN: Included)</string>
+         <item>
+          <property name="text">
+           <string>L1</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>L1+2</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>L1+2+3</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>L1+2+3+4</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>L1+2+3+4+5</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="7" column="2" colspan="2">
+        <widget class="QComboBox" name="cBSatelliteEphemeris">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the type of satellite ephemeris (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-sateph&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
+         <item>
+          <property name="text">
+           <string>Broadcast</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Precise</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Broadcast+SBAS</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Broadcast+SSR APC</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Broadcast+SSR CoM</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Precise (CoM)</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>QZSS LEX</string>
+          </property>
+         </item>
         </widget>
        </item>
        <item row="2" column="3">
-        <widget class="QComboBox" name="Solution">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QComboBox" name="cBSolution">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Filter type (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-soltype&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -524,26 +563,89 @@
          </item>
         </widget>
        </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="Label9">
-         <property name="enabled">
-          <bool>true</bool>
+       <item row="12" column="2" colspan="2">
+        <widget class="QLineEdit" name="lEExcludedSatellites">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the excluded satellites for positioning. Fill in the PRN numbers of the satellites separated by spaces (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-exclsats&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;For GLONASS, Galileo, QZSS, BeiDou and SBAS, use Rnn, Enn, Jnn, Cnn and Snn, respectively (nn: satellite PRN or slot number).&lt;/p&gt;&lt;p&gt;If ʺ+ʺ is added to the head of the satellite ID, the satellite is included for positioning even if the satellite is unhealthy.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QPushButton" name="btnSnrMask">
+         <property name="toolTip">
+          <string>Edit elevation mask</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="lblFrequency">
          <property name="toolTip">
           <string/>
          </property>
          <property name="text">
-          <string>Troposphere Correction</string>
+          <string>Frequencies / Filter Type</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="QLabel" name="Label35">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Excluded Satellites (+PRN: Included)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2" colspan="2">
+        <widget class="QComboBox" name="cBTroposphereOption">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define troposhere correction method (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-tropopt&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Saastamoinen</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>SBAS</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Estimate ZTD</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Estimate ZTD+Grad</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="Label32">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Satellite Ephemeris / Clock</string>
          </property>
         </widget>
        </item>
        <item row="3" column="2">
-        <widget class="QComboBox" name="ElMask">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QComboBox" name="cBElevationMask">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Elevation mask in degree (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos1-elmask&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -622,209 +724,6 @@
          </item>
         </widget>
        </item>
-       <item row="2" column="2">
-        <widget class="QComboBox" name="Freq">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>L1</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>L1+2</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>L1+2+3</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>L1+2+3+4</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>L1+2+3+4+5</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="6" column="2" colspan="2">
-        <widget class="QComboBox" name="TropOpt">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>OFF</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Saastamoinen</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>SBAS</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Estimate ZTD</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Estimate ZTD+Grad</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="5" column="2" colspan="2">
-        <widget class="QComboBox" name="IonoOpt">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>OFF</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Broadcast</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>SBAS</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Iono-Free LC</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Estimate TEC</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>IONEX TEC</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>QZSS Broadcast</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>QZSS LEX</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Input TEC</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="Label8">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Ionosphere Correction</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="LabelElMask">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Elevation Mask (°) / SNR Mask (dBHz)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2" colspan="2">
-        <widget class="QComboBox" name="SatEphem">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>Broadcast</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Precise</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Broadcast+SBAS</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Broadcast+SSR APC</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Broadcast+SSR CoM</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Precise (Com)</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>QZSS LEX</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="QPushButton" name="BtnFreq">
-         <property name="text">
-          <string>?</string>
-         </property>
-        </widget>
-       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="TabSheet2">
@@ -835,173 +734,45 @@
        <string>Setting&amp;2</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="8" column="3" colspan="2">
-        <widget class="QDoubleSpinBox" name="ElMaskHold">
-         <property name="suffix">
-          <string>°</string>
-         </property>
-         <property name="decimals">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <double>90.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="1" colspan="2">
-        <widget class="QSpinBox" name="OutCntResetAmb">
-         <property name="maximum">
-          <number>100</number>
-         </property>
-         <property name="value">
-          <number>5</number>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="3" colspan="2">
-        <widget class="QDoubleSpinBox" name="SlipThres">
-         <property name="suffix">
-          <string> m</string>
-         </property>
-         <property name="decimals">
-          <number>3</number>
-         </property>
-         <property name="value">
-          <double>0.050000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="13" column="1" colspan="2">
-        <widget class="QDoubleSpinBox" name="MaxAgeDiff">
-         <property name="suffix">
-          <string> s</string>
-         </property>
-         <property name="decimals">
-          <number>1</number>
-         </property>
-         <property name="maximum">
-          <double>10000.000000000000000</double>
-         </property>
-         <property name="value">
-          <double>30.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="17" column="1" colspan="2">
-        <widget class="QSpinBox" name="ARIter">
-         <property name="value">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="1" colspan="2">
-        <widget class="QDoubleSpinBox" name="RejectCode">
-         <property name="suffix">
-          <string> m</string>
-         </property>
-         <property name="decimals">
-          <number>2</number>
-         </property>
-         <property name="maximum">
-          <double>1000.000000000000000</double>
-         </property>
-         <property name="value">
-          <double>30.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="14" column="3" colspan="2">
-        <widget class="QDoubleSpinBox" name="RejectPhase">
-         <property name="suffix">
-          <string>m</string>
-         </property>
-         <property name="decimals">
-          <number>2</number>
-         </property>
-         <property name="maximum">
-          <double>1000.000000000000000</double>
-         </property>
-         <property name="value">
-          <double>30.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="17" column="3" colspan="2">
-        <widget class="QSpinBox" name="NumIter">
-         <property name="value">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1" colspan="4">
-        <widget class="QDoubleSpinBox" name="ValidThresAR">
-         <property name="decimals">
-          <number>3</number>
-         </property>
-         <property name="maximum">
-          <double>100.000000000000000</double>
-         </property>
-         <property name="value">
-          <double>3.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="3" colspan="2">
-        <widget class="QDoubleSpinBox" name="ElMaskAR">
-         <property name="suffix">
-          <string>°</string>
-         </property>
-         <property name="decimals">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <double>90.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="1" colspan="2">
-        <widget class="QSpinBox" name="LockCntFixAmb">
-         <property name="suffix">
-          <string> s</string>
-         </property>
-         <property name="maximum">
-          <number>3600</number>
-         </property>
-         <property name="value">
-          <number>5</number>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1" colspan="2">
-        <widget class="QDoubleSpinBox" name="ThresAR2">
-         <property name="decimals">
-          <number>8</number>
-         </property>
-         <property name="maximum">
-          <double>100.000000000000000</double>
-         </property>
-         <property name="value">
-          <double>0.999950000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="3" colspan="2">
-        <widget class="QDoubleSpinBox" name="ThresAR3">
-         <property name="decimals">
-          <number>3</number>
-         </property>
-         <property name="maximum">
-          <double>1000.000000000000000</double>
-         </property>
-         <property name="value">
-          <double>0.200000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="19" column="0">
-        <widget class="QCheckBox" name="BaselineConst">
+       <item row="12" column="1" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBMaxAgeDifferences">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the maximum value of age of differential between the rover and the base station (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-maxage&lt;/span&gt;) &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> s</string>
+         </property>
+         <property name="decimals">
+          <number>1</number>
+         </property>
+         <property name="maximum">
+          <double>3600.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>30.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="3" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBElevationMaskHold">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the minimum elevation angle to hold ambiguity in ʺFix and Holdʺ integer ambiguity resolution mode (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-elmaskhold&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string>°</string>
+         </property>
+         <property name="decimals">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <double>90.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="0">
+        <widget class="QCheckBox" name="cBBaselineConstrain">
+         <property name="toolTip">
+          <string>Constrain the baseline length</string>
          </property>
          <property name="text">
           <string>Baseline Length Constraint</string>
@@ -1011,39 +782,20 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="1" colspan="2">
-        <widget class="QSpinBox" name="FixCntHoldAmb">
-         <property name="suffix">
-          <string> s</string>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-         <property name="value">
-          <number>10</number>
-         </property>
-        </widget>
+       <item row="19" column="1" colspan="2">
+        <widget class="QSpinBox" name="sBMinFixSats"/>
        </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="Label25">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
+       <item row="21" column="0">
+        <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>Integer Ambiguity Res (GPS/GLO/BDS)</string>
+          <string>Max Pos Var for AR / AR Filter</string>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QComboBox" name="AmbRes">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QComboBox" name="cBAmbiguityResolutionGPS">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define integer ambiguity resolution strategy for GPS (option &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-armode&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1072,82 +824,18 @@
          </item>
         </widget>
        </item>
-       <item row="0" column="2" colspan="2">
-        <widget class="QComboBox" name="GloAmbRes">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>OFF</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ON</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Auto Calibration</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="0" column="4">
-        <widget class="QComboBox" name="BdsAmbRes">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>OFF</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ON</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="LabelRatio">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="10" column="0">
+        <widget class="QLabel" name="Label22">
          <property name="toolTip">
           <string/>
          </property>
          <property name="text">
-          <string>Min Ratio to Fix Ambiguity</string>
+          <string>Slip Threshs: Doppler / Geom-Free</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="LabelConf">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Min Confidence / Max FCB to Fix Amb</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
+       <item row="5" column="0">
         <widget class="QLabel" name="Label13">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1156,11 +844,18 @@
          </property>
         </widget>
        </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="LabelHold">
-         <property name="enabled">
-          <bool>true</bool>
+       <item row="10" column="1" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBDopplerThreshold">
+         <property name="suffix">
+          <string> Hz</string>
          </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="0">
+        <widget class="QLabel" name="LabelHold">
          <property name="toolTip">
           <string/>
          </property>
@@ -1169,39 +864,81 @@
          </property>
         </widget>
        </item>
-       <item row="11" column="0">
-        <widget class="QLabel" name="Label22">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
+       <item row="24" column="0">
+        <widget class="QLabel" name="label_7">
          <property name="text">
-          <string>Outage to Reset Amb / Slip Thres</string>
+          <string>Hold Amb Var / Hold Amb Gain</string>
          </property>
         </widget>
        </item>
-       <item row="13" column="0">
-        <widget class="QLabel" name="Label14">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="13" column="1" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBRejectCode">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the reject threshold of GDOP (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-rejgdop&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;If the GDOP is over the value, the observable is excluded for the estimation process as an outlier.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
-         <property name="text">
-          <string>Max Age of Diff / Sync Solution</string>
+         <property name="suffix">
+          <string> m</string>
+         </property>
+         <property name="decimals">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <double>1000.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>30.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QDoubleSpinBox" name="sBValidThresARMin">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="maximum">
+          <double>100.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>3.000000000000000</double>
          </property>
         </widget>
        </item>
        <item row="13" column="3" colspan="2">
-        <widget class="QComboBox" name="SyncSol">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
+        <widget class="QDoubleSpinBox" name="sBRejectPhase">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the reject threshold of the kalman filter innovations (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-rejionn&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;If the carrier phase innovation is over the value, the observable is excluded for the estimation process as an outlier. The innovation threshold is multiplied by the carrier phase/pseudorange error ratio to generate the threshold for pseudorange innovations.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> m</string>
+         </property>
+         <property name="decimals">
+          <number>2</number>
+         </property>
+         <property name="maximum">
+          <double>1000.000000000000000</double>
+         </property>
+         <property name="value">
+          <double>30.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="2">
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>σ: </string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2" colspan="2">
+        <widget class="QComboBox" name="cBAmbiguityResolutionGLO">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define integer ambiguity resolution strategy for Glonass (option &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-gloarmode&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1220,47 +957,120 @@
          </item>
         </widget>
        </item>
-       <item row="14" column="0">
-        <widget class="QLabel" name="Label11">
-         <property name="enabled">
-          <bool>true</bool>
+       <item row="2" column="4">
+        <widget class="QDoubleSpinBox" name="sBValidThresARMax">
+         <property name="decimals">
+          <number>3</number>
          </property>
+        </widget>
+       </item>
+       <item row="5" column="3" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBElevationMaskAR">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the minimum elevation angle to fix integer ambiguity. If the elevation angle is less than the value, the ambiguity is excluded from the fixed integer vector (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-arelmask&lt;/span&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string>°</string>
+         </property>
+         <property name="decimals">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <double>90.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="19" column="0">
+        <widget class="QLabel" name="LabelMinSats">
          <property name="toolTip">
           <string/>
          </property>
          <property name="text">
-          <string>Outlier Threshold for Code/Phase</string>
+          <string>Min Fix Sats / Min Hold Sats</string>
          </property>
         </widget>
        </item>
-       <item row="17" column="0">
+       <item row="22" column="0">
+        <widget class="QLabel" name="label_5">
+         <property name="text">
+          <string>Min Drop Sats</string>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="0">
         <widget class="QLabel" name="Label37">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
          <property name="text">
-          <string>Max # of AR Iter/# of Filter Iter</string>
+          <string># of Filter Iter / Sync Solution</string>
          </property>
         </widget>
        </item>
-       <item row="19" column="1" colspan="2">
-        <widget class="QDoubleSpinBox" name="BaselineLen">
+       <item row="2" column="0">
+        <widget class="QLabel" name="LabelRatio">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Min Ratio to Fix Ambiguity (Min/Nom/Max)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBValidThresAR">
+         <property name="toolTip">
+          <string>Set the integer ambiguity validation threshold for ʺratio‐testʺ, which uses the ratio of squared residuals of the best integer vector to the second‐best vector. (option: pos2-arthres)</string>
+         </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+        </widget>
+       </item>
+       <item row="25" column="1" colspan="4">
+        <widget class="QDoubleSpinBox" name="sBGlonassHwBias">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set relative GLONASS hardware bias in meters per frequency slot (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-arthres2&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;Used only when &amp;quot;Glonass Interger Ambiguity Resolution&amp;quot; is set to “autocal” and is used to specify the interchannel bias between two different receiver manufacturers.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="suffix">
           <string> m</string>
          </property>
          <property name="decimals">
           <number>3</number>
          </property>
+        </widget>
+       </item>
+       <item row="5" column="1" colspan="2">
+        <widget class="QSpinBox" name="sBLockCountFixAmbiguity">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the minimum lock count to fix integer ambiguity. If the lock count is less than the value, the ambiguity is excluded from the fixed integer vector (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-arlockcnt&lt;/span&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> s</string>
+         </property>
          <property name="maximum">
-          <double>10000.000000000000000</double>
+          <number>3600</number>
+         </property>
+         <property name="value">
+          <number>5</number>
+         </property>
+        </widget>
+       </item>
+       <item row="25" column="0">
+        <widget class="QLabel" name="label_8">
+         <property name="text">
+          <string>Glonass HW Bias</string>
          </property>
         </widget>
        </item>
        <item row="19" column="3" colspan="2">
-        <widget class="QDoubleSpinBox" name="BaselineSig">
+        <widget class="QSpinBox" name="sBMinHoldSats"/>
+       </item>
+       <item row="18" column="3" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBBaselineSig">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the standard deviation of the baseline length constraint in moving‐base mode (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-basesig).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="suffix">
           <string> m</string>
          </property>
@@ -1270,6 +1080,180 @@
          <property name="value">
           <double>0.001000000000000</double>
          </property>
+        </widget>
+       </item>
+       <item row="12" column="0">
+        <widget class="QLabel" name="Label14">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Max Age of Diff / Outs to Reset Amb</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="3" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBSlipThreshold">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the cycle‐slip threshold of geometry‐free LC carrier‐phase difference between epochs (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-slipthres&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> m</string>
+         </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="value">
+          <double>0.050000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QComboBox" name="cBAmbiguityResolutionBDS">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define integer ambiguity resolution strategy for BDS (option &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-bdsarmode&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ON</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="Label25">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Integer Ambiguity Res (GPS/GLO/BDS)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="13" column="0">
+        <widget class="QLabel" name="Label11">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Outlier Threshold for Code / Phase</string>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="1" colspan="2">
+        <widget class="QSpinBox" name="sBFixCountHoldAmbiguity">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the minimum fix count to hold ambiguity in &amp;quot;Fix and Hold&amp;quot; integer ambiguity resolution mode (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-arminfix&lt;/span&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> s</string>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+         <property name="value">
+          <number>10</number>
+         </property>
+        </widget>
+       </item>
+       <item row="18" column="1">
+        <widget class="QDoubleSpinBox" name="sBBaselineLen">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the constraint of the baseline length in moving‐base mode (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-baselen).&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> m</string>
+         </property>
+         <property name="decimals">
+          <number>3</number>
+         </property>
+         <property name="maximum">
+          <double>1000000.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="3" colspan="2">
+        <widget class="QComboBox" name="cBSyncSolution">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define time synchronization mode of solutions (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-syncsol&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ON</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Auto Calibration</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="12" column="3" colspan="2">
+        <widget class="QSpinBox" name="sBOutageCountResetAmbiguity"/>
+       </item>
+       <item row="22" column="1" colspan="4">
+        <widget class="QSpinBox" name="sBMinDropSats"/>
+       </item>
+       <item row="24" column="1" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBVarHoldAmb">
+         <property name="decimals">
+          <number>4</number>
+         </property>
+        </widget>
+       </item>
+       <item row="24" column="3" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBGainHoldAmb">
+         <property name="decimals">
+          <number>4</number>
+         </property>
+        </widget>
+       </item>
+       <item row="16" column="1" colspan="2">
+        <widget class="QSpinBox" name="sBNumIteration">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the number of iteration in the measurement update of the estimation filter (option: &lt;span style=&quot; font-style:italic;&quot;&gt;pos2-niter&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;If the baseline length is very short like 1 m, the iteration may be effective to handle the nonlinearity of measurement equation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="value">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="21" column="1" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBMaxPositionVarAR">
+         <property name="decimals">
+          <number>4</number>
+         </property>
+         <property name="value">
+          <double>0.004000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="21" column="3" colspan="2">
+        <widget class="QComboBox" name="cBARFilter">
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ON</string>
+          </property>
+         </item>
         </widget>
        </item>
       </layout>
@@ -1283,7 +1267,10 @@
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="3" column="3">
-        <widget class="QSpinBox" name="TimeDecimal">
+        <widget class="QSpinBox" name="sBTimeDecimal">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the number of decimals in the time format (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-timendec)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
          <property name="maximum">
           <number>20</number>
          </property>
@@ -1294,9 +1281,6 @@
        </item>
        <item row="0" column="0">
         <widget class="QLabel" name="LabelSolFormat">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1305,41 +1289,8 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1" colspan="3">
-        <widget class="QComboBox" name="SolFormat">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>Lat/Lon/Height</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>X/Y/Z-ECEF</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>E/N/U-Baseline</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>NMEA0183</string>
-          </property>
-         </item>
-        </widget>
-       </item>
        <item row="1" column="0">
         <widget class="QLabel" name="Label20">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1349,12 +1300,9 @@
         </widget>
        </item>
        <item row="1" column="1">
-        <widget class="QComboBox" name="OutputHead">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QComboBox" name="cBOutputHeader">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define whether the header is output (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-outhead&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1370,9 +1318,6 @@
        </item>
        <item row="3" column="0">
         <widget class="QLabel" name="LabelTimeFormat">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1382,12 +1327,9 @@
         </widget>
        </item>
        <item row="3" column="1" colspan="2">
-        <widget class="QComboBox" name="TimeFormat">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QComboBox" name="cBTimeFormat">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the format of time (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-timesys&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1413,9 +1355,6 @@
        </item>
        <item row="4" column="0">
         <widget class="QLabel" name="LabelLatLonFormat">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1426,9 +1365,6 @@
        </item>
        <item row="5" column="0">
         <widget class="QLabel" name="LabelFieldSep">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1439,9 +1375,6 @@
        </item>
        <item row="6" column="0">
         <widget class="QLabel" name="Label2">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1451,12 +1384,9 @@
         </widget>
        </item>
        <item row="6" column="1" colspan="2">
-        <widget class="QComboBox" name="OutputDatum">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QComboBox" name="cBOutputDatum">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the datum if the solution format option is set to Lat/Lon/Height (current version supports only WGS84).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1466,12 +1396,9 @@
         </widget>
        </item>
        <item row="6" column="3">
-        <widget class="QComboBox" name="OutputHeight">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QComboBox" name="cBOutputHeight">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the type of height (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-height&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1487,9 +1414,6 @@
        </item>
        <item row="7" column="0">
         <widget class="QLabel" name="Label18">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1499,12 +1423,9 @@
         </widget>
        </item>
        <item row="7" column="1" colspan="3">
-        <widget class="QComboBox" name="OutputGeoid">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QComboBox" name="cBOutputGeoid">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the geoid model if the height option is set to &amp;quot;geodetic&amp;quot; (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-geoid&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;If using external geoid model, specify the geoid file path in ʺFilesʺ tab.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1535,9 +1456,6 @@
        </item>
        <item row="8" column="0">
         <widget class="QLabel" name="Label31">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1547,12 +1465,9 @@
         </widget>
        </item>
        <item row="8" column="1" colspan="3">
-        <widget class="QComboBox" name="SolStatic">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QComboBox" name="cBSolutionStatic">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the solution type for static or PPP‐static mode (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-solstatic&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1581,9 +1496,6 @@
        </item>
        <item row="11" column="0">
         <widget class="QLabel" name="Label36">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -1592,13 +1504,93 @@
          </property>
         </widget>
        </item>
-       <item row="11" column="1">
-        <widget class="QComboBox" name="DebugStatus">
+       <item row="4" column="1" colspan="2">
+        <widget class="QComboBox" name="cBLatLonFormat">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the formats of latitude and longitude if the solution format is set to Lat/Lon/Height (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-degform&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="currentText">
+          <string>ddd.dddddd</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>ddd.dddddd</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ddd mm ss.ss</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QLineEdit" name="lEFieldSeperator">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define the separator for fields (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-fieldsep&lt;/span&gt;).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>64</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="1" colspan="2">
+        <widget class="QComboBox" name="cBOutputSingle">
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ON</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="5" column="3">
+        <widget class="QDoubleSpinBox" name="sBMaxSolutionStd">
+         <property name="suffix">
+          <string> m</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="3">
+        <widget class="QDoubleSpinBox" name="sBNmeaInterval2">
          <property name="enabled">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify the output interval of NMEA GPGSA, GLGSA,GAGSA, GPGSV, GLGSV, GAGSV messages (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-nmeaintv2&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> s</string>
+         </property>
+         <property name="maximum">
+          <double>3600.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="1" colspan="2">
+        <widget class="QDoubleSpinBox" name="sBNmeaInterval1">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify the output interval of NMEA GPRMC, GPGGA messages (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-nmeaintv1&lt;/span&gt;) &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> s</string>
+         </property>
+         <property name="maximum">
+          <double>3600.000000000000000</double>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QComboBox" name="cBOutputOptions">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define whether the processing options are output (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-outopt&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1607,23 +1599,32 @@
          </item>
          <item>
           <property name="text">
-           <string>State</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>Residuals</string>
+           <string>ON</string>
           </property>
          </item>
         </widget>
        </item>
-       <item row="11" column="2" colspan="2">
-        <widget class="QComboBox" name="DebugTrace">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="1" column="3">
+        <widget class="QComboBox" name="cBOutputVelocity">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Define whether the velocity is output&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ON</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="11" column="3">
+        <widget class="QComboBox" name="cBDebugTrace">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the output level of debug trace file. &lt;/p&gt;&lt;p&gt;If setting OFF, any debug trace file is not output. The debug trace file is created in the output file directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1657,96 +1658,10 @@
          </item>
         </widget>
        </item>
-       <item row="4" column="1" colspan="2">
-        <widget class="QComboBox" name="LatLonFormat">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="11" column="1" colspan="2">
+        <widget class="QComboBox" name="cBDebugStatus">
          <property name="toolTip">
-          <string/>
-         </property>
-         <property name="currentText">
-          <string>ddd.dddddd</string>
-         </property>
-         <item>
-          <property name="text">
-           <string>ddd.dddddd</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ddd mm ss.ss</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="4" column="3">
-        <widget class="QLineEdit" name="FieldSep">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1" colspan="2">
-        <widget class="QComboBox" name="OutputSingle">
-         <item>
-          <property name="text">
-           <string>OFF</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ON</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="5" column="3">
-        <widget class="QDoubleSpinBox" name="MaxSolStd">
-         <property name="suffix">
-          <string> m</string>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="3">
-        <widget class="QDoubleSpinBox" name="NmeaIntv2">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="suffix">
-          <string> s</string>
-         </property>
-         <property name="maximum">
-          <double>3600.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="10" column="1" colspan="2">
-        <widget class="QDoubleSpinBox" name="NmeaIntv1">
-         <property name="enabled">
-          <bool>false</bool>
-         </property>
-         <property name="suffix">
-          <string> s</string>
-         </property>
-         <property name="maximum">
-          <double>3600.000000000000000</double>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QComboBox" name="OutputOpt">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the output level of the solution status file (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-outstat&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;The solution status file contains estimated states and residuals. The solution status file is created in the output file directory.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -1755,27 +1670,39 @@
          </item>
          <item>
           <property name="text">
-           <string>ON</string>
+           <string>State</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>Residuals</string>
           </property>
          </item>
         </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QComboBox" name="OutputVel">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="0" column="1" colspan="3">
+        <widget class="QComboBox" name="cBSolutionFormat">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Output format for the solution (option: &lt;span style=&quot; font-style:italic;&quot;&gt;out-solformat&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
-           <string>OFF</string>
+           <string>Lat/Lon/Height</string>
           </property>
          </item>
          <item>
           <property name="text">
-           <string>ON</string>
+           <string>X/Y/Z-ECEF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>E/N/U-Baseline</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>NMEA0183</string>
           </property>
          </item>
         </widget>
@@ -1790,174 +1717,6 @@
        <string>S&amp;tatistics</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_11">
-       <item row="0" column="0" colspan="2">
-        <widget class="QGroupBox" name="GroupBox3">
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="title">
-          <string>Measurement Errors (1-sigma)</string>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="5" column="1" colspan="2">
-           <widget class="QDoubleSpinBox" name="MeasErr4">
-            <property name="suffix">
-             <string> m/10km</string>
-            </property>
-            <property name="decimals">
-             <number>3</number>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QDoubleSpinBox" name="MeasErrR1">
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <double>10000.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>100.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QDoubleSpinBox" name="MeasErrR2">
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="maximum">
-             <double>10000.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>100.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="1">
-           <widget class="QDoubleSpinBox" name="MeasErr2">
-            <property name="suffix">
-             <string> m</string>
-            </property>
-            <property name="decimals">
-             <number>3</number>
-            </property>
-            <property name="maximum">
-             <double>100.000000000000000</double>
-            </property>
-            <property name="value">
-             <double>0.003000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="2">
-           <widget class="QDoubleSpinBox" name="MeasErr3">
-            <property name="suffix">
-             <string> m</string>
-            </property>
-            <property name="decimals">
-             <number>3</number>
-            </property>
-            <property name="value">
-             <double>0.003000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0">
-           <widget class="QLabel" name="Label7">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Carrier-Phase Error a+b/sinEl</string>
-            </property>
-           </widget>
-          </item>
-          <item row="5" column="0">
-           <widget class="QLabel" name="Label16">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Carrier-Phase Error/Baseline</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="0">
-           <widget class="QLabel" name="Label64">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Doppler Frequency</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0">
-           <widget class="QLabel" name="Label6">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Code/Carrier-Phase Error Ratio L1/L2</string>
-            </property>
-           </widget>
-          </item>
-          <item row="7" column="1" colspan="2">
-           <widget class="QDoubleSpinBox" name="MeasErr5">
-            <property name="suffix">
-             <string> Hz</string>
-            </property>
-            <property name="decimals">
-             <number>3</number>
-            </property>
-            <property name="value">
-             <double>0.100000000000000</double>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="Label29">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Satellite Clock Stability (s/s)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="SatClkStab">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>5.0E-12</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="0" colspan="2">
         <widget class="QGroupBox" name="GroupBox4">
          <property name="toolTip">
@@ -1967,124 +1726,382 @@
           <string>Process Noises (1-sigma/sqrt(s))</string>
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
+          <item row="0" column="0">
+           <widget class="QLabel" name="Label33">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Receiver Accel Horiz/Vertical</string>
+            </property>
+           </widget>
+          </item>
           <item row="1" column="0">
            <widget class="QLabel" name="Label26">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
             <property name="toolTip">
              <string/>
             </property>
             <property name="text">
-             <string>Carrier-Phase Bias (cycle)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1" colspan="2">
-           <widget class="QLineEdit" name="PrNoise2">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>1.0E-03</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="Label27">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Vertical Ionospheric Delay (m/10km)</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="0">
-           <widget class="QLabel" name="Label10">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Receiver Accel Horiz/Vertical (m/s2)</string>
+             <string>Carrier-Phase Bias</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
-           <widget class="QLineEdit" name="PrNoise4">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="ScientificSpinBox" name="sBProcessNoise4">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the process noise standard deviation of the receiver acceleration as the horizontal component (&lt;span style=&quot; font-style:italic;&quot;&gt;stats-prnaccelh&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;If receiver dynamics is set to OFF, they are not used.&lt;/p&gt;&lt;p&gt;Unit: m/s2/sqrt(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
-            <property name="text">
-             <string>1.0E-04</string>
+            <property name="suffix">
+             <string> m/s²</string>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
             </property>
            </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QLineEdit" name="PrNoise5">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="ScientificSpinBox" name="sBProcessNoise5">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the process noise standard deviation of the receiver acceleration as the vertical component (&lt;span style=&quot; font-style:italic;&quot;&gt;stats-prnaccelv&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;If receiver dynamics is set to OFF, they are not used.&lt;/p&gt;&lt;p&gt;Unit: m/s2/sqrt(s)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
-            <property name="text">
-             <string>1.0E-04</string>
+            <property name="suffix">
+             <string> m/s²</string>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="2">
+           <widget class="ScientificSpinBox" name="sBProcessNoise3">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the process noise standard deviation of zenith tropospheric delay (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-prntrop&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;Unit: m/sqrt(s).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> m</string>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-1000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>1000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
             </property>
            </widget>
           </item>
           <item row="3" column="0">
            <widget class="QLabel" name="Label28">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
             <property name="toolTip">
              <string/>
             </property>
             <property name="text">
-             <string>Zenith Tropospheric Delay (m)</string>
+             <string>Zenith Tropospheric Delay</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="1" colspan="2">
-           <widget class="QLineEdit" name="PrNoise3">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+          <item row="2" column="0">
+           <widget class="QLabel" name="Label27">
             <property name="toolTip">
              <string/>
             </property>
             <property name="text">
-             <string>1.0E-04</string>
+             <string>Vertical Ionospheric Delay</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="2">
+           <widget class="ScientificSpinBox" name="sBProcessNoise2">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the process noise standard deviation of vertical ionospheric delay per 10 km baseline (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-prniono&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;Unit: m/sqrt(s).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> m/10km</string>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
             </property>
            </widget>
           </item>
           <item row="1" column="1" colspan="2">
-           <widget class="QLineEdit" name="PrNoise1">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="ScientificSpinBox" name="sBProcessNoise1">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the process noise standard deviation of carrier-phase bias/ambiguity (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-prnbias&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;Unit: cycle/sqrt(s).&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
-            <property name="text">
-             <string>1.0E-04</string>
+            <property name="suffix">
+             <string> cycles</string>
+            </property>
+            <property name="decimals">
+             <number>2</number>
+            </property>
+            <property name="minimum">
+             <double>-100.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
             </property>
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="Label29">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Satellite Clock Stability (s/s)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="2">
+        <widget class="QGroupBox" name="GroupBox3">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="title">
+          <string>Measurement Errors (1-sigma)</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_4">
+          <item row="3" column="1" colspan="2">
+           <widget class="QDoubleSpinBox" name="sBMeasurementError2">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the base term of carrier-phase error standard deviation (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-errphase&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> m</string>
+            </property>
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.003000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1" colspan="4">
+           <widget class="QDoubleSpinBox" name="sBMeasurementError4">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the baseline-length dependent term of carrier-phase error standard deviation (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-errphasebl&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> m/10km</string>
+            </property>
+            <property name="decimals">
+             <number>3</number>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="1" colspan="4">
+           <widget class="QDoubleSpinBox" name="sBMeasurementError5">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the standard deviation of Doppler errors (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-errdoppler)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> Hz</string>
+            </property>
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="Label6">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Code/Carrier-Phase Error Ratio L1/L2L5</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="Label16">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Carrier-Phase Error/Baseline</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QDoubleSpinBox" name="sBMeasurementErrorR1">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the ratio of standard deviations of pseudorange errors to carrier-phase errors for L1 (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-eratio1&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>300.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="Label7">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Carrier-Phase Error a+b/sinEl</string>
+            </property>
+           </widget>
+          </item>
+          <item row="8" column="0">
+           <widget class="QLabel" name="Label10">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Doppler Frequency</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
+           <widget class="QDoubleSpinBox" name="sBMeasurementErrorR5">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the ratio of standard deviations of pseudorange errors to carrier-phase errors for L5 (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-eratio5&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>100.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2" colspan="2">
+           <widget class="QDoubleSpinBox" name="sBMeasurementErrorR2">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the ratio of standard deviations of pseudorange errors to carrier-phase errors for L2 (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-eratio2&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <double>10000.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>300.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="3" colspan="2">
+           <widget class="QDoubleSpinBox" name="sBMeasurementError3">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the elevation dependent term of carrier-phase error standard deviation (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-errphaseel&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> m</string>
+            </property>
+            <property name="decimals">
+             <number>3</number>
+            </property>
+            <property name="maximum">
+             <double>100.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>0.003000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Carrier Phase Error: SNR / SNR max</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Carrier Phase Error: Receiver Errors</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1" colspan="2">
+           <widget class="QDoubleSpinBox" name="sBMeasurementErrorSNR">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the SNR dependent terms of carrier-phase error standard deviation (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-errsnr&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;e * 10^(0.1*(SNR_MAX - snr))&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="7" column="1" colspan="2">
+           <widget class="QDoubleSpinBox" name="sBMeasurementErrorReceiver">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the receiver uncertainty dependent term of carrier-phase error standard deviation (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-errrcv&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;u-blox only!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="3" colspan="2">
+           <widget class="QDoubleSpinBox" name="sBMeasurementErrorSNR_Max">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the max component of the SNR dependent terms of carrier-phase error standard deviation (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-snrmax&lt;/span&gt;)&lt;/p&gt;&lt;p&gt;e * 10^(0.1*(SNR_MAX - snr))&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> dB</string>
+            </property>
+            <property name="value">
+             <double>0.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="ScientificSpinBox" name="sBSatelliteClockStability">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the satellite clock stability (option: &lt;span style=&quot; font-style:italic;&quot;&gt;stats-clkstab&lt;/span&gt;) &lt;/p&gt;&lt;p&gt;The value is used for interpolation of base-station observables.&lt;/p&gt;&lt;p&gt;Unit: s/s&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="suffix">
+          <string> s/s</string>
+         </property>
+         <property name="decimals">
+          <number>2</number>
+         </property>
+         <property name="minimum">
+          <double>-1.000000000000000</double>
+         </property>
+         <property name="maximum">
+          <double>1.000000000000000</double>
+         </property>
         </widget>
        </item>
       </layout>
@@ -2097,124 +2114,6 @@
        <string>&amp;Positions</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_13">
-       <item row="5" column="2">
-        <widget class="QPushButton" name="BtnStaPosView">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="rtkpost_qt.qrc">
-           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="3">
-        <widget class="QPushButton" name="BtnStaPosFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="palette">
-          <palette>
-           <active>
-            <colorrole role="WindowText">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>0</red>
-               <green>0</green>
-               <blue>0</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </active>
-           <inactive>
-            <colorrole role="WindowText">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>0</red>
-               <green>0</green>
-               <blue>0</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </inactive>
-           <disabled>
-            <colorrole role="WindowText">
-             <brush brushstyle="SolidPattern">
-              <color alpha="255">
-               <red>0</red>
-               <green>0</green>
-               <blue>0</blue>
-              </color>
-             </brush>
-            </colorrole>
-           </disabled>
-          </palette>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QLineEdit" name="StaPosFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0" colspan="4">
-        <widget class="QLabel" name="Label4">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="Label30">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Station Position File</string>
-         </property>
-        </widget>
-       </item>
        <item row="4" column="0" colspan="4">
         <widget class="QGroupBox" name="GroupRefAnt">
          <property name="sizePolicy">
@@ -2231,26 +2130,23 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_6">
           <item row="0" column="0">
-           <widget class="QComboBox" name="RefPosType">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QComboBox" name="cBReferencePositionType">
             <property name="toolTip">
-             <string/>
+             <string>Select base station position format</string>
             </property>
             <item>
              <property name="text">
-              <string>Lat/Lon/Height deg/m</string>
+              <string>Lat/Lon/Height (deg/m)</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Lat/Lon/Height dms/m</string>
+              <string>Lat/Lon/Height (dms/m)</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>X/Y/Z-ECEF m</string>
+              <string>X/Y/Z-ECEF (m)</string>
              </property>
             </item>
             <item>
@@ -2271,28 +2167,19 @@
            </widget>
           </item>
           <item row="0" column="5">
-           <widget class="QPushButton" name="BtnRefPos">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QPushButton" name="btnReferencePosition">
             <property name="toolTip">
-             <string/>
+             <string>Select reference position</string>
             </property>
             <property name="text">
              <string>...</string>
             </property>
-            <property name="flat">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLineEdit" name="RefPos1">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QLineEdit" name="lEReferencePosition1">
             <property name="toolTip">
-             <string/>
+             <string>Base station position as specify by the format.</string>
             </property>
             <property name="text">
              <string>0</string>
@@ -2300,12 +2187,9 @@
            </widget>
           </item>
           <item row="1" column="1" colspan="2">
-           <widget class="QLineEdit" name="RefPos2">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QLineEdit" name="lEReferencePosition2">
             <property name="toolTip">
-             <string/>
+             <string>Base station position as specify by the format.</string>
             </property>
             <property name="text">
              <string>0</string>
@@ -2313,12 +2197,9 @@
            </widget>
           </item>
           <item row="1" column="3" colspan="3">
-           <widget class="QLineEdit" name="RefPos3">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QLineEdit" name="lEReferencePosition3">
             <property name="toolTip">
-             <string/>
+             <string>Base station position as specify by the format.</string>
             </property>
             <property name="text">
              <string>0</string>
@@ -2326,33 +2207,24 @@
            </widget>
           </item>
           <item row="3" column="0">
-           <widget class="QComboBox" name="RefAnt">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QComboBox" name="cBReferenceAntenna">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the type of the base station antenna (option: &lt;span style=&quot; font-style:italic;&quot;&gt;ant2-anttype&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;To select the antenna type, set the &amp;quot;Receiver Antenna PCV File&amp;quot; path in &amp;quot;Files&amp;quot;. &lt;/p&gt;&lt;p&gt;If &amp;quot;*&amp;quot; is used, antenna type and antenna delta are recognized by the antenna information of RINEX OBS header.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QCheckBox" name="RefAntPcv">
+           <widget class="QCheckBox" name="cBReferenceAntennaPcv">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify base station antenna type and/or delta position&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Antenna Type (*: Auto)</string>
             </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLabel" name="LabelRefAntD">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QLabel" name="lblReferenceAntennaD">
             <property name="toolTip">
              <string/>
             </property>
@@ -2362,41 +2234,59 @@
            </widget>
           </item>
           <item row="3" column="1">
-           <widget class="QDoubleSpinBox" name="RefAntE">
+           <widget class="QDoubleSpinBox" name="sBReferenceAntennaE">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the delta position in east direction of the rover antenna as offsets of ARP (antenna reference point) position with refer to the marker (option: &lt;span style=&quot; font-style:italic;&quot;&gt;ant2-antdele&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="suffix">
              <string> m</string>
             </property>
             <property name="decimals">
              <number>4</number>
             </property>
+            <property name="minimum">
+             <double>-100000.000000000000000</double>
+            </property>
             <property name="maximum">
-             <double>1000.000000000000000</double>
+             <double>100000.000000000000000</double>
             </property>
            </widget>
           </item>
           <item row="3" column="2" colspan="2">
-           <widget class="QDoubleSpinBox" name="RefAntN">
+           <widget class="QDoubleSpinBox" name="sBReferenceAntennaN">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the delta position in north direction of the rover antenna as offsets of ARP (antenna reference point) position with refer to the marker (option: &lt;span style=&quot; font-style:italic;&quot;&gt;ant2-antdeln&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="suffix">
              <string> m</string>
             </property>
             <property name="decimals">
              <number>4</number>
             </property>
+            <property name="minimum">
+             <double>-100000.000000000000000</double>
+            </property>
             <property name="maximum">
-             <double>1000.000000000000000</double>
+             <double>100000.000000000000000</double>
             </property>
            </widget>
           </item>
           <item row="3" column="4" colspan="2">
-           <widget class="QDoubleSpinBox" name="RefAntU">
+           <widget class="QDoubleSpinBox" name="sBReferenceAntennaU">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the delta position in up direction of the rover antenna as offsets of ARP (antenna reference point) position with refer to the marker (option: &lt;span style=&quot; font-style:italic;&quot;&gt;ant2-antdelu&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="suffix">
              <string> m</string>
             </property>
             <property name="decimals">
              <number>4</number>
             </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
+            </property>
             <property name="maximum">
-             <double>1000.000000000000000</double>
+             <double>10000.000000000000000</double>
             </property>
            </widget>
           </item>
@@ -2408,7 +2298,10 @@
            </widget>
           </item>
           <item row="0" column="2">
-           <widget class="QComboBox" name="DatumRef">
+           <widget class="QComboBox" name="cBDatumReference">
+            <property name="toolTip">
+             <string>Reference datum for the base station position</string>
+            </property>
             <item>
              <property name="text">
               <string>ITRF2014</string>
@@ -2470,26 +2363,26 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_7">
           <item row="0" column="0">
-           <widget class="QComboBox" name="RovPosType">
+           <widget class="QComboBox" name="cBRoverPositionType">
             <property name="enabled">
              <bool>false</bool>
             </property>
             <property name="toolTip">
-             <string/>
+             <string>Select rover position format</string>
             </property>
             <item>
              <property name="text">
-              <string>Lat/Lon/Height deg/m</string>
+              <string>Lat/Lon/Height (deg/m)</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Lat/Lon/Height dms/m</string>
+              <string>Lat/Lon/Height (dms/m)</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>X/Y/Z-ECEF m</string>
+              <string>X/Y/Z-ECEF (m)</string>
              </property>
             </item>
             <item>
@@ -2510,28 +2403,19 @@
            </widget>
           </item>
           <item row="0" column="5">
-           <widget class="QPushButton" name="BtnRovPos">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QPushButton" name="btnRoverPosition">
             <property name="toolTip">
-             <string/>
+             <string>Select rover position</string>
             </property>
             <property name="text">
              <string>...</string>
             </property>
-            <property name="flat">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item row="1" column="0">
-           <widget class="QLineEdit" name="RovPos1">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QLineEdit" name="lERoverPosition1">
             <property name="toolTip">
-             <string/>
+             <string>Rover position as specify by the format.</string>
             </property>
             <property name="text">
              <string>0</string>
@@ -2539,12 +2423,9 @@
            </widget>
           </item>
           <item row="1" column="1" colspan="2">
-           <widget class="QLineEdit" name="RovPos2">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QLineEdit" name="lERoverPosition2">
             <property name="toolTip">
-             <string/>
+             <string>Rover position as specify by the format.</string>
             </property>
             <property name="text">
              <string>0</string>
@@ -2552,12 +2433,9 @@
            </widget>
           </item>
           <item row="1" column="3" colspan="3">
-           <widget class="QLineEdit" name="RovPos3">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QLineEdit" name="lERoverPosition3">
             <property name="toolTip">
-             <string/>
+             <string>Rover position as specify by the format.</string>
             </property>
             <property name="text">
              <string>0</string>
@@ -2565,46 +2443,43 @@
            </widget>
           </item>
           <item row="4" column="0">
-           <widget class="QComboBox" name="RovAnt">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QComboBox" name="cBRoverAntenna">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the type of the rover antenna (option: &lt;span style=&quot; font-style:italic;&quot;&gt;ant1-anttype&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;To select the antenna type, set the &amp;quot;Receiver Antenna PCV File&amp;quot; path in &amp;quot;Files&amp;quot;. &lt;/p&gt;&lt;p&gt;If &amp;quot;*&amp;quot; is used, antenna type and antenna delta are recognized by the antenna information of RINEX OBS header.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
            </widget>
           </item>
           <item row="4" column="1">
-           <widget class="QDoubleSpinBox" name="RovAntE">
+           <widget class="QDoubleSpinBox" name="sBRoverAntennaE">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the delta position in east direction of the rover antenna as offsets of ARP (antenna reference point) position with refer to the marker (option: &lt;span style=&quot; font-style:italic;&quot;&gt;ant1-antdele&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="suffix">
              <string> m</string>
             </property>
             <property name="decimals">
-             <number>4</number>
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>-100000.000000000000000</double>
             </property>
             <property name="maximum">
-             <double>1000.000000000000000</double>
+             <double>100000.000000000000000</double>
             </property>
            </widget>
           </item>
           <item row="2" column="0">
-           <widget class="QCheckBox" name="RovAntPcv">
+           <widget class="QCheckBox" name="cBRoverAntennaPcv">
             <property name="toolTip">
-             <string/>
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify rover antenna type and/or delta position&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
             </property>
             <property name="text">
              <string>Antenna Type (*: Auto)</string>
             </property>
-            <property name="checked">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
           <item row="2" column="1">
-           <widget class="QLabel" name="LabelRovAntD">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QLabel" name="lblRoverAntennaD">
             <property name="toolTip">
              <string/>
             </property>
@@ -2614,29 +2489,88 @@
            </widget>
           </item>
           <item row="4" column="2" colspan="2">
-           <widget class="QDoubleSpinBox" name="RovAntN">
+           <widget class="QDoubleSpinBox" name="sBRoverAntennaN">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the delta position in north direction of the rover antenna as offsets of ARP (antenna reference point) position with refer to the marker (option: &lt;span style=&quot; font-style:italic;&quot;&gt;ant1-antdeln&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
             <property name="suffix">
              <string> m</string>
             </property>
             <property name="decimals">
-             <number>4</number>
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>-100000.000000000000000</double>
             </property>
             <property name="maximum">
-             <double>1000.000000000000000</double>
+             <double>100000.000000000000000</double>
             </property>
            </widget>
           </item>
           <item row="4" column="4" colspan="2">
-           <widget class="QDoubleSpinBox" name="RovAntU">
+           <widget class="QDoubleSpinBox" name="sBRoverAntennaU">
+            <property name="toolTip">
+             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the delta position in up direction of the rover antenna as offsets of ARP (antenna reference point) position with refer to the marker (option: &lt;span style=&quot; font-style:italic;&quot;&gt;ant1-antdelu&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            </property>
+            <property name="suffix">
+             <string> m</string>
+            </property>
             <property name="decimals">
-             <number>4</number>
+             <number>3</number>
+            </property>
+            <property name="minimum">
+             <double>-10000.000000000000000</double>
             </property>
             <property name="maximum">
-             <double>1000.000000000000000</double>
+             <double>10000.000000000000000</double>
             </property>
            </widget>
           </item>
          </layout>
+        </widget>
+       </item>
+       <item row="5" column="1">
+        <widget class="QLineEdit" name="lEStationPositionFile">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Input the station position file path to retrieve the position from the station list (option: &lt;span style=&quot; font-style:italic;&quot;&gt;file-staposfile&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;The station position file is a text file which contains the multiple lines. Each line represents a record for a station. A record contains:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- Latitude (deg)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- Longitude (deg)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- Ellipsoidal height (m)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- Station ID&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;- Station name&lt;/span&gt;&lt;/p&gt;&lt;p&gt;separated by spaces. The line starting &amp;quot;%&amp;quot; is treated as the comment line. &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;An example station position file is found at &amp;quot;data\stations.pos&amp;quot;.&lt;/p&gt;&lt;p&gt;SINEX station positions can be used as well. An sample SINEX file is found at &amp;quot;data\igs10P1565_wocov.snx&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>1024</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="3">
+        <widget class="QPushButton" name="btnStationPositionFile">
+         <property name="toolTip">
+          <string>Select station position file</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="Label30">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Station Position File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QPushButton" name="btnStationPositionView">
+         <property name="toolTip">
+          <string>Show station position file</string>
+         </property>
+         <property name="icon">
+          <iconset resource="rtkpost_qt.qrc">
+           <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
       </layout>
@@ -2649,275 +2583,38 @@
        <string>&amp;Files</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_8">
-       <item row="0" column="0">
-        <widget class="QLabel" name="Label38">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="12" column="0" colspan="2">
+        <widget class="QLineEdit" name="lEBLQFile">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Input the file path of an OTL coefficients file (option: &lt;span style=&quot; font-style:italic;&quot;&gt;file-blqfile&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;The format of the OTL coefficients file is BLQ format.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
-         <property name="text">
-          <string>Satellite/Receiver Antenna PCV File ANTEX/NGS PCV</string>
+         <property name="maxLength">
+          <number>1024</number>
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
-        <widget class="QPushButton" name="BtnSatPcvView">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="10" column="2">
+        <widget class="QPushButton" name="btnEOPFile">
          <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="rtkpost_qt.qrc">
-           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2">
-        <widget class="QPushButton" name="BtnAntPcvView">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="rtkpost_qt.qrc">
-           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
-        <widget class="QLineEdit" name="SatPcvFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="2">
-        <widget class="QPushButton" name="BtnSatPcvFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
+          <string>Select EOP data file</string>
          </property>
          <property name="text">
           <string>...</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0" colspan="2">
-        <widget class="QLineEdit" name="AntPcvFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QPushButton" name="BtnAntPcvFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="QLineEdit" name="GeoidDataFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="2">
-        <widget class="QPushButton" name="BtnGeoidDataFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="0">
-        <widget class="QLabel" name="Label15">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>DCB Data File</string>
-         </property>
-        </widget>
-       </item>
-       <item row="6" column="2">
-        <widget class="QPushButton" name="BtnDCBView">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="rtkpost_qt.qrc">
-           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0" colspan="2">
-        <widget class="QLineEdit" name="DCBFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="2">
-        <widget class="QPushButton" name="BtnDCBFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="Label17">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>EOP Data File</string>
          </property>
         </widget>
        </item>
        <item row="8" column="2">
-        <widget class="QPushButton" name="BtnEOPView">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+        <widget class="QPushButton" name="btnDCBFile">
          <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="rtkpost_qt.qrc">
-           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="0" colspan="2">
-        <widget class="QLineEdit" name="EOPFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="2">
-        <widget class="QPushButton" name="BtnEOPFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
+          <string>Select DCB data file</string>
          </property>
          <property name="text">
           <string>...</string>
          </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
         </widget>
        </item>
-       <item row="10" column="0">
+       <item row="11" column="0">
         <widget class="QLabel" name="Label34">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -2926,60 +2623,8 @@
          </property>
         </widget>
        </item>
-       <item row="10" column="2">
-        <widget class="QPushButton" name="BtnBLQFileView">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-         <property name="icon">
-          <iconset resource="rtkpost_qt.qrc">
-           <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-         </property>
-         <property name="flat">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="0" colspan="2">
-        <widget class="QLineEdit" name="BLQFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="2">
-        <widget class="QPushButton" name="BtnBLQFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>...</string>
-         </property>
-         <property name="flat">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="0">
+       <item row="13" column="0">
         <widget class="QLabel" name="Label1">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
@@ -2994,46 +2639,32 @@
          </property>
         </widget>
        </item>
-       <item row="13" column="0" colspan="2">
-        <widget class="QLineEdit" name="IonoFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="7" column="0">
+        <widget class="QLabel" name="Label15">
          <property name="toolTip">
           <string/>
          </property>
          <property name="text">
-          <string/>
+          <string>DCB Data File</string>
          </property>
         </widget>
        </item>
-       <item row="13" column="2">
-        <widget class="QPushButton" name="BtnIonoFile">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="11" column="2">
+        <widget class="QPushButton" name="btnBLQFileView">
          <property name="toolTip">
-          <string/>
+          <string>Show BLQ file</string>
          </property>
-         <property name="text">
-          <string>...</string>
+         <property name="icon">
+          <iconset resource="rtkpost_qt.qrc">
+           <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
          </property>
          <property name="flat">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
+       <item row="4" column="0">
         <widget class="QLabel" name="Label63">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -3041,6 +2672,211 @@
           <string>Geoid Data File</string>
          </property>
         </widget>
+       </item>
+       <item row="9" column="2">
+        <widget class="QPushButton" name="btnEOPView">
+         <property name="toolTip">
+          <string>Show EOP file</string>
+         </property>
+         <property name="icon">
+          <iconset resource="rtkpost_qt.qrc">
+           <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="8" column="0" colspan="2">
+        <widget class="QLineEdit" name="lEDCBFile">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Input the file path of DCB correction for PPP in CODE format (option: &lt;span style=&quot; font-style:italic;&quot;&gt;file-dcbfile&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>1024</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QPushButton" name="btnSatellitePcvFile">
+         <property name="toolTip">
+          <string>Select satellite antenna PCV file</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="0" colspan="2">
+        <widget class="QLineEdit" name="lEGeoidDataFile">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Input the file path of the geoid data file if selecting the external model as Geoid Model (option: &lt;span style=&quot; font-style:italic;&quot;&gt;file-geoidfile&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>1024</number>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="2">
+        <widget class="QPushButton" name="btnIonosphereFile">
+         <property name="toolTip">
+          <string>Select ionosphere data file</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="btnAntennaPcvFile">
+         <property name="toolTip">
+          <string>Select receiver antenna PCV file</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="10" column="0" colspan="2">
+        <widget class="QLineEdit" name="lEEOPFile">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Input the file path of an EOP data file (option: &lt;span style=&quot; font-style:italic;&quot;&gt;file-eopfile&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;The format of the EOP data file shall be IGS ERP format version 2. &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>1024</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QPushButton" name="btnSatellitePcvView">
+         <property name="toolTip">
+          <string>Show satellite PCV file</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="rtkpost_qt.qrc">
+           <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="2">
+        <widget class="QLineEdit" name="lEAntennaPcvFile">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you apply the receiver antenna phase center offset and PCV correction, input ANTEX or NGS type antenna parameters file path (option: &lt;span style=&quot; font-style:italic;&quot;&gt;file-rcvantfile&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;An example of the antenna parameter file is found at &amp;quot;data\igs08.atx&amp;quot; or &amp;quot;data\ngs_abs.pcv&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>1024</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="2">
+        <widget class="QPushButton" name="btnGeoidDataFile">
+         <property name="toolTip">
+          <string>Select geoid data file</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="12" column="2">
+        <widget class="QPushButton" name="btnBLQFile">
+         <property name="toolTip">
+          <string>Select OTL file</string>
+         </property>
+         <property name="text">
+          <string>...</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="Label38">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Satellite/Receiver Antenna PCV File ANTEX/NGS PCV</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0" colspan="2">
+        <widget class="QLineEdit" name="lESatellitePcvFile">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If you use the precise ephemeris or SSR correction, input the ANTEX antenna parameters file path for the satellite antenna PCV (phase center variation) correction (option: &lt;span style=&quot; font-style:italic;&quot;&gt;file-satantfile&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;Usually use latest igs08.atx file provided by IGS.&lt;/p&gt;&lt;p&gt;An example of the ANTEX file is found in the rtklib directory &amp;quot;data\igs08.atx&amp;quot;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>1024</number>
+         </property>
+        </widget>
+       </item>
+       <item row="7" column="2">
+        <widget class="QPushButton" name="btnDCBView">
+         <property name="toolTip">
+          <string>Show DCB file</string>
+         </property>
+         <property name="icon">
+          <iconset resource="rtkpost_qt.qrc">
+           <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="14" column="0" colspan="2">
+        <widget class="QLineEdit" name="lEIonosphereFile">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Input the file path of an ionospheric corrections file (*.yyi)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>1024</number>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="btnAntennaPcvView">
+         <property name="toolTip">
+          <string>Show receiverantenna PCV file</string>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="icon">
+          <iconset resource="rtkpost_qt.qrc">
+           <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
+         </property>
+         <property name="flat">
+          <bool>true</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="9" column="0">
+        <widget class="QLabel" name="Label17">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>EOP Data File</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -3052,144 +2888,17 @@
        <string>&amp;Misc</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_9">
-       <item row="7" column="0">
-        <widget class="QWidget" name="Panel1" native="true">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text" stdset="0">
-          <string/>
-         </property>
-         <layout class="QGridLayout" name="gridLayout_12">
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <item row="0" column="0">
-           <widget class="QPushButton" name="BtnHelp">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>?</string>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="1">
-           <widget class="QLabel" name="Label46">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="Label62">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Keywords in File Path</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="2">
-           <widget class="QLabel" name="Label43">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>#..:</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QLabel" name="Label65">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text">
-             <string>Comment in List</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </widget>
-       </item>
-       <item row="0" column="0" colspan="3">
-        <widget class="QLabel" name="Label41">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="5" column="0">
+        <widget class="QLabel" name="Label23">
          <property name="toolTip">
           <string/>
          </property>
          <property name="text">
-          <string>Time Interpolation of Base Station Data</string>
+          <string>PPP Options</string>
          </property>
         </widget>
        </item>
-       <item row="0" column="3">
-        <widget class="QComboBox" name="IntpRefObs">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <item>
-          <property name="text">
-           <string>OFF</string>
-          </property>
-         </item>
-         <item>
-          <property name="text">
-           <string>ON</string>
-          </property>
-         </item>
-        </widget>
-       </item>
-       <item row="1" column="0" colspan="2">
+       <item row="1" column="0" colspan="3">
         <widget class="QLabel" name="Label42">
          <property name="enabled">
           <bool>false</bool>
@@ -3202,13 +2911,73 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="3">
-        <widget class="QComboBox" name="ComboBox1">
+       <item row="4" column="0">
+        <widget class="QLabel" name="Label12">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>RINEX Opt (Base)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0" colspan="4">
+        <widget class="QLabel" name="Label40">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>SBAS Satellite Selection (0: All) </string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="2" colspan="3">
+        <widget class="QLineEdit" name="lERnxOptions1">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify RINEX read options for rover RINEX observation data as follows (option: &lt;span style=&quot; font-style:italic;&quot;&gt;misc-rnxopt1&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Multiple options can be input separated by spaces.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-GLss[=+n.nn]: select GPS signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-RLss[=+n.nn]: select GLO signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-ELss[=+n.nn]: select GAL signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-JLss[=+n.nn]: select QZS signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-CLss[=+n.nn]: select BDS signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-SLss[=+n.nn]: select SBS signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;ss : signal id (refer Appendix D.3 of RTKLIB documentation)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;=+n.nn: phase shift +n.nn (cycle) to be add to carrier-phase observables&lt;/span&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Without the option and multiple signals in a frequency, RTKLIB select a signal for a frequency according to the default priorities of signals. Refer to Appendix D.4 Default Priorities of Multiple Signals of the documentation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="maxLength">
+          <number>256</number>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="4">
+        <widget class="QLabel" name="Label44">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Base Stations</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0" colspan="4">
+        <widget class="QLabel" name="Label41">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>Time Interpolation of Base Station Data</string>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2" colspan="3">
+        <widget class="QLineEdit" name="lEPPPOptions">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="maxLength">
+          <number>256</number>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="4">
+        <widget class="QComboBox" name="cbDGPS">
          <property name="enabled">
           <bool>false</bool>
          </property>
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select source for differential GNSS data&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
          <item>
           <property name="text">
@@ -3222,115 +2991,18 @@
          </item>
         </widget>
        </item>
-       <item row="2" column="0" colspan="3">
-        <widget class="QLabel" name="Label40">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="4" column="2" colspan="3">
+        <widget class="QLineEdit" name="lERnxOptions2">
          <property name="toolTip">
-          <string/>
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify RINEX read options for base-station RINEX observation data (option: &lt;span style=&quot; font-style:italic;&quot;&gt;misc-rnxopt2&lt;/span&gt;).&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Multiple options can be input separated by spaces.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-GLss[=+n.nn]: select GPS signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-RLss[=+n.nn]: select GLO signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-ELss[=+n.nn]: select GAL signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-JLss[=+n.nn]: select QZS signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-CLss[=+n.nn]: select BDS signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;-SLss[=+n.nn]: select SBS signal ss&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;ss : signal id (refer Appendix D.3 of RTKLIB documentation)&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:700;&quot;&gt;=+n.nn: phase shift +n.nn (cycle) to be add to carrier-phase observables&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Without the option and multiple signals in a frequency, RTKLIB select a signal for a frequency according to the default priorities of signals. Refer to Appendix D.4 Default Priorities of Multiple Signals of the documentation.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
          </property>
-         <property name="text">
-          <string>SBAS Satellite Selection (0: All) </string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="3">
-        <widget class="QLineEdit" name="SbasSat">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>0</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="Label60">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>RINEX Opt (Rover)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1" colspan="3">
-        <widget class="QLineEdit" name="RnxOpts1">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="Label12">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>RINEX Opt (Base)</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1" colspan="3">
-        <widget class="QLineEdit" name="RnxOpts2">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="Label23">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>PPP Options</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1" colspan="3">
-        <widget class="QLineEdit" name="PPPOpts">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string/>
+         <property name="maxLength">
+          <number>256</number>
          </property>
         </widget>
        </item>
        <item row="6" column="0">
         <widget class="QLabel" name="Label45">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
          <property name="toolTip">
           <string/>
          </property>
@@ -3339,11 +3011,48 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="2">
-        <widget class="QLabel" name="Label19">
+       <item row="3" column="0">
+        <widget class="QLabel" name="Label60">
+         <property name="toolTip">
+          <string/>
+         </property>
+         <property name="text">
+          <string>RINEX Opt (Rover)</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="4">
+        <widget class="QLineEdit" name="lESbasSat">
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If SBAS DGPS correction enabled, input SBAS satellite PRN number to be used (option: &lt;span style=&quot; font-style:italic;&quot;&gt;misc-sbasatsel&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;If you input 0, all available SBAS satellites are used.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <property name="text">
+          <string>0</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="4">
+        <widget class="QComboBox" name="cBIntputReferenceObservation">
          <property name="enabled">
           <bool>true</bool>
          </property>
+         <property name="toolTip">
+          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select ON to enable time interpolation of base station data (opotion: &lt;span style=&quot; font-style:italic;&quot;&gt;misc-timeinterp&lt;/span&gt;). &lt;/p&gt;&lt;p&gt;&lt;br/&gt;If selecting ON, the base station data are linearly interpolated to the rover epoch and DD (double- difference) is made with them. If not checked, nearest epoch of base station data is used for DD.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         </property>
+         <item>
+          <property name="text">
+           <string>OFF</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string>ON</string>
+          </property>
+         </item>
+        </widget>
+       </item>
+       <item row="6" column="2" colspan="2">
+        <widget class="QLabel" name="Label19">
          <property name="toolTip">
           <string/>
          </property>
@@ -3352,51 +3061,94 @@
          </property>
         </widget>
        </item>
-       <item row="6" column="3">
-        <widget class="QLabel" name="Label44">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
-         <property name="text">
-          <string>Base Stations</string>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="1" colspan="2">
-        <widget class="QPlainTextEdit" name="RovList">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
-          <string/>
-         </property>
+       <item row="7" column="0">
+        <widget class="QFrame" name="frame">
          <property name="frameShape">
-          <enum>QFrame::Panel</enum>
+          <enum>QFrame::Box</enum>
          </property>
          <property name="frameShadow">
           <enum>QFrame::Sunken</enum>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_14">
+          <item row="0" column="1">
+           <widget class="QLabel" name="Label46">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="Label62">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Keywords in File Path</string>
+            </property>
+            <property name="wordWrap">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0">
+           <widget class="QPushButton" name="btnHelp">
+            <property name="maximumSize">
+             <size>
+              <width>32</width>
+              <height>32</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>?</string>
+            </property>
+            <property name="flat">
+             <bool>true</bool>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QLabel" name="Label65">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>Comment in List</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QLabel" name="Label43">
+            <property name="toolTip">
+             <string/>
+            </property>
+            <property name="text">
+             <string>#..:</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="7" column="3">
+        <widget class="QPlainTextEdit" name="tERoverList">
+         <property name="toolTip">
+          <string/>
          </property>
          <property name="plainText">
           <string>rover</string>
          </property>
         </widget>
        </item>
-       <item row="7" column="3">
-        <widget class="QPlainTextEdit" name="BaseList">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
+       <item row="7" column="4">
+        <widget class="QPlainTextEdit" name="tEBaseList">
          <property name="toolTip">
           <string/>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::Panel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
          </property>
          <property name="plainText">
           <string>base</string>
@@ -3407,154 +3159,121 @@
      </widget>
     </widget>
    </item>
-   <item row="2" column="7">
-    <widget class="QPushButton" name="BtnCancel">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;Cancel</string>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>ScientificSpinBox</class>
+   <extends>QDoubleSpinBox</extends>
+   <header>scientificspinbox.h</header>
+  </customwidget>
+ </customwidgets>
  <tabstops>
-  <tabstop>BtnLoad</tabstop>
-  <tabstop>BtnSave</tabstop>
-  <tabstop>BtnOk</tabstop>
-  <tabstop>BtnCancel</tabstop>
-  <tabstop>Misc</tabstop>
-  <tabstop>PosMode</tabstop>
-  <tabstop>Freq</tabstop>
-  <tabstop>Solution</tabstop>
-  <tabstop>ElMask</tabstop>
-  <tabstop>BtnMask</tabstop>
-  <tabstop>DynamicModel</tabstop>
-  <tabstop>TideCorr</tabstop>
-  <tabstop>IonoOpt</tabstop>
-  <tabstop>TropOpt</tabstop>
-  <tabstop>SatEphem</tabstop>
-  <tabstop>PosOpt1</tabstop>
-  <tabstop>PosOpt2</tabstop>
-  <tabstop>PosOpt3</tabstop>
-  <tabstop>PosOpt4</tabstop>
-  <tabstop>PosOpt5</tabstop>
-  <tabstop>PosOpt6</tabstop>
-  <tabstop>ExSats</tabstop>
-  <tabstop>NavSys1</tabstop>
-  <tabstop>NavSys2</tabstop>
-  <tabstop>NavSys3</tabstop>
-  <tabstop>NavSys4</tabstop>
-  <tabstop>NavSys6</tabstop>
-  <tabstop>NavSys7</tabstop>
-  <tabstop>AmbRes</tabstop>
-  <tabstop>GloAmbRes</tabstop>
-  <tabstop>BdsAmbRes</tabstop>
-  <tabstop>ValidThresAR</tabstop>
-  <tabstop>ThresAR2</tabstop>
-  <tabstop>ThresAR3</tabstop>
-  <tabstop>LockCntFixAmb</tabstop>
-  <tabstop>ElMaskAR</tabstop>
-  <tabstop>FixCntHoldAmb</tabstop>
-  <tabstop>ElMaskHold</tabstop>
-  <tabstop>OutCntResetAmb</tabstop>
-  <tabstop>SlipThres</tabstop>
-  <tabstop>MaxAgeDiff</tabstop>
-  <tabstop>SyncSol</tabstop>
-  <tabstop>RejectCode</tabstop>
-  <tabstop>RejectPhase</tabstop>
-  <tabstop>ARIter</tabstop>
-  <tabstop>NumIter</tabstop>
-  <tabstop>BaselineConst</tabstop>
-  <tabstop>BaselineLen</tabstop>
-  <tabstop>BaselineSig</tabstop>
-  <tabstop>SolFormat</tabstop>
-  <tabstop>OutputHead</tabstop>
-  <tabstop>OutputOpt</tabstop>
-  <tabstop>TimeFormat</tabstop>
-  <tabstop>TimeDecimal</tabstop>
-  <tabstop>LatLonFormat</tabstop>
-  <tabstop>FieldSep</tabstop>
-  <tabstop>OutputSingle</tabstop>
-  <tabstop>MaxSolStd</tabstop>
-  <tabstop>OutputDatum</tabstop>
-  <tabstop>OutputHeight</tabstop>
-  <tabstop>OutputGeoid</tabstop>
-  <tabstop>SolStatic</tabstop>
-  <tabstop>NmeaIntv1</tabstop>
-  <tabstop>NmeaIntv2</tabstop>
-  <tabstop>DebugStatus</tabstop>
-  <tabstop>DebugTrace</tabstop>
-  <tabstop>MeasErrR1</tabstop>
-  <tabstop>MeasErrR2</tabstop>
-  <tabstop>MeasErr2</tabstop>
-  <tabstop>MeasErr3</tabstop>
-  <tabstop>MeasErr4</tabstop>
-  <tabstop>MeasErr5</tabstop>
-  <tabstop>PrNoise4</tabstop>
-  <tabstop>PrNoise5</tabstop>
-  <tabstop>PrNoise1</tabstop>
-  <tabstop>PrNoise2</tabstop>
-  <tabstop>PrNoise3</tabstop>
-  <tabstop>SatClkStab</tabstop>
-  <tabstop>RovPosType</tabstop>
-  <tabstop>BtnRovPos</tabstop>
-  <tabstop>RovPos1</tabstop>
-  <tabstop>RovPos2</tabstop>
-  <tabstop>RovPos3</tabstop>
-  <tabstop>RovAntPcv</tabstop>
-  <tabstop>RovAnt</tabstop>
-  <tabstop>RovAntE</tabstop>
-  <tabstop>RovAntN</tabstop>
-  <tabstop>RovAntU</tabstop>
-  <tabstop>RefPosType</tabstop>
-  <tabstop>BtnRefPos</tabstop>
-  <tabstop>RefPos1</tabstop>
-  <tabstop>RefPos2</tabstop>
-  <tabstop>RefPos3</tabstop>
-  <tabstop>RefAntPcv</tabstop>
-  <tabstop>RefAnt</tabstop>
-  <tabstop>RefAntE</tabstop>
-  <tabstop>RefAntN</tabstop>
-  <tabstop>RefAntU</tabstop>
-  <tabstop>StaPosFile</tabstop>
-  <tabstop>BtnStaPosView</tabstop>
-  <tabstop>BtnStaPosFile</tabstop>
-  <tabstop>BtnSatPcvView</tabstop>
-  <tabstop>BtnAntPcvView</tabstop>
-  <tabstop>SatPcvFile</tabstop>
-  <tabstop>BtnSatPcvFile</tabstop>
-  <tabstop>AntPcvFile</tabstop>
-  <tabstop>BtnAntPcvFile</tabstop>
-  <tabstop>GeoidDataFile</tabstop>
-  <tabstop>BtnGeoidDataFile</tabstop>
-  <tabstop>DCBFile</tabstop>
-  <tabstop>BtnDCBView</tabstop>
-  <tabstop>BtnDCBFile</tabstop>
-  <tabstop>EOPFile</tabstop>
-  <tabstop>BtnEOPView</tabstop>
-  <tabstop>BtnEOPFile</tabstop>
-  <tabstop>BLQFile</tabstop>
-  <tabstop>BtnBLQFileView</tabstop>
-  <tabstop>BtnBLQFile</tabstop>
-  <tabstop>IonoFile</tabstop>
-  <tabstop>BtnIonoFile</tabstop>
-  <tabstop>IntpRefObs</tabstop>
-  <tabstop>ComboBox1</tabstop>
-  <tabstop>SbasSat</tabstop>
-  <tabstop>RnxOpts1</tabstop>
-  <tabstop>RnxOpts2</tabstop>
-  <tabstop>PPPOpts</tabstop>
-  <tabstop>BtnHelp</tabstop>
-  <tabstop>RovList</tabstop>
-  <tabstop>BaseList</tabstop>
+  <tabstop>btnLoad</tabstop>
+  <tabstop>btnSave</tabstop>
+  <tabstop>btnOk</tabstop>
+  <tabstop>btnCancel</tabstop>
+  <tabstop>tWOptions</tabstop>
+  <tabstop>cBPositionMode</tabstop>
+  <tabstop>cBFrequencies</tabstop>
+  <tabstop>cBSolution</tabstop>
+  <tabstop>cBElevationMask</tabstop>
+  <tabstop>btnSnrMask</tabstop>
+  <tabstop>cBDynamicModel</tabstop>
+  <tabstop>cBTideCorrection</tabstop>
+  <tabstop>cBIonosphereOption</tabstop>
+  <tabstop>cBTroposphereOption</tabstop>
+  <tabstop>cBSatelliteEphemeris</tabstop>
+  <tabstop>cBPositionOption1</tabstop>
+  <tabstop>cBPositionOption2</tabstop>
+  <tabstop>cBPositionOption3</tabstop>
+  <tabstop>cBPositionOption4</tabstop>
+  <tabstop>cBPositionOption5</tabstop>
+  <tabstop>cBPositionOption6</tabstop>
+  <tabstop>lEExcludedSatellites</tabstop>
+  <tabstop>cBAmbiguityResolutionGPS</tabstop>
+  <tabstop>cBAmbiguityResolutionGLO</tabstop>
+  <tabstop>sBValidThresARMin</tabstop>
+  <tabstop>sBLockCountFixAmbiguity</tabstop>
+  <tabstop>sBFixCountHoldAmbiguity</tabstop>
+  <tabstop>sBElevationMaskHold</tabstop>
+  <tabstop>sBSlipThreshold</tabstop>
+  <tabstop>sBMaxAgeDifferences</tabstop>
+  <tabstop>sBRejectCode</tabstop>
+  <tabstop>sBRejectPhase</tabstop>
+  <tabstop>cBBaselineConstrain</tabstop>
+  <tabstop>sBBaselineLen</tabstop>
+  <tabstop>sBBaselineSig</tabstop>
+  <tabstop>cBSolutionFormat</tabstop>
+  <tabstop>cBOutputHeader</tabstop>
+  <tabstop>cBOutputOptions</tabstop>
+  <tabstop>cBTimeFormat</tabstop>
+  <tabstop>sBTimeDecimal</tabstop>
+  <tabstop>cBLatLonFormat</tabstop>
+  <tabstop>lEFieldSeperator</tabstop>
+  <tabstop>cBOutputSingle</tabstop>
+  <tabstop>sBMaxSolutionStd</tabstop>
+  <tabstop>cBOutputDatum</tabstop>
+  <tabstop>cBOutputHeight</tabstop>
+  <tabstop>cBOutputGeoid</tabstop>
+  <tabstop>cBSolutionStatic</tabstop>
+  <tabstop>sBNmeaInterval1</tabstop>
+  <tabstop>sBNmeaInterval2</tabstop>
+  <tabstop>cBDebugStatus</tabstop>
+  <tabstop>cBDebugTrace</tabstop>
+  <tabstop>sBMeasurementErrorR1</tabstop>
+  <tabstop>sBMeasurementErrorR2</tabstop>
+  <tabstop>sBMeasurementError2</tabstop>
+  <tabstop>sBMeasurementError4</tabstop>
+  <tabstop>sBMeasurementError5</tabstop>
+  <tabstop>cBRoverPositionType</tabstop>
+  <tabstop>btnRoverPosition</tabstop>
+  <tabstop>lERoverPosition1</tabstop>
+  <tabstop>lERoverPosition2</tabstop>
+  <tabstop>lERoverPosition3</tabstop>
+  <tabstop>cBRoverAntennaPcv</tabstop>
+  <tabstop>cBRoverAntenna</tabstop>
+  <tabstop>sBRoverAntennaE</tabstop>
+  <tabstop>sBRoverAntennaN</tabstop>
+  <tabstop>sBRoverAntennaU</tabstop>
+  <tabstop>cBReferencePositionType</tabstop>
+  <tabstop>btnReferencePosition</tabstop>
+  <tabstop>lEReferencePosition1</tabstop>
+  <tabstop>lEReferencePosition2</tabstop>
+  <tabstop>lEReferencePosition3</tabstop>
+  <tabstop>cBReferenceAntennaPcv</tabstop>
+  <tabstop>cBReferenceAntenna</tabstop>
+  <tabstop>sBReferenceAntennaE</tabstop>
+  <tabstop>sBReferenceAntennaN</tabstop>
+  <tabstop>sBReferenceAntennaU</tabstop>
+  <tabstop>lEStationPositionFile</tabstop>
+  <tabstop>btnStationPositionView</tabstop>
+  <tabstop>btnStationPositionFile</tabstop>
+  <tabstop>btnSatellitePcvView</tabstop>
+  <tabstop>btnAntennaPcvView</tabstop>
+  <tabstop>lESatellitePcvFile</tabstop>
+  <tabstop>btnSatellitePcvFile</tabstop>
+  <tabstop>lEAntennaPcvFile</tabstop>
+  <tabstop>btnAntennaPcvFile</tabstop>
+  <tabstop>lEGeoidDataFile</tabstop>
+  <tabstop>btnGeoidDataFile</tabstop>
+  <tabstop>lEDCBFile</tabstop>
+  <tabstop>btnDCBView</tabstop>
+  <tabstop>btnDCBFile</tabstop>
+  <tabstop>lEEOPFile</tabstop>
+  <tabstop>btnEOPView</tabstop>
+  <tabstop>btnEOPFile</tabstop>
+  <tabstop>lEBLQFile</tabstop>
+  <tabstop>btnBLQFileView</tabstop>
+  <tabstop>btnBLQFile</tabstop>
+  <tabstop>lEIonosphereFile</tabstop>
+  <tabstop>btnIonosphereFile</tabstop>
+  <tabstop>cBIntputReferenceObservation</tabstop>
+  <tabstop>cbDGPS</tabstop>
+  <tabstop>lESbasSat</tabstop>
+  <tabstop>lERnxOptions1</tabstop>
+  <tabstop>lERnxOptions2</tabstop>
+  <tabstop>lEPPPOptions</tabstop>
  </tabstops>
  <resources>
   <include location="rtkpost_qt.qrc"/>

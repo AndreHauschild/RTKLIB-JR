@@ -14,15 +14,15 @@ CmdOptDialog::CmdOptDialog(QWidget *parent)
 {
     setupUi(this);
 
-    CmdEna[0] = CmdEna[1] = 1;
+    commandsEnabled[0] = commandsEnabled[1] = 1;
 
-    connect(BtnOk, SIGNAL(clicked()), this, SLOT(BtnOkClick()));
-    connect(BtnCancel, SIGNAL(clicked()), this, SLOT(reject()));
-    connect(BtnLoad, SIGNAL(clicked()), this, SLOT(BtnLoadClick()));
-    connect(BtnSave, SIGNAL(clicked()), this, SLOT(BtnSaveClick()));
-    connect(ChkCloseCmd, SIGNAL(clicked(bool)), this, SLOT(ChkCloseCmdClick()));
-    connect(ChkOpenCmd, SIGNAL(clicked(bool)), this, SLOT(ChkOpenCmdClick()));
-    connect(ChkPeriodicCmd, SIGNAL(clicked(bool)), this, SLOT(ChkPeriodicCmdClick()));
+    connect(btnOk, &QPushButton::clicked, this, &CmdOptDialog::btnOkClicked);
+    connect(btnCancel, &QPushButton::clicked, this, &CmdOptDialog::reject);
+    connect(btnLoad, &QPushButton::clicked, this, &CmdOptDialog::btnLoadClicked);
+    connect(btnSave, &QPushButton::clicked, this, &CmdOptDialog::btnSaveClicked);
+    connect(cBCloseCommands, &QPushButton::clicked, this, &CmdOptDialog::updateEnable);
+    connect(cBOpenCommands, &QPushButton::clicked, this, &CmdOptDialog::updateEnable);
+    connect(cBPeriodicCommands, &QPushButton::clicked, this, &CmdOptDialog::updateEnable);
 }
 
 //---------------------------------------------------------------------------
@@ -30,35 +30,36 @@ void CmdOptDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    OpenCmd->clear();
-    CloseCmd->clear();
+    tEOpenCommands->clear();
+    tECloseCommands->clear();
+    tEPeriodicCommands->clear();
 
-    OpenCmd->appendPlainText(Cmds[0]);
-    CloseCmd->appendPlainText(Cmds[1]);
-    PeriodicCmd->appendPlainText(Cmds[2]);
-    ChkOpenCmd->setChecked(CmdEna[0]);
-    ChkCloseCmd->setChecked(CmdEna[1]);
-    ChkPeriodicCmd->setChecked(CmdEna[2]);
+    tEOpenCommands->appendPlainText(commands[0]);
+    tECloseCommands->appendPlainText(commands[1]);
+    tEPeriodicCommands->appendPlainText(commands[2]);
+    cBOpenCommands->setChecked(commandsEnabled[0]);
+    cBCloseCommands->setChecked(commandsEnabled[1]);
+    cBPeriodicCommands->setChecked(commandsEnabled[2]);
 
-	UpdateEnable();
+	updateEnable();
 }
 //---------------------------------------------------------------------------
-void CmdOptDialog::BtnOkClick()
+void CmdOptDialog::btnOkClicked()
 {
-    Cmds[0] = OpenCmd->toPlainText();
-    Cmds[1] = CloseCmd->toPlainText();
-    Cmds[2] = PeriodicCmd->toPlainText();
-    CmdEna[0] = ChkOpenCmd->isChecked();
-    CmdEna[1] = ChkCloseCmd->isChecked();
-    CmdEna[2] = ChkPeriodicCmd->isChecked();
+    commands[0] = tEOpenCommands->toPlainText();
+    commands[1] = tECloseCommands->toPlainText();
+    commands[2] = tEPeriodicCommands->toPlainText();
+    commandsEnabled[0] = cBOpenCommands->isChecked();
+    commandsEnabled[1] = cBCloseCommands->isChecked();
+    commandsEnabled[2] = cBPeriodicCommands->isChecked();
 
     accept();
 }
 //---------------------------------------------------------------------------
-void CmdOptDialog::BtnLoadClick()
+void CmdOptDialog::btnLoadClicked()
 {
     QString OpenDialog_FileName;
-    QPlainTextEdit *cmd[] = { OpenCmd, CloseCmd , PeriodicCmd };
+    QPlainTextEdit *cmd[] = {tEOpenCommands, tECloseCommands, tEPeriodicCommands};
     QByteArray buff;
     int n = 0;
 
@@ -74,17 +75,19 @@ void CmdOptDialog::BtnLoadClick()
     while (!f.atEnd() && n < 3) {
         buff = f.readLine(0);
         if (buff.at(0) == '@') {
-            n ++; continue;
+            n++; continue;
         }
         if (buff[buff.length() - 1] == '\n') buff[buff.length() - 1] = '\0';
         cmd[n]->appendPlainText(buff);
     }
 }
 //---------------------------------------------------------------------------
-void CmdOptDialog::BtnSaveClick()
+void CmdOptDialog::btnSaveClicked()
 {
     QString SaveDialog_FileName;
-    QByteArray OpenCmd_Text = OpenCmd->toPlainText().toLatin1(), CloseCmd_Text = CloseCmd->toPlainText().toLatin1(), PeriodicCmd_Text = PeriodicCmd->toPlainText().toLatin1();
+    QByteArray OpenCmd_Text = tEOpenCommands->toPlainText().toLatin1();
+    QByteArray CloseCmd_Text = tECloseCommands->toPlainText().toLatin1();
+    QByteArray PeriodicCmd_Text = tEPeriodicCommands->toPlainText().toLatin1();
 
     SaveDialog_FileName = QDir::toNativeSeparators(QFileDialog::getSaveFileName(this));
     QFile fp(SaveDialog_FileName);
@@ -99,25 +102,9 @@ void CmdOptDialog::BtnSaveClick()
 }
 
 //---------------------------------------------------------------------------
-void CmdOptDialog::ChkCloseCmdClick()
+void CmdOptDialog::updateEnable()
 {
-	UpdateEnable();
-}
-
-//---------------------------------------------------------------------------
-void CmdOptDialog::ChkOpenCmdClick()
-{
-	UpdateEnable();
-}
-//---------------------------------------------------------------------------
-void CmdOptDialog::ChkPeriodicCmdClick()
-{
-    UpdateEnable();
-}
-//---------------------------------------------------------------------------
-void CmdOptDialog::UpdateEnable()
-{
-    OpenCmd->setEnabled(ChkOpenCmd->isChecked());
-    CloseCmd->setEnabled(ChkCloseCmd->isChecked());
-    PeriodicCmd->setEnabled(ChkPeriodicCmd->isChecked());
+    tEOpenCommands->setEnabled(cBOpenCommands->isChecked());
+    tECloseCommands->setEnabled(cBCloseCommands->isChecked());
+    tEPeriodicCommands->setEnabled(cBPeriodicCommands->isChecked());
 }

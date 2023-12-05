@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>351</width>
+    <width>356</width>
     <height>300</height>
    </rect>
   </property>
@@ -18,7 +18,11 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QListWidget" name="StaList"/>
+    <widget class="QListWidget" name="lWStationList">
+     <property name="toolTip">
+      <string>Station list</string>
+     </property>
+    </widget>
    </item>
    <item>
     <widget class="QWidget" name="Panel1" native="true">
@@ -48,23 +52,17 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnLoad">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnLoad">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>Load...</string>
+         <string>&amp;Load...</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnSave">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnSave">
         <property name="toolTip">
          <string/>
         </property>
@@ -74,10 +72,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -93,10 +88,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>

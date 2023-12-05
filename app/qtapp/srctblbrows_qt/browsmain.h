@@ -3,7 +3,7 @@
 #define browsmainH
 //---------------------------------------------------------------------------
 #include <QMainWindow>
-#include<QFutureWatcher>
+#include <QFutureWatcher>
 
 #include "ui_browsmain.h"
 
@@ -11,7 +11,7 @@
 class QShowEvent;
 class QCloseEvent;
 class StaListDialog;
-class GoogleMapView;
+class MapView;
 class QTimer;
 
 //---------------------------------------------------------------------------
@@ -24,44 +24,42 @@ protected:
     void closeEvent(QCloseEvent*);
 
 public slots:
-    void BtnUpdateClick();
-    void BtnListClick();
-    void AddressChange();
-    void MenuOpenClick();
-    void MenuSaveClick();
-    void MenuQuitClick();
-    void MenuUpdateCasterClick();
-    void MenuUpdateTableClick();
-    void MenuViewStrClick();
-    void MenuViewCasClick();
-    void MenuViewNetClick();
-    void MenuViewSrcClick();
-    void MenuAboutClick();
-    void BtnMapClick();
-    void TimerTimer();
+    void btnUpdateClicked();
+    void btnListClicked();
+    void addressChanged();
+    void menuOpenClicked();
+    void menuSaveClicked();
+    void menuUpdateCasterClicked();
+    void menuUpdateTableClicked();
+    void menuViewStrClicked();
+    void menuViewCasterClicked();
+    void menuViewNetClicked();
+    void menuViewSourceClicked();
+    void menuAboutClicked();
+    void btnMapClicked();
+    void loadTimerExpired();
     void Table0SelectCell(int ARow, int ACol);
-    void BtnStaClick();
-    void StaMaskClick();
-    void UpdateCaster();
-    void UpdateTable();
-    void ShowMsg(const QString &);
+    void btnStatsionClicked();
+    void updateCaster();
+    void updateTable();
+    void showMsg(const QString &);
 
 private:
-    QString AddrList, AddrCaster, SrcTable, IniFile;
-	int FontScale;
-    GoogleMapView *googleMapView;
+    QString addressList, addressCaster, sourceTable, iniFile;
+    float fontScale;
+    MapView *mapView;
     StaListDialog *staListDialog;
-    QTimer *Timer;
-    QFutureWatcher<char*> TableWatcher;
-    QFutureWatcher<char*> CasterWatcher;
+    QTimer *loadTimer;
+    QFutureWatcher<char*> tableWatcher;
+    QFutureWatcher<char*> casterWatcher;
 
-    void GetCaster(void);
-    void GetTable(void);
-    void UpdateMap(void);
-    void UpdateEnable(void);
-    void ShowTable(void);
+    void getCaster(void);
+    void getTable(void);
+    void updateMap(void);
+    void updateEnable(void);
+    void showTable(void);
 public:
-    QStringList StaList;
+    QStringList stationList;
 
     explicit MainForm(QWidget *parent = NULL);
 };

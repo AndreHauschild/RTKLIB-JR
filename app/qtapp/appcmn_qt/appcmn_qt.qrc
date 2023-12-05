@@ -1,0 +1,33 @@
+<RCC>
+    <qresource prefix="/html">
+        <file>qwebchannel.js</file>
+        <file>rtklib_ll.htm</file>
+        <file>rtklib_gm.htm</file>
+    </qresource>
+    <qresource prefix="/image">
+        <file alias="marker_bluegreen.png">../icon/marker_bluegreen.png</file>
+        <file alias="marker_bluegreenx2.png">../icon/marker_bluegreenx2.png</file>
+        <file alias="marker_blue.png">../icon/marker_blue.png</file>
+        <file alias="marker_bluex2.png">../icon/marker_bluex2.png</file>
+        <file alias="marker_green.png">../icon/marker_green.png</file>
+        <file alias="marker_greenx2.png">../icon/marker_greenx2.png</file>
+        <file alias="marker_magenta.png">../icon/marker_magenta.png</file>
+        <file alias="marker_magentax2.png">../icon/marker_magentax2.png</file>
+        <file alias="marker_orange.png">../icon/marker_orange.png</file>
+        <file alias="marker_orangex2.png">../icon/marker_orangex2.png</file>
+        <file alias="marker_red.png">../icon/marker_red.png</file>
+        <file alias="marker_redx2.png">../icon/marker_redx2.png</file>
+        <file alias="marker_yellow.png">../icon/marker_yellow.png</file>
+        <file alias="marker_yellowx2.png">../icon/marker_yellowx2.png</file>
+    </qresource>
+    <qresource prefix="/leaflet">
+        <file alias="leaflet.js">leaflet/leaflet.js</file>
+        <file alias="leaflet.css">leaflet/leaflet.css</file>
+        <file alias="images/layers-2x.png">leaflet/images/layers-2x.png</file>
+        <file alias="images/layers.png">leaflet/images/layers.png</file>
+        <file alias="images/marker-icon-2x.png">leaflet/images/marker-icon-2x.png</file>
+        <file alias="images/marker-icon.png">leaflet/images/marker-icon.png</file>
+        <file alias="images/marker-shadow.png">leaflet/images/marker-shadow.png</file>
+    </qresource>
+</RCC>
+

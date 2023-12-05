@@ -13,11 +13,12 @@ class MntpOptDialog : public QDialog, private Ui::MntpOptDialog
     Q_OBJECT
 protected:
     void  showEvent(QShowEvent*);
+
 public slots:
-    void BtnOkClick();
+    void btnOkClicked();
 
 public:
-    QString MntPnt,MntpStr;
+    QString mountPoint,mountpointString;
     MntpOptDialog(QWidget* parent);
 };
 

@@ -16,70 +16,58 @@ protected:
     void showEvent(QShowEvent*);
 
 public slots:
-    void BtnOkClick();
-    void RovAntPcvClick();
-    void BtnAntPcvFileClick();
-    void BtnDCBFileClick();
-    void BtnAntPcvViewClick();
-    void AmbResChange(int);
-    void PosModeChange(int);
-    void SolFormatChange(int);
-    void BtnLoadClick();
-    void BtnSaveClick();
-    void FreqChange();
-    void BtnRefPosClick();
-    void BtnRovPosClick();
-    void BtnStaPosViewClick();
-    void BtnStaPosFileClick();
-    void OutputHeightClick();
-    void RefPosTypePChange(int);
-    void RovPosTypePChange(int);
-    void GetPos(int type, QLineEdit **edit, double *pos);
-    void SetPos(int type, QLineEdit **edit, double *pos);
-    void BtnFont1Click();
-    void BtnFont2Click();
-    void BtnGeoidDataFileClick();
-    void NavSys2Click();
-    void BaselineConstClick();
-    void BtnSatPcvViewClick();
-    void BtnSatPcvFileClick();
-    void BtnLocalDirClick();
-    void BtnEOPFileClick();
-    void BtnEOPViewClick();
-    void BtnSnrMaskClick();
-    void NavSys6Click();
-    void BtnFreqClick();
-    void RefAntClick();
-    void RovAntClick();
+    void btnOkClicked();
+    void btnAntennaPcvFileClicked();
+    void btnDCBFileClicked();
+    void btnAntennaPcvViewClicked();
+    void btnLoadClicked();
+    void btnSaveClicked();
+    void btnReferencePositionClicked();
+    void btnRoverPositionClicked();
+    void btnStationPositionViewClicked();
+    void btnStationPositionFileClicked();
+    void referencePositionTypePChanged(int);
+    void roverPositionTypePChanged(int);
+    void getPosition(int type, QLineEdit **edit, double *pos);
+    void setPosition(int type, QLineEdit **edit, double *pos);
+    void btnFontPanelClicked();
+    void btnFontSolutionClicked();
+    void btnGeoidDataFileClicked();
+    void btnSatellitePcvViewClicked();
+    void btnSatellitePcvFileClicked();
+    void btnLocalDirectoryClicked();
+    void btnEOPFileClicked();
+    void btnEOPViewClicked();
+    void btnSnrMaskClicked();
 
 private:
-    void GetOpt(void);
-    void SetOpt(void);
-    void LoadOpt(const QString &file);
-    void SaveOpt(const QString &file);
-    void ReadAntList(void);
-    void UpdateEnable(void);
+    void getOption(void);
+    void setOption(void);
+    void loadOption(const QString &file);
+    void saveOption(const QString &file);
+    void readAntennaList(void);
+    void updateEnable(void);
 
 public:
-	prcopt_t PrcOpt;
-	solopt_t SolOpt;
-    QFont PanelFont, PosFont;
+    prcopt_t processOptions;
+    solopt_t solutionOption;
+    QFont panelFont, positionFont;
     TextViewer *textViewer;
     FreqDialog * freqDialog;
 
-    int SvrCycle, SvrBuffSize, SolBuffSize, NavSelect, SavedSol;
-    int NmeaReq, NmeaCycle, TimeoutTime, ReconTime, DgpsCorr, SbasCorr;
-    int DebugTraceF, DebugStatusF;
-    int RovPosTypeF, RefPosTypeF, RovAntPcvF, RefAntPcvF, BaselineC;
-    int MoniPort, FileSwapMargin, PanelStack;
+    int serverCycle, serverBufferSize, solutionBufferSize, navSelect, savedSolution;
+    int nmeaRequest, nmeaCycle, timeoutTime, reconnectTime, dgpsCorrection, sbasCorrection;
+    int debugTraceF, debugStatusF;
+    int roverPositionTypeF, referencePositionTypeF, roverAntennaPcvF, referenceAntennaPcvF, baselineC;
+    int monitorPort, fileSwapMargin, panelStack;
 
-    QString ExSats, LocalDirectory;
-    QString RovAntF, RefAntF, SatPcvFileF, AntPcvFileF, StaPosFileF;
-    QString GeoidDataFileF, DCBFileF, EOPFileF, TLEFileF, TLESatFileF;
-    QString ProxyAddr;
+    QString excludedSatellites, localDirectory;
+    QString roverAntennaF, referenceAntennaF, satellitePcvFileF, antennaPcvFileF, stationPositionFileF;
+    QString geoidDataFileF, dcbFileF, eopFileF, tleFileF, tleSatFileF;
+    QString proxyAddr;
 
-    double RovAntDel[3], RefAntDel[3], RovPos[3], RefPos[3];
-    double Baseline[2], NmeaIntv[2];
+    double roverAntennaDelta[3], referenceAntennaDelta[3], roverPosition[3], referencePosition[3];
+    double baseline[2], nmeaInterval[2];
 
     explicit OptDialog(QWidget* parent);
 };

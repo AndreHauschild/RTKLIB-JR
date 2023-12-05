@@ -52,9 +52,6 @@
       </property>
       <item>
        <widget class="QLabel" name="Label1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -64,12 +61,12 @@
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="MapSize1"/>
+       <widget class="QSpinBox" name="sBMapSize1"/>
       </item>
       <item>
        <widget class="QLabel" name="Label2">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
@@ -86,7 +83,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="MapSize2"/>
+       <widget class="QSpinBox" name="sBMapSize2"/>
       </item>
      </layout>
     </widget>
@@ -120,9 +117,6 @@
       </property>
       <item row="1" column="0" colspan="2">
        <widget class="QLabel" name="Label5">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -132,9 +126,9 @@
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="Lon">
+       <widget class="QDoubleSpinBox" name="sBLongitude">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="toolTip">
          <string/>
@@ -154,10 +148,7 @@
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QDoubleSpinBox" name="Lat">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QDoubleSpinBox" name="sBLatitude">
         <property name="toolTip">
          <string/>
         </property>
@@ -177,9 +168,6 @@
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="Label6">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -189,23 +177,17 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QCheckBox" name="ScaleEq">
+       <widget class="QCheckBox" name="cBScaleEqual">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>X=Y</string>
         </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QDoubleSpinBox" name="ScaleX">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QDoubleSpinBox" name="sBScaleX">
         <property name="toolTip">
          <string/>
         </property>
@@ -221,10 +203,7 @@
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QDoubleSpinBox" name="ScaleY">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QDoubleSpinBox" name="sBScaleY">
         <property name="toolTip">
          <string/>
         </property>
@@ -264,10 +243,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnSave">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnSave">
         <property name="toolTip">
          <string/>
         </property>
@@ -277,10 +253,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCenter">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCenter">
         <property name="toolTip">
          <string/>
         </property>
@@ -290,10 +263,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnUpdate">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnUpdate">
         <property name="toolTip">
          <string/>
         </property>
@@ -303,10 +273,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClose">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnClose">
         <property name="toolTip">
          <string/>
         </property>

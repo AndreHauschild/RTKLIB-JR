@@ -110,10 +110,7 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QToolButton" name="BtnConnect">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnConnect">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -123,13 +120,10 @@
                    <property name="toolTip">
                     <string>Connect/Disconnect</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/connect1.bmp</normaloff>
-                     <normalon>:/buttons/connect2.bmp</normalon>:/buttons/connect1.bmp</iconset>
+                     <normaloff>:/buttons/connect1</normaloff>
+                     <normalon>:/buttons/connect2</normalon>:/buttons/connect1</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -137,10 +131,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnSol1">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnSolution1">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -150,12 +141,9 @@
                    <property name="toolTip">
                     <string>Data 1</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/data1.bmp</normaloff>:/buttons/data1.bmp</iconset>
+                     <normaloff>:/buttons/data1</normaloff>:/buttons/data1</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -163,10 +151,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnSol2">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnSolution2">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -176,12 +161,9 @@
                    <property name="toolTip">
                     <string>Data 2</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/data2.bmp</normaloff>:/buttons/data2.bmp</iconset>
+                     <normaloff>:/buttons/data2</normaloff>:/buttons/data2</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -189,10 +171,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnSol12">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnSolution12">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -202,12 +181,9 @@
                    <property name="toolTip">
                     <string>Data 1-2</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/data12.bmp</normaloff>:/buttons/data12.bmp</iconset>
+                     <normaloff>:/buttons/data12</normaloff>:/buttons/data12</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -239,16 +215,7 @@
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QComboBox" name="PlotTypeS">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
+                     <widget class="QComboBox" name="cBPlotTypeS">
                       <property name="toolTip">
                        <string/>
                       </property>
@@ -297,16 +264,10 @@
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QPushButton" name="BtnOn1">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QPushButton" name="btnOn1">
                       <property name="toolTip">
                        <string>Plot1</string>
                       </property>
-                      <property name="text">
-                       <string/>
-                      </property>
                       <property name="checkable">
                        <bool>true</bool>
                       </property>
@@ -316,16 +277,10 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="BtnOn2">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QPushButton" name="btnOn2">
                       <property name="toolTip">
                        <string>Plot2</string>
                       </property>
-                      <property name="text">
-                       <string/>
-                      </property>
                       <property name="checkable">
                        <bool>true</bool>
                       </property>
@@ -335,10 +290,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="BtnOn3">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QPushButton" name="btnOn3">
                       <property name="sizePolicy">
                        <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
                         <horstretch>0</horstretch>
@@ -347,9 +299,6 @@
                       </property>
                       <property name="toolTip">
                        <string>Plot3</string>
-                      </property>
-                      <property name="text">
-                       <string/>
                       </property>
                       <property name="checkable">
                        <bool>true</bool>
@@ -387,16 +336,7 @@
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QComboBox" name="QFlag">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
+                     <widget class="QComboBox" name="cBQFlag">
                       <property name="toolTip">
                        <string>Quality Flag</string>
                       </property>
@@ -438,16 +378,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="ObsType2">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
+                     <widget class="QComboBox" name="cBObservationType2">
                       <property name="toolTip">
                        <string>Freq Type</string>
                       </property>
@@ -464,32 +395,14 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="ObsType">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
+                     <widget class="QComboBox" name="cBObservationType">
                       <property name="toolTip">
                        <string>Obs Type</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="FrqType">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
+                     <widget class="QComboBox" name="cBFrequencyType">
                       <property name="toolTip">
                        <string>Freq Type</string>
                       </property>
@@ -506,16 +419,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="DopType">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
+                     <widget class="QComboBox" name="cBDopType">
                       <property name="toolTip">
                        <string>Dop Type</string>
                       </property>
@@ -579,10 +483,7 @@
                      <number>0</number>
                     </property>
                     <item>
-                     <widget class="QToolButton" name="BtnCenterOri">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QToolButton" name="btnCenterOrigin">
                       <property name="maximumSize">
                        <size>
                         <width>25</width>
@@ -592,20 +493,14 @@
                       <property name="toolTip">
                        <string>Center Origin</string>
                       </property>
-                      <property name="text">
-                       <string/>
-                      </property>
                       <property name="icon">
                        <iconset resource="rtkplot_qt.qrc">
-                        <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+                        <normaloff>:/buttons/trackc</normaloff>:/buttons/trackc</iconset>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QToolButton" name="BtnRangeList">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QToolButton" name="btnRangeList">
                       <property name="maximumSize">
                        <size>
                         <width>25</width>
@@ -615,26 +510,14 @@
                       <property name="toolTip">
                        <string/>
                       </property>
-                      <property name="text">
-                       <string/>
-                      </property>
                       <property name="icon">
                        <iconset resource="rtkplot_qt.qrc">
-                        <normaloff>:/buttons/down.bmp</normaloff>:/buttons/down.bmp</iconset>
+                        <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="SatList">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
-                      <property name="sizePolicy">
-                       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-                        <horstretch>0</horstretch>
-                        <verstretch>0</verstretch>
-                       </sizepolicy>
-                      </property>
+                     <widget class="QComboBox" name="cBSatelliteList">
                       <property name="toolTip">
                        <string>Satllite List</string>
                       </property>
@@ -649,10 +532,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnFitHoriz">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnFitHorizontal">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -662,20 +542,14 @@
                    <property name="toolTip">
                     <string>Fit Horizontal</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/fith.bmp</normaloff>:/buttons/fith.bmp</iconset>
+                     <normaloff>:/buttons/fith</normaloff>:/buttons/fith</iconset>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnFitVert">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnFitVertical">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -685,20 +559,14 @@
                    <property name="toolTip">
                     <string>Fit Vertical</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/fitv.bmp</normaloff>:/buttons/fitv.bmp</iconset>
+                     <normaloff>:/buttons/fitv</normaloff>:/buttons/fitv</iconset>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnShowTrack">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnShowTrack">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -708,12 +576,9 @@
                    <property name="toolTip">
                     <string>Show Track Point</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/point.bmp</normaloff>:/buttons/point.bmp</iconset>
+                     <normaloff>:/icons/point</normaloff>:/icons/point</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -721,10 +586,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnShowSkyplot">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnShowSkyplot">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -734,12 +596,9 @@
                    <property name="toolTip">
                     <string>Show Skyplot</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+                     <normaloff>:/buttons/trackc</normaloff>:/buttons/trackc</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -750,7 +609,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnShowGrid">
+                  <widget class="QToolButton" name="btnShowGrid">
                    <property name="minimumSize">
                     <size>
                      <width>25</width>
@@ -760,12 +619,9 @@
                    <property name="toolTip">
                     <string>Show Grid</string>
                    </property>
-                   <property name="text">
-                    <string>...</string>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/grid.bmp</normaloff>:/buttons/grid.bmp</iconset>
+                     <normaloff>:/buttons/grid</normaloff>:/buttons/grid</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -776,10 +632,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnShowImg">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnShowImage">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -789,12 +642,9 @@
                    <property name="toolTip">
                     <string>Map/Sky Image</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
+                     <normaloff>:/buttons/map</normaloff>:/buttons/map</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -802,10 +652,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnFixCent">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnFixCenter">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -815,12 +662,9 @@
                    <property name="toolTip">
                     <string>Fix Track Center</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+                     <normaloff>:/buttons/trackc</normaloff>:/buttons/trackc</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -831,10 +675,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnFixHoriz">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnFixHorizontal">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -844,12 +685,9 @@
                    <property name="toolTip">
                     <string>Fix Track Horizotal</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/track.bmp</normaloff>:/buttons/track.bmp</iconset>
+                     <normaloff>:/buttons/track</normaloff>:/buttons/track</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -860,10 +698,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnFixVert">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnFixVertical">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -873,12 +708,9 @@
                    <property name="toolTip">
                     <string>Fix Track Vertical</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/track.bmp</normaloff>:/buttons/track.bmp</iconset>
+                     <normaloff>:/buttons/trackl</normaloff>:/buttons/trackl</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -889,10 +721,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnShowMap">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnShowMap">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -907,7 +736,7 @@
                    </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/showp.bmp</normaloff>:/buttons/showp.bmp</iconset>
+                     <normaloff>:/buttons/map</normaloff>:/buttons/map</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -915,10 +744,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnMapView">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnMapView">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -928,12 +754,9 @@
                    <property name="toolTip">
                     <string>Google Map View</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/gm.bmp</normaloff>:/buttons/gm.bmp</iconset>
+                     <normaloff>:/buttons/gm</normaloff>:/buttons/gm</iconset>
                    </property>
                   </widget>
                  </item>
@@ -971,10 +794,7 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QToolButton" name="BtnAnimate">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QToolButton" name="btnAnimate">
                    <property name="maximumSize">
                     <size>
                      <width>25</width>
@@ -984,13 +804,10 @@
                    <property name="toolTip">
                     <string>Animation</string>
                    </property>
-                   <property name="text">
-                    <string/>
-                   </property>
                    <property name="icon">
                     <iconset resource="rtkplot_qt.qrc">
-                     <normaloff>:/buttons/anim1.bmp</normaloff>
-                     <normalon>:/buttons/anim2.bmp</normalon>:/buttons/anim1.bmp</iconset>
+                     <normaloff>:/buttons/anim1</normaloff>
+                     <normalon>:/buttons/anim2</normalon>:/buttons/anim1</iconset>
                    </property>
                    <property name="checkable">
                     <bool>true</bool>
@@ -1001,10 +818,7 @@
                   </widget>
                  </item>
                  <item>
-                  <widget class="QScrollBar" name="TimeScroll">
-                   <property name="enabled">
-                    <bool>true</bool>
-                   </property>
+                  <widget class="QScrollBar" name="sBTime">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
                      <horstretch>0</horstretch>
@@ -1075,23 +889,14 @@
                      </spacer>
                     </item>
                     <item>
-                     <widget class="QLabel" name="ConnectMsg">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QLabel" name="lblConnectMessage">
                       <property name="toolTip">
-                       <string/>
-                      </property>
-                      <property name="text">
                        <string/>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QToolButton" name="BtnClear">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QToolButton" name="btnClear">
                       <property name="maximumSize">
                        <size>
                         <width>25</width>
@@ -1101,20 +906,14 @@
                       <property name="toolTip">
                        <string>Clear</string>
                       </property>
-                      <property name="text">
-                       <string/>
-                      </property>
                       <property name="icon">
                        <iconset resource="rtkplot_qt.qrc">
-                        <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
+                        <normaloff>:/buttons/del</normaloff>:/buttons/del</iconset>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QToolButton" name="BtnReload">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QToolButton" name="btnReload">
                       <property name="maximumSize">
                        <size>
                         <width>25</width>
@@ -1124,23 +923,17 @@
                       <property name="toolTip">
                        <string>Reload</string>
                       </property>
-                      <property name="text">
-                       <string/>
-                      </property>
                       <property name="icon">
                        <iconset resource="rtkplot_qt.qrc">
-                        <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
+                        <normaloff>:/buttons/reload</normaloff>:/buttons/reload</iconset>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QWidget" name="StrStatus" native="true">
+                     <widget class="QWidget" name="wgStreamStatus" native="true">
                       <layout class="QHBoxLayout" name="horizontalLayout_5">
                        <item>
-                        <widget class="QLabel" name="StrStatus1">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
+                        <widget class="QLabel" name="lblStreamStatus1">
                          <property name="maximumSize">
                           <size>
                            <width>25</width>
@@ -1155,17 +948,11 @@
                          </property>
                          <property name="frameShadow">
                           <enum>QFrame::Sunken</enum>
-                         </property>
-                         <property name="text">
-                          <string/>
                          </property>
                         </widget>
                        </item>
                        <item>
-                        <widget class="QLabel" name="StrStatus2">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
+                        <widget class="QLabel" name="lblStreamStatus2">
                          <property name="maximumSize">
                           <size>
                            <width>25</width>
@@ -1180,9 +967,6 @@
                          </property>
                          <property name="frameShadow">
                           <enum>QFrame::Sunken</enum>
-                         </property>
-                         <property name="text">
-                          <string/>
                          </property>
                         </widget>
                        </item>
@@ -1190,10 +974,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QToolButton" name="BtnFreq">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QToolButton" name="btnFrequency">
                       <property name="maximumSize">
                        <size>
                         <width>25</width>
@@ -1209,10 +990,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QToolButton" name="BtnOptions">
-                      <property name="enabled">
-                       <bool>true</bool>
-                      </property>
+                     <widget class="QToolButton" name="btnOptions">
                       <property name="maximumSize">
                        <size>
                         <width>25</width>
@@ -1222,12 +1000,9 @@
                       <property name="toolTip">
                        <string>Options</string>
                       </property>
-                      <property name="text">
-                       <string/>
-                      </property>
                       <property name="icon">
                        <iconset resource="rtkplot_qt.qrc">
-                        <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
+                        <normaloff>:/buttons/tool</normaloff>:/buttons/tool</iconset>
                       </property>
                      </widget>
                     </item>
@@ -1241,7 +1016,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QLabel" name="Disp">
+            <widget class="QLabel" name="lblDisplay">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
                <horstretch>0</horstretch>
@@ -1254,10 +1029,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QListWidget" name="RangeList">
-             <property name="enabled">
-              <bool>true</bool>
-             </property>
+            <widget class="QListWidget" name="lWRangeList">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                <horstretch>0</horstretch>
@@ -1366,7 +1138,7 @@
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="PanelBrowse" native="true">
+         <widget class="QWidget" name="panelBrowse" native="true">
           <layout class="QVBoxLayout" name="verticalLayout1">
            <item>
             <widget class="QWidget" name="Panel13" native="true">
@@ -1405,7 +1177,7 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QComboBox" name="DriveSel"/>
+               <widget class="QComboBox" name="cBDriveSelect"/>
               </item>
              </layout>
             </widget>
@@ -1477,14 +1249,14 @@
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QLabel" name="DirSelected">
+                  <widget class="QLabel" name="lblDirectorySelected">
                    <property name="text">
                     <string>TextLabel</string>
                    </property>
                   </widget>
                  </item>
                  <item>
-                  <widget class="QToolButton" name="BtnDirSel">
+                  <widget class="QToolButton" name="btnDirectorySelect">
                    <property name="text">
                     <string>...</string>
                    </property>
@@ -1497,7 +1269,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QListView" name="FileList">
+            <widget class="QListView" name="lVFileList">
              <property name="frameShape">
               <enum>QFrame::StyledPanel</enum>
              </property>
@@ -1540,7 +1312,7 @@
                <number>0</number>
               </property>
               <item>
-               <widget class="QComboBox" name="Filter">
+               <widget class="QComboBox" name="cBFilter">
                 <item>
                  <property name="text">
                   <string>Position File (*.pos *.nmea)</string>
@@ -1571,7 +1343,7 @@
      <x>0</x>
      <y>0</y>
      <width>1671</width>
-     <height>30</height>
+     <height>23</height>
     </rect>
    </property>
    <widget class="QMenu" name="MenuFile">
@@ -1752,10 +1524,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QLabel" name="Message1">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QLabel" name="lblMessage1">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -1763,18 +1532,12 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="QL1">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QLabel" name="lblQL1">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -1782,18 +1545,12 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="QL2">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QLabel" name="lblQL2">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -1801,18 +1558,12 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="QL3">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QLabel" name="lblQL3">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -1820,18 +1571,12 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="QL4">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QLabel" name="lblQL4">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -1839,18 +1584,12 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="QL5">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QLabel" name="lblQL5">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -1858,18 +1597,12 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="QL6">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QLabel" name="lblQL6">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -1877,18 +1610,12 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
         <string/>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="QL7">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QLabel" name="lblQL7">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -1896,9 +1623,6 @@
         </sizepolicy>
        </property>
        <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
         <string/>
        </property>
       </widget>
@@ -1917,10 +1641,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLabel" name="Message2">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QLabel" name="lblMessage2">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -1930,28 +1651,19 @@
        <property name="toolTip">
         <string/>
        </property>
-       <property name="text">
-        <string/>
-       </property>
       </widget>
      </item>
      <item>
-      <widget class="QToolButton" name="BtnMessage2">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
+      <widget class="QToolButton" name="btnMessage2">
        <property name="maximumSize">
         <size>
          <width>16</width>
          <height>16</height>
         </size>
        </property>
-       <property name="text">
-        <string>...</string>
-       </property>
        <property name="icon">
         <iconset resource="rtkplot_qt.qrc">
-         <normaloff>:/buttons/showp.bmp</normaloff>:/buttons/showp.bmp</iconset>
+         <normaloff>:/buttons/showp</normaloff>:/buttons/showp</iconset>
        </property>
       </widget>
      </item>
@@ -1972,7 +1684,7 @@
   <action name="MenuOpenSol1">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/data1.bmp</normaloff>:/buttons/data1.bmp</iconset>
+     <normaloff>:/buttons/data1</normaloff>:/buttons/data1</iconset>
    </property>
    <property name="text">
     <string>Open Solution-&amp;1...</string>
@@ -1984,7 +1696,7 @@
   <action name="MenuOpenSol2">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/data2.bmp</normaloff>:/buttons/data2.bmp</iconset>
+     <normaloff>:/buttons/data2</normaloff>:/buttons/data2</iconset>
    </property>
    <property name="text">
     <string>Open Solution-&amp;2...</string>
@@ -2065,7 +1777,7 @@
   <action name="MenuConnect">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/connect1.bmp</normaloff>:/buttons/connect1.bmp</iconset>
+     <normaloff>:/buttons/connect1</normaloff>:/buttons/connect1</iconset>
    </property>
    <property name="text">
     <string>&amp;Connect</string>
@@ -2077,7 +1789,7 @@
   <action name="MenuDisconnect">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/connect2.bmp</normaloff>:/buttons/connect2.bmp</iconset>
+     <normaloff>:/buttons/connect2</normaloff>:/buttons/connect2</iconset>
    </property>
    <property name="text">
     <string>&amp;Disconnect</string>
@@ -2091,7 +1803,7 @@
   <action name="MenuReload">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
+     <normaloff>:/buttons/reload</normaloff>:/buttons/reload</iconset>
    </property>
    <property name="text">
     <string>&amp;Reload</string>
@@ -2103,7 +1815,7 @@
   <action name="MenuClear">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
+     <normaloff>:/buttons/del</normaloff>:/buttons/del</iconset>
    </property>
    <property name="text">
     <string>C&amp;lear</string>
@@ -2128,7 +1840,7 @@
   <action name="MenuMapImg">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
+     <normaloff>:/buttons/map</normaloff>:/buttons/map</iconset>
    </property>
    <property name="text">
     <string>&amp;Map Image...</string>
@@ -2173,7 +1885,7 @@
   <action name="MenuOptions">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
+     <normaloff>:/buttons/tool</normaloff>:/buttons/tool</iconset>
    </property>
    <property name="text">
     <string>&amp;Options...</string>
@@ -2207,7 +1919,7 @@
   <action name="MenuMapView">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/gm.bmp</normaloff>:/buttons/gm.bmp</iconset>
+     <normaloff>:/buttons/gm</normaloff>:/buttons/gm</iconset>
    </property>
    <property name="text">
     <string>&amp;Map View...</string>
@@ -2232,7 +1944,7 @@
   <action name="MenuCenterOri">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/ori.bmp</normaloff>:/buttons/ori.bmp</iconset>
+     <normaloff>:/buttons/ori</normaloff>:/buttons/ori</iconset>
    </property>
    <property name="text">
     <string>&amp;Center Origin</string>
@@ -2241,7 +1953,7 @@
   <action name="MenuFitHoriz">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/fith.bmp</normaloff>:/buttons/fith.bmp</iconset>
+     <normaloff>:/buttons/fith</normaloff>:/buttons/fith</iconset>
    </property>
    <property name="text">
     <string>Fit &amp;Horizontal</string>
@@ -2253,7 +1965,7 @@
   <action name="MenuFitVert">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/fitv.bmp</normaloff>:/buttons/fitv.bmp</iconset>
+     <normaloff>:/buttons/fitv</normaloff>:/buttons/fitv</iconset>
    </property>
    <property name="text">
     <string>Fit &amp;Vertical</string>
@@ -2267,8 +1979,8 @@
     <bool>true</bool>
    </property>
    <property name="icon">
-    <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/point.bmp</normaloff>:/buttons/point.bmp</iconset>
+    <iconset>
+     <normaloff>:/buttons/point</normaloff>:/buttons/point</iconset>
    </property>
    <property name="text">
     <string>Show Track &amp;Point</string>
@@ -2283,7 +1995,7 @@
    </property>
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+     <normaloff>:/buttons/trackc</normaloff>:/buttons/trackc</iconset>
    </property>
    <property name="text">
     <string>&amp;Fix Track Center</string>
@@ -2298,7 +2010,7 @@
    </property>
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/track.bmp</normaloff>:/buttons/track.bmp</iconset>
+     <normaloff>:/buttons/track</normaloff>:/buttons/track</iconset>
    </property>
    <property name="text">
     <string>Fi&amp;x Track Horizontal</string>
@@ -2316,7 +2028,7 @@
    </property>
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/trackl.bmp</normaloff>:/buttons/trackl.bmp</iconset>
+     <normaloff>:/buttons/trackl</normaloff>:/buttons/trackl</iconset>
    </property>
    <property name="text">
     <string>Fix T&amp;rack Vertical</string>
@@ -2328,7 +2040,7 @@
    </property>
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/graph.bmp</normaloff>:/buttons/graph.bmp</iconset>
+     <normaloff>:/buttons/graph</normaloff>:/buttons/graph</iconset>
    </property>
    <property name="text">
     <string>Sh&amp;ow Skyplot</string>
@@ -2340,7 +2052,7 @@
    </property>
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/map.bmp</normaloff>:/buttons/map.bmp</iconset>
+     <normaloff>:/buttons/map</normaloff>:/buttons/map</iconset>
    </property>
    <property name="text">
     <string>Show &amp;Image</string>
@@ -2352,7 +2064,7 @@
    </property>
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/showp.bmp</normaloff>:/buttons/showp.bmp</iconset>
+     <normaloff>:/buttons/showp</normaloff>:/buttons/showp</iconset>
    </property>
    <property name="text">
     <string>Show Map/&amp;Waypoint</string>
@@ -2364,7 +2076,7 @@
   <action name="MenuAnimStart">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/anim1.bmp</normaloff>:/buttons/anim1.bmp</iconset>
+     <normaloff>:/buttons/anim1</normaloff>:/buttons/anim1</iconset>
    </property>
    <property name="text">
     <string>&amp;Animation Start</string>
@@ -2373,7 +2085,7 @@
   <action name="MenuAnimStop">
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/anim2.bmp</normaloff>:/buttons/anim2.bmp</iconset>
+     <normaloff>:/buttons/anim2</normaloff>:/buttons/anim2</iconset>
    </property>
    <property name="text">
     <string>A&amp;nimation Stop</string>
@@ -2428,7 +2140,7 @@
    </property>
    <property name="icon">
     <iconset resource="rtkplot_qt.qrc">
-     <normaloff>:/buttons/grid.bmp</normaloff>:/buttons/grid.bmp</iconset>
+     <normaloff>:/buttons/grid</normaloff>:/buttons/grid</iconset>
    </property>
    <property name="text">
     <string>Show Gri&amp;d</string>

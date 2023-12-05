@@ -11,7 +11,7 @@ include(../qtapp.pri)
 TARGET = rtknavi_qt
 TEMPLATE = app
 
-INCLUDEPATH += ../../../src/ ../appcmn_qt
+INCLUDEPATH += ../../../src/ ../appcmn_qt ../widgets_qt
 
 SOURCES += \
     ../appcmn_qt/aboutdlg.cpp \
@@ -27,6 +27,9 @@ SOURCES += \
     ../appcmn_qt/viewer.cpp \
     ../appcmn_qt/vieweropt.cpp \
     ../appcmn_qt/freqdlg.cpp \
+    ../appcmn_qt/helper.cpp \
+    ../appcmn_qt/graph.cpp \
+    ../widgets_qt/scientificspinbox.cpp \
     instrdlg.cpp \
     logstrdlg.cpp \
     main.cpp \
@@ -35,8 +38,7 @@ SOURCES += \
     naviopt.cpp \
     outstrdlg.cpp \
     rcvoptdlg.cpp \
-    markdlg.cpp \
-    ../appcmn_qt/graph.cpp
+    markdlg.cpp
 
 HEADERS  += \
     instrdlg.h \
@@ -59,8 +61,10 @@ HEADERS  += \
     ../appcmn_qt/viewer.h \
     ../appcmn_qt/vieweropt.h \
     ../appcmn_qt/freqdlg.h \
-    markdlg.h \
-    ../appcmn_qt/graph.h
+    ../appcmn_qt/helper.h \
+    ../appcmn_qt/graph.h \
+    ../widgets_qt/scientificspinbox.h \
+    markdlg.h
 
 FORMS    += \
     instrdlg.ui \

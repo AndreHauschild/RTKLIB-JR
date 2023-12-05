@@ -31,53 +31,48 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-public slots:	
-    void TimerTimer();
-	
-    void BtnStartClick();
-    void BtnStopClick();
-    void BtnPlotClick();
-    void BtnOptClick();
-    void BtnExitClick();
-	
-    void BtnTimeSysClick();
-    void BtnInputStrClick();
-    void BtnOutputStrClick();
-    void BtnLogStrClick();
-    void BtnSolTypeClick();
-    void BtnPlotType1Click();
-	
-    void BtnMonitorClick();
-    void BtnSaveClick();
-    void BtnAboutClick();
-    void BtnTaskTrayClick();
-	
-    void MenuExpandClick();
-    void MenuStartClick();
-    void MenuStopClick();
-    void MenuPlotClick();
-    void MenuMonitorClick();
-    void MenuExitClick();
-    void ScbSolChange();
-	
-    void TrayIconClick(QSystemTrayIcon::ActivationReason);
-    void BtnFreqType1Click();
-    void BtnPanelClick();
-    void BtnPlotType2Click();
-    void BtnFreqType2Click();
-    void BtnPlotType3Click();
-    void BtnFreqType3Click();
-    void BtnPlotType4Click();
-    void BtnFreqType4Click();
-    void BtnExpand1Click();
-    void BtnShrink1Click();
-    void BtnExpand2Click();
-    void BtnShrink2Click();
-    void BtnExpand3Click();
-    void BtnShrink3Click();
-    void BtnExpand4Click();
-    void BtnShrink4Click();
-    void BtnMarkClick();
+public slots:
+    void updateTimerTriggered();
+
+    void startClicked();
+    void stopClicked();
+    void showRtkPlot();
+    void btnOptionsClicked();
+    void exitClicked();
+
+    void btnTimeSystemClicked();
+    void btnInputStreamClicked();
+    void btnOutputStreamClicked();
+    void btnLogStreamClicked();
+    void btnSolutionTypeClicked();
+    void btnPlotType1Clicked();
+
+    void showMonitorDialog();
+    void btnSaveClicked();
+    void btnAboutClicked();
+    void btnTaskTrayClicked();
+
+    void menuExpandClicked();
+    void sBSolutionChanged();
+
+    void trayIconClicked(QSystemTrayIcon::ActivationReason);
+    void btnFrequencyType1Clicked();
+    void btnPanelClicked();
+    void btnPlotType2Clicked();
+    void btnFrequencyType2Clicked();
+    void btnPlotType3Clicked();
+    void btnFrequencyType3Clicked();
+    void btnPlotType4Clicked();
+    void btnFrequencyType4Clicked();
+    void btnExpand1Clicked();
+    void btnShrink1Clicked();
+    void btnExpand2Clicked();
+    void btnShrink2Clicked();
+    void btnExpand3Clicked();
+    void btnShrink3Clicked();
+    void btnExpand4Clicked();
+    void btnShrink4Clicked();
+    void btnMarkClicked();
 
 protected:
     void showEvent(QShowEvent*);
@@ -91,100 +86,101 @@ private:
     MonitorDialog *monitor;
     QSystemTrayIcon *systemTray;
     QMenu *trayMenu;
-    QAction *MenuStartAction, *MenuStopAction, *MenuExitAction;
+    QAction *menuStartAction, *menuStopAction, *menuExitAction;
 
-    void  UpdateLog (int stat, gtime_t time, double *rr, float *qr,
+    void updateLog (int stat, gtime_t time, double *rr, float *qr,
                      double *rb, int ns, double age, double ratio);
-    void SvrStart(void);
-    void SvrStop(void);
-    void UpdatePanel(void);
-    void UpdateTimeSys(void);
-    void UpdateSolType(void);
-    void UpdateFont(void);
-    void UpdateTime(void);
-    void UpdatePos(void);
-    void UpdateStr(void);
-    void DrawPlot(QLabel *plot, int type, int freq);
-    void UpdatePlot(void);
-    void UpdateEnable(void);
+    void serverStart();
+    void serverStop();
+    void updatePanel();
+    void updateTimeSystem();
+    void updateSolutionType();
+    void updateFont();
+    void updateTime();
+    void updatePosition();
+    void updateStream();
+    void drawSolutionPlot(QLabel *plot, int type, int freq);
+    void updatePlot();
+    void updateEnable();
     void ChangePlot(void);
-    int ConfOverwrite(const QString &path);
-	
-    void DrawSnr(QPainter *c, int w, int h, int x0, int y0, int index, int freq);
-    void DrawSat(QPainter *c, int w, int h, int x0, int y0, int index, int freq);
-    void DrawBL(QPainter *c, int id, int w, int h);
-    void DrawTrk(QPainter *c, int id, QPixmap &plot);
-    void DrawSky(QPainter *c, int w, int h, int x0, int y0);
-    void DrawText(QPainter *c, int x, int y, const QString &s,
+    int confirmOverwrite(const QString &path);
+
+    void drawSnr(QPainter &c, int w, int h, int x0, int y0, int index, int freq);
+    void drawSatellites(QPainter &c, int w, int h, int x0, int y0, int index, int freq);
+    void drawBaseline(QPainter &c, int id, int w, int h);
+    void drawTrack(QPainter &c, int id, QPaintDevice * plot);
+    void drawSky(QPainter &c, int w, int h, int x0, int y0);
+    void drawText(QPainter &c, int x, int y, const QString &s,
                    const QColor &color, int ha, int va);
-    void DrawArrow    (QPainter *c, int x, int y, int siz,
+    void drawArrow(QPainter &c, int x, int y, int siz,
                                   int ang, const QColor &color);
-    void OpenMoniPort(int port);
-    void InitSolBuff(void);
-    void SaveLog(void);
-    void LoadNav(nav_t *nav);
-    void SaveNav(nav_t *nav);
-    void LoadOpt(void);
-    void SaveOpt(void);
-    void SetTrayIcon(int index);
-    int ExecCmd(const QString &cmd, const QStringList &opt, int show);
-    void BtnFreqTypeChange(int i);
-    QColor SnrColor(int snr);
+    void openMonitorPort(int port);
+    void initSolutionBuffer(void);
+    void saveLogs(void);
+    void loadNavigation(nav_t *nav);
+    void saveNavigation(nav_t *nav);
+    void loadOptions(void);
+    void saveOptions(void);
+    void setTrayIcon(int index);
+    int execCommand(const QString &cmd, const QStringList &opt, int show);
+    void btnFrequencyTypeChanged(int i);
+    QColor snrColor(int snr);
 public:
     OptDialog *optDialog;
-    QString IniFile;
-	
-    int TimerCycle,TimerInact;
-    int PanelStack, PanelMode;
-    int SvrCycle, SvrBuffSize, Scale, SolBuffSize, NavSelect, SavedSol;
+    QString iniFile;
 
-    int NmeaReq,NmeaCycle,InTimeTag,InTime64Bit;
-    int OutTimeTag,OutAppend,LogTimeTag,LogAppend;
-    int TimeoutTime, ReconTime, SbasCorr, DgpsCorr, TideCorr, FileSwapMargin;
-    int Stream[MAXSTRRTK], StreamC[MAXSTRRTK], Format[MAXSTRRTK];
-    int CmdEna[3][3], CmdEnaTcp[3][3];
-    int TimeSys,SolType;
-    int PlotType[4],FreqType[4];
-    int TrkType[4];
-    int TrkScale[4];
-    int BLMode[4];   
-    int MoniPort, OpenPort, AutoRun;
-	
-    int PSol, PSolS, PSolE, Nsat[2], SolCurrentStat;
-    int Sat[2][MAXSAT], Snr[2][MAXSAT][NFREQ], Vsat[2][MAXSAT];
-    double Az[2][MAXSAT], El[2][MAXSAT];
-	gtime_t *Time;
-    int *SolStat, *Nvsat;
-    double *SolRov, *SolRef, *Qr, *VelRov, *Age, *Ratio;
-    double TrkOri[3], MaxBL;
+    int timerCycle,timerInactive;
+    int panelStacking, panelMode;
+    int serverCycle, serverBufferSize, scale, solutionBufferSize, NavSelect, savedSolutions;
 
-    QString Paths[MAXSTRRTK][4], Cmds[3][3], CmdsTcp[3][3];
-    QString InTimeStart, InTimeSpeed, ExSats;
-    QString RcvOpt[3], ProxyAddr;
-    QString OutSwapInterval, LogSwapInterval, ResetCmd;
+    int NmeaReq, nmeaCycle, inputTimeTag, inputTime64Bit;
+    int outputTimeTag, outputAppend, logTimeTag,logAppend;
+    int timeoutTime, reconnectionTime, sbasCorrection, dgpsCorrection, tideCorrection, fileSwapMargin;
+    int streamType[MAXSTRRTK], streamEnabled[MAXSTRRTK], inputFormat[MAXSTRRTK];
+    int commandEnabled[3][3], commandEnableTcp[3][3];
+    int timeSystem, solutionType;
+    int plotType[4],frequencyType[4];
+    int trackType[4];
+    int trackScale[4];
+    int baselineMode[4];
+    int monitorPort, monitorPortOpen, autoRun;
 
-	prcopt_t PrcOpt;
-	solopt_t SolOpt;
+    int solutionsCurrent, solutionsStart, solutionsEnd, numSatellites[2], solutionCurrentStatus;
+    int satellites[2][MAXSAT], satellitesSNR[2][MAXSAT][NFREQ], validSatellites[2][MAXSAT];
+    double satellitesAzimuth[2][MAXSAT], satellitesElevation[2][MAXSAT];
+    gtime_t *timeStamps;
+    int *solutionStatus, *numValidSatellites;
+    double *solutionRover, *solutionReference, *solutionQr, *velocityRover, *ages, *ratioAR;
+    double trackOrigin[3], maxBaseLine;
 
-    QFont PanelFont, PosFont;
+    QString paths[MAXSTRRTK][4], commands[3][3], commandsTcp[3][3];
+    QString inputTimeStart, inputTimeSpeed, excludedSatellites;
+    QString receiverOptions[3], proxyAddress;
+    QString outputSwapInterval, logSwapInterval, resetCommand;
 
-    int DebugTraceF, DebugStatusF, OutputGeoidF, BaselineC;
-    int RovPosTypeF, RefPosTypeF, RovAntPcvF, RefAntPcvF;
-    QString RovAntF, RefAntF, SatPcvFileF, AntPcvFileF;
-    double RovAntDel[3], RefAntDel[3], RovPos[3], RefPos[3], NmeaPos[3];
-	double Baseline[2];
+    prcopt_t processingOptions;
+    solopt_t solutionOptions;
+    
+    QFont panelFont, positionFont;
+    QColor panelFontColor, positionFontColor;
 
-    QString History[10];
+    int debugTraceLevel, debugStatusLevel, outputGeoidF, baselineEnabled;
+    int roverPositionTypeF, referencePositionTypeF, roverAntennaPcvF, referenceAntennaPcvF;
+    QString roverAntennaF, referenceAntennaF, satellitePcvFileF, antennaPcvFileF;
+    double roverAntennaDelta[3], referenceAntennaDelta[3], roverPosition[3], referencePosition[3], nmeaPosition[3];
+    double baseline[2];
 
-    QTimer Timer;
-	
-    QString GeoidDataFileF, StaPosFileF, DCBFileF, EOPFileF;
-    QString LocalDirectory, PntName[MAXMAPPNT];
+    QString history[10];
 
-	double PntPos[MAXMAPPNT][3];
-	int NMapPnt;
+    QTimer updateTimer;
 
-    QString MarkerName, MarkerComment;
+    QString geoidDataFileF, stationPositionFileF, dcbFile, eopFileF;
+    QString localDirectory, pointName[MAXMAPPNT];
+
+    double pointPosition[MAXMAPPNT][3];
+    int nMapPoint;
+
+    QString markerName, markerComment;
 };
 
 extern MainWindow *mainForm;

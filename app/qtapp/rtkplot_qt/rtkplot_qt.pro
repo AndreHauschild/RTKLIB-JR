@@ -48,6 +48,7 @@ SOURCES += \
     ../appcmn_qt/graph.cpp \
     ../appcmn_qt/console.cpp \
     ../appcmn_qt/tspandlg.cpp \
+    ../appcmn_qt/helper.cpp \
     fileseldlg.cpp \
     mapview.cpp \
     mapviewopt.cpp \
@@ -74,6 +75,7 @@ HEADERS  += \
     ../appcmn_qt/graph.h \
     ../appcmn_qt/console.h \
     ../appcmn_qt/tspandlg.h \
+    ../appcmn_qt/helper.h \
     fileseldlg.h \
     mapview.h \
     mapviewopt.h \

@@ -20,31 +20,27 @@ protected:
     void showEvent(QShowEvent*);
 
 public slots:
-    void BtnOpt1Click();
-    void BtnOkClick();
-    void BtnCmd1Click();
-    void BtnOpt2Click();
-    void BtnCmd2Click();
-    void SelStream1Change();
-    void SolFormat1Change();
-    void SolFormat2Change();
-    void SelStream2Change();
+    void btnOkClick();
+    void btnOption1Clicked();
+    void btnOption2Clicked();
+    void btnCommand1Clicked();
+    void btnCommand2Clicked();
+    void updateEnable(void);
 
 private:
-    void SerialOpt1(int opt);
-    void SerialOpt2(int opt);
-    void TcpOpt1(int opt);
-    void TcpOpt2(int opt);
-    void FileOpt1(int opt);
-    void FileOpt2(int opt);
-    void UpdateEnable(void);
+    void serialOption1(int opt);
+    void serialOption2(int opt);
+    void tcpOption1(int opt);
+    void tcpOption2(int opt);
+    void fileOption1(int opt);
+    void fileOption2(int opt);
 
 public:
-    int Stream1, Stream2, Format1, Format2, CmdEna1[2], CmdEna2[2];
-    int TimeForm, DegForm, TimeOutTime, ReConnTime;
-    QString Path, Paths1[4], Paths2[4];
+    int stream1, stream2, format1, format2, commandEnable1[2], commandEnable2[2];
+    int timeFormat, degFormat, timeoutTime, reconnectTime;
+    QString path, paths1[4], paths2[4];
     QString TcpHistory[MAXHIST];
-    QString Cmds1[2], Cmds2[2], FieldSep;
+    QString commands1[2], commands2[2], fieldSeparator;
 
     explicit ConnectDialog(QWidget *parent=NULL);
 };

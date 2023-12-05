@@ -7,9 +7,6 @@
 
 #include "ui_mapview.h"
 
-#ifdef QWEBKIT
-class QWebView;
-#endif
 #ifdef QWEBENGINE
 class QWebEngineView;
 class MapViewPageState : public QObject
@@ -35,56 +32,53 @@ class MapView : public QDialog, private Ui::MapView
     Q_OBJECT
 
 public slots:
-    void BtnCloseClick();
-    void Timer1Timer();
-    void BtnZoomOutClick();
-    void BtnZoomInClick();
-    void BtnSyncClick();
-    void PageLoaded(bool);
+    void btnCloseClicked();
+    void timer1Timer();
+    void btnZoomOutClicked();
+    void btnZoomInClicked();
+    void btnSyncClicked();
+    void pageLoaded(bool);
 
-    void BtnOptClick();
-    void MapSel1Click();
-    void MapSel2Click();
-    void Timer2Timer();
+    void btnOptionsClicked();
+    void mapSelect1Clicked();
+    void mapSelect2Clicked();
+    void timer2Timer();
 
 protected:
     void resizeEvent(QResizeEvent*);
      void showEvent(QShowEvent*);
 
 private:
-#ifdef QWEBKIT
-    QWebView *WebBrowser;
-#endif
 #ifdef QWEBENGINE
-    QWebEngineView *WebBrowser;
+    QWebEngineView *webBrowser;
     MapViewPageState *pageState;
 #endif
-    int MarkState[2];
-    double Lat,Lon;
-    double MarkPos[2][2];
-    QTimer Timer1, Timer2;
+    int markState[2];
+    double center_latitude, center_longitude;
+    double markPosition[2][2];
+    QTimer timerLL, timerGM;
     bool loaded;
 
     MapViewOptDialog *mapViewOptDialog;
 
-    void ShowMapLL(void);
-    void ShowMapGM(void);
-    void ShowMap(int map);
-    void SetView(int map, double lat, double lon, int zoom);
-    void AddMark(int map, int index, double lat, double lon, int state);
-    void UpdateMap(void);
-    void SelectMap(int map);
-    int  GetState(int map);
-    void ExecFunc(int map, const QString &func);
+    void showMapLL(void);
+    void showMapGM(void);
+    void showMap(int map);
+    void setView(int map, double lat, double lon, int zoom);
+    void addMark(int map, int index, double lat, double lon, int state);
+    void updateMap(void);
+    void selectMap(int map);
+    int  setState(int map);
+    void execFunction(int map, const QString &func);
 
 public:
-    int MapSel;
+    int selectedMap;
 
     explicit MapView(QWidget *parent = NULL);
-    void SetCent(double lat, double lon);
-    void SetMark(int index, double lat, double lon);
-    void ShowMark(int index);
-    void HideMark(int index);
+    void setCenter(double lat, double lon);
+    void setMark(int index, double lat, double lon);
+    void showMark(int index);
+    void hideMark(int index);
 };
 //---------------------------------------------------------------------------
 #endif

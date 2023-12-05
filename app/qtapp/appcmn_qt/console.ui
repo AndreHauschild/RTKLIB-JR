@@ -17,18 +17,6 @@
    <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
     <widget class="QWidget" name="Panel1" native="true">
      <property name="enabled">
@@ -60,10 +48,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnAsc">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnAsc">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -85,10 +70,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnHex">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnHex">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -110,10 +92,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnStop">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnStop">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -127,8 +106,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-          <normaloff>:/buttons/pause.bmp</normaloff>:/buttons/pause.bmp</iconset>
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+          <normaloff>:/buttons/pause</normaloff>:/buttons/pause</iconset>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -139,10 +118,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnDown">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnDown">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -156,8 +132,8 @@
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-          <normaloff>:/buttons/fitd.bmp</normaloff>:/buttons/fitd.bmp</iconset>
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+          <normaloff>:/buttons/fitd</normaloff>:/buttons/fitd</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -165,9 +141,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClear">
+       <widget class="QPushButton" name="btnClear">
         <property name="enabled">
-         <bool>true</bool>
+         <bool>false</bool>
         </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -176,14 +152,14 @@
          </sizepolicy>
         </property>
         <property name="toolTip">
-         <string>Clear</string>
+         <string>Clear messages</string>
         </property>
         <property name="text">
          <string/>
         </property>
         <property name="icon">
-         <iconset resource="../rtkget_qt/rtkget_qt.qrc">
-          <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
+         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
+          <normaloff>:/buttons/del</normaloff>:/buttons/del</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -204,18 +180,12 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClose">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnClose">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>&amp;Close</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -232,7 +202,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkget_qt/rtkget_qt.qrc"/>
+  <include location="../rtkplot_qt/rtkplot_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

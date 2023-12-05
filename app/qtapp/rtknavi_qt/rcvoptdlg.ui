@@ -18,15 +18,9 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QLineEdit" name="OptionE">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QLineEdit" name="lEOption">
      <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
+      <string>Receiver options</string>
      </property>
     </widget>
    </item>
@@ -59,10 +53,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOk">
         <property name="toolTip">
          <string/>
         </property>
@@ -78,10 +69,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCancel">
         <property name="toolTip">
          <string/>
         </property>

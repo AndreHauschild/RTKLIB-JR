@@ -22,6 +22,7 @@ SOURCES += main.cpp \
     ../appcmn_qt/keydlg.cpp \
     ../appcmn_qt/viewer.cpp \
     ../appcmn_qt/vieweropt.cpp \
+    ../appcmn_qt/helper.cpp \
     ../appcmn_qt/timedlg.cpp
 
 HEADERS  += \
@@ -32,6 +33,7 @@ HEADERS  += \
     ../appcmn_qt/keydlg.h \
     ../appcmn_qt/viewer.h \
     ../appcmn_qt/vieweropt.h \
+    ../appcmn_qt/helper.h \
     ../appcmn_qt/timedlg.h
 
 FORMS    += \

@@ -15,22 +15,22 @@ protected:
     bool noUpdate;
 
 public slots:
-    void BtnDelClick();
-    void BtnAddClick();
-    void BtnUpdateClick();
-    void PntListSetEditText();
-    void PntListClick();
-    void PntListDblClick(QTableWidgetItem *w);
+    void btnDeleteClicked();
+    void btnAddClicked();
+    void btnUpdateClicked();
+    void pntListSetEditText();
+    void pntListClicked();
+    void pntListDblClicked(QTableWidgetItem *w);
 
 private:
-    void UpdatePoint(void);
+    void updatePoint(void);
 
 public:
-	double Pos[3];
-	int FontScale;
+    double position[3];
+    int fontScale;
 
     explicit PntDialog(QWidget* parent = NULL);
-    void SetPoint(void);
+    void setPoint(void);
 };
 //---------------------------------------------------------------------------
 #endif

@@ -18,21 +18,21 @@ protected:
     void showEvent(QShowEvent*);
 
 public slots:
-    void BtnCloseClick();
-    void BtnUpdateClick();
-    void BtnSaveClick();
+    void btnCloseClicked();
+    void btnUpdateClicked();
+    void btnSaveClicked();
 
-    void BtnCenterClick();
-    void ScaleEqClick();
+    void btnCenterClicked();
+    void ScaleEqualClicked();
 
 private:
-    void UpdateMap(void);
-    void UpdatePlot(void);
-    void UpdateEnable(void);
+    void updateMap(void);
+    void updatePlot(void);
+    void updateEnable(void);
 	
 public:
     MapOptDialog(QWidget* parent);
-    void UpdateField(void);
+    void updateField(void);
 };
 
 //---------------------------------------------------------------------------
