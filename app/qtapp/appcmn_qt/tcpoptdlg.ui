@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>TCP Options</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QGridLayout" name="gridLayout">
    <item row="2" column="4">
     <widget class="QSpinBox" name="sBPort">
@@ -29,12 +26,6 @@
    </item>
    <item row="0" column="4">
     <widget class="QLabel" name="lblPort">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="toolTip">
       <string/>
      </property>
@@ -81,12 +72,6 @@
    </item>
    <item row="5" column="1">
     <widget class="QLabel" name="lblMountPoint">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="toolTip">
       <string/>
      </property>
@@ -97,12 +82,6 @@
    </item>
    <item row="0" column="1" colspan="3">
     <widget class="QLabel" name="lblAddress">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="toolTip">
       <string/>
      </property>
@@ -113,12 +92,6 @@
    </item>
    <item row="5" column="4">
     <widget class="QLabel" name="lblPassword">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <property name="toolTip">
       <string/>
      </property>
@@ -162,12 +135,6 @@
    </item>
    <item row="10" column="1" colspan="4">
     <widget class="QWidget" name="widget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <property name="leftMargin">
        <number>0</number>
@@ -187,7 +154,7 @@
          <string>Start source table browser</string>
         </property>
         <property name="text">
-         <string>Browse</string>
+         <string>&amp;Browse...</string>
         </property>
        </widget>
       </item>
@@ -197,7 +164,7 @@
          <string>Mount point option</string>
         </property>
         <property name="text">
-         <string>Mountpoint Options...</string>
+         <string>Mountpoint &amp;Options...</string>
         </property>
        </widget>
       </item>
@@ -212,28 +179,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnOk">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;OK</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnCancel">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Cancel</string>
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
         </property>
        </widget>
       </item>
@@ -257,8 +205,6 @@
   <tabstop>sBPort</tabstop>
   <tabstop>cBMountPoint</tabstop>
   <tabstop>btnNtrip</tabstop>
-  <tabstop>btnOk</tabstop>
-  <tabstop>btnCancel</tabstop>
  </tabstops>
  <resources/>
  <connections/>

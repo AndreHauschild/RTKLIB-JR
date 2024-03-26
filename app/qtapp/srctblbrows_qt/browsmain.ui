@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1098</width>
-    <height>457</height>
+    <height>470</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -61,7 +61,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="btnList">
+           <widget class="QToolButton" name="btnList">
             <property name="toolTip">
              <string>Update Caster List</string>
             </property>
@@ -69,7 +69,7 @@
              <string/>
             </property>
             <property name="icon">
-             <iconset resource="srctblbrows_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/reload</normaloff>:/buttons/reload</iconset>
             </property>
            </widget>
@@ -91,27 +91,18 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnUpdate">
+           <widget class="QToolButton" name="btnUpdate">
             <property name="toolTip">
              <string>Update Data Streams</string>
             </property>
             <property name="icon">
-             <iconset resource="srctblbrows_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/load</normaloff>:/buttons/load</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QToolButton" name="btnTypeStr">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
             <property name="toolTip">
              <string>Data Streams</string>
             </property>
@@ -125,12 +116,6 @@
           </item>
           <item>
            <widget class="QToolButton" name="btnTypeCas">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
             <property name="toolTip">
              <string>Caster</string>
             </property>
@@ -144,12 +129,6 @@
           </item>
           <item>
            <widget class="QToolButton" name="btnTypeNet">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
             <property name="toolTip">
              <string>Networks</string>
             </property>
@@ -163,12 +142,6 @@
           </item>
           <item>
            <widget class="QToolButton" name="btnTypeSrc">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
             <property name="toolTip">
              <string>Source Table</string>
             </property>
@@ -181,7 +154,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnMap">
+           <widget class="QToolButton" name="btnMap">
             <property name="toolTip">
              <string/>
             </property>
@@ -231,7 +204,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="btnSta">
+           <widget class="QToolButton" name="btnSta">
             <property name="enabled">
              <bool>true</bool>
             </property>
@@ -241,9 +214,6 @@
             <property name="text">
              <string>...</string>
             </property>
-            <property name="flat">
-             <bool>false</bool>
-            </property>
            </widget>
           </item>
          </layout>
@@ -251,6 +221,9 @@
        </item>
        <item>
         <widget class="QTableWidget" name="tWTableCas">
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectRows</enum>
          </property>
@@ -271,6 +244,9 @@
        </item>
        <item>
         <widget class="QTableWidget" name="tWTableNet">
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectRows</enum>
          </property>
@@ -281,6 +257,9 @@
        </item>
        <item>
         <widget class="QTableWidget" name="tWTableStr">
+         <property name="editTriggers">
+          <set>QAbstractItemView::NoEditTriggers</set>
+         </property>
          <property name="selectionBehavior">
           <enum>QAbstractItemView::SelectRows</enum>
          </property>
@@ -290,43 +269,10 @@
         </widget>
        </item>
        <item>
-        <widget class="QWidget" name="wgMessage" native="true">
-         <property name="enabled">
-          <bool>true</bool>
-         </property>
-         <property name="toolTip">
+        <widget class="QLabel" name="lblMessage">
+         <property name="text">
           <string/>
          </property>
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
-         <property name="text" stdset="0">
-          <string/>
-         </property>
-         <layout class="QHBoxLayout" name="horizontalLayout_3">
-          <property name="spacing">
-           <number>0</number>
-          </property>
-          <property name="leftMargin">
-           <number>0</number>
-          </property>
-          <property name="topMargin">
-           <number>0</number>
-          </property>
-          <property name="rightMargin">
-           <number>0</number>
-          </property>
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="QLabel" name="lblMessage">
-            <property name="text">
-             <string/>
-            </property>
-           </widget>
-          </item>
-         </layout>
         </widget>
        </item>
       </layout>
@@ -340,7 +286,7 @@
      <x>0</x>
      <y>0</y>
      <width>1098</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <widget class="QMenu" name="File">
@@ -410,15 +356,24 @@
    <property name="text">
     <string>&amp;Open Source Table...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
   </action>
   <action name="actMenuSave">
    <property name="text">
     <string>&amp;Save Source Table...</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
   </action>
   <action name="actMenuQuit">
    <property name="text">
     <string>&amp;Quit</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
    </property>
   </action>
   <action name="actMenuUpdateCaster">
@@ -438,6 +393,9 @@
    <property name="text">
     <string>&amp;Stream List</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+T</string>
+   </property>
   </action>
   <action name="actMenuViewCas">
    <property name="checkable">
@@ -446,6 +404,9 @@
    <property name="text">
     <string>&amp;Caster List</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+C</string>
+   </property>
   </action>
   <action name="actMenuViewNet">
    <property name="checkable">
@@ -453,6 +414,9 @@
    </property>
    <property name="text">
     <string>&amp;Network List</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
    </property>
   </action>
   <action name="actMenuViewSrc">
@@ -470,7 +434,7 @@
   </action>
  </widget>
  <resources>
-  <include location="srctblbrows_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

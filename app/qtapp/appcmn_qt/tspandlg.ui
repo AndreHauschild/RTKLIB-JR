@@ -17,86 +17,87 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <item row="0" column="0">
-    <widget class="QCheckBox" name="TimeStartF">
-     <property name="toolTip">
-      <string/>
+   <item row="2" column="3">
+    <widget class="QPushButton" name="btnTimeEnd">
+     <property name="maximumSize">
+      <size>
+       <width>20</width>
+       <height>16777215</height>
+      </size>
      </property>
      <property name="text">
-      <string>Time Start (GPST)</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
+      <string>?</string>
      </property>
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QCheckBox" name="TimeEndF">
+    <widget class="QCheckBox" name="cBTimeEndEnabled">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="toolTip">
-      <string/>
+      <string>Enabled end time</string>
      </property>
      <property name="text">
       <string>Time End (GPST)</string>
      </property>
-     <property name="checked">
-      <bool>false</bool>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QCheckBox" name="cBTimeStartEnabled">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="toolTip">
+      <string>Enable start time</string>
+     </property>
+     <property name="text">
+      <string>Time Start (GPST)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1" colspan="2">
+    <widget class="QDateTimeEdit" name="dTTimeEnd">
+     <property name="toolTip">
+      <string>End time</string>
+     </property>
+     <property name="calendarPopup">
+      <bool>true</bool>
+     </property>
+     <property name="timeSpec">
+      <enum>Qt::UTC</enum>
      </property>
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QCheckBox" name="TimeIntF">
+    <widget class="QCheckBox" name="cBTimeIntervalEnabled">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
      <property name="toolTip">
-      <string/>
+      <string>Enable time interval</string>
      </property>
      <property name="text">
       <string>Interval (s)</string>
      </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QPushButton" name="BtnOk">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;OK</string>
-     </property>
-     <property name="autoDefault">
-      <bool>true</bool>
-     </property>
-     <property name="default">
-      <bool>true</bool>
-     </property>
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="QComboBox" name="EditTimeInt">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QComboBox" name="cBTimeInterval">
      <property name="toolTip">
-      <string/>
+      <string>Time interval</string>
+     </property>
+     <property name="editable">
+      <bool>true</bool>
      </property>
      <item>
       <property name="text">
@@ -175,36 +176,36 @@
      </item>
     </widget>
    </item>
-   <item row="4" column="2">
-    <widget class="QPushButton" name="BtnCancel">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
+   <item row="0" column="3">
+    <widget class="QPushButton" name="btnTimeStart">
+     <property name="maximumSize">
+      <size>
+       <width>20</width>
+       <height>16777215</height>
+      </size>
      </property>
      <property name="text">
-      <string>&amp;Cancel</string>
+      <string>?</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
    <item row="0" column="1" colspan="2">
-    <widget class="QDateTimeEdit" name="dateTime1">
+    <widget class="QDateTimeEdit" name="dTTimeStart">
+     <property name="toolTip">
+      <string>Start time</string>
+     </property>
      <property name="calendarPopup">
       <bool>true</bool>
      </property>
      <property name="timeSpec">
-      <enum>Qt::LocalTime</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QDateTimeEdit" name="dateTime2">
-     <property name="calendarPopup">
-      <bool>true</bool>
-     </property>
-     <property name="timeSpec">
-      <enum>Qt::LocalTime</enum>
+      <enum>Qt::UTC</enum>
      </property>
     </widget>
    </item>

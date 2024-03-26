@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>612</width>
+    <width>662</width>
     <height>276</height>
    </rect>
   </property>
@@ -14,7 +14,14 @@
    <string>GLONASS Frequency Channel Number</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="0" colspan="5">
+   <item row="2" column="0">
+    <widget class="QPushButton" name="btnClear">
+     <property name="text">
+      <string>Clear</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="3">
     <widget class="QFrame" name="frame">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
@@ -28,12 +35,18 @@
         <property name="text">
          <string>R18</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn18</cstring>
+        </property>
        </widget>
       </item>
       <item row="1" column="1">
        <widget class="QLabel" name="Label2">
         <property name="text">
          <string>R02</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn02</cstring>
         </property>
        </widget>
       </item>
@@ -42,12 +55,18 @@
         <property name="text">
          <string>R23</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn23</cstring>
+        </property>
        </widget>
       </item>
       <item row="1" column="6">
        <widget class="QLabel" name="Label2_6">
         <property name="text">
          <string>R07</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn07</cstring>
         </property>
        </widget>
       </item>
@@ -56,6 +75,9 @@
         <property name="text">
          <string>R24</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn24</cstring>
+        </property>
        </widget>
       </item>
       <item row="1" column="7">
@@ -63,12 +85,18 @@
         <property name="text">
          <string>R08</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn08</cstring>
+        </property>
        </widget>
       </item>
       <item row="4" column="2">
        <widget class="QLabel" name="Label1_4">
         <property name="text">
          <string>R13</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn13</cstring>
         </property>
        </widget>
       </item>
@@ -87,6 +115,9 @@
         <property name="text">
          <string>R22</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn22</cstring>
+        </property>
        </widget>
       </item>
       <item row="4" column="3">
@@ -94,12 +125,18 @@
         <property name="text">
          <string>R14</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn14</cstring>
+        </property>
        </widget>
       </item>
       <item row="1" column="5">
        <widget class="QLabel" name="Label2_5">
         <property name="text">
          <string>R06</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn06</cstring>
         </property>
        </widget>
       </item>
@@ -124,12 +161,18 @@
         <property name="text">
          <string>R11</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn11</cstring>
+        </property>
        </widget>
       </item>
       <item row="4" column="4">
        <widget class="QLabel" name="Label1_6">
         <property name="text">
          <string>R15</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn15</cstring>
         </property>
        </widget>
       </item>
@@ -148,12 +191,18 @@
         <property name="text">
          <string>R05</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn05</cstring>
+        </property>
        </widget>
       </item>
       <item row="1" column="8">
        <widget class="QLabel" name="Label2_8">
         <property name="text">
          <string>R09</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn09</cstring>
         </property>
        </widget>
       </item>
@@ -178,6 +227,9 @@
         <property name="text">
          <string>R19</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn19</cstring>
+        </property>
        </widget>
       </item>
       <item row="3" column="4">
@@ -201,12 +253,18 @@
         <property name="text">
          <string>R17</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn17</cstring>
+        </property>
        </widget>
       </item>
       <item row="6" column="4">
        <widget class="QLabel" name="Label1_16">
         <property name="text">
          <string>R25</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn25</cstring>
         </property>
        </widget>
       </item>
@@ -215,12 +273,18 @@
         <property name="text">
          <string>R01</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn01</cstring>
+        </property>
        </widget>
       </item>
       <item row="1" column="2">
        <widget class="QLabel" name="Label2_2">
         <property name="text">
          <string>R03</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn03</cstring>
         </property>
        </widget>
       </item>
@@ -229,6 +293,9 @@
         <property name="text">
          <string>R26</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn26</cstring>
+        </property>
        </widget>
       </item>
       <item row="4" column="9">
@@ -236,12 +303,18 @@
         <property name="text">
          <string>R20</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn20</cstring>
+        </property>
        </widget>
       </item>
       <item row="6" column="6">
        <widget class="QLabel" name="Label1_18">
         <property name="text">
          <string>R27</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn27</cstring>
         </property>
        </widget>
       </item>
@@ -266,6 +339,9 @@
         <property name="text">
          <string>R10</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn10</cstring>
+        </property>
        </widget>
       </item>
       <item row="3" column="1">
@@ -288,6 +364,9 @@
        <widget class="QLabel" name="Label1_3">
         <property name="text">
          <string>R12</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn12</cstring>
         </property>
        </widget>
       </item>
@@ -312,6 +391,9 @@
         <property name="text">
          <string>R21</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn21</cstring>
+        </property>
        </widget>
       </item>
       <item row="1" column="3">
@@ -319,12 +401,18 @@
         <property name="text">
          <string>R04</string>
         </property>
+        <property name="buddy">
+         <cstring>sBFcn04</cstring>
+        </property>
        </widget>
       </item>
       <item row="4" column="5">
        <widget class="QLabel" name="Label1_7">
         <property name="text">
          <string>R16</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBFcn16</cstring>
         </property>
        </widget>
       </item>
@@ -669,57 +757,62 @@
    </item>
    <item row="2" column="1">
     <widget class="QPushButton" name="btnRead">
-     <property name="text">
-      <string>Read</string>
+     <property name="toolTip">
+      <string>Read Assignment from RINEX file</string>
      </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QPushButton" name="btnClear">
      <property name="text">
-      <string>Clear</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="4">
-    <widget class="QPushButton" name="btnCancel">
-     <property name="text">
-      <string>Cancel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="3">
-    <widget class="QPushButton" name="btnOk">
-     <property name="text">
-      <string>Ok</string>
-     </property>
-     <property name="default">
-      <bool>true</bool>
+      <string>Read...</string>
      </property>
     </widget>
    </item>
    <item row="2" column="2">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>40</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
+    </widget>
    </item>
-   <item row="0" column="0" colspan="2">
+   <item row="0" column="0" colspan="3">
     <widget class="QCheckBox" name="cBEnableFcn">
      <property name="text">
-      <string>Use FCN Table</string>
+      <string>Use Frequency Channel Number (FCN) Table</string>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cBEnableFcn</tabstop>
+  <tabstop>sBFcn01</tabstop>
+  <tabstop>sBFcn02</tabstop>
+  <tabstop>sBFcn03</tabstop>
+  <tabstop>sBFcn04</tabstop>
+  <tabstop>sBFcn05</tabstop>
+  <tabstop>sBFcn06</tabstop>
+  <tabstop>sBFcn07</tabstop>
+  <tabstop>sBFcn08</tabstop>
+  <tabstop>sBFcn09</tabstop>
+  <tabstop>sBFcn10</tabstop>
+  <tabstop>sBFcn11</tabstop>
+  <tabstop>sBFcn12</tabstop>
+  <tabstop>sBFcn13</tabstop>
+  <tabstop>sBFcn14</tabstop>
+  <tabstop>sBFcn15</tabstop>
+  <tabstop>sBFcn16</tabstop>
+  <tabstop>sBFcn17</tabstop>
+  <tabstop>sBFcn18</tabstop>
+  <tabstop>sBFcn19</tabstop>
+  <tabstop>sBFcn20</tabstop>
+  <tabstop>sBFcn21</tabstop>
+  <tabstop>sBFcn22</tabstop>
+  <tabstop>sBFcn23</tabstop>
+  <tabstop>sBFcn24</tabstop>
+  <tabstop>sBFcn25</tabstop>
+  <tabstop>sBFcn26</tabstop>
+  <tabstop>sBFcn27</tabstop>
+  <tabstop>btnClear</tabstop>
+  <tabstop>btnRead</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

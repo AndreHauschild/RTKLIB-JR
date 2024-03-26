@@ -13,18 +13,9 @@
   <property name="windowTitle">
    <string>Signal Mask</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
    <item>
     <widget class="QGroupBox" name="groupBox1">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="title">
       <string>GPS</string>
      </property>
@@ -319,9 +310,6 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox2">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="title">
       <string>GLONASS</string>
      </property>
@@ -512,14 +500,14 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox3">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="title">
       <string>Galileo</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_3">
       <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
        <number>0</number>
       </property>
       <property name="rightMargin">
@@ -780,9 +768,6 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox4">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="title">
       <string>QZSS</string>
      </property>
@@ -1051,9 +1036,6 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox6">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="title">
       <string>BDS</string>
      </property>
@@ -1464,9 +1446,6 @@
    </item>
    <item>
     <widget class="QGroupBox" name="groupBox5">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="title">
       <string>SBAS</string>
      </property>
@@ -1555,9 +1534,6 @@
       </property>
       <item>
        <widget class="QPushButton" name="btnSetAll">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -1567,34 +1543,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;OK</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Cancel</string>
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
         </property>
        </widget>
       </item>

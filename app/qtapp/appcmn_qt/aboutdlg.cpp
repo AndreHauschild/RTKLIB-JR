@@ -4,30 +4,19 @@
 #include "aboutdlg.h"
 #include "rtklib.h"
 
+#include "ui_aboutdlg.h"
+
+
 //---------------------------------------------------------------------------
-AboutDialog::AboutDialog(QWidget *parent)
-    : QDialog(parent)
+AboutDialog::AboutDialog(QWidget *parent, QPixmap icon, QString aboutString)
+    : QDialog(parent), ui(new Ui::AboutDlg)
 {
-    setupUi(this);
-}
+    ui->setupUi(this);
 
-void AboutDialog::showEvent(QShowEvent *event)
-{
-    if (event->spontaneous()) return;
+    connect(ui->btnOkay, &QPushButton::clicked, this, &AboutDialog::accept);
 
-    QPixmap icon[] = { QPixmap(":/icons/rtk1"),
-                       QPixmap(":/icons/rtk2"),
-                       QPixmap(":/icons/rtk3"),
-                       QPixmap(":/icons/rtk4"),
-                       QPixmap(":/icons/rtk5"),
-                       QPixmap(":/icons/rtk6"),
-                       QPixmap(":/icons/rtk7") };
-
-    if ((iconIndex > 0) && (iconIndex < 7)) wgIcon->setPixmap(icon[iconIndex - 1]);
-
-    lbAbout->setText(aboutString);
-    lbVersion->setText(tr("with RTKLIB ver.%1 %2").arg(VER_RTKLIB).arg(PATCH_LEVEL));
-    lbCopyright->setText(COPYRIGHT_RTKLIB);
-
-    connect(pbOkay, &QPushButton::clicked, this, &AboutDialog::accept);
+    ui->lbIcon->setPixmap(icon.scaled(128, 128));
+    ui->lbAbout->setText(aboutString);
+    ui->lbVersion->setText(tr("with RTKLIB Version %1 %2").arg(VER_RTKLIB, PATCH_LEVEL));
+    ui->lbCopyright->setText(QString("%1\nQt Version\n2016-2025 Jens Reimann").arg(COPYRIGHT_RTKLIB));
 }

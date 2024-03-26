@@ -5,15 +5,18 @@
 #include <QDialog>
 #include <QTimer>
 
-#include "ui_mapview.h"
-
 #define NUM_MARK 256
+
+namespace Ui {
+class MapView;
+}
 
 class QWebEngineView;
 class QWebChannel;
 class QResizeEvent;
 class QShowEvent;
 class MapViewOptDialog;
+class QSettings;
 
 //---------------------------------------------------------------------------
 class MapViewPageState : public QObject
@@ -30,27 +33,24 @@ private:
 };
 
 //---------------------------------------------------------------------------
-class MapView : public QDialog, private Ui::MapView
+class MapView : public QDialog
 {
     Q_OBJECT
 
-public slots:
-    void btnZoomOutClicked();
-    void btnZoomInClicked();
-    void btnCenterClicked();
+protected slots:
+    void zoomOut();
+    void zoomIn();
+    void center();
     void pageLoaded(bool);
 
-    void showMapLL(void);
-    void showMapGM(void);
+    void showMapLL();
+    void showMapGM();
     void setView(int map, double lat, double lon, int zoom);
-    void btnOptionsClicked();
-    void mapSelect1Clicked();
-    void mapSelect2Clicked();
+    void showOptionsDialog();
+    void selectMapLL();
+    void selectMapGM();
     void timerLLTimer();
     void timerGMTimer();
-
-protected:
-     void showEvent(QShowEvent*);
 
 private:
     QWebEngineView *webBrowser;
@@ -60,6 +60,7 @@ private:
 
     QString mapStrings[6][3];
     int selectedMap;
+    QString apiKey;
 
     double center_latitude, center_longitude;
     int markState[NUM_MARK];
@@ -72,24 +73,29 @@ private:
 
     MapViewOptDialog *mapViewOptDialog;
 
-    void updateMap(void);
+    void updateMap();
     void selectMap(int map);
     int  setState(int map);
     void execFunction(int map, const QString &func);
 
+    Ui::MapView *ui;
 public:
-    QString apiKey;
-
     explicit MapView(QWidget *parent = NULL);
+
     void showMap(int map);
     void addMark(int map, int index, double lat, double lon, const QString& title, const QString& msg);
     void setCenter(double lat, double lon);
+    void setViewBounds(double min_lat, double min_lon, double max_lat, double max_lon);
     void setMark(int index, const QString &title, double lat, double lon);
     void showMark(int index);
     void hideMark(int index);
     void highlightMark(int index);
     void clearMark();
     bool isLoaded();
+    void setApiKey(const QString & key); // TODO: store API key in config
+    const QString &getApiKey();
+    void loadOptions(QSettings &);
+    void saveOptions(QSettings &);
 };
 //---------------------------------------------------------------------------
 #endif

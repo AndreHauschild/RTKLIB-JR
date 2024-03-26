@@ -6,25 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>653</width>
-    <height>497</height>
+    <width>720</width>
+    <height>483</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>STRSVR</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QWidget" name="Panel3" native="true">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text" stdset="0">
-      <string/>
-     </property>
+    <widget class="QWidget" name="panelMain" native="true">
      <layout class="QVBoxLayout" name="verticalLayout">
       <property name="leftMargin">
        <number>0</number>
@@ -39,18 +30,12 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QWidget" name="Panel2" native="true">
+       <widget class="QWidget" name="panelTop" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text" stdset="0">
-         <string/>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <property name="leftMargin">
@@ -76,17 +61,14 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="Label8">
-           <property name="toolTip">
-            <string/>
-           </property>
+          <widget class="QLabel" name="lblConnectionTime">
            <property name="text">
             <string>Connect Time:</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="lblConnectionTime">
+          <widget class="QLabel" name="lblCurrentConnectionTime">
            <property name="enabled">
             <bool>true</bool>
            </property>
@@ -102,13 +84,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="Panel1" native="true">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text" stdset="0">
-         <string/>
-        </property>
+       <widget class="QWidget" name="panelStreams" native="true">
         <layout class="QGridLayout" name="gridLayout">
          <property name="leftMargin">
           <number>0</number>
@@ -123,18 +99,12 @@
           <number>0</number>
          </property>
          <item row="0" column="5">
-          <widget class="QLabel" name="Label1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblCommands">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="text">
             <string>Commands</string>
@@ -143,9 +113,6 @@
          </item>
          <item row="5" column="1">
           <widget class="QLabel" name="lblOutput2">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>(2) Output</string>
            </property>
@@ -153,37 +120,31 @@
          </item>
          <item row="6" column="10">
           <widget class="QLabel" name="lblOutput3Byte">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="9" column="10">
           <widget class="QLabel" name="lblOutput5Byte">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="0" column="6">
-          <widget class="QLabel" name="Label2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblConvert">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="text">
             <string>Convert</string>
@@ -196,7 +157,7 @@
             <bool>false</bool>
            </property>
            <property name="toolTip">
-            <string/>
+            <string>Define stream format conversion</string>
            </property>
            <property name="text">
             <string>...</string>
@@ -217,9 +178,6 @@
              <height>25</height>
             </size>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -234,7 +192,7 @@
             <bool>false</bool>
            </property>
            <property name="toolTip">
-            <string/>
+            <string>Define stream format conversion</string>
            </property>
            <property name="text">
             <string>...</string>
@@ -243,11 +201,11 @@
          </item>
          <item row="9" column="11">
           <widget class="QLabel" name="lblOutput5Bps">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -299,7 +257,7 @@
           </widget>
          </item>
          <item row="5" column="3" colspan="2">
-          <widget class="QPushButton" name="btnOutput2">
+          <widget class="QPushButton" name="btnOutputOptions2">
            <property name="toolTip">
             <string>Options for stream</string>
            </property>
@@ -320,16 +278,16 @@
          </item>
          <item row="5" column="10">
           <widget class="QLabel" name="lblOutput2Byte">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="9" column="3" colspan="2">
-          <widget class="QPushButton" name="btnOutput5">
+          <widget class="QPushButton" name="btnOutputOptions5">
            <property name="toolTip">
             <string>Options for stream</string>
            </property>
@@ -351,9 +309,6 @@
              <width>25</width>
              <height>25</height>
             </size>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
@@ -400,7 +355,12 @@
            </item>
            <item>
             <property name="text">
-             <string>NTRIP Client</string>
+             <string>NTRIP Server</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>NTRIP Caster</string>
             </property>
            </item>
            <item>
@@ -439,9 +399,6 @@
              <height>25</height>
             </size>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -451,18 +408,12 @@
           </widget>
          </item>
          <item row="0" column="2">
-          <widget class="QLabel" name="Label3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblType">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="text">
             <string>Type</string>
@@ -483,9 +434,6 @@
              <height>25</height>
             </size>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -496,21 +444,21 @@
          </item>
          <item row="4" column="10">
           <widget class="QLabel" name="lblOutput1Byte">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="7" column="11">
           <widget class="QLabel" name="lblOutput4Bps">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -573,11 +521,11 @@
          </item>
          <item row="4" column="11">
           <widget class="QLabel" name="lblOutput1Bps">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -630,9 +578,6 @@
          </item>
          <item row="6" column="1">
           <widget class="QLabel" name="lblOutput3">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>(3) Output</string>
            </property>
@@ -652,9 +597,6 @@
              <height>25</height>
             </size>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -672,7 +614,7 @@
             <bool>false</bool>
            </property>
            <property name="toolTip">
-            <string/>
+            <string>Define stream format conversion</string>
            </property>
            <property name="text">
             <string>...</string>
@@ -680,7 +622,7 @@
           </widget>
          </item>
          <item row="4" column="3" colspan="2">
-          <widget class="QPushButton" name="btnOutput1">
+          <widget class="QPushButton" name="btnOutputOptions1">
            <property name="toolTip">
             <string>Options for stream</string>
            </property>
@@ -691,31 +633,31 @@
          </item>
          <item row="6" column="11">
           <widget class="QLabel" name="lblOutput3Bps">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="10" column="11">
           <widget class="QLabel" name="lblOutput6Bps">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="5" column="11">
           <widget class="QLabel" name="lblOutput2Bps">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -733,9 +675,6 @@
              <height>25</height>
             </size>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -745,7 +684,7 @@
           </widget>
          </item>
          <item row="1" column="3" colspan="2">
-          <widget class="QPushButton" name="btnInput">
+          <widget class="QPushButton" name="btnInputOptions">
            <property name="toolTip">
             <string>Options for stream</string>
            </property>
@@ -760,7 +699,7 @@
             <bool>false</bool>
            </property>
            <property name="toolTip">
-            <string/>
+            <string>Define stream format conversion</string>
            </property>
            <property name="text">
             <string>...</string>
@@ -775,18 +714,12 @@
           </widget>
          </item>
          <item row="0" column="3">
-          <widget class="QLabel" name="Label4">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblOptions">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="text">
             <string>Options</string>
@@ -806,9 +739,6 @@
              <width>25</width>
              <height>25</height>
             </size>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
@@ -832,9 +762,6 @@
              <height>25</height>
             </size>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -844,7 +771,7 @@
           </widget>
          </item>
          <item row="10" column="3" colspan="2">
-          <widget class="QPushButton" name="btnOutput6">
+          <widget class="QPushButton" name="btnOutputOptions6">
            <property name="toolTip">
             <string>Options for stream</string>
            </property>
@@ -854,7 +781,7 @@
           </widget>
          </item>
          <item row="7" column="3" colspan="2">
-          <widget class="QPushButton" name="btnOutput4">
+          <widget class="QPushButton" name="btnOutputOptions4">
            <property name="toolTip">
             <string>Options for stream</string>
            </property>
@@ -869,7 +796,7 @@
             <bool>false</bool>
            </property>
            <property name="toolTip">
-            <string/>
+            <string>Define stream format conversion</string>
            </property>
            <property name="text">
             <string>...</string>
@@ -899,9 +826,6 @@
              <width>25</width>
              <height>25</height>
             </size>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
@@ -969,9 +893,6 @@
              <height>25</height>
             </size>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -982,16 +903,16 @@
          </item>
          <item row="7" column="10">
           <widget class="QLabel" name="lblOutput4Byte">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="6" column="3" colspan="2">
-          <widget class="QPushButton" name="btnOutput3">
+          <widget class="QPushButton" name="btnOutputOptions3">
            <property name="toolTip">
             <string>Options for stream</string>
            </property>
@@ -1006,7 +927,7 @@
             <bool>false</bool>
            </property>
            <property name="toolTip">
-            <string/>
+            <string>Define stream format conversion</string>
            </property>
            <property name="text">
             <string>...</string>
@@ -1062,67 +983,24 @@
          </item>
          <item row="4" column="1">
           <widget class="QLabel" name="lblOutput1">
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>(1) Output</string>
            </property>
           </widget>
          </item>
          <item row="0" column="10">
-          <widget class="QLabel" name="Label6">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblBytes">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
-            <string>bytes</string>
+            <string>Bytes</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -1150,9 +1028,6 @@
              <height>25</height>
             </size>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -1162,10 +1037,7 @@
           </widget>
          </item>
          <item row="0" column="11">
-          <widget class="QLabel" name="Label7">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblBps">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -1173,10 +1045,13 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string/>
+            <string>bytes per second</string>
            </property>
            <property name="text">
             <string>bps</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -1193,9 +1068,6 @@
              <width>25</width>
              <height>25</height>
             </size>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="layoutDirection">
             <enum>Qt::LeftToRight</enum>
@@ -1221,9 +1093,6 @@
              <width>25</width>
              <height>25</height>
             </size>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
@@ -1294,9 +1163,6 @@
              <height>25</height>
             </size>
            </property>
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="frameShape">
             <enum>QFrame::Box</enum>
            </property>
@@ -1307,11 +1173,11 @@
          </item>
          <item row="1" column="11">
           <widget class="QLabel" name="lblInputBps">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -1324,11 +1190,11 @@
          </item>
          <item row="10" column="10">
           <widget class="QLabel" name="lblOutput6Byte">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
@@ -1344,9 +1210,6 @@
          </item>
          <item row="1" column="1">
           <widget class="QLabel" name="lblInput">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>(0) Input</string>
            </property>
@@ -1354,19 +1217,16 @@
          </item>
          <item row="1" column="10">
           <widget class="QLabel" name="lblInputByte">
-           <property name="toolTip">
-            <string/>
-           </property>
            <property name="text">
             <string>0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item row="0" column="7">
-          <widget class="QLabel" name="label_4">
-           <property name="toolTip">
-            <string/>
-           </property>
+          <widget class="QLabel" name="lblLog">
            <property name="text">
             <string>Log</string>
            </property>
@@ -1443,18 +1303,12 @@
           </widget>
          </item>
          <item row="0" column="0" colspan="2">
-          <widget class="QLabel" name="Label5">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblStream">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string/>
            </property>
            <property name="text">
             <string>Stream</string>
@@ -1472,7 +1326,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="Panel4" native="true">
+       <widget class="QWidget" name="panelBottom" native="true">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -1480,9 +1334,6 @@
          </sizepolicy>
         </property>
         <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text" stdset="0">
          <string/>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -1510,20 +1361,13 @@
             <string>Open stream Monitor</string>
            </property>
            <property name="icon">
-            <iconset resource="strsvr_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/square</normaloff>:/buttons/square</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="lblMessage">
-           <property name="toolTip">
-            <string/>
-           </property>
-          </widget>
+          <widget class="QLabel" name="lblMessage"/>
          </item>
          <item>
           <widget class="QPushButton" name="btnTaskIcon">
@@ -1537,11 +1381,8 @@
             <string>Hide window in task tray</string>
            </property>
            <property name="icon">
-            <iconset resource="strsvr_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/tray</normaloff>:/buttons/tray</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -1553,14 +1394,17 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="toolTip">
             <string>About...</string>
            </property>
            <property name="text">
             <string>?</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -1600,7 +1444,7 @@
          <string>&amp;Start</string>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/start</normaloff>:/buttons/start</iconset>
         </property>
        </widget>
@@ -1614,13 +1458,13 @@
          <string>S&amp;top</string>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/stop2</normaloff>:/buttons/stop2</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnOpt">
+       <widget class="QPushButton" name="btnOptions">
         <property name="toolTip">
          <string>Show options</string>
         </property>
@@ -1628,7 +1472,7 @@
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/tool</normaloff>:/buttons/tool</iconset>
         </property>
        </widget>
@@ -1675,21 +1519,21 @@
  <tabstops>
   <tabstop>btnStart</tabstop>
   <tabstop>btnStop</tabstop>
-  <tabstop>btnOpt</tabstop>
+  <tabstop>btnOptions</tabstop>
   <tabstop>btnExit</tabstop>
   <tabstop>cBInput</tabstop>
-  <tabstop>btnInput</tabstop>
+  <tabstop>btnInputOptions</tabstop>
   <tabstop>btnCmd</tabstop>
   <tabstop>cBOutput1</tabstop>
-  <tabstop>btnOutput1</tabstop>
+  <tabstop>btnOutputOptions1</tabstop>
   <tabstop>btnCmd1</tabstop>
   <tabstop>btnConv1</tabstop>
   <tabstop>cBOutput2</tabstop>
-  <tabstop>btnOutput2</tabstop>
+  <tabstop>btnOutputOptions2</tabstop>
   <tabstop>btnCmd2</tabstop>
   <tabstop>btnConv2</tabstop>
   <tabstop>cBOutput3</tabstop>
-  <tabstop>btnOutput3</tabstop>
+  <tabstop>btnOutputOptions3</tabstop>
   <tabstop>btnCmd3</tabstop>
   <tabstop>btnConv3</tabstop>
   <tabstop>btnStreamMonitor</tabstop>
@@ -1697,7 +1541,7 @@
   <tabstop>btnAbout</tabstop>
  </tabstops>
  <resources>
-  <include location="strsvr_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

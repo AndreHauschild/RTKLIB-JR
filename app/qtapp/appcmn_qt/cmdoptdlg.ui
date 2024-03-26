@@ -13,9 +13,6 @@
   <property name="windowTitle">
    <string>Serial/TCP Commands</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QCheckBox" name="cBOpenCommands">
@@ -23,7 +20,7 @@
       <string>Send commands at startup</string>
      </property>
      <property name="text">
-      <string>Commands at startup</string>
+      <string>Commands at start&amp;up</string>
      </property>
     </widget>
    </item>
@@ -40,7 +37,7 @@
       <string>Send commands at shutdown</string>
      </property>
      <property name="text">
-      <string>Commands at shutdown</string>
+      <string>Commands at shut&amp;down</string>
      </property>
     </widget>
    </item>
@@ -57,7 +54,7 @@
       <string>Send commands periodically</string>
      </property>
      <property name="text">
-      <string>Periodic Commands : &lt;command&gt; # cycle (ms)</string>
+      <string>&amp;Periodic Commands : &lt;command&gt; # cycle (ms)</string>
      </property>
     </widget>
    </item>
@@ -69,68 +66,54 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="btnLoad">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Load...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnSave">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Save...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnOk">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;OK</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnCancel">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Cancel</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="btnLoad">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>&amp;Load...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSave">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>&amp;Save...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnOk">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>&amp;OK</string>
+       </property>
+       <property name="autoDefault">
+        <bool>true</bool>
+       </property>
+       <property name="default">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnCancel">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>&amp;Cancel</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

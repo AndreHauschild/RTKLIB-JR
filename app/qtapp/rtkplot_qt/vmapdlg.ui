@@ -176,7 +176,13 @@
        </widget>
       </item>
       <item row="0" column="0">
-       <widget class="QLabel" name="Label3">
+       <widget class="QLabel" name="lblShow">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -193,7 +199,13 @@
        </widget>
       </item>
       <item row="0" column="2">
-       <widget class="QLabel" name="Label2">
+       <widget class="QLabel" name="lblLine">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -329,7 +341,13 @@
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="Label1">
+       <widget class="QLabel" name="lblLayer">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
          <string/>
         </property>
@@ -388,7 +406,13 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="lblFill">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="text">
          <string>Fill</string>
         </property>
@@ -420,7 +444,7 @@
       <string>&amp;Up</string>
      </property>
      <property name="icon">
-      <iconset resource="rtkplot_qt.qrc">
+      <iconset resource="../icon/resources.qrc">
        <normaloff>:/buttons/up2</normaloff>:/buttons/up2</iconset>
      </property>
     </widget>
@@ -434,7 +458,7 @@
       <string>&amp;Down</string>
      </property>
      <property name="icon">
-      <iconset resource="rtkplot_qt.qrc">
+      <iconset resource="../icon/resources.qrc">
        <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
      </property>
     </widget>
@@ -480,8 +504,62 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cBVisible1</tabstop>
+  <tabstop>rBLayer1</tabstop>
+  <tabstop>btnColor1</tabstop>
+  <tabstop>btnColor1F</tabstop>
+  <tabstop>cBVisible2</tabstop>
+  <tabstop>rBLayer2</tabstop>
+  <tabstop>btnColor2</tabstop>
+  <tabstop>btnColor2F</tabstop>
+  <tabstop>cBVisible3</tabstop>
+  <tabstop>rBLayer3</tabstop>
+  <tabstop>btnColor3</tabstop>
+  <tabstop>btnColor3F</tabstop>
+  <tabstop>cBVisible4</tabstop>
+  <tabstop>rBLayer4</tabstop>
+  <tabstop>btnColor4</tabstop>
+  <tabstop>btnColor4F</tabstop>
+  <tabstop>cBVisible5</tabstop>
+  <tabstop>rBLayer5</tabstop>
+  <tabstop>btnColor5</tabstop>
+  <tabstop>btnColor5F</tabstop>
+  <tabstop>cBVisible6</tabstop>
+  <tabstop>rBLayer6</tabstop>
+  <tabstop>btnColor6</tabstop>
+  <tabstop>btnColor6F</tabstop>
+  <tabstop>cBVisible7</tabstop>
+  <tabstop>rBLayer7</tabstop>
+  <tabstop>btnColor7</tabstop>
+  <tabstop>btnColor7F</tabstop>
+  <tabstop>cBVisible8</tabstop>
+  <tabstop>rBLayer8</tabstop>
+  <tabstop>btnColor8</tabstop>
+  <tabstop>btnColor8F</tabstop>
+  <tabstop>cBVisible9</tabstop>
+  <tabstop>rBLayer9</tabstop>
+  <tabstop>btnColor9</tabstop>
+  <tabstop>btnColor9F</tabstop>
+  <tabstop>cBVisible10</tabstop>
+  <tabstop>rBLayer10</tabstop>
+  <tabstop>btnColor10</tabstop>
+  <tabstop>btnColor10F</tabstop>
+  <tabstop>cBVisible11</tabstop>
+  <tabstop>rBLayer11</tabstop>
+  <tabstop>btnColor11</tabstop>
+  <tabstop>btnColor11F</tabstop>
+  <tabstop>cBVisible12</tabstop>
+  <tabstop>rBLayer12</tabstop>
+  <tabstop>btnColor12</tabstop>
+  <tabstop>btnColor12F</tabstop>
+  <tabstop>btnUp</tabstop>
+  <tabstop>btnDown</tabstop>
+  <tabstop>btnApply</tabstop>
+  <tabstop>btnClose</tabstop>
+ </tabstops>
  <resources>
-  <include location="rtkplot_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

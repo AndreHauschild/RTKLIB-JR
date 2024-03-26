@@ -18,19 +18,7 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" name="Panel1" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
+    <widget class="QWidget" name="panelTools" native="true">
      <property name="text" stdset="0">
       <string/>
      </property>
@@ -276,35 +264,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnClose">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Close</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
        <widget class="QComboBox" name="cBSelectInputStream">
         <property name="toolTip">
          <string>Select stream</string>
@@ -349,7 +308,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="Panel2" native="true">
+       <widget class="QWidget" name="panelControl" native="true">
         <layout class="QHBoxLayout" name="horizontalLayout_2">
          <property name="leftMargin">
           <number>0</number>
@@ -369,11 +328,8 @@
             <string>Clear Buffer</string>
            </property>
            <property name="icon">
-            <iconset resource="rtknavi_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/del</normaloff>:/buttons/del</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -383,13 +339,10 @@
             <string>Pause</string>
            </property>
            <property name="icon">
-            <iconset resource="rtknavi_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/pause</normaloff>:/buttons/pause</iconset>
            </property>
            <property name="checkable">
-            <bool>true</bool>
-           </property>
-           <property name="flat">
             <bool>true</bool>
            </property>
           </widget>
@@ -400,16 +353,13 @@
             <string>Scroll Down</string>
            </property>
            <property name="icon">
-            <iconset resource="rtknavi_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/fitd</normaloff>:/buttons/fitd</iconset>
            </property>
            <property name="checkable">
             <bool>true</bool>
            </property>
            <property name="checked">
-            <bool>true</bool>
-           </property>
-           <property name="flat">
             <bool>true</bool>
            </property>
           </widget>
@@ -462,6 +412,26 @@
        </widget>
       </item>
       <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Close</set>
+        </property>
+       </widget>
+      </item>
+      <item>
        <widget class="QLabel" name="lblInformation">
         <property name="toolTip">
          <string/>
@@ -480,7 +450,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="rtknavi_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

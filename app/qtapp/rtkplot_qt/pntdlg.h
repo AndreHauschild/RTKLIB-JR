@@ -4,33 +4,38 @@
 //---------------------------------------------------------------------------
 #include <QDialog>
 
-#include "ui_pntdlg.h"
+namespace Ui {
+class PntDialog;
+}
+
+class QTableWidgetItem;
+class Plot;
+
 //---------------------------------------------------------------------------
-class PntDialog : public QDialog, private Ui::PntDialog
+class PntDialog : public QDialog
 {
     Q_OBJECT
+
+public:
+    explicit PntDialog(Plot * plot, QWidget* parent = NULL);
+    void setPoints();
 
 protected:
     void showEvent(QShowEvent*);
     bool noUpdate;
 
 public slots:
-    void btnDeleteClicked();
-    void btnAddClicked();
-    void btnUpdateClicked();
-    void pntListSetEditText();
-    void pntListClicked();
-    void pntListDblClicked(QTableWidgetItem *w);
+    void deletePoint();
+    void addPoint();
+    void selectPoint();
+    void centerPoint(QTableWidgetItem *w);
 
 private:
-    void updatePoint(void);
+    void updatePoints();
 
-public:
-    double position[3];
-    int fontScale;
+    Plot *plot;
+    Ui::PntDialog * ui;
 
-    explicit PntDialog(QWidget* parent = NULL);
-    void setPoint(void);
 };
 //---------------------------------------------------------------------------
 #endif

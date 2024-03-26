@@ -47,6 +47,10 @@ function SetView(lat,lon,zoom) {
     map.setView([lat,lon],zoom);
 }
 
+function SetViewBounds(lat_min, lat_max, lon_min, lon_max) {
+    map.fitBounds([lat_min, lon_min], [lat_max, lon_max], padding=5);
+}
+
 function SetCent(lat,lon) {
     map.setView([lat,lon],map.getZoom());
 }

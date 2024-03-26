@@ -19,10 +19,14 @@
 #include <QCommandLineParser>
 #include <QProcess>
 #include <QMenu>
+#include <QDir>
 
 #include "rtklib.h"
 #include "launchmain.h"
 #include "launchoptdlg.h"
+
+#include "ui_launchmain.h"
+
 
 //---------------------------------------------------------------------------
 
@@ -30,37 +34,31 @@
 #define BTN_COUNT       8
 #define MAX(x, y)        ((x) > (y) ? (x) : (y))
 
-MainForm *mainForm;
-
 //---------------------------------------------------------------------------
 MainForm::MainForm(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::MainForm)
 {
-    setupUi(this);
-
-    mainForm = this;
+    ui->setupUi(this);
 
     QString prgFilename = QApplication::applicationFilePath();
     QFileInfo prgFileInfo(prgFilename);
-    iniFile = prgFileInfo.absolutePath() + "/" + prgFileInfo.baseName() + ".ini";
-    option = 0;
-    minimize = 0;
+    iniFile = prgFileInfo.absoluteDir().filePath(prgFileInfo.baseName()) + ".ini";;
 
     launchOptDlg = new LaunchOptDialog(this);
 
-    setWindowTitle(tr("RTKLIB v.%1 %2").arg(VER_RTKLIB).arg(PATCH_LEVEL));
+    setWindowTitle(tr("RTKLIB Version %1 %2").arg(VER_RTKLIB, PATCH_LEVEL));
     setWindowIcon(QIcon(":/icons/rtk9"));
 
     QCoreApplication::setApplicationName("rtklaunch_qt");
     QCoreApplication::setApplicationVersion("1.0");
 
     QSettings settings(iniFile, QSettings::IniFormat);
-    option =  settings.value("pos/option", 0).toInt();
-    minimize =  settings.value("pos/minimize", 1).toInt();
-    btnRtklib->setStatusTip("RTKLIB v." VER_RTKLIB " " PATCH_LEVEL);
+    option = settings.value("pos/option", 0).toInt();
+    minimize = settings.value("pos/minimize", 1).toInt();
+    ui->btnRtklib->setStatusTip(tr("RTKLIB Version %1 %2").arg(VER_RTKLIB, PATCH_LEVEL));
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("rtklib application launcher Qt");
+    parser.setApplicationDescription("RTKLIB application launcher Qt");
     parser.addHelpOption();
     parser.addVersionOption();
 
@@ -70,40 +68,37 @@ MainForm::MainForm(QWidget *parent)
     parser.addOption(titleOption);
 
     QCommandLineOption trayOption(QStringList() << "tray",
-                      QCoreApplication::translate("main", "only show tray icon"));
+                      QCoreApplication::translate("main", "Only show tray icon"));
     parser.addOption(trayOption);
 
     QCommandLineOption miniOption(QStringList() << "min",
-                      QCoreApplication::translate("main", "start minimized"));
+                      QCoreApplication::translate("main", "Start minimized"));
     parser.addOption(miniOption);
 
-
     parser.process(*QApplication::instance());
-
-    bool tray = parser.isSet(trayOption);
 
     if (parser.isSet(titleOption))
         setWindowTitle(parser.value(titleOption));
 
-    if (tray) {
+    if (parser.isSet(trayOption)) {
         setVisible(false);
         trayIcon.setVisible(true);
     }
 
     if (parser.isSet(miniOption)) minimize = 1;
 
-    btnOption->setVisible(false);
+    ui->btnOption->setVisible(false);
 
     trayMenu = new QMenu(this);
-    trayMenu->addAction(tr("Expand"), this, &MainForm::menuExpandClicked);
+    trayMenu->addAction(tr("Expand"), this, &MainForm::expandWindow);
     trayMenu->addSeparator();
-    trayMenu->addAction(tr("RTK&PLOT"), this, &MainForm::btnPlotClicked);
-    trayMenu->addAction(tr("&RTKPOST"), this, &MainForm::btnPostClicked);
-    trayMenu->addAction(tr("RTK&NAVI"), this, &MainForm::btnNaviClicked);
-    trayMenu->addAction(tr("RTK&CONV"), this, &MainForm::btnConvClicked);
-    trayMenu->addAction(tr("RTK&GET"), this, &MainForm::btnGetClicked);
-    trayMenu->addAction(tr("RTK&STR"), this, &MainForm::btnStrClicked);
-    trayMenu->addAction(tr("&NTRIP BROWSER"), this, &MainForm::btnNtripClicked);
+    trayMenu->addAction(tr("RTK&PLOT"), this, &MainForm::launchRTKPlot);
+    trayMenu->addAction(tr("&RTKPOST"), this, &MainForm::launchRTKPost);
+    trayMenu->addAction(tr("RTK&NAVI"), this, &MainForm::launchRTKNavi);
+    trayMenu->addAction(tr("RTK&CONV"), this, &MainForm::launchRTKConv);
+    trayMenu->addAction(tr("RTK&GET"), this, &MainForm::launchRTKGet);
+    trayMenu->addAction(tr("RTK&STR"), this, &MainForm::launchStrSvr);
+    trayMenu->addAction(tr("&NTRIP BROWSER"), this, &MainForm::launchSrcTblBrows);
     trayMenu->addSeparator();
     trayMenu->addAction(tr("&Exit"), this, &MainForm::close);
 
@@ -111,40 +106,40 @@ MainForm::MainForm(QWidget *parent)
     trayIcon.setIcon(QIcon(":/icons/rtk9"));
     trayIcon.setToolTip(windowTitle());
 
-    QMenu *Popup = new QMenu();
-    Popup->addAction(tr("&Expand"), this, &MainForm::menuExpandClicked);
-    Popup->addSeparator();
-    Popup->addAction(actionRtkConv);
-    Popup->addAction(actionRtkGet);
-    Popup->addAction(actionRtkNavi);
-    Popup->addAction(actionRtkNtrip);
-    Popup->addAction(actionRtkPlot);
-    Popup->addAction(actionRtkPost);
-    Popup->addAction(actionRtkStr);
-    Popup->addAction(actionRtkVideo);
-    Popup->addSeparator();
-    Popup->addAction(tr("E&xit"),this, &MainForm::accept);
-    btnRtklib->setMenu(Popup);
+    QMenu *popup_menu = new QMenu();
+    popup_menu->addAction(tr("&Expand"), this, &MainForm::expandWindow);
+    popup_menu->addSeparator();
+    popup_menu->addAction(ui->actionRtkConv);
+    popup_menu->addAction(ui->actionRtkGet);
+    popup_menu->addAction(ui->actionRtkNavi);
+    popup_menu->addAction(ui->actionRtkNtrip);
+    popup_menu->addAction(ui->actionRtkPlot);
+    popup_menu->addAction(ui->actionRtkPost);
+    popup_menu->addAction(ui->actionRtkStr);
+    popup_menu->addAction(ui->actionRtkVideo);
+    popup_menu->addSeparator();
+    popup_menu->addAction(tr("E&xit"),this, &MainForm::accept);
+    ui->btnRtklib->setMenu(popup_menu);
 
-    connect(btnPlot, &QPushButton::clicked, this, &MainForm::btnPlotClicked);
-    connect(btnConv, &QPushButton::clicked, this, &MainForm::btnConvClicked);
-    connect(btnStr, &QPushButton::clicked, this, &MainForm::btnStrClicked);
-    connect(btnPost, &QPushButton::clicked, this, &MainForm::btnPostClicked);
-    connect(btnNtrip, &QPushButton::clicked, this, &MainForm::btnNtripClicked);
-    connect(btnNavi, &QPushButton::clicked, this, &MainForm::btnNaviClicked);
-    connect(btnTray, &QPushButton::clicked, this, &MainForm::btnTrayClicked);
-    connect(btnGet, &QPushButton::clicked, this, &MainForm::btnGetClicked);
-    connect(btnOption, &QPushButton::clicked, this, &MainForm::btnOptionClicked);
-    connect(btnExit, &QPushButton::clicked, this, &MainForm::accept);
-    connect(&trayIcon, &QSystemTrayIcon::activated, this, &MainForm::trayIconActivated);
+    connect(ui->btnPlot, &QPushButton::clicked, this, &MainForm::launchRTKPlot);
+    connect(ui->btnConv, &QPushButton::clicked, this, &MainForm::launchRTKConv);
+    connect(ui->btnStrSvr, &QPushButton::clicked, this, &MainForm::launchStrSvr);
+    connect(ui->btnPost, &QPushButton::clicked, this, &MainForm::launchRTKPost);
+    connect(ui->btnSrcTblBrows, &QPushButton::clicked, this, &MainForm::launchSrcTblBrows);
+    connect(ui->btnNavi, &QPushButton::clicked, this, &MainForm::launchRTKNavi);
+    connect(ui->btnTray, &QPushButton::clicked, this, &MainForm::moveToTray);
+    connect(ui->btnGet, &QPushButton::clicked, this, &MainForm::launchRTKGet);
+    connect(ui->btnOption, &QPushButton::clicked, this, &MainForm::showOptions);
+    connect(ui->btnExit, &QPushButton::clicked, this, &MainForm::accept);
+    connect(&trayIcon, &QSystemTrayIcon::activated, this, &MainForm::restoreFromTaskTray);
 
-    connect(actionRtkConv, &QAction::triggered, this, &MainForm::btnConvClicked);
-    connect(actionRtkGet, &QAction::triggered, this, &MainForm::btnGetClicked);
-    connect(actionRtkNavi, &QAction::triggered, this, &MainForm::btnNaviClicked);
-    connect(actionRtkNtrip, &QAction::triggered, this, &MainForm::btnNtripClicked);
-    connect(actionRtkPlot, &QAction::triggered, this, &MainForm::btnPlotClicked);
-    connect(actionRtkPost, &QAction::triggered, this, &MainForm::btnPostClicked);
-    connect(actionRtkStr, &QAction::triggered, this, &MainForm::btnStrClicked);
+    connect(ui->actionRtkConv, &QAction::triggered, this, &MainForm::launchRTKConv);
+    connect(ui->actionRtkGet, &QAction::triggered, this, &MainForm::launchRTKGet);
+    connect(ui->actionRtkNavi, &QAction::triggered, this, &MainForm::launchRTKNavi);
+    connect(ui->actionRtkNtrip, &QAction::triggered, this, &MainForm::launchSrcTblBrows);
+    connect(ui->actionRtkPlot, &QAction::triggered, this, &MainForm::launchRTKPlot);
+    connect(ui->actionRtkPost, &QAction::triggered, this, &MainForm::launchRTKPost);
+    connect(ui->actionRtkStr, &QAction::triggered, this, &MainForm::launchStrSvr);
 
     updatePanel();
 }
@@ -160,7 +155,6 @@ void MainForm::showEvent(QShowEvent *event)
 
     resize(settings.value("pos/width", 310).toInt(),
            settings.value("pos/height", 79).toInt());
-
 }
 //---------------------------------------------------------------------------
 void MainForm::closeEvent(QCloseEvent *event)
@@ -168,6 +162,7 @@ void MainForm::closeEvent(QCloseEvent *event)
     if (event->spontaneous()) return;
 
     QSettings settings(iniFile, QSettings::IniFormat);
+
     settings.setValue("pos/left", pos().x());
     settings.setValue("pos/top", pos().y());
     settings.setValue("pos/width", width());
@@ -176,7 +171,7 @@ void MainForm::closeEvent(QCloseEvent *event)
     settings.setValue("pos/minimize", minimize);
 }
 //---------------------------------------------------------------------------
-void MainForm::btnPlotClicked()
+void MainForm::launchRTKPlot()
 {
     QString cmd1 = "./rtkplot_qt", cmd2 = "../rtkplot_qt/rtkplot_qt";
     QStringList opts;
@@ -184,7 +179,7 @@ void MainForm::btnPlotClicked()
     if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
 }
 //---------------------------------------------------------------------------
-void MainForm::btnConvClicked()
+void MainForm::launchRTKConv()
 {
     QString cmd1 = "./rtkconv_qt", cmd2 = "../rtkconv_qt/rtkconv_qt";
     QStringList opts;
@@ -192,7 +187,7 @@ void MainForm::btnConvClicked()
     if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
 }
 //---------------------------------------------------------------------------
-void MainForm::btnStrClicked()
+void MainForm::launchStrSvr()
 {
     QString cmd1 = "./strsvr_qt", cmd2 = "../strsvr_qt/strsvr_qt";
     QStringList opts;
@@ -200,7 +195,7 @@ void MainForm::btnStrClicked()
     if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
 }
 //---------------------------------------------------------------------------
-void MainForm::btnPostClicked()
+void MainForm::launchRTKPost()
 {
     QString cmd1 = "./rtkpost_qt", cmd2 = "../rtkpost_qt/rtkpost_qt";
     QStringList opts;
@@ -208,7 +203,7 @@ void MainForm::btnPostClicked()
     if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
 }
 //---------------------------------------------------------------------------
-void MainForm::btnNtripClicked()
+void MainForm::launchSrcTblBrows()
 {
     QString cmd1 = "./srctblbrows_qt", cmd2 = "../srctblbrows_qt/srctblbrows_qt";
     QStringList opts;
@@ -216,7 +211,7 @@ void MainForm::btnNtripClicked()
     if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
 }
 //---------------------------------------------------------------------------
-void MainForm::btnNaviClicked()
+void MainForm::launchRTKNavi()
 {
     QString cmd1 = "./rtknavi_qt", cmd2 = "../rtknavi_qt/rtknavi_qt";
     QStringList opts;
@@ -224,7 +219,7 @@ void MainForm::btnNaviClicked()
     if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
 }
 //---------------------------------------------------------------------------
-void MainForm::btnGetClicked()
+void MainForm::launchRTKGet()
 {
     QString cmd1 = "./rtkget_qt", cmd2 = "../rtkget_qt/rtkget_qt";
     QStringList opts;
@@ -237,21 +232,20 @@ int MainForm::execCommand(const QString &cmd, const QStringList &opt)
     return QProcess::startDetached(cmd, opt);
 }
 //---------------------------------------------------------------------------
-void MainForm::btnTrayClicked()
+void MainForm::moveToTray()
 {
     setVisible(false);
     trayIcon.setVisible(true);
 }
 //---------------------------------------------------------------------------
-void MainForm::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
+void MainForm::restoreFromTaskTray(QSystemTrayIcon::ActivationReason reason)
 {
     if (reason != QSystemTrayIcon::DoubleClick && reason != QSystemTrayIcon::Trigger) return;
 
-    setVisible(true);
-    trayIcon.setVisible(false);
+    expandWindow();
 }
 //---------------------------------------------------------------------------
-void MainForm::menuExpandClicked()
+void MainForm::expandWindow()
 {
     setVisible(true);
     trayIcon.setVisible(false);
@@ -260,22 +254,28 @@ void MainForm::menuExpandClicked()
     updatePanel();
 }
 //---------------------------------------------------------------------------
-void MainForm::updatePanel(void)
+void MainForm::updatePanel()
 {
     if (minimize) {
-        panelTop->setVisible(false);
-        panelBottom->setVisible(true);
+        ui->panelTop->setVisible(false);
+        ui->panelBottom->setVisible(true);
     }
     else {
-        panelTop->setVisible(true);
-        panelBottom->setVisible(false);
+        ui->panelTop->setVisible(true);
+        ui->panelBottom->setVisible(false);
     }
 }
 //---------------------------------------------------------------------------
-void MainForm::btnOptionClicked()
+void MainForm::showOptions()
 {
+    launchOptDlg->setOption(option);
+    launchOptDlg->setMinimize(minimize);
+
     launchOptDlg->exec();
-    if (launchOptDlg->result()!=QDialog::Accepted) return;
+    if (launchOptDlg->result() != QDialog::Accepted) return;
+
+    option = launchOptDlg->getOption();
+    minimize = launchOptDlg->getMinimize();
 
     updatePanel();
 }

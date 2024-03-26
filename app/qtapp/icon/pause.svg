@@ -7,7 +7,7 @@
    viewBox="0 0 150 150"
    version="1.1"
    id="svg1"
-   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   inkscape:version="1.3.2 (091e20ef0f, 2023-11-25)"
    sodipodi:docname="pause.svg"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -24,7 +24,7 @@
      inkscape:deskcolor="#d1d1d1"
      inkscape:document-units="mm"
      inkscape:zoom="0.71624579"
-     inkscape:cx="181.50194"
+     inkscape:cx="182.20002"
      inkscape:cy="149.39006"
      inkscape:window-width="1920"
      inkscape:window-height="1008"
@@ -42,16 +42,16 @@
     <rect
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.0499999;stroke-linejoin:round"
        id="rect2"
-       width="30"
-       height="80"
+       width="40"
+       height="100"
        x="141.88806"
-       y="143.97388" />
+       y="132.97388" />
     <rect
        style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:0.0499999;stroke-linejoin:round"
        id="rect2-6"
-       width="30"
-       height="80"
-       x="91.888054"
-       y="143.97388" />
+       width="40"
+       height="100"
+       x="81.888054"
+       y="133.97388" />
   </g>
 </svg>

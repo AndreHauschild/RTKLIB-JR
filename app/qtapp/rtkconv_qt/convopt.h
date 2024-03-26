@@ -3,38 +3,56 @@
 #define optdlgH
 //---------------------------------------------------------------------------
 #include <QDialog>
+#include "rtklib.h"
 
-#include "ui_convopt.h"
+namespace Ui {
+class ConvOptDialog;
+}
 
-class QShowEvent;
+class QSettings;
 class CodeOptDialog;
 class GloFcnDialog;
 class FreqDialog;
 
 //---------------------------------------------------------------------------
-class ConvOptDialog : public QDialog, private Ui::ConvOptDialog
+class ConvOptDialog : public QDialog
 {
     Q_OBJECT
 
-public slots:
-    void btnOkClicked();
-    void btnMaskClicked();
-    void btnFreqClicked();
-    void btnFcnClicked();
+public:
+    explicit ConvOptDialog(QWidget *parent);
+    void loadOptions(QSettings &);
+    void saveOptions(QSettings &);
+    void setTimeIntervalEnabled(bool ena);
+    bool getTimeIntervalEnabled();
+
+    gtime_t rinexTime;
+    QString runBy, marker, markerNo, markerType, name[2], receiver[3], antenna[3];
+    QString rinexStationCode, comment[2], receiverOptions, excludedSatellites;
+    QString codeMask[7];
+    double approxPosition[3], antennaDelta[3], timeTolerance;
+    int rinexVersion, rinexFile, navSys, observationType, frequencyType, traceLevel;
+    int autoPosition, phaseShift, halfCycle, outputIonoCorr, outputTimeCorr, outputLeapSeconds, separateNavigation;
+    int enableGlonassFrequency, glonassFrequency[27];
+
+protected slots:
+    void saveClose();
+    void showMaskDialog();
+    void showFrequencyDialog();
+    void showFcnDialog();
 
 protected:
-    void showEvent(QShowEvent*);
+    bool timeIntervalEnabled;
 
 private:
-    void updateEnable(void);
+    void updateEnable();
+    void updateUi();
 
     CodeOptDialog *codeOptDialog;
     GloFcnDialog *gloFcnDialog;
     FreqDialog *freqDialog;
-public:
-    QString codeMask[7];
-	
-    explicit ConvOptDialog(QWidget *parent);
+
+    Ui::ConvOptDialog *ui;
 };
 //---------------------------------------------------------------------------
 #endif

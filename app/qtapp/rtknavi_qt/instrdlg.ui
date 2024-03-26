@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>774</width>
-    <height>374</height>
+    <width>927</width>
+    <height>389</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,8 +17,8 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="13" column="0">
-    <widget class="QWidget" name="widget_3" native="true">
+   <item row="14" column="0">
+    <widget class="QWidget" name="panelTags" native="true">
      <layout class="QGridLayout" name="gridLayout_4">
       <property name="leftMargin">
        <number>0</number>
@@ -33,7 +33,7 @@
        <number>0</number>
       </property>
       <item row="0" column="1">
-       <widget class="QComboBox" name="cBTimeSpeedL">
+       <widget class="QComboBox" name="cBTimeSpeed">
         <property name="toolTip">
          <string>Select the replay speed (required time-tag file)</string>
         </property>
@@ -79,28 +79,25 @@
         </item>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QLineEdit" name="lETimeStartE">
-        <property name="toolTip">
-         <string>Specify the start time for replay</string>
-        </property>
-        <property name="text">
-         <string>0</string>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="2">
-       <widget class="QLabel" name="lblF3">
-        <property name="toolTip">
-         <string/>
-        </property>
+       <widget class="QLabel" name="lblPlus">
         <property name="text">
          <string>+</string>
         </property>
        </widget>
       </item>
+      <item row="0" column="3">
+       <widget class="QDoubleSpinBox" name="sBTimeStart">
+        <property name="suffix">
+         <string> s</string>
+        </property>
+        <property name="maximum">
+         <double>3600.000000000000000</double>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
-       <widget class="QCheckBox" name="cBTimeTagC">
+       <widget class="QCheckBox" name="cBTimeTag">
         <property name="toolTip">
          <string>Enable time-tag replay</string>
         </property>
@@ -110,13 +107,6 @@
        </widget>
       </item>
       <item row="0" column="4">
-       <widget class="QLabel" name="lblF2">
-        <property name="text">
-         <string>s</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5">
        <widget class="QCheckBox" name="cB64Bit">
         <property name="toolTip">
          <string>Use 64 bit time-tags</string>
@@ -129,81 +119,87 @@
      </layout>
     </widget>
    </item>
-   <item row="13" column="1">
-    <widget class="QPushButton" name="btnOk">
-     <property name="toolTip">
-      <string>Accept changes</string>
-     </property>
-     <property name="text">
-      <string>&amp;OK</string>
-     </property>
-     <property name="autoDefault">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="2">
-    <widget class="QPushButton" name="btnCancel">
-     <property name="toolTip">
-      <string>Cancel</string>
-     </property>
-     <property name="text">
-      <string>&amp;Cancel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="2">
-    <widget class="QPushButton" name="btnFile3">
-     <property name="toolTip">
-      <string>Select correction data file</string>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="0" colspan="2">
-    <widget class="QLineEdit" name="lEFilePath3">
-     <property name="toolTip">
-      <string>Specify file name for correction data</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0" colspan="2">
-    <widget class="QLineEdit" name="lEFilePath2">
-     <property name="toolTip">
-      <string>Specify file name for base station data</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="2">
-    <widget class="QPushButton" name="btnFile2">
-     <property name="toolTip">
-      <string>Select base station data file</string>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="2">
-    <widget class="QPushButton" name="btnFile1">
-     <property name="toolTip">
-      <string>Select rover data file</string>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
    <item row="9" column="0" colspan="2">
-    <widget class="QLineEdit" name="lEFilePath1">
-     <property name="toolTip">
-      <string>Specify file name for rover data</string>
+    <widget class="QWidget" name="PanelInputs" native="true">
+     <layout class="QGridLayout" name="gridLayout_6">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_1">
+        <property name="text">
+         <string>(1)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="lEFilePath2">
+        <property name="toolTip">
+         <string>Specify file name for base station data</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="lEFilePath3">
+        <property name="toolTip">
+         <string>Specify file name for correction data</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>(2)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>(3)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="lblInputFilePath">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Input File Paths</string>
+        </property>
+        <property name="buddy">
+         <cstring>lEFilePath1</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lEFilePath1">
+        <property name="toolTip">
+         <string>Specify file name for rover data</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="14" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="3">
+   <item row="1" column="0" colspan="2">
     <widget class="QWidget" name="widget_2" native="true">
      <layout class="QGridLayout" name="gridLayout_3">
       <property name="leftMargin">
@@ -218,144 +214,193 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item row="1" column="3">
-       <widget class="QDoubleSpinBox" name="sBNmeaPosition3">
-        <property name="toolTip">
-         <string>Height to send to base station</string>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblNmea">
+        <property name="text">
+         <string>Transmit NMEA GGA to Base Station</string>
         </property>
-        <property name="suffix">
-         <string> m</string>
-        </property>
-        <property name="decimals">
-         <number>3</number>
-        </property>
-        <property name="maximum">
-         <double>8000.000000000000000</double>
+        <property name="buddy">
+         <cstring>cBNmeaRequestType</cstring>
         </property>
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QComboBox" name="cBNmeaReqL">
-        <property name="toolTip">
-         <string>Transmit the approximate position of the rover to the base station</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>OFF</string>
+       <widget class="QWidget" name="widget" native="true">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <property name="leftMargin">
+          <number>0</number>
          </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Latitude/Longitude</string>
+         <property name="topMargin">
+          <number>0</number>
          </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Single Solution</string>
+         <property name="rightMargin">
+          <number>0</number>
          </property>
-        </item>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="3">
+          <widget class="QDoubleSpinBox" name="sBNmeaPosition3">
+           <property name="toolTip">
+            <string>Height to send to base station</string>
+           </property>
+           <property name="suffix">
+            <string> m</string>
+           </property>
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="maximum">
+            <double>8000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="sBNmeaPosition1">
+           <property name="toolTip">
+            <string>Latitude to send to base station</string>
+           </property>
+           <property name="suffix">
+            <string>°</string>
+           </property>
+           <property name="decimals">
+            <number>9</number>
+           </property>
+           <property name="minimum">
+            <double>-180.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>180.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="sBNmeaPosition2">
+           <property name="toolTip">
+            <string>Longitude to send to base station</string>
+           </property>
+           <property name="suffix">
+            <string>°</string>
+           </property>
+           <property name="decimals">
+            <number>9</number>
+           </property>
+           <property name="minimum">
+            <double>-90.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>90.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QComboBox" name="cBNmeaRequestType">
+           <property name="toolTip">
+            <string>Transmit the approximate position of the rover to the base station</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>OFF</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Latitude/Longitude</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Single Solution</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QPushButton" name="btnPosition">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Select rover position from station list</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/ori</normaloff>:/buttons/ori</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
-      <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="sBNmeaPosition1">
-        <property name="toolTip">
-         <string>Latitude to send to base station</string>
-        </property>
-        <property name="suffix">
-         <string>°</string>
-        </property>
-        <property name="decimals">
-         <number>9</number>
-        </property>
-        <property name="minimum">
-         <double>-180.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>180.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="sBNmeaPosition2">
-        <property name="toolTip">
-         <string>Longitude to send to base station</string>
-        </property>
-        <property name="suffix">
-         <string>°</string>
-        </property>
-        <property name="decimals">
-         <number>9</number>
-        </property>
-        <property name="minimum">
-         <double>-90.000000000000000</double>
-        </property>
-        <property name="maximum">
-         <double>90.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="lblNmea">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Transmit NMEA GGA to Base Station</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="lblResetCmd">
-        <property name="text">
-         <string>Reset Command</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="4">
-       <widget class="QPushButton" name="btnPosition">
-        <property name="toolTip">
-         <string>Select rover position from station list</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QLabel" name="lblMaxBaseLine">
-        <property name="text">
-         <string>Max. Baseline</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="4">
-       <widget class="QDoubleSpinBox" name="sBMaxBaseLine">
-        <property name="toolTip">
-         <string>Maximum baseline which will trigger the reset command to be executed</string>
-        </property>
-        <property name="suffix">
-         <string> km</string>
-        </property>
-        <property name="maximum">
-         <double>99999.990000000005239</double>
-        </property>
-        <property name="value">
-         <double>10.000000000000000</double>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="2">
-       <widget class="QLineEdit" name="lEResetCmd">
-        <property name="toolTip">
-         <string>Reset command to send when max. baseline is reached</string>
-        </property>
+      <item row="3" column="0">
+       <widget class="QWidget" name="widget_3" native="true">
+        <layout class="QGridLayout" name="gridLayout_7">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="2">
+          <widget class="QLabel" name="lblMaxBaseLine">
+           <property name="text">
+            <string>Max. Baseline</string>
+           </property>
+           <property name="buddy">
+            <cstring>sBMaxBaseLine</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="lblResetCmd">
+           <property name="text">
+            <string>Reset Command</string>
+           </property>
+           <property name="buddy">
+            <cstring>lEResetCmd</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="lEResetCmd">
+           <property name="toolTip">
+            <string>Reset command to send when max. baseline is reached</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QDoubleSpinBox" name="sBMaxBaseLine">
+           <property name="toolTip">
+            <string>Maximum baseline which will trigger the reset command to be executed</string>
+           </property>
+           <property name="suffix">
+            <string> km</string>
+           </property>
+           <property name="maximum">
+            <double>99999.990000000005239</double>
+           </property>
+           <property name="value">
+            <double>10.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
-   <item row="0" column="0" colspan="3">
-    <widget class="QWidget" name="widget" native="true">
+   <item row="0" column="0" colspan="2">
+    <widget class="QWidget" name="panelStream" native="true">
      <layout class="QGridLayout" name="gridLayout_2">
       <property name="leftMargin">
        <number>0</number>
@@ -369,163 +414,37 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
+      <item row="0" column="5">
+       <widget class="QLabel" name="lblReceiverOptions">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Receiver Options</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
-       <widget class="QLabel" name="Label5">
+       <widget class="QLabel" name="lblStreamType">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
-         <string>Type</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QLabel" name="Label6">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Stream Options</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="3">
-       <widget class="QPushButton" name="btnCmd2">
-        <property name="toolTip">
-         <string>Specify additional commands for the base station</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="4">
-       <widget class="QComboBox" name="cBFormat2">
-        <property name="toolTip">
-         <string>Select base station data stream format</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="cBStreamC2">
-        <property name="toolTip">
-         <string>Activate data input stream for the base station</string>
-        </property>
-        <property name="text">
-         <string>(2) Base Station</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="cBStreamC3">
-        <property name="toolTip">
-         <string>Activate data input stream for additional corrections</string>
-        </property>
-        <property name="text">
-         <string>(3) Correction</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="cBStreamC1">
-        <property name="toolTip">
-         <string>Activate data input stream for the rover</string>
-        </property>
-        <property name="text">
-         <string>(1) Rover</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="4">
-       <widget class="QComboBox" name="cBFormat3">
-        <property name="toolTip">
-         <string>Select correction data stream format</string>
+         <string>Stream Type</string>
         </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QPushButton" name="btnStream1">
+       <widget class="QPushButton" name="btnStream2">
         <property name="toolTip">
-         <string>Select options for the rover data stream</string>
+         <string>Select options for the base station data stream</string>
         </property>
         <property name="text">
          <string>...</string>
         </property>
        </widget>
       </item>
-      <item row="4" column="3">
-       <widget class="QPushButton" name="btnCmd3">
-        <property name="toolTip">
-         <string>Specify additional commands for the correction data stream</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="3">
-       <widget class="QPushButton" name="btnCmd1">
-        <property name="toolTip">
-         <string>Specify additional commands for the rover</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QComboBox" name="cBStream1">
-        <property name="toolTip">
-         <string>Select input stream type for rover</string>
-        </property>
-        <item>
-         <property name="text">
-          <string>Serial</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>TCP Client</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>TCP Server</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>NTRIP Client</string>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>File</string>
-         </property>
-        </item>
-       </widget>
-      </item>
-      <item row="4" column="2">
-       <widget class="QPushButton" name="btnStream3">
-        <property name="toolTip">
-         <string>Select options for the correction data stream</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="4">
-       <widget class="QLabel" name="Label7">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Format</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="1">
+      <item row="3" column="1">
        <widget class="QComboBox" name="cBStream3">
         <property name="toolTip">
          <string>Select input stream type for corrections</string>
@@ -567,24 +486,210 @@
         </item>
        </widget>
       </item>
-      <item row="2" column="4">
-       <widget class="QComboBox" name="cBFormat1">
+      <item row="3" column="3">
+       <widget class="QPushButton" name="btnCmd3">
         <property name="toolTip">
-         <string>Select rover data stream format</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QPushButton" name="btnStream2">
-        <property name="toolTip">
-         <string>Select options for the base station data stream</string>
+         <string>Specify additional commands for the correction data stream</string>
         </property>
         <property name="text">
          <string>...</string>
         </property>
        </widget>
       </item>
-      <item row="3" column="1">
+      <item row="1" column="3">
+       <widget class="QPushButton" name="btnCmd1">
+        <property name="toolTip">
+         <string>Specify additional commands for the rover</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="lblFormat">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QPushButton" name="btnReceiverOptions3">
+        <property name="toolTip">
+         <string>Define additional options for the receiver</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QComboBox" name="cBFormat2">
+        <property name="toolTip">
+         <string>Select base station data stream format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="lblStreamOptions">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Stream Options</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QComboBox" name="cBFormat3">
+        <property name="toolTip">
+         <string>Select correction data stream format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="btnCmd2">
+        <property name="toolTip">
+         <string>Specify additional commands for the base station</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="cBStream1">
+        <property name="toolTip">
+         <string>Select input stream type for rover</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Serial</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TCP Client</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TCP Server</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>NTRIP Client</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>File</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblInputStream">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Input Stream</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="cBStreamC1">
+        <property name="toolTip">
+         <string>Activate data input stream for the rover</string>
+        </property>
+        <property name="text">
+         <string>(1) Rover</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="btnStream1">
+        <property name="toolTip">
+         <string>Select options for the rover data stream</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="cBStreamC3">
+        <property name="toolTip">
+         <string>Activate data input stream for additional corrections</string>
+        </property>
+        <property name="text">
+         <string>(3) Correction</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="cBStreamC2">
+        <property name="toolTip">
+         <string>Activate data input stream for the base station</string>
+        </property>
+        <property name="text">
+         <string>(2) Base Station</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QComboBox" name="cBFormat1">
+        <property name="toolTip">
+         <string>Select rover data stream format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QPushButton" name="btnReceiverOptions2">
+        <property name="toolTip">
+         <string>Define additional options for the receiver</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="btnStream3">
+        <property name="toolTip">
+         <string>Select options for the correction data stream</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QPushButton" name="btnReceiverOptions1">
+        <property name="toolTip">
+         <string>Define additional options for the receiver</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="lblCommands">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Commands</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
        <widget class="QComboBox" name="cBStream2">
         <property name="toolTip">
          <string>Select input stream type for base station</string>
@@ -616,81 +721,46 @@
         </item>
        </widget>
       </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="Label11">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Commands</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QLabel" name="Label10">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Input Stream</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="5">
-       <widget class="QPushButton" name="btnReceiverOptions3">
-        <property name="toolTip">
-         <string>Define additional options for the receiver</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="5">
-       <widget class="QPushButton" name="btnReceiverOptions2">
-        <property name="toolTip">
-         <string>Define additional options for the receiver</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="5">
-       <widget class="QPushButton" name="btnReceiverOptions1">
-        <property name="toolTip">
-         <string>Define additional options for the receiver</string>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="5">
-       <widget class="QLabel" name="Label1">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Receiver Options</string>
-        </property>
-       </widget>
-      </item>
      </layout>
-    </widget>
-   </item>
-   <item row="8" column="0" colspan="3">
-    <widget class="QLabel" name="lblF1">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Input File Paths</string>
-     </property>
     </widget>
    </item>
   </layout>
  </widget>
- <resources/>
+ <tabstops>
+  <tabstop>cBStreamC1</tabstop>
+  <tabstop>cBStream1</tabstop>
+  <tabstop>btnStream1</tabstop>
+  <tabstop>btnCmd1</tabstop>
+  <tabstop>cBFormat1</tabstop>
+  <tabstop>btnReceiverOptions1</tabstop>
+  <tabstop>cBStreamC2</tabstop>
+  <tabstop>cBStream2</tabstop>
+  <tabstop>btnStream2</tabstop>
+  <tabstop>btnCmd2</tabstop>
+  <tabstop>cBFormat2</tabstop>
+  <tabstop>btnReceiverOptions2</tabstop>
+  <tabstop>cBStreamC3</tabstop>
+  <tabstop>cBStream3</tabstop>
+  <tabstop>btnStream3</tabstop>
+  <tabstop>btnCmd3</tabstop>
+  <tabstop>cBFormat3</tabstop>
+  <tabstop>btnReceiverOptions3</tabstop>
+  <tabstop>cBNmeaRequestType</tabstop>
+  <tabstop>sBNmeaPosition1</tabstop>
+  <tabstop>sBNmeaPosition2</tabstop>
+  <tabstop>sBNmeaPosition3</tabstop>
+  <tabstop>btnPosition</tabstop>
+  <tabstop>lEResetCmd</tabstop>
+  <tabstop>sBMaxBaseLine</tabstop>
+  <tabstop>lEFilePath1</tabstop>
+  <tabstop>lEFilePath2</tabstop>
+  <tabstop>lEFilePath3</tabstop>
+  <tabstop>cBTimeTag</tabstop>
+  <tabstop>cBTimeSpeed</tabstop>
+  <tabstop>cB64Bit</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../icon/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

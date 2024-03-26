@@ -5,14 +5,20 @@
 #include <QWebEngineView>
 #include <QWebEnginePage>
 #include <QWebChannel>
-#include <QFile>
 #endif
+
 #include <QShowEvent>
+#include <QSettings>
 #include <QFile>
 #include <QTextStream>
+#include <QLabel>
+
+#include <cmath>
+
 #include "mapviewopt.h"
 #include "mapview.h"
-#include <cmath>
+
+#include "ui_mapview.h"
 
 #define RTKLIB_GM_TEMP ":/html/rtklib_gm.htm"
 #define RTKLIB_GM_FILE "rtklib_gm_a.htm"
@@ -24,10 +30,10 @@
 
 //---------------------------------------------------------------------------
 MapView::MapView(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::MapView)
 {
     loaded = false;
-    setupUi(this);
+    ui->setupUi(this);
 
     selectedMap = 0;
     center_latitude = center_longitude = 0.0;
@@ -38,25 +44,25 @@ MapView::MapView(QWidget *parent)
     }
     mapViewOptDialog = new MapViewOptDialog(this);
 
-    connect(btnClose, &QPushButton::clicked, this, &MapView::close);
-    connect(btnOptions, &QPushButton::clicked, this, &MapView::btnOptionsClicked);
-    connect(btnShrink, &QPushButton::clicked, this, &MapView::btnZoomOutClicked);
-    connect(btnExpand, &QPushButton::clicked, this, &MapView::btnZoomInClicked);
-    connect(btnCenter, &QPushButton::clicked, this, &MapView::btnCenterClicked);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &MapView::close);
+    connect(ui->btnOptions, &QPushButton::clicked, this, &MapView::showOptionsDialog);
+    connect(ui->btnShrink, &QPushButton::clicked, this, &MapView::zoomOut);
+    connect(ui->btnExpand, &QPushButton::clicked, this, &MapView::zoomIn);
+    connect(ui->btnCenter, &QPushButton::clicked, this, &MapView::center);
+    connect(ui->rBMapSelect1, &QRadioButton::clicked, this, &MapView::selectMapLL);
+    connect(ui->rBMapSelect2, &QRadioButton::clicked, this, &MapView::selectMapGM);
     connect(&timerLL, &QTimer::timeout, this, &MapView::timerLLTimer);
     connect(&timerGM, &QTimer::timeout, this, &MapView::timerGMTimer);
-    connect(rBMapSelect1, &QRadioButton::clicked, this, &MapView::mapSelect1Clicked);
-    connect(rBMapSelect2, &QRadioButton::clicked, this, &MapView::mapSelect2Clicked);
 
-    mapStrings[0][0] = "OpenStreetMap";
+    mapStrings[0][0] = "OpenStreetMap";                                     //todo: save map strings in settins
     mapStrings[0][1] = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
     mapStrings[0][2] = "https://osm.org/copyright";
 
     QHBoxLayout *layout = new QHBoxLayout();
-    panel2->setContentsMargins(0, 0, 0, 0);
-    panel2->setLayout(layout);
+    ui->wgMap->setContentsMargins(0, 0, 0, 0);
+    ui->wgMap->setLayout(layout);
 #ifdef QWEBENGINE
-    webBrowser = new QWebEngineView(panel2);
+    webBrowser = new QWebEngineView(ui->wgMap);
     layout->addWidget(webBrowser);
     pageState = new MapViewPageState(this);
     webChannel = new QWebChannel(this);
@@ -68,44 +74,46 @@ MapView::MapView(QWidget *parent)
     label->setText("QWebEngine is not available to show a map.");
     layout->addWidget(label);
 #endif
-}
-//---------------------------------------------------------------------------
-void MapView::showEvent(QShowEvent*)
-{
-    rBMapSelect1->setChecked(!selectedMap);
-    rBMapSelect2->setChecked(selectedMap);
+
+    ui->rBMapSelect1->setChecked(!selectedMap);
+    ui->rBMapSelect2->setChecked(selectedMap);
     selectMap(selectedMap);
     showMap(selectedMap);
 }
-
 //---------------------------------------------------------------------------
-void MapView::mapSelect1Clicked()
+void MapView::setApiKey(const QString & key)
+{
+    apiKey = key;
+}
+//---------------------------------------------------------------------------
+const QString &MapView::getApiKey()
+{
+    return apiKey;
+}
+//---------------------------------------------------------------------------
+void MapView::selectMapLL()
 {
     selectMap(0);
 }
 //---------------------------------------------------------------------------
-void MapView::mapSelect2Clicked()
+void MapView::selectMapGM()
 {
     selectMap(1);
 }
 //---------------------------------------------------------------------------
-void MapView::btnOptionsClicked()
+void MapView::showOptionsDialog()
 {
     mapViewOptDialog->move(x() + width() / 2 - mapViewOptDialog->width() / 2,
                            y() + height() / 2 - mapViewOptDialog->height() / 2);
 
-    mapViewOptDialog->apiKey = apiKey;
+    mapViewOptDialog->setApiKey(apiKey);
     for (int i = 0; i < 6; i++)
-        for (int j = 0; j < 3; j++) {
-            mapViewOptDialog->mapStrings[i][j] = mapStrings[i][j];
-        }
-    if (mapViewOptDialog->exec()!=QDialog::Accepted) return;
+        mapViewOptDialog->setMapStrings(i, mapStrings[i][0], mapStrings[i][1], mapStrings[i][2]);
+    if (mapViewOptDialog->exec() != QDialog::Accepted) return;
 
-    apiKey = mapViewOptDialog->apiKey;
+    apiKey = mapViewOptDialog->getApiKey();
     for (int i = 0; i < 6; i++)
-        for (int j = 0; j < 3; j++) {
-            mapStrings[i][j] = mapViewOptDialog->mapStrings[i][j];
-        }
+        mapViewOptDialog->getMapStrings(i, mapStrings[i][0], mapStrings[i][1], mapStrings[i][2]);
 
     showMap(selectedMap);
 }
@@ -124,19 +132,19 @@ void MapView::pageLoaded(bool ok)
     loaded = true;
 }
 //---------------------------------------------------------------------------
-void MapView::btnZoomOutClicked()
+void MapView::zoomOut()
 {
     execFunction(selectedMap,"ZoomOut()");
 }
 //---------------------------------------------------------------------------
-void MapView::btnZoomInClicked()
+void MapView::zoomIn()
 {
     execFunction(selectedMap,"ZoomIn()");
 }
 //---------------------------------------------------------------------------
-void MapView::btnCenterClicked()
+void MapView::center()
 {
-        setCenter(center_latitude,center_longitude);
+    setCenter(center_latitude,center_longitude);
 }
 //---------------------------------------------------------------------------
 void MapView::showMap(int map)
@@ -149,7 +157,7 @@ void MapView::showMap(int map)
     }
 }
 //---------------------------------------------------------------------------
-void MapView::showMapLL(void)
+void MapView::showMapLL()
 {
     QString pageSource;
     int i, j;
@@ -173,7 +181,7 @@ void MapView::showMapLL(void)
             QString attr = mapStrings[i][2];
 
             out << QString("var tile%1 = L.tileLayer('%2', {\n").arg(j).arg(url);
-            out << QString("  attribution: \"<a href='%1' target='_blank'>%2</a>\",\n").arg(attr).arg(title);
+            out << QString("  attribution: \"<a href='%1' target='_blank'>%2</a>\",\n").arg(attr, title);
             out << QString("  opacity: %1});\n").arg(MAP_OPACITY,0,'f',1);
             j++;
         }
@@ -181,7 +189,7 @@ void MapView::showMapLL(void)
         for (i = 0, j = 1; i < 6; i++) {
             if (mapStrings[i][0] == "") continue;
             QString title = mapStrings[i][0];
-            out << QString("%1\"%2\":tile%3").arg((j == 1) ? "" : ",").arg(title).arg(j);
+            out << QString("%1\"%2\":tile%3").arg((j == 1) ? "" : ",", title).arg(j);
             j++;
         }
         out << "};\n";
@@ -207,7 +215,8 @@ void MapView::timerLLTimer()
 
     timerLL.stop();
 }
-void MapView::showMapGM(void)
+//---------------------------------------------------------------------------
+void MapView::showMapGM()
 {
     QString pageSource;
 
@@ -254,9 +263,8 @@ void MapView::setView(int map, double lat, double lon, int zoom)
 {
     execFunction(map, QString("SetView(%1,%2,%3)").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9).arg(zoom));
 }
-
 //---------------------------------------------------------------------------
-void MapView::updateMap(void)
+void MapView::updateMap()
 {
     setCenter(center_latitude, center_longitude);
     for (int i = 0; i < 255; i++) {
@@ -277,16 +285,22 @@ void MapView::selectMap(int map)
 //---------------------------------------------------------------------------
 void MapView::setCenter(double lat, double lon)
 {
-    QString func=QString("SetCent(%1,%2)").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9);
+    QString func = QString("SetCent(%1,%2)").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9);
     center_latitude = lat;
     center_longitude = lon;
 
     execFunction(selectedMap, func);
 }
 //---------------------------------------------------------------------------
+void MapView::setViewBounds(double min_lat, double min_lon, double max_lat, double max_lon)
+{ //TODO: to be implemented for Google Maps
+    execFunction(selectedMap, QString("SetVuewBounds(%1,%2,%3,%4)").arg(min_lat, 0, 'f', 9).arg(min_lon, 0, 'f', 9).
+                      arg(max_lat, 0, 'f', 9).arg(max_lon, 0, 'f', 9));
+};
+//---------------------------------------------------------------------------
 void MapView::addMark(int map, int index, double lat, double lon, const QString &title, const QString &msg)
 {
-    QString func = QString("AddMark(%1,%2,'%3','%4')").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9).arg(title).arg(msg);
+    QString func = QString("AddMark(%1,%2,'%3','%4')").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9).arg(title, msg);
 
     markTitle[index] = title;
     markMessage[index] = msg;
@@ -308,7 +322,6 @@ void MapView::setMark(int index, const QString &title, double lat, double lon)
     markPosition[index][1] = lon;
 
     execFunction(selectedMap, func);
-
 }
 //---------------------------------------------------------------------------
 void MapView::showMark(int index)
@@ -367,11 +380,44 @@ void MapView::execFunction(int map, const QString &func)
     if (page == NULL) return;
 
     page->runJavaScript(func);
+#else
+    Q_UNUSED(func)
 #endif
 }
 //---------------------------------------------------------------------------
 bool MapView::isLoaded()
 {
     return setState(1);
+}
+//---------------------------------------------------------------------------
+void MapView::loadOptions(QSettings &settings)
+{
+    QStringList strs;
+    for (int i = 0; i < 6; i++)
+    {
+        if (i==0)
+            strs = settings.value("mapview/mapstrs_0", "OpenStreetMap,"
+                                                       "https://tile.openstreetmap.org/{z}/{x}/{y}.png,"
+                                                       "https://osm.org/copyright").toString().split(",");
+        else
+            strs = settings.value(QString("set/mapstring%1").arg(i), "").toString().split(",");
+        if (strs.length() == 3)
+        {
+            for (int j = 0; j < 3; j++)
+                mapStrings[i][j] = strs[j];
+        }
+    }
+    apiKey = settings.value("mapview/apikey" ,"").toString();
+}
+//---------------------------------------------------------------------------
+void MapView::saveOptions(QSettings &settings)
+{
+    for (int i = 0; i < 6; i++)
+    {
+        QString str = mapStrings[i][0] + "," + mapStrings[i][1] + "," + mapStrings[i][2];
+        settings.setValue(QString("set/mapstring%1").arg(i), str);
+    }
+
+    settings.setValue("mapview/apikey", apiKey);
 }
 //---------------------------------------------------------------------------

@@ -10,46 +10,58 @@
 
 #define INHIBIT_RTK_LOCK_MACROS
 #include "rtklib.h"
-#include "ui_getmain.h"
+
+namespace Ui {
+class MainForm;
+}
 
 class TextViewer;
+class DownOptDialog;
 class DownloadThread;
 class TimeDialog;
+class QComboBox;
 
 //---------------------------------------------------------------------------
-class MainForm : public QWidget, public Ui::MainForm
+class MainForm : public QWidget
 {
      Q_OBJECT
 
+public:
+    explicit MainForm(QWidget* parent);
+
+    void showMessage(int i, const QString&);
+
 protected:
     void  closeEvent(QCloseEvent *);
-
     void  showEvent(QShowEvent*);
-
     void  dragEnterEvent(QDragEnterEvent *event);
     void  dropEvent(QDropEvent * event);
 
-public slots:
-    void  btnOptionsClicked();
-    void  btnLogClicked();
-    void  btnDownloadClicked();
-    void  btnFileClicked();
-    void  dataListClicked();
-    void  btnDirClicked();
-    void  localDirClicked();
-    void  btnStationsClicked();
-    void  btnKeywordClicked();
-    void  btnAboutClicked();
+    QString iniFilename;
+    QTimer busyTimer;
+    int timerCnt;
+
+protected slots:
+    void  showOptionsDialog();
+    void  viewLogFile();
+    void  download();
+    void  openOutputDirectory();
+    void  dataListSelectionChanged();
+    void  selectOutputDirectory();
+    void  localDirectoryCheckBoxClicked();
+    void  showStationDialog();
+    void  showKeyDialog();
+    void  showAboutDialog();
     void  busyTimerTriggered();
-    void  btnTrayClicked();
-    void  trayIconActivated(QSystemTrayIcon::ActivationReason);
-    void  btnTestClicked();
-    void  btnAllClicked();
+    void  minimizeToTray();
+    void  restoreFromTaskTray(QSystemTrayIcon::ActivationReason);
+    void  testDownload();
+    void  selectDeselectAllStations();
     void  downloadFinished();
-    void  btnTimeStartClicked();
-    void  btnTimeStopClicked();
+    void  showStartTimeDetails();
+    void  showStopTimeDetails();
     void  updateEnable();
-    void  updateType();
+    void  updateDataListWidget();
     void  updateMessage();
 
 private:
@@ -61,37 +73,24 @@ private:
     DownloadThread *processingThread;
     TextViewer *viewer;
     TimeDialog *timeDialog;
+    DownOptDialog *downOptDialog;
+
+    Ui::MainForm *ui;
 
     void  loadOptions();
     void  saveOptions();
-    void  updateStationList();
+    void  updateStationListLabel();
     void  panelEnable(int ena);
     void  getTime(gtime_t *ts, gtime_t *te, double *ti);
     int   selectUrl(url_t *urls);
     int   selectStation(char **stas);
-    void  loadUrl(QString file);
-    void  loadStation(QString file);
+    void  loadUrlList(const QString &file);
+    void  loadStationFile(const QString &file);
     int   execCommand(const QString &cmd, const QStringList &opt);
-    void  readHistory(QSettings &, QString key, QComboBox *);
-    void  writeHistory(QSettings &, QString key, QComboBox *);
+    void  readHistory(QSettings &, const QString &key, QComboBox *);
+    void  writeHistory(QSettings &, const QString &key, QComboBox *);
     void  addHistory(QComboBox *combo);
 	
-public:
-    QString iniFilename;
-    QString urlFile;
-    QString logFile;
-    QString stations;
-    QString proxyAddr;
-    int holdErr;
-    int holdList;
-    int columnCnt;
-    int dateFormat;
-    int traceLevel;
-    int logAppend;
-    int timerCnt;
-    QTimer busyTimer;
-
-    explicit MainForm(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

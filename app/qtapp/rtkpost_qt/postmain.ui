@@ -6,28 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>697</width>
-    <height>482</height>
+    <width>711</width>
+    <height>511</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>RTKPOST</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QWidget" name="Panel1" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
+    <widget class="QWidget" name="panelMain" native="true">
      <property name="text" stdset="0">
       <string/>
      </property>
@@ -45,10 +33,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QWidget" name="Panel3" native="true">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QWidget" name="panelTime" native="true">
         <property name="toolTip">
          <string/>
         </property>
@@ -71,26 +56,13 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="0" column="0" colspan="2">
-          <widget class="QCheckBox" name="cBTimeStart">
+         <item row="0" column="7">
+          <widget class="QCheckBox" name="cBTimeUnitF">
            <property name="toolTip">
-            <string>Specify start time</string>
+            <string>Enable time unit selection</string>
            </property>
            <property name="text">
-            <string>Time Start (GPST)</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QPushButton" name="btnTimeStart">
-           <property name="toolTip">
-            <string>Show start time details</string>
-           </property>
-           <property name="text">
-            <string>?</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
+            <string>Unit</string>
            </property>
           </widget>
          </item>
@@ -104,20 +76,23 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="5">
-          <widget class="QPushButton" name="btnTimeStop">
+         <item row="0" column="2">
+          <widget class="QPushButton" name="btnTimeStart">
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
            <property name="toolTip">
-            <string>Show end time etails</string>
+            <string>Show start time details</string>
            </property>
            <property name="text">
             <string>?</string>
            </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
           </widget>
          </item>
-         <item row="0" column="6" colspan="2">
+         <item row="0" column="6">
           <widget class="QCheckBox" name="cBTimeIntervalF">
            <property name="toolTip">
             <string>Specify processing interval</string>
@@ -127,30 +102,7 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="8">
-          <widget class="QCheckBox" name="cBTimeUnitF">
-           <property name="toolTip">
-            <string>Enable time unit selection</string>
-           </property>
-           <property name="text">
-            <string>Unit</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="3">
-          <widget class="QDateTimeEdit" name="dtDateTimeStart">
-           <property name="toolTip">
-            <string>Select start time</string>
-           </property>
-           <property name="calendarPopup">
-            <bool>true</bool>
-           </property>
-           <property name="timeSpec">
-            <enum>Qt::UTC</enum>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="6">
+         <item row="2" column="6">
           <widget class="QComboBox" name="cBTimeInterval">
            <property name="toolTip">
             <string>Select processing interval</string>
@@ -160,102 +112,72 @@
            </property>
            <item>
             <property name="text">
-             <string>0</string>
+             <string>0 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>0.05</string>
+             <string>0.05 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>0.1</string>
+             <string>0.1 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>0.2</string>
+             <string>0.2 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>0.25</string>
+             <string>0.25 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>0.5</string>
+             <string>0.5 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>1</string>
+             <string>1 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>2</string>
+             <string>2 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>5</string>
+             <string>5 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>10</string>
+             <string>10 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>15</string>
+             <string>15 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>30</string>
+             <string>30 s</string>
             </property>
            </item>
            <item>
             <property name="text">
-             <string>60</string>
+             <string>60 s</string>
             </property>
            </item>
           </widget>
          </item>
-         <item row="1" column="7">
-          <widget class="QLabel" name="lblTimeInterval">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>s</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="9">
-          <widget class="QLabel" name="lblTimeUnit">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>H</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="8">
-          <widget class="QLineEdit" name="lETimeUnit">
-           <property name="toolTip">
-            <string>Specify the time unit for multiple-session conversion and include proper keywords into the input file names.</string>
-           </property>
-           <property name="text">
-            <string>24</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="3" colspan="3">
+         <item row="2" column="3" colspan="3">
           <widget class="QDateTimeEdit" name="dtDateTimeStop">
            <property name="toolTip">
             <string>Select end time</string>
@@ -268,20 +190,63 @@
            </property>
           </widget>
          </item>
+         <item row="0" column="5">
+          <widget class="QPushButton" name="btnTimeStop">
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Show end time details</string>
+           </property>
+           <property name="text">
+            <string>?</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0" colspan="3">
+          <widget class="QDateTimeEdit" name="dtDateTimeStart">
+           <property name="toolTip">
+            <string>Select start time</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>true</bool>
+           </property>
+           <property name="timeSpec">
+            <enum>Qt::UTC</enum>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="7">
+          <widget class="QDoubleSpinBox" name="sBTimeUnit">
+           <property name="suffix">
+            <string> h</string>
+           </property>
+           <property name="maximum">
+            <double>3600.000000000000000</double>
+           </property>
+           <property name="value">
+            <double>24.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0" colspan="2">
+          <widget class="QCheckBox" name="cBTimeStart">
+           <property name="toolTip">
+            <string>Specify start time</string>
+           </property>
+           <property name="text">
+            <string>Time Start (GPST)</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="Panel4" native="true">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
+       <widget class="QWidget" name="panelFiles" native="true">
         <property name="text" stdset="0">
          <string/>
         </property>
@@ -298,9 +263,34 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <property name="verticalSpacing">
-          <number>0</number>
-         </property>
+         <item row="6" column="5">
+          <widget class="QPushButton" name="btnInputView4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>View content of second additional input file</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="7" column="6">
+          <widget class="QPushButton" name="btnInputFile5">
+           <property name="toolTip">
+            <string>Select additional input file</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="0">
           <widget class="QLabel" name="lblInputFile1">
            <property name="toolTip">
@@ -309,22 +299,33 @@
            <property name="text">
             <string>RINEX OBS</string>
            </property>
+           <property name="buddy">
+            <cstring>cBInputFile1</cstring>
+           </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QPushButton" name="btnKeyword">
+         <item row="7" column="5">
+          <widget class="QPushButton" name="btnInputView5">
            <property name="toolTip">
-            <string>Show valid keys allow to specify in input paths</string>
+            <string>View content of third additional input file</string>
            </property>
-           <property name="text">
-            <string>?</string>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
            </property>
-           <property name="flat">
+          </widget>
+         </item>
+         <item row="6" column="0" colspan="5">
+          <widget class="QComboBox" name="cBInputFile4">
+           <property name="toolTip">
+            <string>Specify additional input files, e.g. clocks, biases, ephemeris</string>
+           </property>
+           <property name="editable">
             <bool>true</bool>
            </property>
           </widget>
          </item>
-         <item row="0" column="4">
+         <item row="0" column="6">
           <widget class="QPushButton" name="btnInputPlot1">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -336,95 +337,8 @@
             <string>Call rtkplot on (rover) observations</string>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/chart</normaloff>:/buttons/chart</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="5">
-          <widget class="QPushButton" name="btnInputView1">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>View content of (rover) observation file</string>
-           </property>
-           <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
-             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="5">
-          <widget class="QComboBox" name="cBInputFile1">
-           <property name="toolTip">
-            <string>Specify the (rover) observation file, e.g. *.obs</string>
-           </property>
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="5">
-          <widget class="QPushButton" name="btnInputFile1">
-           <property name="toolTip">
-            <string>Select (rover) observation file</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="0">
-          <widget class="QLabel" name="lblInputFile3">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>RINEX OBS: Base Station</string>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="4">
-          <widget class="QPushButton" name="btnInputPlot2">
-           <property name="toolTip">
-            <string>Call rtkplot on base station observations</string>
-           </property>
-           <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
-             <normaloff>:/buttons/chart</normaloff>:/buttons/chart</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="2" column="5">
-          <widget class="QPushButton" name="btnInputView2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>View content of base station observation file</string>
-           </property>
-           <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
-             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
@@ -439,27 +353,7 @@
           </widget>
          </item>
          <item row="3" column="5">
-          <widget class="QPushButton" name="btnInputFile2">
-           <property name="toolTip">
-            <string>Select base station observation file</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0" colspan="2">
-          <widget class="QLabel" name="lblInputFile2">
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>RINEX NAV/CLK, SP3, Bias-SINEX, IONEX, SBS/EMS  or RTCM</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="2">
-          <widget class="QPushButton" name="btnInputView3">
+          <widget class="QPushButton" name="btnInputView2">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -467,52 +361,26 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>View content of first additional input file</string>
+            <string>View content of base station observation file</string>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
-         <item row="4" column="3">
-          <widget class="QPushButton" name="btnInputView4">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+         <item row="8" column="6">
+          <widget class="QPushButton" name="btnInputFile6">
            <property name="toolTip">
-            <string>View content of second additional input file</string>
+            <string>Select additional input file</string>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
-             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
            </property>
           </widget>
          </item>
-         <item row="4" column="4">
-          <widget class="QPushButton" name="btnInputView5">
-           <property name="toolTip">
-            <string>View content of third additional input file</string>
-           </property>
-           <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
-             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="5">
+         <item row="8" column="5">
           <widget class="QPushButton" name="btnInputView6">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -524,11 +392,109 @@
             <string>View content of forth additional input file</string>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
            </property>
-           <property name="flat">
+          </widget>
+         </item>
+         <item row="1" column="0" colspan="5">
+          <widget class="QComboBox" name="cBInputFile1">
+           <property name="toolTip">
+            <string>Specify the (rover) observation file, e.g. *.obs</string>
+           </property>
+           <property name="editable">
             <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="5">
+          <widget class="QPushButton" name="btnInputView3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>View content of first additional input file</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="5">
+          <widget class="QPushButton" name="btnInputView1">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>View content of (rover) observation file</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0" colspan="2">
+          <widget class="QLabel" name="lblInputFile3">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>RINEX NAV/CLK, SP3, Bias-SINEX, IONEX, SBS/EMS  or RTCM</string>
+           </property>
+           <property name="buddy">
+            <cstring>cBInputFile3</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="3" column="6">
+          <widget class="QPushButton" name="btnInputFile2">
+           <property name="toolTip">
+            <string>Select base station observation file</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="6">
+          <widget class="QPushButton" name="btnInputFile1">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Select (rover) observation file</string>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QLabel" name="lblInputFile2">
+           <property name="toolTip">
+            <string/>
+           </property>
+           <property name="text">
+            <string>RINEX OBS: Base Station</string>
+           </property>
+           <property name="buddy">
+            <cstring>cBInputFile2</cstring>
            </property>
           </widget>
          </item>
@@ -542,53 +508,25 @@
            </property>
           </widget>
          </item>
-         <item row="5" column="5">
-          <widget class="QPushButton" name="btnInputFile3">
-           <property name="toolTip">
-            <string>Select additional input file</string>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="0" colspan="5">
-          <widget class="QComboBox" name="cBInputFile4">
-           <property name="toolTip">
-            <string>Specify additional input files, e.g. clocks, biases, ephemeris</string>
-           </property>
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="5">
+         <item row="6" column="6">
           <widget class="QPushButton" name="btnInputFile4">
            <property name="toolTip">
             <string>Select additional input file</string>
            </property>
-           <property name="text">
-            <string>...</string>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
            </property>
           </widget>
          </item>
-         <item row="7" column="0" colspan="5">
-          <widget class="QComboBox" name="cBInputFile5">
-           <property name="toolTip">
-            <string>Specify additional input files, e.g. clocks, biases, ephemeris</string>
-           </property>
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="7" column="5">
-          <widget class="QPushButton" name="btnInputFile5">
+         <item row="5" column="6">
+          <widget class="QPushButton" name="btnInputFile3">
            <property name="toolTip">
             <string>Select additional input file</string>
            </property>
-           <property name="text">
-            <string>...</string>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
            </property>
           </widget>
          </item>
@@ -602,13 +540,41 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="5">
-          <widget class="QPushButton" name="btnInputFile6">
+         <item row="7" column="0" colspan="5">
+          <widget class="QComboBox" name="cBInputFile5">
            <property name="toolTip">
-            <string>Select additional input file</string>
+            <string>Specify additional input files, e.g. clocks, biases, ephemeris</string>
            </property>
-           <property name="text">
-            <string>...</string>
+           <property name="editable">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="6">
+          <widget class="QPushButton" name="btnInputPlot2">
+           <property name="toolTip">
+            <string>Call rtkplot on base station observations</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/chart</normaloff>:/buttons/chart</iconset>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="5">
+          <widget class="QPushButton" name="btnKeyword">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Show valid keys allow to specify in input paths</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/key</normaloff>:/buttons/key</iconset>
            </property>
           </widget>
          </item>
@@ -616,16 +582,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="Panel5" native="true">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
+       <widget class="QWidget" name="panelSolution" native="true">
         <property name="text" stdset="0">
          <string/>
         </property>
@@ -653,12 +610,12 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QLabel" name="Label1">
-           <property name="toolTip">
-            <string/>
-           </property>
+          <widget class="QLabel" name="lblSolution">
            <property name="text">
             <string>Solution</string>
+           </property>
+           <property name="buddy">
+            <cstring>cBOutputDirectoryEnable</cstring>
            </property>
           </widget>
          </item>
@@ -684,8 +641,9 @@
            <property name="toolTip">
             <string>Select output file</string>
            </property>
-           <property name="text">
-            <string>...</string>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
            </property>
           </widget>
          </item>
@@ -694,8 +652,9 @@
            <property name="toolTip">
             <string>Select output directory</string>
            </property>
-           <property name="text">
-            <string>...</string>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
            </property>
           </widget>
          </item>
@@ -724,7 +683,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="btnOutputView2">
+          <widget class="QPushButton" name="btnOutputViewTrace">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -735,16 +694,13 @@
             <string>View content of trace file</string>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btnOutputView1">
+          <widget class="QPushButton" name="btnOutputViewStat">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -755,20 +711,13 @@
             <string>View content of .stat file</string>
            </property>
            <property name="icon">
-            <iconset resource="rtkpost_qt.qrc">
+            <iconset resource="../icon/resources.qrc">
              <normaloff>:/buttons/square</normaloff>:/buttons/square</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="lblMessage">
-           <property name="toolTip">
-            <string/>
-           </property>
-          </widget>
+          <widget class="QLabel" name="lblMessage"/>
          </item>
          <item>
           <widget class="QPushButton" name="btnAbout">
@@ -781,11 +730,9 @@
            <property name="toolTip">
             <string>About...</string>
            </property>
-           <property name="text">
-            <string>?</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/icons/rtkpost</normaloff>:/icons/rtkpost</iconset>
            </property>
           </widget>
          </item>
@@ -803,21 +750,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Panel2" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="panelButtons" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -838,13 +776,13 @@
       <item>
        <widget class="QPushButton" name="btnPlot">
         <property name="toolTip">
-         <string>Call rtkplot on results</string>
+         <string>Call RTKPlot on results</string>
         </property>
         <property name="text">
          <string>&amp;Plot...</string>
         </property>
         <property name="icon">
-         <iconset resource="rtkpost_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/chart</normaloff>:/buttons/chart</iconset>
         </property>
        </widget>
@@ -858,7 +796,7 @@
          <string>&amp;View...</string>
         </property>
         <property name="icon">
-         <iconset resource="rtkpost_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
         </property>
        </widget>
@@ -882,7 +820,7 @@
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset resource="rtkpost_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/tool</normaloff>:/buttons/tool</iconset>
         </property>
        </widget>
@@ -896,7 +834,7 @@
          <string>E&amp;xecute</string>
         </property>
         <property name="icon">
-         <iconset resource="rtkpost_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/start</normaloff>:/buttons/start</iconset>
         </property>
        </widget>
@@ -910,7 +848,7 @@
          <string>Abort</string>
         </property>
         <property name="icon">
-         <iconset resource="rtkpost_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/stop2</normaloff>:/buttons/stop2</iconset>
         </property>
        </widget>
@@ -931,9 +869,6 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>btnExec</tabstop>
-  <tabstop>btnAbort</tabstop>
-  <tabstop>btnExit</tabstop>
   <tabstop>cBTimeStart</tabstop>
   <tabstop>btnTimeStart</tabstop>
   <tabstop>cBTimeEnd</tabstop>
@@ -943,43 +878,46 @@
   <tabstop>dtDateTimeStart</tabstop>
   <tabstop>dtDateTimeStop</tabstop>
   <tabstop>cBTimeInterval</tabstop>
-  <tabstop>lETimeUnit</tabstop>
+  <tabstop>sBTimeUnit</tabstop>
   <tabstop>btnKeyword</tabstop>
   <tabstop>btnInputPlot1</tabstop>
-  <tabstop>btnInputView1</tabstop>
   <tabstop>cBInputFile1</tabstop>
+  <tabstop>btnInputView1</tabstop>
   <tabstop>btnInputFile1</tabstop>
   <tabstop>btnInputPlot2</tabstop>
-  <tabstop>btnInputView2</tabstop>
   <tabstop>cBInputFile2</tabstop>
+  <tabstop>btnInputView2</tabstop>
   <tabstop>btnInputFile2</tabstop>
-  <tabstop>btnInputView3</tabstop>
-  <tabstop>btnInputView4</tabstop>
-  <tabstop>btnInputView5</tabstop>
-  <tabstop>btnInputView6</tabstop>
   <tabstop>cBInputFile3</tabstop>
+  <tabstop>btnInputView3</tabstop>
   <tabstop>btnInputFile3</tabstop>
   <tabstop>cBInputFile4</tabstop>
+  <tabstop>btnInputView4</tabstop>
   <tabstop>btnInputFile4</tabstop>
   <tabstop>cBInputFile5</tabstop>
+  <tabstop>btnInputView5</tabstop>
   <tabstop>btnInputFile5</tabstop>
   <tabstop>cBInputFile6</tabstop>
+  <tabstop>btnInputView6</tabstop>
   <tabstop>btnInputFile6</tabstop>
   <tabstop>cBOutputDirectoryEnable</tabstop>
   <tabstop>lEOutputDirectory</tabstop>
   <tabstop>btnOutputDirectory</tabstop>
   <tabstop>cBOutputFile</tabstop>
   <tabstop>btnOutputFile</tabstop>
-  <tabstop>btnOutputView2</tabstop>
-  <tabstop>btnOutputView1</tabstop>
+  <tabstop>btnOutputViewTrace</tabstop>
+  <tabstop>btnOutputViewStat</tabstop>
   <tabstop>btnAbout</tabstop>
   <tabstop>btnPlot</tabstop>
   <tabstop>btnView</tabstop>
   <tabstop>btnToKML</tabstop>
   <tabstop>btnOption</tabstop>
+  <tabstop>btnExec</tabstop>
+  <tabstop>btnAbort</tabstop>
+  <tabstop>btnExit</tabstop>
  </tabstops>
  <resources>
-  <include location="rtkpost_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

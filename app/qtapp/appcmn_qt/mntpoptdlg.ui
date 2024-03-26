@@ -6,14 +6,260 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>410</width>
-    <height>692</height>
+    <width>395</width>
+    <height>591</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Mountpoint Options</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="Label17">
+     <property name="text">
+      <string>&amp;Mountpoint</string>
+     </property>
+     <property name="buddy">
+      <cstring>lEMountPoint</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLineEdit" name="lEMountPoint">
+     <property name="toolTip">
+      <string>Mountpoint name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QLabel" name="Label14">
+     <property name="text">
+      <string>&amp;Source ID</string>
+     </property>
+     <property name="buddy">
+      <cstring>lESourceTable3</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <widget class="QLineEdit" name="lESourceTable3">
+     <property name="toolTip">
+      <string>Source identifier, e.g. location</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="Label15">
+     <property name="text">
+      <string>&amp;Carrier</string>
+     </property>
+     <property name="buddy">
+      <cstring>cBSourceTable6</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QComboBox" name="cBSourceTable6">
+     <item>
+      <property name="text">
+       <string>No carrier phase (DGPS)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>L1 carrier phase (RTK)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>L1 &amp; L2 carrier phase (RTK)</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="Label16">
+     <property name="text">
+      <string>&amp;Generator</string>
+     </property>
+     <property name="buddy">
+      <cstring>lESourceTable14</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLineEdit" name="lESourceTable14">
+     <property name="toolTip">
+      <string>Hard- or software generating the data stream</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="Label1">
+     <property name="text">
+      <string>Format &amp;Details</string>
+     </property>
+     <property name="buddy">
+      <cstring>lESourceTable5</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLineEdit" name="lESourceTable5">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QLabel" name="Label2">
+     <property name="text">
+      <string>F&amp;ormat</string>
+     </property>
+     <property name="buddy">
+      <cstring>lESourceTable4</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QLineEdit" name="lESourceTable4">
+     <property name="toolTip">
+      <string>Supported data stream format and  version</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="Label3">
+     <property name="text">
+      <string>Coun&amp;try</string>
+     </property>
+     <property name="buddy">
+      <cstring>lESourceTable9</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QLineEdit" name="lESourceTable9">
+     <property name="toolTip">
+      <string>Country code</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QLabel" name="Label4">
+     <property name="text">
+      <string>N&amp;etwork</string>
+     </property>
+     <property name="buddy">
+      <cstring>lESourceTable8</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="1">
+    <widget class="QLineEdit" name="lESourceTable8">
+     <property name="toolTip">
+      <string>Network name</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QLabel" name="Label6">
+     <property name="text">
+      <string>So&amp;lution</string>
+     </property>
+     <property name="buddy">
+      <cstring>cBSourceTable13</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1">
+    <widget class="QComboBox" name="cBSourceTable13">
+     <item>
+      <property name="text">
+       <string>Single base</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Network</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QLabel" name="Label7">
+     <property name="text">
+      <string>Na&amp;v-System</string>
+     </property>
+     <property name="buddy">
+      <cstring>lESourceTable7</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1">
+    <widget class="QLineEdit" name="lESourceTable7">
+     <property name="toolTip">
+      <string>Supported navigation systems</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QLabel" name="Label8">
+     <property name="text">
+      <string>&amp;Latitude</string>
+     </property>
+     <property name="buddy">
+      <cstring>sBSourceTable10</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="1">
+    <widget class="QDoubleSpinBox" name="sBSourceTable10">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="suffix">
+      <string>°</string>
+     </property>
+     <property name="decimals">
+      <number>8</number>
+     </property>
+     <property name="minimum">
+      <double>-180.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>180.000000000000000</double>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0">
+    <widget class="QLabel" name="Label9">
+     <property name="text">
+      <string>Longitu&amp;de</string>
+     </property>
+     <property name="buddy">
+      <cstring>sBSourceTable11</cstring>
+     </property>
+    </widget>
+   </item>
    <item row="11" column="1">
     <widget class="QDoubleSpinBox" name="sBSourceTable11">
      <property name="readOnly">
@@ -33,27 +279,60 @@
      </property>
     </widget>
    </item>
-   <item row="15" column="1">
-    <widget class="QComboBox" name="cBSourceTable17">
+   <item row="12" column="0">
+    <widget class="QLabel" name="Label18">
      <property name="toolTip">
-      <string>Uage fee applied</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Capability of Caster to receive NMEA message with approximate position from Client&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
+     <property name="text">
+      <string>&amp;NMEA</string>
+     </property>
+     <property name="buddy">
+      <cstring>cBSourceTable12</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="1">
+    <widget class="QComboBox" name="cBSourceTable12">
      <item>
       <property name="text">
-       <string>No user fee</string>
+       <string>Supported</string>
       </property>
      </item>
      <item>
       <property name="text">
-       <string>Usage is charged</string>
+       <string>Unsupported</string>
       </property>
      </item>
     </widget>
    </item>
-   <item row="1" column="0">
-    <widget class="QLabel" name="Label14">
+   <item row="13" column="0">
+    <widget class="QLabel" name="Label10">
      <property name="text">
-      <string>Source ID</string>
+      <string>Compr/Encr&amp;ypt</string>
+     </property>
+     <property name="buddy">
+      <cstring>lESourceTable15</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="1">
+    <widget class="QLineEdit" name="lESourceTable15">
+     <property name="toolTip">
+      <string>Compression/Encryption algorithm applied</string>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="0">
+    <widget class="QLabel" name="Label11">
+     <property name="text">
+      <string>&amp;Authentication</string>
+     </property>
+     <property name="buddy">
+      <cstring>cBSourceTable16</cstring>
      </property>
     </widget>
    </item>
@@ -79,315 +358,40 @@
      </item>
     </widget>
    </item>
-   <item row="11" column="0">
-    <widget class="QLabel" name="Label9">
+   <item row="15" column="0">
+    <widget class="QLabel" name="Label12">
      <property name="text">
-      <string>Longitude</string>
+      <string>&amp;Fee</string>
      </property>
+     <property name="buddy">
+      <cstring>cBSourceTable17</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="15" column="1">
+    <widget class="QComboBox" name="cBSourceTable17">
+     <property name="toolTip">
+      <string>Uage fee applied</string>
+     </property>
+     <item>
+      <property name="text">
+       <string>No user fee</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Usage is charged</string>
+      </property>
+     </item>
     </widget>
    </item>
    <item row="16" column="0">
     <widget class="QLabel" name="Label13">
      <property name="text">
-      <string>Bitrate</string>
+      <string>&amp;Bitrate</string>
      </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="Label1">
-     <property name="text">
-      <string>Format Details</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="Label17">
-     <property name="text">
-      <string>Mountpoint</string>
-     </property>
-    </widget>
-   </item>
-   <item row="18" column="0" colspan="2">
-    <widget class="QWidget" name="widget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnOk">
-        <property name="text">
-         <string>&amp;Ok</string>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnCancel">
-        <property name="text">
-         <string>&amp;Cancel</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QComboBox" name="cBSourceTable6">
-     <item>
-      <property name="text">
-       <string>No carrier phase (DGPS)</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>L1 carrier phase (RTK)</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>L1 &amp; L2 carrier phase (RTK)</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="10" column="0">
-    <widget class="QLabel" name="Label8">
-     <property name="text">
-      <string>Latitude</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QLabel" name="Label2">
-     <property name="text">
-      <string>Format</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="Label4">
-     <property name="text">
-      <string>Network</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="0">
-    <widget class="QLabel" name="Label10">
-     <property name="text">
-      <string>Compr-encryp</string>
-     </property>
-    </widget>
-   </item>
-   <item row="14" column="0">
-    <widget class="QLabel" name="Label11">
-     <property name="text">
-      <string>Authentication</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="1">
-    <widget class="QDoubleSpinBox" name="sBSourceTable10">
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-     <property name="suffix">
-      <string>°</string>
-     </property>
-     <property name="decimals">
-      <number>8</number>
-     </property>
-     <property name="minimum">
-      <double>-180.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>180.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="1">
-    <widget class="QComboBox" name="cBSourceTable13">
-     <item>
-      <property name="text">
-       <string>Single base</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Network</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="1" column="1">
-    <widget class="QLineEdit" name="lESourceTable3">
-     <property name="toolTip">
-      <string>Source identifier, e.g. location</string>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="Label15">
-     <property name="text">
-      <string>Carrier</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLineEdit" name="lEMountPoint">
-     <property name="toolTip">
-      <string>Mountpoint name</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="1">
-    <widget class="QLineEdit" name="lESourceTable7">
-     <property name="toolTip">
-      <string>Supported navigation systems</string>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="Label16">
-     <property name="text">
-      <string>Generator</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="Label6">
-     <property name="text">
-      <string>Solution</string>
-     </property>
-    </widget>
-   </item>
-   <item row="15" column="0">
-    <widget class="QLabel" name="Label12">
-     <property name="text">
-      <string>Fee</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QComboBox" name="cBSourceTable5">
-     <item>
-      <property name="text">
-       <string>0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>3</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="9" column="0">
-    <widget class="QLabel" name="Label7">
-     <property name="text">
-      <string>Nav-System</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="QLineEdit" name="lESourceTable8">
-     <property name="toolTip">
-      <string>Network name</string>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QLineEdit" name="lESourceTable4">
-     <property name="toolTip">
-      <string>Supported data stream format and  version</string>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QLineEdit" name="lESourceTable14">
-     <property name="toolTip">
-      <string>Hard- or software generating the data stream</string>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="Label3">
-     <property name="text">
-      <string>Country</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="1">
-    <widget class="QLineEdit" name="lESourceTable15">
-     <property name="toolTip">
-      <string>Compression/Encryption algorithm applied</string>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QLineEdit" name="lESourceTable9">
-     <property name="toolTip">
-      <string>Country code</string>
-     </property>
-     <property name="readOnly">
-      <bool>true</bool>
+     <property name="buddy">
+      <cstring>sBSourceTable18</cstring>
      </property>
     </widget>
    </item>
@@ -407,28 +411,11 @@
      </property>
     </widget>
    </item>
-   <item row="12" column="0">
-    <widget class="QLabel" name="Label18">
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Capability of Caster to receive NMEA message with approximate position from Client&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+   <item row="17" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
-     <property name="text">
-      <string>NMEA</string>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="1">
-    <widget class="QComboBox" name="cBSourceTable12">
-     <item>
-      <property name="text">
-       <string>Supported</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Unsupported</string>
-      </property>
-     </item>
     </widget>
    </item>
   </layout>

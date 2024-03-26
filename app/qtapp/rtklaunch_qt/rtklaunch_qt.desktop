@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=RtkLaunch
+GenericName=RtkLib Application Launcher
+Keywords=rtklib;GNSS
+Exec=rtklaunch_qt
+Icon=rtklaunch
+Categories=Science;Geoscience;

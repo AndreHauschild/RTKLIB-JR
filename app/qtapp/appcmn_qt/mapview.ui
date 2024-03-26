@@ -6,15 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>504</width>
-    <height>506</height>
+    <width>492</width>
+    <height>490</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Google Map View</string>
-  </property>
-  <property name="toolTip">
-   <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
@@ -30,12 +27,6 @@
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -59,11 +50,8 @@
          <string>Go to Center</string>
         </property>
         <property name="icon">
-         <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/trackc</normaloff>:/buttons/trackc</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -73,11 +61,8 @@
          <string>Zoom out</string>
         </property>
         <property name="icon">
-         <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/shrink</normaloff>:/buttons/shrink</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -87,11 +72,8 @@
          <string>Zoom in</string>
         </property>
         <property name="icon">
-         <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/expand</normaloff>:/buttons/expand</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -127,21 +109,16 @@
         <property name="text">
          <string>Options...</string>
         </property>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/tool</normaloff>:/buttons/tool</iconset>
+        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnClose">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Close</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="standardButtons">
+         <set>QDialogButtonBox::Close</set>
         </property>
        </widget>
       </item>
@@ -149,13 +126,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="panel2" native="true">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
+    <widget class="QWidget" name="wgMap" native="true">
      <property name="text" stdset="0">
       <string/>
      </property>
@@ -164,7 +135,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../srctblbrows_qt/srctblbrows_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

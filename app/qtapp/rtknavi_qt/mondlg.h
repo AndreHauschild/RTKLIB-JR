@@ -8,21 +8,33 @@
 
 #include "rtklib.h"
 
-#include "ui_mondlg.h"
+namespace Ui {
+class MonitorDialog;
+}
 
 //---------------------------------------------------------------------------
-class MonitorDialog : public QDialog, private Ui::MonitorDialog
+class MonitorDialog : public QDialog
 {
     Q_OBJECT
+
+public:
+    explicit MonitorDialog(QWidget* parent, rtksvr_t *server, stream_t* stream);
+    ~MonitorDialog();
+
+    int getDisplayType();
+
 protected:
     void showEvent(QShowEvent*);
     void closeEvent(QCloseEvent*);
 
+    rtksvr_t *rtksvr;		// rtk server struct
+    stream_t *monistr;	// monitor stream
+
 public slots:
-    void btnClearClicked();
-    void btnDownClicked();
+    void clearOutput();
+    void scrollDown();
     void displayTypeChanged();
-    void updateTimerTriggered();
+    void updateDisplays();
     void showBuffers();
     void observationModeChanged();
     void consoleFormatChanged();
@@ -30,7 +42,7 @@ public slots:
     void solutionStreamChanged();
 
 private:
-    int typeF, consoleFormat, inputStream, solutionStream, fontScale, observationMode;
+    int consoleFormat, inputStream, solutionStream, fontScale;
     QStringList consoleBuffer;
     QStringList header;
 	rtcm_t rtcm;
@@ -75,11 +87,9 @@ private:
     void showRtcmSsr();
     void showReferenceStation();
 
-    void addConsole(const unsigned char *msg, int n, int mode);
+    void addConsole(const unsigned char *msg, int n, int mode, bool newline);
 
-public:
-    explicit MonitorDialog(QWidget* parent);
-    ~MonitorDialog();
+    Ui::MonitorDialog *ui;
 };
 //---------------------------------------------------------------------------
 #endif

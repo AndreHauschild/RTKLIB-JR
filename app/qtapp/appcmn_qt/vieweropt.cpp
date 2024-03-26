@@ -12,31 +12,41 @@
 #include "viewer.h"
 #include "vieweropt.h"
 
+#include "ui_vieweropt.h"
+
+
 //---------------------------------------------------------------------------
 ViewerOptDialog::ViewerOptDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::ViewerOptDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
-    connect(btnCancel, &QPushButton::clicked, this, &ViewerOptDialog::reject);
-    connect(btnOk, &QPushButton::clicked, this, &ViewerOptDialog::accept);
-    connect(btnFont, &QPushButton::clicked, this, &ViewerOptDialog::btnFontClicked);
-    connect(btnColorText, &QPushButton::clicked, this, &ViewerOptDialog::btnColorTextClicked);
-    connect(btnColorBackground, &QPushButton::clicked, this, &ViewerOptDialog::btnColorBackgroundClicked);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &ViewerOptDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ViewerOptDialog::reject);
+    connect(ui->btnFont, &QPushButton::clicked, this, &ViewerOptDialog::selectFont);
+    connect(ui->btnColorText, &QPushButton::clicked, this, &ViewerOptDialog::selectTextColor);
+    connect(ui->btnColorBackground, &QPushButton::clicked, this, &ViewerOptDialog::selectBackgroundColor);
 }
 //---------------------------------------------------------------------------
-void ViewerOptDialog::showEvent(QShowEvent *event)
+void ViewerOptDialog::setFont(const QFont &font)
 {
-    if (event->spontaneous()) return;
-
-    fontLabel->setFont(font);
-    fontLabel->setText(QString("%1 %2 px").arg(font.family()).arg(font.pointSize()));
-
-    lbColorText->setStyleSheet(QString("background-color: %1").arg(color2String(colorText)));
-    lbColorBackground->setStyleSheet(QString("background-color: %1").arg(color2String(colorBackground)));
+    ui->fontLabel->setFont(font);
+    ui->fontLabel->setText(QString("%1 %2 px").arg(font.family()).arg(font.pointSize()));
 }
 //---------------------------------------------------------------------------
-void ViewerOptDialog::btnColorTextClicked()
+void ViewerOptDialog::setTextColor(const QColor &color)
+{
+    colorText = color;
+    setWidgetBackgroundColor(ui->lbColorText, colorText);
+}
+//---------------------------------------------------------------------------
+void ViewerOptDialog::setBackgroundColor(const QColor &color)
+{
+    colorBackground = color;
+    setWidgetBackgroundColor(ui->lbColorBackground, colorBackground);
+}
+//---------------------------------------------------------------------------
+void ViewerOptDialog::selectTextColor()
 {
     QColorDialog d;
 
@@ -44,10 +54,10 @@ void ViewerOptDialog::btnColorTextClicked()
     d.exec();
     colorText = d.selectedColor();
 
-    lbColorText->setStyleSheet(QString("background-color: %1").arg(color2String(colorText)));
+    setWidgetBackgroundColor(ui->lbColorText, colorText);
 }
 //---------------------------------------------------------------------------
-void ViewerOptDialog::btnColorBackgroundClicked()
+void ViewerOptDialog::selectBackgroundColor()
 {
     QColorDialog d;
 
@@ -55,10 +65,10 @@ void ViewerOptDialog::btnColorBackgroundClicked()
     d.exec();
     colorBackground = d.selectedColor();
 
-    lbColorBackground->setStyleSheet(QString("background-color: %1").arg(color2String(colorBackground)));
+    setWidgetBackgroundColor(ui->lbColorBackground, colorBackground);
 }
 //---------------------------------------------------------------------------
-void ViewerOptDialog::btnFontClicked()
+void ViewerOptDialog::selectFont()
 {
     QFontDialog d;
 
@@ -67,7 +77,7 @@ void ViewerOptDialog::btnFontClicked()
 
     font = d.selectedFont();
 
-    fontLabel->setFont(font);
-    fontLabel->setText(font.family() + QString::number(font.pointSize()) + "pt");
+    ui->fontLabel->setFont(font);
+    ui->fontLabel->setText(font.family() + QString::number(font.pointSize()) + "pt");
 }
 //---------------------------------------------------------------------------

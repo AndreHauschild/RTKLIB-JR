@@ -2,45 +2,41 @@
 #include <ctype.h>
 #include <stdio.h>
 
-#include "console.h"
-
 #include <QScrollBar>
+
+#include "console.h"
+#include "ui_console.h"
 
 #define MAXLEN		256
 #define MAXLINE		2048
 
 //---------------------------------------------------------------------------
 Console::Console(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::Console)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
     consoleBuffer.reserve(MAXLINE);
     consoleBuffer.append("");
 
-    btnHex->setChecked(true);
-    btnAsc->setChecked(false);
+    ui->btnHex->setChecked(true);
+    ui->btnAsc->setChecked(false);
 
-    connect(btnClose, &QPushButton::clicked, this, &Console::btnCloseClicked);
-    connect(btnClear, &QPushButton::clicked, this, &Console::btnClearClicked);
-    connect(btnAsc, &QPushButton::clicked, this, &Console::btnAsciiClicked);
-    connect(btnDown, &QPushButton::clicked, this, &Console::btnDownClicked);
-    connect(btnHex, &QPushButton::clicked, this, &Console::btnHexClicked);
-}
-//---------------------------------------------------------------------------
-void Console::btnCloseClicked()
-{
-    close();
+    connect(ui->btnClose, &QPushButton::clicked, this, &Console::close);
+    connect(ui->btnClear, &QPushButton::clicked, this, &Console::btnClearClicked);
+    connect(ui->btnAsc, &QPushButton::clicked, this, &Console::btnAsciiClicked);
+    connect(ui->btnDown, &QPushButton::clicked, this, &Console::btnDownClicked);
+    connect(ui->btnHex, &QPushButton::clicked, this, &Console::btnHexClicked);
 }
 //---------------------------------------------------------------------------
 void Console::btnAsciiClicked()
 {
-    btnHex->setChecked(!btnAsc->isChecked());
+    ui->btnHex->setChecked(!ui->btnAsc->isChecked());
 }
 //---------------------------------------------------------------------------
 void Console::btnHexClicked()
 {
-    btnAsc->setChecked(!btnHex->isChecked());
+    ui->btnAsc->setChecked(!ui->btnHex->isChecked());
 }
 //---------------------------------------------------------------------------
 void Console::btnClearClicked()
@@ -48,45 +44,45 @@ void Console::btnClearClicked()
     consoleBuffer.clear();
     consoleBuffer.reserve(MAXLINE);
     consoleBuffer.append("");
-    textEdit->setPlainText("");
+    ui->textEdit->setPlainText("");
 }
 //---------------------------------------------------------------------------
 void Console::btnDownClicked()
 {
-    textEdit->verticalScrollBar()->setValue(textEdit->verticalScrollBar()->maximum());
+    ui->textEdit->verticalScrollBar()->setValue(ui->textEdit->verticalScrollBar()->maximum());
 }
 //---------------------------------------------------------------------------
 void Console::addMessage(uint8_t *msg, int n)
 {
-    char buff[MAXLEN+16],*p=buff;
-    int mode=btnAsc->isChecked();
+    char buff[MAXLEN+16], *p = buff;
+    int mode = ui->btnAsc->isChecked();
 
-    if (n<=0) return;
+    if (n <= 0) return;
 
-    if (btnStop->isChecked()) return;
+    if (ui->btnStop->isChecked()) return;
 
-    p+=sprintf(p,"%s",qPrintable(consoleBuffer.last()));
+    p += sprintf(p, "%s", qPrintable(consoleBuffer.last()));
 
-    for (int i=0;i<n;i++) {
+    for (int i = 0; i < n; i++) {
             if (mode) {
-                    if (msg[i]=='\r') continue;
-                    p+=sprintf(p, "%c", msg[i]=='\n'||isprint(msg[i])?msg[i]:'.');
+                    if (msg[i] == '\r') continue;
+                    p += sprintf(p, "%c", msg[i] == '\n' || isprint(msg[i]) ? msg[i] : '.');
             }
             else {
-                    p+=sprintf(p, "%s%02X", (p-buff)%17==16?" ":"", msg[i]);
-                    if (p-buff>=67) p+=sprintf(p,"\n");
+                    p += sprintf(p, "%s%02X", (p - buff) % 17 == 16 ? " " : "", msg[i]);
+                    if (p - buff >= 67) p += sprintf(p,"\n");
             }
-            if (p-buff>=MAXLEN) p+=sprintf(p,"\n");
+            if (p-buff >= MAXLEN) p += sprintf(p,"\n");
 
-            if (*(p-1)=='\n') {
-                    consoleBuffer.last()=buff;
+            if (*(p-1) == '\n') {
+                    consoleBuffer.last() = buff;
                     consoleBuffer.append("");
-                    *(p=buff)=0;
-                    if (consoleBuffer.count()>=MAXLINE) consoleBuffer.removeFirst();
+                    *(p=buff) = 0;
+                    if (consoleBuffer.count() >= MAXLINE) consoleBuffer.removeFirst();
             }
     }
-    consoleBuffer.last()=buff;
+    consoleBuffer.last() = buff;
 
-    textEdit->setPlainText(consoleBuffer.join(QString()));
+    ui->textEdit->setPlainText(consoleBuffer.join(QString()));
 }
 //---------------------------------------------------------------------------

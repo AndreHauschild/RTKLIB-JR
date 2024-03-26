@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>635</width>
-    <height>612</height>
+    <width>514</width>
+    <height>502</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,7 +17,7 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="3" colspan="2">
+   <item row="4" column="2">
     <widget class="QLabel" name="Label7">
      <property name="toolTip">
       <string>Log level for log stream</string>
@@ -25,187 +25,47 @@
      <property name="text">
       <string>Output Log Level</string>
      </property>
+     <property name="buddy">
+      <cstring>cBTraceLevel</cstring>
+     </property>
     </widget>
    </item>
-   <item row="21" column="7">
-    <widget class="QPushButton" name="btnCancel">
+   <item row="10" column="0">
+    <widget class="QLabel" name="lblLatLonHeight">
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string>&amp;Cancel</string>
-     </property>
-     <property name="flat">
-      <bool>false</bool>
+      <string>Lat/Lon/Height</string>
      </property>
     </widget>
    </item>
    <item row="0" column="2">
-    <widget class="QSpinBox" name="sBServerBufferSize">
+    <widget class="QLabel" name="Label6">
      <property name="toolTip">
-      <string>Size of the read buffer</string>
+      <string/>
+     </property>
+     <property name="text">
+      <string>Period of Rate</string>
+     </property>
+     <property name="buddy">
+      <cstring>sBAveragePeriodRate</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QSpinBox" name="sBAveragePeriodRate">
+     <property name="toolTip">
+      <string>Average time for data rate</string>
      </property>
      <property name="suffix">
-      <string> bytes</string>
+      <string> ms</string>
      </property>
      <property name="maximum">
       <number>1000000</number>
      </property>
      <property name="value">
-      <number>16384</number>
-     </property>
-    </widget>
-   </item>
-   <item row="19" column="7">
-    <widget class="QPushButton" name="btnLocalDir">
-     <property name="toolTip">
-      <string>Select directory for HTTP &amp; FTP data</string>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="3" colspan="2">
-    <widget class="QCheckBox" name="cBNmeaReq">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>NMEA Cycle</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="5" colspan="3">
-    <widget class="QSpinBox" name="sBFileSwapMargin">
-     <property name="toolTip">
-      <string>Time to switch to new file</string>
-     </property>
-     <property name="suffix">
-      <string> s</string>
-     </property>
-     <property name="minimum">
-      <number>0</number>
-     </property>
-     <property name="value">
-      <number>30</number>
-     </property>
-    </widget>
-   </item>
-   <item row="19" column="0">
-    <widget class="QLabel" name="Label4">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>FTP/HTTP Local Dir</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="3" colspan="2">
-    <widget class="QLabel" name="Label9">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>File Swap Margin</string>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="0">
-    <widget class="QLabel" name="lblAntennaOffsets">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Offset E/N/U</string>
-     </property>
-    </widget>
-   </item>
-   <item row="17" column="7">
-    <widget class="QPushButton" name="btnLogFile">
-     <property name="toolTip">
-      <string>Select log file</string>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="3" colspan="2">
-    <widget class="QDoubleSpinBox" name="sBAntennaPos2">
-     <property name="toolTip">
-      <string>Station longitude</string>
-     </property>
-     <property name="suffix">
-      <string>°</string>
-     </property>
-     <property name="decimals">
-      <number>8</number>
-     </property>
-     <property name="minimum">
-      <double>-180.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>180.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="0">
-    <widget class="QLabel" name="lblAntennaInfo">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Antenna Info</string>
-     </property>
-    </widget>
-   </item>
-   <item row="21" column="6">
-    <widget class="QPushButton" name="btnOk">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;OK</string>
-     </property>
-     <property name="autoDefault">
-      <bool>true</bool>
-     </property>
-     <property name="default">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="12" column="2">
-    <widget class="QDoubleSpinBox" name="sBAntennaOffset1">
-     <property name="toolTip">
-      <string>Antenna offset in east direction</string>
-     </property>
-     <property name="suffix">
-      <string> m</string>
-     </property>
-     <property name="decimals">
-      <number>4</number>
-     </property>
-     <property name="minimum">
-      <double>-1000.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>10000.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="16" column="0">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Progress Bar Range</string>
+      <number>1000</number>
      </property>
     </widget>
    </item>
@@ -217,164 +77,32 @@
      <property name="text">
       <string>Server Cycle </string>
      </property>
-    </widget>
-   </item>
-   <item row="14" column="2" colspan="6">
-    <widget class="QLineEdit" name="lEReceiverInfo">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma separated list of:&lt;/p&gt;&lt;p&gt;- receiver type&lt;/p&gt;&lt;p&gt;- receiver version&lt;/p&gt;&lt;p&gt;- receiver serial number&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="text">
-      <string/>
+     <property name="buddy">
+      <cstring>sBServerCycle</cstring>
      </property>
     </widget>
    </item>
-   <item row="9" column="2">
-    <widget class="QSpinBox" name="sBStationId">
-     <property name="toolTip">
-      <string>Station ID</string>
-     </property>
-     <property name="maximum">
-      <number>100000</number>
-     </property>
-     <property name="value">
-      <number>1234</number>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="5" colspan="3">
-    <widget class="QSpinBox" name="sBNmeaCycle">
-     <property name="suffix">
-      <string> ms</string>
-     </property>
-     <property name="maximum">
-      <number>100000</number>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="7">
-    <widget class="QPushButton" name="btnPosition">
-     <property name="toolTip">
-      <string>Set station position</string>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="0">
-    <widget class="QLabel" name="lblLatLonHeight">
+   <item row="0" column="0">
+    <widget class="QLabel" name="Label1">
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string>Lat/Lon/Height</string>
+      <string>Buffer Size</string>
+     </property>
+     <property name="buddy">
+      <cstring>sBServerBufferSize</cstring>
      </property>
     </widget>
    </item>
-   <item row="15" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Relay Messages</string>
+   <item row="21" column="0" colspan="4">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>
-   <item row="12" column="5" colspan="2">
-    <widget class="QDoubleSpinBox" name="sBAntennaOffset3">
-     <property name="toolTip">
-      <string>Antenna height offset</string>
-     </property>
-     <property name="suffix">
-      <string> m</string>
-     </property>
-     <property name="decimals">
-      <number>4</number>
-     </property>
-     <property name="minimum">
-      <double>-1000.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>1000.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="5" colspan="2">
-    <widget class="QDoubleSpinBox" name="sBAntennaPos3">
-     <property name="toolTip">
-      <string>Station height</string>
-     </property>
-     <property name="suffix">
-      <string> m</string>
-     </property>
-     <property name="decimals">
-      <number>3</number>
-     </property>
-     <property name="minimum">
-      <double>-1000.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>10000.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="0">
-    <widget class="QCheckBox" name="cBStationId">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Station ID</string>
-     </property>
-    </widget>
-   </item>
-   <item row="14" column="0">
-    <widget class="QLabel" name="lblReceiverInfo">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Receiver Info</string>
-     </property>
-    </widget>
-   </item>
-   <item row="17" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Log File</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="Label5">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Reconnect Interval</string>
-     </property>
-    </widget>
-   </item>
-   <item row="20" column="0">
-    <widget class="QLabel" name="Label10">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>HTTP/NTRIP Proxy</string>
-     </property>
-    </widget>
-   </item>
-   <item row="17" column="2" colspan="5">
-    <widget class="QLineEdit" name="lELogFile">
-     <property name="toolTip">
-      <string>Path to log file</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="2">
+   <item row="4" column="1">
     <widget class="QSpinBox" name="sBDataTimeout">
      <property name="toolTip">
       <string>Time to detect inactivity</string>
@@ -390,23 +118,104 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="Label3">
+   <item row="2" column="2">
+    <widget class="QLabel" name="Label9">
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string>Inactive Timeout</string>
+      <string>File Swap Margin</string>
+     </property>
+     <property name="buddy">
+      <cstring>sBFileSwapMargin</cstring>
      </property>
     </widget>
    </item>
-   <item row="16" column="2" colspan="5">
-    <widget class="QSpinBox" name="sBProgressBar">
+   <item row="13" column="0">
+    <widget class="QLabel" name="lblAntennaInfo">
      <property name="toolTip">
-      <string>Maximum range of input byte buffer</string>
+      <string/>
+     </property>
+     <property name="text">
+      <string>Antenna Info</string>
+     </property>
+     <property name="buddy">
+      <cstring>lEAntennaInfo</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QLabel" name="Label5">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Reconnect Interval</string>
+     </property>
+     <property name="buddy">
+      <cstring>sBReconnectInterval</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="0">
+    <widget class="QLabel" name="lblReceiverInfo">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Receiver Info</string>
+     </property>
+     <property name="buddy">
+      <cstring>lEReceiverInfo</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="20" column="0">
+    <widget class="QLabel" name="Label10">
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>HTTP/NTRIP Proxy</string>
+     </property>
+     <property name="buddy">
+      <cstring>lEProxyAddress</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="15" column="0">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Relay Messages</string>
+     </property>
+     <property name="buddy">
+      <cstring>cBRelayMessage</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
+    <widget class="QSpinBox" name="sBServerCycle">
+     <property name="toolTip">
+      <string>Server cycle time</string>
      </property>
      <property name="suffix">
-      <string> kb</string>
+      <string> ms</string>
+     </property>
+     <property name="maximum">
+      <number>10000</number>
+     </property>
+     <property name="value">
+      <number>100</number>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <widget class="QSpinBox" name="sBReconnectInterval">
+     <property name="toolTip">
+      <string>Interval to reconnect</string>
+     </property>
+     <property name="suffix">
+      <string> ms</string>
      </property>
      <property name="maximum">
       <number>100000</number>
@@ -416,7 +225,20 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="5" colspan="3">
+   <item row="9" column="1">
+    <widget class="QSpinBox" name="sBStationId">
+     <property name="toolTip">
+      <string>Station ID</string>
+     </property>
+     <property name="maximum">
+      <number>100000</number>
+     </property>
+     <property name="value">
+      <number>1234</number>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="3">
     <widget class="QComboBox" name="cBTraceLevel">
      <property name="enabled">
       <bool>true</bool>
@@ -456,127 +278,305 @@
      </item>
     </widget>
    </item>
-   <item row="0" column="5" colspan="3">
-    <widget class="QSpinBox" name="sBAveragePeriodRate">
+   <item row="9" column="0">
+    <widget class="QCheckBox" name="cBStationId">
      <property name="toolTip">
-      <string>Average time for data rate</string>
+      <string/>
+     </property>
+     <property name="text">
+      <string>Station ID</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <widget class="QSpinBox" name="sBServerBufferSize">
+     <property name="toolTip">
+      <string>Size of the read buffer</string>
      </property>
      <property name="suffix">
-      <string> ms</string>
+      <string> bytes</string>
      </property>
      <property name="maximum">
       <number>1000000</number>
      </property>
      <property name="value">
-      <number>1000</number>
+      <number>16384</number>
+     </property>
+    </widget>
+   </item>
+   <item row="17" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Log File</string>
+     </property>
+     <property name="buddy">
+      <cstring>lELogFile</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="16" column="0">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Progress Bar Range</string>
+     </property>
+     <property name="buddy">
+      <cstring>sBProgressBar</cstring>
      </property>
     </widget>
    </item>
    <item row="6" column="2">
-    <widget class="QSpinBox" name="sBReconnectInterval">
+    <widget class="QCheckBox" name="cBNmeaReq">
      <property name="toolTip">
-      <string>Interval to reconnect</string>
+      <string/>
      </property>
+     <property name="text">
+      <string>NMEA Cycle</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="3">
+    <widget class="QSpinBox" name="sBFileSwapMargin">
+     <property name="toolTip">
+      <string>Time to switch to new file</string>
+     </property>
+     <property name="suffix">
+      <string> s</string>
+     </property>
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="value">
+      <number>30</number>
+     </property>
+    </widget>
+   </item>
+   <item row="19" column="0">
+    <widget class="QLabel" name="Label4">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="text">
+      <string>FTP/HTTP Local Dir</string>
+     </property>
+     <property name="buddy">
+      <cstring>lELocalDir</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="3">
+    <widget class="QSpinBox" name="sBNmeaCycle">
      <property name="suffix">
       <string> ms</string>
      </property>
      <property name="maximum">
       <number>100000</number>
      </property>
-     <property name="value">
-      <number>2000</number>
-     </property>
     </widget>
    </item>
-   <item row="11" column="2">
-    <widget class="QDoubleSpinBox" name="sBAntennaPos1">
-     <property name="toolTip">
-      <string>Station Latitude</string>
-     </property>
-     <property name="suffix">
-      <string>°</string>
-     </property>
-     <property name="decimals">
-      <number>8</number>
-     </property>
-     <property name="minimum">
-      <double>-90.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>90.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="Label1">
+   <item row="4" column="0">
+    <widget class="QLabel" name="Label3">
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string>Buffer Size</string>
+      <string>Inactive Timeout</string>
+     </property>
+     <property name="buddy">
+      <cstring>sBDataTimeout</cstring>
      </property>
     </widget>
    </item>
-   <item row="12" column="3" colspan="2">
-    <widget class="QDoubleSpinBox" name="sBAntennaOffset2">
-     <property name="toolTip">
-      <string>Antenna offset in north direction</string>
-     </property>
-     <property name="suffix">
-      <string> m</string>
-     </property>
-     <property name="decimals">
-      <number>4</number>
-     </property>
-     <property name="minimum">
-      <double>-1000.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>1000.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3" colspan="2">
-    <widget class="QLabel" name="Label6">
+   <item row="11" column="0">
+    <widget class="QLabel" name="lblAntennaOffsets">
      <property name="toolTip">
       <string/>
      </property>
      <property name="text">
-      <string>Period of Rate</string>
+      <string>Offset E/N/U</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="2">
-    <widget class="QSpinBox" name="sBServerCycle">
+   <item row="10" column="1" rowspan="2" colspan="3">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="0" column="3">
+      <widget class="QDoubleSpinBox" name="sBAntennaPos3">
+       <property name="toolTip">
+        <string>Station height</string>
+       </property>
+       <property name="suffix">
+        <string> m</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>-1000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>10000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="4">
+      <widget class="QPushButton" name="btnPosition">
+       <property name="maximumSize">
+        <size>
+         <width>30</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Set station position</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QDoubleSpinBox" name="sBAntennaPos1">
+       <property name="toolTip">
+        <string>Station Latitude</string>
+       </property>
+       <property name="suffix">
+        <string>°</string>
+       </property>
+       <property name="decimals">
+        <number>8</number>
+       </property>
+       <property name="minimum">
+        <double>-90.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>90.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QDoubleSpinBox" name="sBAntennaPos2">
+       <property name="toolTip">
+        <string>Station longitude</string>
+       </property>
+       <property name="suffix">
+        <string>°</string>
+       </property>
+       <property name="decimals">
+        <number>8</number>
+       </property>
+       <property name="minimum">
+        <double>-180.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>180.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="3">
+      <widget class="QDoubleSpinBox" name="sBAntennaOffset3">
+       <property name="toolTip">
+        <string>Antenna height offset</string>
+       </property>
+       <property name="suffix">
+        <string> m</string>
+       </property>
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>-1000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="2">
+      <widget class="QDoubleSpinBox" name="sBAntennaOffset2">
+       <property name="toolTip">
+        <string>Antenna offset in north direction</string>
+       </property>
+       <property name="suffix">
+        <string> m</string>
+       </property>
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>-1000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>1000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QDoubleSpinBox" name="sBAntennaOffset1">
+       <property name="toolTip">
+        <string>Antenna offset in east direction</string>
+       </property>
+       <property name="suffix">
+        <string> m</string>
+       </property>
+       <property name="decimals">
+        <number>4</number>
+       </property>
+       <property name="minimum">
+        <double>-1000.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>10000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="17" column="1" colspan="3">
+    <widget class="QLineEdit" name="lELogFile">
      <property name="toolTip">
-      <string>Server cycle time</string>
-     </property>
-     <property name="suffix">
-      <string> ms</string>
-     </property>
-     <property name="maximum">
-      <number>10000</number>
-     </property>
-     <property name="value">
-      <number>100</number>
+      <string>Path to log file</string>
      </property>
     </widget>
    </item>
-   <item row="19" column="2" colspan="5">
+   <item row="19" column="1" colspan="3">
     <widget class="QLineEdit" name="lELocalDir">
      <property name="toolTip">
       <string>Local storage directory for HTTP &amp; FTP data</string>
      </property>
     </widget>
    </item>
-   <item row="20" column="2" colspan="6">
+   <item row="20" column="1" colspan="3">
     <widget class="QLineEdit" name="lEProxyAddress">
      <property name="toolTip">
       <string>Proxy server</string>
      </property>
+     <property name="placeholderText">
+      <string>&lt;address&gt;:&lt;port&gt;</string>
+     </property>
     </widget>
    </item>
-   <item row="13" column="2" colspan="6">
+   <item row="14" column="1" colspan="3">
+    <widget class="QLineEdit" name="lEReceiverInfo">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Comma separated list of:&lt;/p&gt;&lt;p&gt;- receiver type&lt;/p&gt;&lt;p&gt;- receiver version&lt;/p&gt;&lt;p&gt;- receiver serial number&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+     <property name="placeholderText">
+      <string>&lt;antenna description&gt;,&lt;antenna serial number&gt;, &lt;setup description&gt;</string>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="1" colspan="3">
     <widget class="QLineEdit" name="lEAntennaInfo">
      <property name="enabled">
       <bool>true</bool>
@@ -587,9 +587,12 @@
      <property name="text">
       <string/>
      </property>
+     <property name="placeholderText">
+      <string>&lt;antenna description&gt;,&lt;antenna serial number&gt;, &lt;setup description&gt;</string>
+     </property>
     </widget>
    </item>
-   <item row="15" column="2" colspan="5">
+   <item row="15" column="1" colspan="3">
     <widget class="QComboBox" name="cBRelayMessage">
      <property name="toolTip">
       <string>Relay back output messages to input stream</string>
@@ -616,38 +619,26 @@
      </item>
     </widget>
    </item>
+   <item row="16" column="1" colspan="3">
+    <widget class="QSpinBox" name="sBProgressBar">
+     <property name="toolTip">
+      <string>Maximum range of input byte buffer</string>
+     </property>
+     <property name="suffix">
+      <string> kb</string>
+     </property>
+     <property name="maximum">
+      <number>100000</number>
+     </property>
+     <property name="value">
+      <number>2000</number>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>btnOk</tabstop>
-  <tabstop>btnCancel</tabstop>
-  <tabstop>sBServerBufferSize</tabstop>
-  <tabstop>sBAveragePeriodRate</tabstop>
-  <tabstop>sBServerCycle</tabstop>
-  <tabstop>sBFileSwapMargin</tabstop>
-  <tabstop>sBDataTimeout</tabstop>
-  <tabstop>cBTraceLevel</tabstop>
-  <tabstop>sBReconnectInterval</tabstop>
-  <tabstop>cBNmeaReq</tabstop>
-  <tabstop>sBNmeaCycle</tabstop>
   <tabstop>cBStationId</tabstop>
-  <tabstop>sBStationId</tabstop>
-  <tabstop>sBAntennaPos1</tabstop>
-  <tabstop>sBAntennaPos2</tabstop>
-  <tabstop>sBAntennaPos3</tabstop>
-  <tabstop>btnPosition</tabstop>
-  <tabstop>sBAntennaOffset1</tabstop>
-  <tabstop>sBAntennaOffset2</tabstop>
-  <tabstop>sBAntennaOffset3</tabstop>
-  <tabstop>lEAntennaInfo</tabstop>
-  <tabstop>lEReceiverInfo</tabstop>
-  <tabstop>cBRelayMessage</tabstop>
-  <tabstop>sBProgressBar</tabstop>
-  <tabstop>lELogFile</tabstop>
-  <tabstop>btnLogFile</tabstop>
-  <tabstop>lELocalDir</tabstop>
-  <tabstop>btnLocalDir</tabstop>
-  <tabstop>lEProxyAddress</tabstop>
  </tabstops>
  <resources/>
  <connections/>

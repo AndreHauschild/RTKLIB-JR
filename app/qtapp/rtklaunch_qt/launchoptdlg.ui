@@ -17,23 +17,10 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" colspan="2">
-    <widget class="QRadioButton" name="rBOptionNormal">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;Normal APs (without MKL)</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="0" colspan="2">
     <widget class="QRadioButton" name="rBOptionMkl">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="text">
-      <string>RTKPOST_&amp;MKL, RTKNAVI_MKL</string>
+      <string>RTKPost_&amp;MKL, RTKNavi_MKL</string>
      </property>
      <property name="checked">
       <bool>false</bool>
@@ -42,44 +29,29 @@
    </item>
    <item row="2" column="0" colspan="2">
     <widget class="QRadioButton" name="rBOptionWin64">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="text">
-      <string>RTKPOST_WIN&amp;64, RTKNAVI_WIN64</string>
+      <string>RTKPost_WIN&amp;64, RTKNavi_WIN64</string>
      </property>
     </widget>
    </item>
    <item row="3" column="0">
     <widget class="QCheckBox" name="cBMinimize">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="text">
       <string>Minimize</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QPushButton" name="btnOk">
-     <property name="toolTip">
-      <string/>
-     </property>
+   <item row="0" column="0" colspan="2">
+    <widget class="QRadioButton" name="rBOptionNormal">
      <property name="text">
-      <string>&amp;OK</string>
-     </property>
-     <property name="default">
-      <bool>true</bool>
+      <string>&amp;Normal APs (without MKL)</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <widget class="QPushButton" name="btnCancel">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;Cancel</string>
+   <item row="4" column="0" colspan="2">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
    </item>

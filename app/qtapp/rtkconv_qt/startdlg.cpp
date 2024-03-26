@@ -6,62 +6,67 @@
 
 #include "rtklib.h"
 #include "startdlg.h"
+
+#include "ui_startdlg.h"
+
 //---------------------------------------------------------------------------
 StartDialog::StartDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::StartDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
-    time.time = 0;
-    time.sec = 0.0;
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &StartDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &StartDialog::reject);
+    connect(ui->btnFileTime, &QPushButton::clicked, this, &StartDialog::setTimeFromFile);
 
-    connect(btnOk, &QPushButton::clicked, this, &StartDialog::btnOkClicked);
-    connect(btnCancel, &QPushButton::clicked, this, &StartDialog::reject);
+    setTime(utc2gpst(timeget()));
 }
 //---------------------------------------------------------------------------
-void StartDialog::showEvent(QShowEvent *event)
+void StartDialog::setFileName(const QString &fn)
 {
     FILE *fp;
     uint32_t timetag = 0;
     uint8_t buff[80] = {0};
     char path_tag[1024], path[1020], *paths[1];
-
-    if (event->spontaneous()) return;
-
-    if (time.time == 0)
-        time = utc2gpst(timeget());
+    gtime_t time = {0, 0};
 
     // read time tag file if exists
     paths[0] = path;
-    if (expath(qPrintable(filename), paths, 1)) {
+    if (expath(qPrintable(fn), paths, 1)) {
         sprintf(path_tag, "%s.tag", path);
         if ((fp = fopen(path_tag, "rb"))) {
             fread(buff, 64, 1, fp);
             if (!strncmp((char *)buff, "TIMETAG", 7) && fread(&timetag, 4, 1, fp)) {
                 time.time = timetag;
                 time.sec = 0;
+                filename = fn;
             }
             fclose(fp);
+            setTime(time);
         }
     }
-
+}
+//---------------------------------------------------------------------------
+void StartDialog::setTime(const gtime_t &time)
+{
     QDateTime date = QDateTime::fromSecsSinceEpoch(time.time);
     date = date.addMSecs(time.sec*1000);
 
-    tETime->setDateTime(date);
+    ui->tETime->setDateTime(date);
 }
 //---------------------------------------------------------------------------
-void StartDialog::btnOkClicked()
+gtime_t StartDialog::getTime()
 {
-    QDateTime date(tETime->dateTime());
+    QDateTime date(ui->tETime->dateTime());
+    gtime_t time;
 
     time.time = date.toSecsSinceEpoch();
     time.sec = date.time().msec() / 1000;
 
-    accept();
+    return time;
 }
 //---------------------------------------------------------------------------
-void StartDialog::btnFileTimeClicked()
+void StartDialog::setTimeFromFile()
 {
     char path[1024], *paths[1];
 
@@ -74,7 +79,7 @@ void StartDialog::btnFileTimeClicked()
     QFileInfo fi(filename);
     QDateTime d = fi.birthTime();
 
-    tETime->setDateTime(d);
+    ui->tETime->setDateTime(d);
 }
 //---------------------------------------------------------------------------
     

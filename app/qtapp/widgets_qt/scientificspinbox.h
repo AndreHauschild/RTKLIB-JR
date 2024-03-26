@@ -5,8 +5,9 @@
 class ScientificSpinBox : public QDoubleSpinBox
 {
     Q_OBJECT
+
 public:
-    ScientificSpinBox(QWidget * parent = 0);
+    ScientificSpinBox(QWidget * parent = nullptr);
 
     int decimals() const;
     void setDecimals(int value);
@@ -17,7 +18,6 @@ public:
 private:
     int m_displayDecimals;
     QDoubleValidator *m_validator;
-
 
 private:
     QVariant validateAndInterpret(QString &input, int &pos, QValidator::State &state) const;

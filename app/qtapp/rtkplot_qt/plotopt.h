@@ -4,50 +4,93 @@
 #define plotoptH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_plotopt.h"
+#include <QSettings>
 
-class Plot;
+#define MAXMAPLAYER 12                  // max number of map layers
+
+namespace Ui {
+    class PlotOptDialog;
+}
+//class Plot;
 class RefDialog;
 
 //---------------------------------------------------------------------------
-class PlotOptDialog : public QDialog, private Ui::PlotOptDialog
+class PlotOptDialog : public QDialog
 {
     Q_OBJECT
 
-protected:
-    void showEvent(QShowEvent*);
+public:
+    explicit PlotOptDialog(QWidget *parent=NULL);
+    void loadOptions(QSettings &);
+    void saveOptions(QSettings &);
 
-public slots:
-    void btnOKClicked();
-    void btnColor1Clicked();
-    void btnColor2Clicked();
-    void btnColor3Clicked();
-    void btnColor4Clicked();
-    void btnReferencePositionClicked();
-    void originChanged();
-    void autoScaleChanged();
-    void mColorClicked();
-    void btnFontClicked();
-    void receiverPositionChanged();
-    void btnTLEFileClicked();
-    void btnShapeFileClicked();
-    void btnTLESatelliteFileClicked();
-    void btnTLEViewClicked();
-    void btnTLESatelliteViewClicked();
-    void timeSyncClicked();
+    // plot options
+    int getTimeFormat();
+    int getLatLonFormat();
+    int getShowStats();
+    int getShowSlip();
+    int getShowHalfC();
+    int getShowEphemeris();
+    double getElevationMask();
+    int getElevationMaskEnabled();
+    int getHideLowSatellites();
+    double getMaxDop();
+    double getMaxMP();
+    int getNavSys();
+    QString getExcludedSatellites();
+    int getShowError();
+    int getShowArrow();
+    int getShowGridLabel();
+    int getShowLabel();
+    int getShowCompass();
+    int getShowScale();
+    int getAutoScale();
+    double getYRange();
+    int getRtBufferSize();
+    int getTimeSyncOut();
+    int getTimeSyncPort();
+    int getOrigin();
+    int getReceiverPosition();
+    double* getOoPosition();
+    int getPlotStyle();
+    int getMarkSize();
+    int getAnimationCycle();
+    int getRefreshCycle();
+    QString getShapeFile();
+    QString getTleFile();
+    QString getRinexOptions();
+    QString getTleSatelliteFile();
+    QFont getFont();
+    QColor getCColor(int i);
+    QColor getMarkerColor(int i, int j);
+
+protected slots:
+    void color1Select();
+    void color2Select();
+    void color3Select();
+    void color4Select();
+    void referencePositionSelect();
+    void markerColorSelect();
+    void fontSelect();
+    void tleFileOpen();
+    void shapeFileOpen();
+    void tleSatelliteFileOpen();
+    void tleFileView();
+    void tleSatelliteFileView();
 
 private:
-    void updateFont(void);
-    void updateEnable(void);
-    QColor mColor[2][8]; // {{mark1 0-7},{mark2 0-7}}
-    QColor cColor[4];    // {background,grid,text,line}
-    QFont fontOption;
+    void updateFont();
+    void updateEnable();
 
-public:
-    Plot *plot;
+protected:
+    QColor markerColor[2][8]; // {{mark1 0-7},{mark2 0-7}}
+    QColor cColor[4];    // {background,grid,text,line}
+
+    QFont fontOption;
     RefDialog *refDialog;
 
-    explicit PlotOptDialog(QWidget *parent=NULL);
+private:
+    Ui::PlotOptDialog *ui;
 };
 //---------------------------------------------------------------------------
 #endif

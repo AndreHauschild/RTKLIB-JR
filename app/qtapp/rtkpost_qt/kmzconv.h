@@ -4,23 +4,33 @@
 #define kmzconvH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_kmzconv.h"
+#include <QSettings>
+
+namespace Ui {
+class ConvDialog;
+}
 
 class TextViewer;
 //---------------------------------------------------------------------------
-class ConvDialog : public QDialog, public Ui::ConvDialog
+class ConvDialog : public QDialog
 {
     Q_OBJECT
 
-public slots:
-    void btnConvertClicked();
-    void btnViewClicked();
-    void btnInputFileClicked();
-    void googleEarthFileChanged();
-    void btnGoogleEarthFileClicked();
-    void btnGoogleEarthClick();
-    void formatKMLClicked();
-    void formatGPXClicked();
+public:
+    explicit ConvDialog(QWidget *parent);
+
+    void setInput(const QString &File);
+
+    void loadOptions(QSettings&);
+    void saveOptions(QSettings&);
+
+protected slots:
+    void convert();
+    void viewOutputFile();
+    void selectInputFile();
+    void selectGoogleEarthFile();
+    void callGoogleEarth();
+    void formatChanged();
     void updateEnable();
 
 private:
@@ -28,15 +38,11 @@ private:
     void showMessage(const QString &msg);
     void updateOutputFile();
 
-protected:
-    void showEvent(QShowEvent*);
+    Ui::ConvDialog *ui;
 
+protected:
     TextViewer *viewer;
 
-public:
-    explicit ConvDialog(QWidget *parent);
-
-    void setInput(const QString &File);
 };
 //---------------------------------------------------------------------------
 #endif

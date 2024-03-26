@@ -3,7 +3,7 @@
 
 #include <QString>
 
-static QString htmlPage =  R"~~~(
+static QString htmlPage(R"~~~(
 
 <!------------------------------------------------------------------------------
 * rtkplot_gm.htm: rtkplot google map view
@@ -123,5 +123,5 @@ function HideMark(title) {
     <input id="state" type="hidden" value="0">
 </body>
 </html>
-)~~~";
+)~~~");
 #endif

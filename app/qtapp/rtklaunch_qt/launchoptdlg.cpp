@@ -5,41 +5,52 @@
 
 #include <QShowEvent>
 
-extern MainForm *mainForm;
+#include "ui_launchoptdlg.h"
 
 //---------------------------------------------------------------------------
 LaunchOptDialog::LaunchOptDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::LaunchOptDialog)
 {
-    setupUi(this);
-}
-//---------------------------------------------------------------------------
-void LaunchOptDialog::showEvent(QShowEvent *event)
-{
-    if (event->spontaneous()) return;
+    ui->setupUi(this);
 
-    if (mainForm->option == 1) {
-        rBOptionMkl->setChecked(true);
-	}
-    else if (mainForm->option == 2) {
-        rBOptionWin64->setChecked(true);
-	}
-	else {
-        rBOptionNormal->setChecked(true);
-	}
-    cBMinimize->setChecked(mainForm->minimize);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LaunchOptDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LaunchOptDialog::reject);
 }
 //---------------------------------------------------------------------------
-void LaunchOptDialog::btnOkClicked()
+void LaunchOptDialog::setOption(int option)
 {
-    if (rBOptionMkl->isChecked()) {
-        mainForm->option = 1;
+
+    if (option == 1) {
+        ui->rBOptionMkl->setChecked(true);
 	}
-    else if (rBOptionWin64->isChecked()) {
-        mainForm->option = 2;
+    else if (option == 2) {
+        ui->rBOptionWin64->setChecked(true);
 	}
 	else {
-        mainForm->option = 0;
+        ui->rBOptionNormal->setChecked(true);
 	}
-    mainForm->minimize=cBMinimize->isChecked();
-}//---------------------------------------------------------------------------
+}
+//---------------------------------------------------------------------------
+int LaunchOptDialog::getOption()
+{
+    if (ui->rBOptionMkl->isChecked()) {
+        return 1;
+	}
+    else if (ui->rBOptionWin64->isChecked()) {
+        return 2;
+	}
+	else {
+        return 0;
+	}
+}
+//---------------------------------------------------------------------------
+void LaunchOptDialog::setMinimize(int minimize)
+{
+    ui->cBMinimize->setChecked(minimize);
+}
+//---------------------------------------------------------------------------
+int LaunchOptDialog::getMinimize()
+{
+    return ui->cBMinimize->isChecked();
+}
+//---------------------------------------------------------------------------

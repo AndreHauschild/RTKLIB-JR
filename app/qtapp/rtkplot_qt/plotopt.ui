@@ -6,28 +6,16 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1015</width>
-    <height>611</height>
+    <width>970</width>
+    <height>593</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Options</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" name="Panel2" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
+    <widget class="QWidget" name="panelMain" native="true">
      <property name="text" stdset="0">
       <string/>
      </property>
@@ -47,7 +35,7 @@
       <item row="6" column="15">
        <widget class="QPushButton" name="btnColor1">
         <property name="toolTip">
-         <string/>
+         <string>Set the background color in plots.</string>
         </property>
         <property name="text">
          <string>...</string>
@@ -73,7 +61,7 @@
       <item row="8" column="3">
        <widget class="QComboBox" name="cBElevationMaskPattern">
         <property name="toolTip">
-         <string/>
+         <string>Set whether elevation mask pattern is used or not.</string>
         </property>
         <item>
          <property name="text">
@@ -90,7 +78,7 @@
       <item row="4" column="3">
        <widget class="QComboBox" name="cBShowSlip">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether cycle‐slip position is shown or not in the satellite visibility plot. If ʺLG Jumpʺ selected, dual frequency geometry free LC (linear combination) is used to detect cycle‐slips. In the case of ʺLLI Flagʺ, LLI (loss‐off‐lock indicator) in RINEX observation data is used. Cycle‐slips are shown as red vertical lines in the Satellite Visibility plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -117,12 +105,15 @@
         <property name="text">
          <string>Hide Low Satellite</string>
         </property>
+        <property name="buddy">
+         <cstring>cBHideLowSatellites</cstring>
+        </property>
        </widget>
       </item>
       <item row="4" column="7" colspan="3">
        <widget class="QComboBox" name="cBShowGridLabel">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether grid and grid labels are shown or not in solution display. Set it to ʺCirclesʺ or ʺCircles/Labelʺ for circular grids.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -154,7 +145,7 @@
       <item row="10" column="15">
        <widget class="QPushButton" name="btnFont">
         <property name="toolTip">
-         <string/>
+         <string>Select the font in plots.</string>
         </property>
         <property name="text">
          <string>...</string>
@@ -164,7 +155,7 @@
       <item row="7" column="7" colspan="3">
        <widget class="QComboBox" name="cBAutoScale">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether scale is adjusted automatically or not for solution plots.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -186,12 +177,15 @@
         <property name="text">
          <string>Elev Mask Pattern</string>
         </property>
+        <property name="buddy">
+         <cstring>cBElevationMaskPattern</cstring>
+        </property>
        </widget>
       </item>
       <item row="7" column="3">
        <widget class="QComboBox" name="cBElevationMask">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the elevation mask angle (deg) for the satellite visibility plot.&lt;/p&gt;&lt;p&gt;The elevation mask is also used for DOP/NSat plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -248,7 +242,7 @@
       <item row="6" column="7" colspan="3">
        <widget class="QComboBox" name="cBShowScale">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether scale is shown or not in the solution ground track plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -270,6 +264,9 @@
         <property name="text">
          <string>RT Buffer Size</string>
         </property>
+        <property name="buddy">
+         <cstring>sBBufferSize</cstring>
+        </property>
        </widget>
       </item>
       <item row="5" column="4" colspan="2">
@@ -280,12 +277,15 @@
         <property name="text">
          <string>Compass</string>
         </property>
+        <property name="buddy">
+         <cstring>cBShowCompass</cstring>
+        </property>
        </widget>
       </item>
       <item row="2" column="7" colspan="3">
        <widget class="QComboBox" name="cBShowArrow">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether direction arrow and velocity arrow are shown or not in the solution ground track plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -307,6 +307,9 @@
         <property name="text">
          <string>Show Statistics</string>
         </property>
+        <property name="buddy">
+         <cstring>cBShowStats</cstring>
+        </property>
        </widget>
       </item>
       <item row="6" column="4">
@@ -317,32 +320,15 @@
         <property name="text">
          <string>Scale</string>
         </property>
+        <property name="buddy">
+         <cstring>cBShowScale</cstring>
+        </property>
        </widget>
       </item>
       <item row="12" column="7">
-       <widget class="QSpinBox" name="sBTimeSync">
+       <widget class="QSpinBox" name="sBTimeSyncPort">
         <property name="maximum">
          <number>65535</number>
-        </property>
-       </widget>
-      </item>
-      <item row="20" column="14">
-       <widget class="QPushButton" name="btnTLEView">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="rtkplot_qt.qrc">
-          <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -354,15 +340,8 @@
         <property name="text">
          <string>Cycle-Slip</string>
         </property>
-       </widget>
-      </item>
-      <item row="21" column="15">
-       <widget class="QPushButton" name="btnTLESatelliteFile">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>...</string>
+        <property name="buddy">
+         <cstring>cBShowSlip</cstring>
         </property>
        </widget>
       </item>
@@ -374,12 +353,15 @@
         <property name="text">
          <string>Max NSAT/DOP</string>
         </property>
+        <property name="buddy">
+         <cstring>cBMaxDop</cstring>
+        </property>
        </widget>
       </item>
       <item row="12" column="12" colspan="4">
        <widget class="QComboBox" name="cBAnimationCycle">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the animation interval for solution or observation data plots.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -426,6 +408,9 @@
         <property name="text">
          <string>Font Name</string>
         </property>
+        <property name="buddy">
+         <cstring>btnFont</cstring>
+        </property>
        </widget>
       </item>
       <item row="4" column="10">
@@ -436,12 +421,15 @@
         <property name="text">
          <string>Text Color</string>
         </property>
+        <property name="buddy">
+         <cstring>btnColor3</cstring>
+        </property>
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QComboBox" name="cBTimeLabel">
+       <widget class="QComboBox" name="cBTimeFormat">
         <property name="toolTip">
-         <string/>
+         <string>Format for printing the time</string>
         </property>
         <item>
          <property name="text">
@@ -466,7 +454,7 @@
        </widget>
       </item>
       <item row="18" column="0" rowspan="3" colspan="4">
-       <widget class="QGroupBox" name="GroupBox1">
+       <widget class="QGroupBox" name="gBSatSystes">
         <property name="toolTip">
          <string/>
         </property>
@@ -493,7 +481,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>GLO</string>
+            <string>GLONASS</string>
            </property>
           </widget>
          </item>
@@ -503,7 +491,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>GAL</string>
+            <string>Galileo</string>
            </property>
           </widget>
          </item>
@@ -513,7 +501,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>QZS</string>
+            <string>QZSS</string>
            </property>
           </widget>
          </item>
@@ -523,7 +511,7 @@
             <string/>
            </property>
            <property name="text">
-            <string>SBS</string>
+            <string>SBAS</string>
            </property>
           </widget>
          </item>
@@ -540,7 +528,7 @@
          <item row="1" column="3">
           <widget class="QCheckBox" name="cBNavSys7">
            <property name="text">
-            <string>IRN</string>
+            <string>NavIC</string>
            </property>
           </widget>
          </item>
@@ -550,7 +538,7 @@
       <item row="10" column="3">
        <widget class="QComboBox" name="cBHideLowSatellites">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether low elevation satellites under the elevation mask and the elevation mask pattern are shown or not.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -572,6 +560,9 @@
         <property name="text">
          <string>Grid Color</string>
         </property>
+        <property name="buddy">
+         <cstring>btnColor2</cstring>
+        </property>
        </widget>
       </item>
       <item row="21" column="1">
@@ -580,14 +571,17 @@
          <string/>
         </property>
         <property name="text">
-         <string>Excluded Sats</string>
+         <string>Excluded Satelites</string>
+        </property>
+        <property name="buddy">
+         <cstring>lEExcludedSatellites</cstring>
         </property>
        </widget>
       </item>
       <item row="15" column="15">
        <widget class="QPushButton" name="btnReferencePosition">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set latitude, longitude and height for the origin from station position.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <property name="text">
          <string>...</string>
@@ -597,7 +591,7 @@
       <item row="8" column="12" colspan="4">
        <widget class="QComboBox" name="cBMarkSize">
         <property name="toolTip">
-         <string/>
+         <string>Set the mark size in plots.</string>
         </property>
         <item>
          <property name="text">
@@ -649,12 +643,15 @@
         <property name="text">
          <string>Lat/Lon/Hgt</string>
         </property>
+        <property name="buddy">
+         <cstring>sBReferencePosition1</cstring>
+        </property>
        </widget>
       </item>
       <item row="2" column="3">
        <widget class="QComboBox" name="cBLatLonFormat">
         <property name="toolTip">
-         <string/>
+         <string>Format for printing the positions</string>
         </property>
         <item>
          <property name="text">
@@ -671,7 +668,7 @@
       <item row="3" column="7" colspan="3">
        <widget class="QComboBox" name="cBShowLabel">
         <property name="toolTip">
-         <string/>
+         <string>Set whether graph labels are shown or not in solution display.</string>
         </property>
         <item>
          <property name="text">
@@ -685,20 +682,10 @@
         </item>
        </widget>
       </item>
-      <item row="20" column="15">
-       <widget class="QPushButton" name="btnTLEFile">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
       <item row="3" column="15">
        <widget class="QPushButton" name="btnColor4">
         <property name="toolTip">
-         <string/>
+         <string>Set the line color in plots.</string>
         </property>
         <property name="text">
          <string>...</string>
@@ -713,12 +700,15 @@
         <property name="text">
          <string>TLE Data</string>
         </property>
+        <property name="buddy">
+         <cstring>lETLEFile</cstring>
+        </property>
        </widget>
       </item>
       <item row="14" column="7">
        <widget class="QComboBox" name="cBOrigin">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the origin position of solution display as follows:&lt;/p&gt;&lt;p&gt;‐ Start Pos: the first solution position&lt;/p&gt;&lt;p&gt;‐ End Pos: the last solution position&lt;/p&gt;&lt;p&gt;‐ Average Pos: the average of all solution positions&lt;/p&gt;&lt;p&gt;‐ Linear Fit Pos: based on the linearly fitted positions&lt;/p&gt;&lt;p&gt;‐ Base Station: the base station position.&lt;/p&gt;&lt;p&gt;‐ Lat/Lon/Hgt: latitude, longitude and height specified&lt;/p&gt;&lt;p&gt;‐ Auto Input: auto position as follows&lt;/p&gt;&lt;p&gt;‐ Waypoint 1‐10: a waypoint position&lt;/p&gt;&lt;p&gt;If you select ʺLat/Lon/Heightʺ, you have to input latitude, longitude and ellipsoidal height in the text fields below for the origin. If selecting ʺAuto Inputʺ, receiver ID is assumed as the 4‐charactors of the solution file name head and the position is read from the position file. The position file can be selected by pushing &amp;quot;...&amp;quot; button and pushing ʺLoadʺ button in the position list dialog.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -825,12 +815,15 @@
         <property name="text">
          <string>Background Color</string>
         </property>
+        <property name="buddy">
+         <cstring>btnColor1</cstring>
+        </property>
        </widget>
       </item>
       <item row="5" column="3">
        <widget class="QComboBox" name="cBShowHalfC">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether parity unknown status is shown or not in the satellite visibility plot. Parity unknown epochs are shown as gray vertical lines in the satellite visibility plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -852,19 +845,15 @@
         <property name="text">
          <string>Elevation Mask (°)</string>
         </property>
-       </widget>
-      </item>
-      <item row="21" column="3">
-       <widget class="QLineEdit" name="lEExcludedSatellites">
-        <property name="toolTip">
-         <string/>
+        <property name="buddy">
+         <cstring>cBElevationMask</cstring>
         </property>
        </widget>
       </item>
       <item row="1" column="7" colspan="3">
        <widget class="QComboBox" name="cBShowError">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether error bar or error circle is shown or not in solution display. &lt;/p&gt;&lt;p&gt;You can select ʺBar/Circleʺ or ʺDotsʺ as the format.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -891,6 +880,9 @@
         <property name="text">
          <string>Graph Label</string>
         </property>
+        <property name="buddy">
+         <cstring>cBShowLabel</cstring>
+        </property>
        </widget>
       </item>
       <item row="15" column="1" colspan="2">
@@ -900,6 +892,9 @@
         </property>
         <property name="text">
          <string>Receiver Position</string>
+        </property>
+        <property name="buddy">
+         <cstring>cBReceiverPosition</cstring>
         </property>
        </widget>
       </item>
@@ -911,6 +906,9 @@
         <property name="text">
          <string>Animation Interval</string>
         </property>
+        <property name="buddy">
+         <cstring>cBAnimationCycle</cstring>
+        </property>
        </widget>
       </item>
       <item row="15" column="3">
@@ -919,7 +917,7 @@
          <bool>true</bool>
         </property>
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the receiver position for the satellite visibility plot or skyplot. &lt;/p&gt;&lt;p&gt;ʺSingle Solutionʺ uses single‐point results as receiver positions by using observation and navigation data. For moving receivers, you shall set it. &lt;/p&gt;&lt;p&gt;ʺLat/Lon/Hgtʺ uses latitude, longitude and height for static receivers specified as the following Lat/Lon/Hgt fields. &lt;/p&gt;&lt;p&gt;ʺRINEX Headerʺ uses ʺAPPROX POSITION XYZʺ in RINEX observation data header as the receiver position.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -946,38 +944,21 @@
         <property name="text">
          <string>Auto Fit</string>
         </property>
+        <property name="buddy">
+         <cstring>cBAutoScale</cstring>
+        </property>
        </widget>
       </item>
       <item row="5" column="12" colspan="2">
        <widget class="QLabel" name="lblColor2">
         <property name="toolTip">
-         <string/>
+         <string>Grid color</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::Box</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Sunken</enum>
-        </property>
-       </widget>
-      </item>
-      <item row="21" column="14">
-       <widget class="QPushButton" name="btnTLESatelliteView">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="icon">
-         <iconset resource="rtkplot_qt.qrc">
-          <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -1015,12 +996,15 @@
         <property name="text">
          <string>Parity Unknown</string>
         </property>
+        <property name="buddy">
+         <cstring>cBShowHalfC</cstring>
+        </property>
        </widget>
       </item>
       <item row="5" column="15">
        <widget class="QPushButton" name="btnColor2">
         <property name="toolTip">
-         <string/>
+         <string>Set the grid color in plots.</string>
         </property>
         <property name="text">
          <string>...</string>
@@ -1029,6 +1013,9 @@
       </item>
       <item row="14" column="12" colspan="4">
        <widget class="QSpinBox" name="sBRefreshCycle">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the plot update cycle time for real‐time plots.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
         <property name="suffix">
          <string> ms</string>
         </property>
@@ -1048,10 +1035,19 @@
         <property name="text">
          <string>Grid/Grid Label</string>
         </property>
+        <property name="buddy">
+         <cstring>cBShowGridLabel</cstring>
+        </property>
        </widget>
       </item>
       <item row="10" column="7">
        <widget class="QSpinBox" name="sBBufferSize">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the buffer size for real‐time solution plots in epochs. The older solutions over the buffer size are deleted for real‐time plots.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="suffix">
+         <string> bytes</string>
+        </property>
         <property name="maximum">
          <number>1000000</number>
         </property>
@@ -1063,7 +1059,7 @@
       <item row="5" column="7" colspan="3">
        <widget class="QComboBox" name="cBShowCompass">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether compass is shown or not in the solution ground track plot.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -1085,12 +1081,15 @@
         <property name="text">
          <string>Plot Style</string>
         </property>
+        <property name="buddy">
+         <cstring>cBPlotStyle</cstring>
+        </property>
        </widget>
       </item>
       <item row="4" column="15">
        <widget class="QPushButton" name="btnColor3">
         <property name="toolTip">
-         <string/>
+         <string>Set the text color in plots.</string>
         </property>
         <property name="text">
          <string>...</string>
@@ -1108,12 +1107,15 @@
         <property name="text">
          <string>Coordinate Origin</string>
         </property>
+        <property name="buddy">
+         <cstring>cBOrigin</cstring>
+        </property>
        </widget>
       </item>
       <item row="7" column="12" colspan="4">
        <widget class="QComboBox" name="cBPlotStyle">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select the plot style in plots. To delete all of markers and lines except for the track point mark, set it ʺNoneʺ.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -1145,12 +1147,15 @@
         <property name="text">
          <string>Direction Arrow</string>
         </property>
+        <property name="buddy">
+         <cstring>cBShowArrow</cstring>
+        </property>
        </widget>
       </item>
       <item row="14" column="3">
        <widget class="QComboBox" name="cBMaxMP">
         <property name="toolTip">
-         <string/>
+         <string>Set the y‐axis limit of multipath plot</string>
         </property>
         <item>
          <property name="text">
@@ -1192,7 +1197,7 @@
       <item row="3" column="12" colspan="2">
        <widget class="QLabel" name="lblColor4">
         <property name="toolTip">
-         <string/>
+         <string>Line color</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::Box</enum>
@@ -1210,12 +1215,15 @@
         <property name="text">
          <string>Y-Range (+/-)</string>
         </property>
+        <property name="buddy">
+         <cstring>cBYRange</cstring>
+        </property>
        </widget>
       </item>
       <item row="6" column="3">
        <widget class="QComboBox" name="cBShowEphemeris">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set whether ephemeris status is shown or not in the satellite visibility plot. Ephemerides are shown as the grey line under&lt;/p&gt;&lt;p&gt;the observation data. Gray dots mean the Toe (time of ephemeris). Red ephemeris lines mean the satellite unhealthy.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
         <item>
          <property name="text">
@@ -1237,6 +1245,9 @@
         <property name="text">
          <string>Time Format</string>
         </property>
+        <property name="buddy">
+         <cstring>cBTimeFormat</cstring>
+        </property>
        </widget>
       </item>
       <item row="3" column="10">
@@ -1246,6 +1257,9 @@
         </property>
         <property name="text">
          <string>Line Color</string>
+        </property>
+        <property name="buddy">
+         <cstring>btnColor4</cstring>
         </property>
        </widget>
       </item>
@@ -1257,6 +1271,9 @@
         <property name="text">
          <string>Max Multipath</string>
         </property>
+        <property name="buddy">
+         <cstring>cBMaxMP</cstring>
+        </property>
        </widget>
       </item>
       <item row="1" column="4" colspan="3">
@@ -1266,6 +1283,9 @@
         </property>
         <property name="text">
          <string>Error Bar/Circle</string>
+        </property>
+        <property name="buddy">
+         <cstring>cBShowError</cstring>
         </property>
        </widget>
       </item>
@@ -1277,12 +1297,15 @@
         <property name="text">
          <string>TLE Sat No</string>
         </property>
+        <property name="buddy">
+         <cstring>lETLESatelliteFile</cstring>
+        </property>
        </widget>
       </item>
       <item row="4" column="12" colspan="2">
        <widget class="QLabel" name="lblColor3">
         <property name="toolTip">
-         <string/>
+         <string>Text color</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::Box</enum>
@@ -1295,7 +1318,7 @@
       <item row="12" column="3">
        <widget class="QComboBox" name="cBMaxDop">
         <property name="toolTip">
-         <string/>
+         <string>Set the y‐axis limit of DOP/NSat plot.</string>
         </property>
         <item>
          <property name="text">
@@ -1337,12 +1360,15 @@
         <property name="text">
          <string>Update Cycle</string>
         </property>
+        <property name="buddy">
+         <cstring>sBRefreshCycle</cstring>
+        </property>
        </widget>
       </item>
       <item row="6" column="12" colspan="2">
        <widget class="QLabel" name="lblColor1">
         <property name="toolTip">
-         <string/>
+         <string>Background color</string>
         </property>
         <property name="frameShape">
          <enum>QFrame::Box</enum>
@@ -1360,6 +1386,9 @@
         <property name="text">
          <string>Lat/Lon Format</string>
         </property>
+        <property name="buddy">
+         <cstring>cBLatLonFormat</cstring>
+        </property>
        </widget>
       </item>
       <item row="10" column="10">
@@ -1369,6 +1398,9 @@
         </property>
         <property name="text">
          <string>Font</string>
+        </property>
+        <property name="buddy">
+         <cstring>btnFont</cstring>
         </property>
        </widget>
       </item>
@@ -1387,6 +1419,9 @@
         <property name="text">
          <string>Mark Size</string>
         </property>
+        <property name="buddy">
+         <cstring>cBMarkSize</cstring>
+        </property>
        </widget>
       </item>
       <item row="6" column="1">
@@ -1397,12 +1432,15 @@
         <property name="text">
          <string>Ephemeris</string>
         </property>
+        <property name="buddy">
+         <cstring>cBShowEphemeris</cstring>
+        </property>
        </widget>
       </item>
       <item row="3" column="3">
        <widget class="QComboBox" name="cBShowStats">
         <property name="toolTip">
-         <string/>
+         <string>Show average and standard deviation</string>
         </property>
         <item>
          <property name="text">
@@ -1417,7 +1455,7 @@
        </widget>
       </item>
       <item row="1" column="10" rowspan="2" colspan="6">
-       <widget class="QWidget" name="widget_2" native="true">
+       <widget class="QWidget" name="wgMapColors" native="true">
         <layout class="QGridLayout" name="gridLayout_3">
          <property name="leftMargin">
           <number>0</number>
@@ -1432,20 +1470,14 @@
           <number>0</number>
          </property>
          <item row="0" column="1">
-          <widget class="QToolButton" name="lblMColor1">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+          <widget class="QToolButton" name="tBMColor1">
            <property name="toolTip">
             <string/>
            </property>
           </widget>
          </item>
          <item row="0" column="4">
-          <widget class="QToolButton" name="lblMColor4">
+          <widget class="QToolButton" name="tBMColor4">
            <property name="toolTip">
             <string/>
            </property>
@@ -1462,7 +1494,7 @@
           </widget>
          </item>
          <item row="0" column="5">
-          <widget class="QToolButton" name="lblMColor5">
+          <widget class="QToolButton" name="tBMColor5">
            <property name="toolTip">
             <string/>
            </property>
@@ -1472,21 +1504,21 @@
           </widget>
          </item>
          <item row="0" column="6">
-          <widget class="QToolButton" name="lblMColor6">
+          <widget class="QToolButton" name="tBMColor6">
            <property name="toolTip">
             <string/>
            </property>
           </widget>
          </item>
          <item row="0" column="3">
-          <widget class="QToolButton" name="lblMColor3">
+          <widget class="QToolButton" name="tBMColor3">
            <property name="toolTip">
             <string/>
            </property>
           </widget>
          </item>
          <item row="0" column="2">
-          <widget class="QToolButton" name="lblMColor2">
+          <widget class="QToolButton" name="tBMColor2">
            <property name="toolTip">
             <string/>
            </property>
@@ -1503,48 +1535,42 @@
           </widget>
          </item>
          <item row="1" column="1">
-          <widget class="QToolButton" name="lblMColor7">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+          <widget class="QToolButton" name="tBMColor7">
            <property name="toolTip">
             <string/>
            </property>
           </widget>
          </item>
          <item row="1" column="2">
-          <widget class="QToolButton" name="lblMColor8">
+          <widget class="QToolButton" name="tBMColor8">
            <property name="toolTip">
             <string/>
            </property>
           </widget>
          </item>
          <item row="1" column="3">
-          <widget class="QToolButton" name="lblMColor9">
+          <widget class="QToolButton" name="tBMColor9">
            <property name="toolTip">
             <string/>
            </property>
           </widget>
          </item>
          <item row="1" column="4">
-          <widget class="QToolButton" name="lblMColor10">
+          <widget class="QToolButton" name="tBMColor10">
            <property name="toolTip">
             <string/>
            </property>
           </widget>
          </item>
          <item row="1" column="5">
-          <widget class="QToolButton" name="lblMColor11">
+          <widget class="QToolButton" name="tBMColor11">
            <property name="toolTip">
             <string/>
            </property>
           </widget>
          </item>
          <item row="1" column="6">
-          <widget class="QToolButton" name="lblMColor12">
+          <widget class="QToolButton" name="tBMColor12">
            <property name="toolTip">
             <string/>
            </property>
@@ -1556,7 +1582,7 @@
       <item row="8" column="7" colspan="3">
        <widget class="QComboBox" name="cBYRange">
         <property name="toolTip">
-         <string/>
+         <string>Set the range of Y‐axis in solution plots.</string>
         </property>
         <item>
          <property name="text">
@@ -1641,7 +1667,10 @@
          <string/>
         </property>
         <property name="text">
-         <string>ShapeFile</string>
+         <string>Shape File</string>
+        </property>
+        <property name="buddy">
+         <cstring>lEShapeFile</cstring>
         </property>
        </widget>
       </item>
@@ -1652,6 +1681,9 @@
         </property>
         <property name="text">
          <string>RINEX Options</string>
+        </property>
+        <property name="buddy">
+         <cstring>lERinexOptions</cstring>
         </property>
        </widget>
       </item>
@@ -1671,38 +1703,38 @@
         </property>
        </widget>
       </item>
-      <item row="20" column="7" colspan="7">
+      <item row="18" column="7" colspan="9">
+       <widget class="QLineEdit" name="lERinexOptions">
+        <property name="toolTip">
+         <string>Set RINEX read options.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="20" column="7" colspan="9">
        <widget class="QLineEdit" name="lETLEFile">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify NORAD TLE satellite orbit element data file. The TLE data are used to compute satellite positions for the skyplot if the satellite ephemeris unavailable. Both of two line format or three line format of TLE data can be used.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
-      <item row="21" column="7" colspan="7">
+      <item row="21" column="7" colspan="9">
        <widget class="QLineEdit" name="lETLESatelliteFile">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Specify the satellite number file which is to connect GNSS satellite/PRN numbers and TLE satellite catalog numbers in NORAD TLE data file.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
-      <item row="19" column="15">
-       <widget class="QPushButton" name="btnShapeFile">
-        <property name="text">
-         <string>...</string>
-        </property>
-       </widget>
-      </item>
-      <item row="19" column="7" colspan="8">
+      <item row="19" column="7" colspan="9">
        <widget class="QLineEdit" name="lEShapeFile">
         <property name="toolTip">
          <string/>
         </property>
        </widget>
       </item>
-      <item row="18" column="7" colspan="9">
-       <widget class="QLineEdit" name="lERinexOptions">
+      <item row="21" column="3" rowspan="2">
+       <widget class="QLineEdit" name="lEExcludedSatellites">
         <property name="toolTip">
-         <string/>
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the excluded satellites. Fill in the PRN numbers of the satellites separated by spaces.&lt;/p&gt;&lt;p&gt;For GLONASS, Galileo, QZSS, BeiDou and SBAS, use Rnn, Enn, Jnn, Cnn and Snn, respectively (nn: satellite&lt;/p&gt;&lt;p&gt;PRN or slot number).&lt;/p&gt;&lt;p&gt;If ʺ+ʺ is added to the head of the satellite ID, the satellite is included for positioning even if the satellite is unhealthy&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
         </property>
        </widget>
       </item>
@@ -1710,77 +1742,33 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="widget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="lblMessage">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnOK">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;OK</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="btnCancel">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Cancel</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="lblMessage">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string/>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>btnOK</tabstop>
-  <tabstop>btnCancel</tabstop>
-  <tabstop>cBTimeLabel</tabstop>
+  <tabstop>cBTimeFormat</tabstop>
   <tabstop>cBLatLonFormat</tabstop>
   <tabstop>cBShowStats</tabstop>
   <tabstop>cBShowSlip</tabstop>
@@ -1809,18 +1797,28 @@
   <tabstop>cBAutoScale</tabstop>
   <tabstop>cBYRange</tabstop>
   <tabstop>sBBufferSize</tabstop>
-  <tabstop>lblMColor1</tabstop>
-  <tabstop>lblMColor2</tabstop>
-  <tabstop>lblMColor3</tabstop>
-  <tabstop>lblMColor4</tabstop>
-  <tabstop>lblMColor5</tabstop>
-  <tabstop>lblMColor6</tabstop>
-  <tabstop>lblMColor7</tabstop>
-  <tabstop>lblMColor8</tabstop>
-  <tabstop>lblMColor9</tabstop>
-  <tabstop>lblMColor10</tabstop>
-  <tabstop>lblMColor11</tabstop>
-  <tabstop>lblMColor12</tabstop>
+  <tabstop>sBTimeSyncPort</tabstop>
+  <tabstop>cBOrigin</tabstop>
+  <tabstop>sBReferencePosition1</tabstop>
+  <tabstop>sBReferencePosition2</tabstop>
+  <tabstop>sBReferencePosition3</tabstop>
+  <tabstop>btnReferencePosition</tabstop>
+  <tabstop>lERinexOptions</tabstop>
+  <tabstop>lEShapeFile</tabstop>
+  <tabstop>lETLEFile</tabstop>
+  <tabstop>lETLESatelliteFile</tabstop>
+  <tabstop>tBMColor1</tabstop>
+  <tabstop>tBMColor2</tabstop>
+  <tabstop>tBMColor3</tabstop>
+  <tabstop>tBMColor4</tabstop>
+  <tabstop>tBMColor5</tabstop>
+  <tabstop>tBMColor6</tabstop>
+  <tabstop>tBMColor7</tabstop>
+  <tabstop>tBMColor8</tabstop>
+  <tabstop>tBMColor9</tabstop>
+  <tabstop>tBMColor10</tabstop>
+  <tabstop>tBMColor11</tabstop>
+  <tabstop>tBMColor12</tabstop>
   <tabstop>btnColor4</tabstop>
   <tabstop>btnColor3</tabstop>
   <tabstop>btnColor2</tabstop>
@@ -1830,19 +1828,8 @@
   <tabstop>btnFont</tabstop>
   <tabstop>cBAnimationCycle</tabstop>
   <tabstop>sBRefreshCycle</tabstop>
-  <tabstop>sBReferencePosition1</tabstop>
-  <tabstop>sBReferencePosition2</tabstop>
-  <tabstop>sBReferencePosition3</tabstop>
-  <tabstop>btnReferencePosition</tabstop>
-  <tabstop>lETLEFile</tabstop>
-  <tabstop>btnTLEView</tabstop>
-  <tabstop>btnTLEFile</tabstop>
-  <tabstop>lETLESatelliteFile</tabstop>
-  <tabstop>btnTLESatelliteView</tabstop>
-  <tabstop>btnTLESatelliteFile</tabstop>
+  <tabstop>cBTimeSync</tabstop>
  </tabstops>
- <resources>
-  <include location="rtkplot_qt.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

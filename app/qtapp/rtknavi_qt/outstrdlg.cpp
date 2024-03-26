@@ -3,20 +3,22 @@
 #include <QCompleter>
 #include <QFileSystemModel>
 #include <QFileDialog>
+#include <QAction>
 
-#include "rtklib.h"
 #include "serioptdlg.h"
 #include "fileoptdlg.h"
 #include "tcpoptdlg.h"
 #include "outstrdlg.h"
 #include "keydlg.h"
 
-//---------------------------------------------------------------------------
+#include "ui_outstrdlg.h"
+
+
 //---------------------------------------------------------------------------
 OutputStrDialog::OutputStrDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::OutputStrDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
     keyDialog = new KeyDialog(this);
     serialOptDialog = new SerialOptDialog(this);
@@ -26,160 +28,234 @@ OutputStrDialog::OutputStrDialog(QWidget *parent)
     QFileSystemModel *fileModel = new QFileSystemModel(fileCompleter);
     fileModel->setRootPath("");
     fileCompleter->setModel(fileModel);
-    lEFilePath1->setCompleter(fileCompleter);
-    lEFilePath2->setCompleter(fileCompleter);
+    ui->lEFilePath1->setCompleter(fileCompleter);
+    ui->lEFilePath2->setCompleter(fileCompleter);
 
-    connect(btnCancel, &QPushButton::clicked, this, &OutputStrDialog::reject);
-    connect(btnFile1, &QPushButton::clicked, this, &OutputStrDialog::btnFile1Clicked);
-    connect(btnFile2, &QPushButton::clicked, this, &OutputStrDialog::btnFile2Clicked);
-    connect(btnKey, &QPushButton::clicked, this, &OutputStrDialog::btnKeyClicked);
-    connect(btnOk, &QPushButton::clicked, this, &OutputStrDialog::btnOkClicked);
-    connect(btnStream1, &QPushButton::clicked, this, &OutputStrDialog::btnStream1Clicked);
-    connect(btnStream2, &QPushButton::clicked, this, &OutputStrDialog::btnStream2Clicked);
-    connect(cBStream1, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &OutputStrDialog::updateEnable);
-    connect(cBStream2, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &OutputStrDialog::updateEnable);
-    connect(cBStream1C, &QCheckBox::clicked, this, &OutputStrDialog::updateEnable);
-    connect(cBStream2C, &QCheckBox::clicked, this, &OutputStrDialog::updateEnable);
+    // line edit actions
+    QAction *aclEFilePath1Select = ui->lEFilePath1->addAction(QIcon(":/buttons/folder"), QLineEdit::TrailingPosition);
+    aclEFilePath1Select->setToolTip(tr("Select File"));
+    QAction *aclEFilePath2Select = ui->lEFilePath2->addAction(QIcon(":/buttons/folder"), QLineEdit::TrailingPosition);
+    aclEFilePath2Select->setToolTip(tr("Select File"));
 
-    cBSwapInterval->setValidator(new QDoubleValidator(this));
-}
-//---------------------------------------------------------------------------
-void OutputStrDialog::showEvent(QShowEvent *event)
-{
-    if (event->spontaneous()) return;
-    
-    cBStream1C->setChecked(streamEnabled[0]);
-    cBStream2C->setChecked(streamEnabled[1]);
-    cBStream1->setCurrentIndex(stream[0]);
-    cBStream2->setCurrentIndex(stream[1]);
-    cBFormat1->setCurrentIndex(format[0]);
-    cBFormat2->setCurrentIndex(format[1]);
-    lEFilePath1->setText(getFilePath(paths[0][2]));
-    lEFilePath2->setText(getFilePath(paths[1][2]));
-    cBSwapInterval->insertItem(0, swapInterval); cBSwapInterval->setCurrentIndex(0);
-    cBTimeTag->setChecked(outputTimeTag);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &OutputStrDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &OutputStrDialog::reject);
+    connect(aclEFilePath1Select, &QAction::triggered, this, &OutputStrDialog::selectFile1);
+    connect(aclEFilePath2Select, &QAction::triggered, this, &OutputStrDialog::selectFile2);
+    connect(ui->btnKey, &QPushButton::clicked, this, &OutputStrDialog::showKeyDialog);
+    connect(ui->btnStream1, &QPushButton::clicked, this, &OutputStrDialog::showStream1Options);
+    connect(ui->btnStream2, &QPushButton::clicked, this, &OutputStrDialog::showStream2Options);
+    connect(ui->cBStream1, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &OutputStrDialog::updateEnable);
+    connect(ui->cBStream2, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &OutputStrDialog::updateEnable);
+    connect(ui->cBStream1C, &QCheckBox::clicked, this, &OutputStrDialog::updateEnable);
+    connect(ui->cBStream2C, &QCheckBox::clicked, this, &OutputStrDialog::updateEnable);
 
-    updateEnable();
+    ui->cBSwapInterval->setValidator(new QDoubleValidator(this));
 }
 //---------------------------------------------------------------------------
-void OutputStrDialog::btnOkClicked()
+void OutputStrDialog::selectFile1()
 {
-    streamEnabled[0] = cBStream1C->isChecked();
-    streamEnabled[1] = cBStream2C->isChecked();
-    stream[0] = cBStream1->currentIndex();
-    stream[1] = cBStream2->currentIndex();
-    format[0] = cBFormat1->currentIndex();
-    format[1] = cBFormat2->currentIndex();
-    paths [0][2] = setFilePath(lEFilePath1->text());
-    paths [1][2] = setFilePath(lEFilePath2->text());
-    swapInterval = cBSwapInterval->currentText();
-    outputTimeTag = cBTimeTag->isChecked();
+    QString filename = QFileDialog::getSaveFileName(this, tr("Load..."), ui->lEFilePath1->text());
 
-    accept();
+    if (!filename.isEmpty())
+        ui->lEFilePath1->setText(QDir::toNativeSeparators(filename));
 }
 //---------------------------------------------------------------------------
-void OutputStrDialog::btnFile1Clicked()
+void OutputStrDialog::selectFile2()
 {
-    lEFilePath1->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Load..."), lEFilePath1->text())));
+    QString filename = QFileDialog::getSaveFileName(this, tr("Load..."), ui->lEFilePath2->text());
+    if (!filename.isEmpty())
+        ui->lEFilePath2->setText(QDir::toNativeSeparators(filename));
 }
 //---------------------------------------------------------------------------
-void OutputStrDialog::btnFile2Clicked()
-{
-    lEFilePath2->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Load..."), lEFilePath2->text())));
-}
-//---------------------------------------------------------------------------
-void OutputStrDialog::btnKeyClicked()
+void OutputStrDialog::showKeyDialog()
 {
     keyDialog->exec();
 }
 //---------------------------------------------------------------------------
-void OutputStrDialog::btnStream1Clicked()
+void OutputStrDialog::showStream1Options()
 {
-    switch (cBStream1->currentIndex()) {
-        case 0: serialOptions(0, 0); break;
-        case 1: tcpOptions(0, 1); break;
-        case 2: tcpOptions(0, 0); break;
-        case 3: tcpOptions(0, 2); break;
-        case 4: tcpOptions(0, 4); break;
+    switch (ui->cBStream1->currentIndex()) {
+        case 0: showSerialOptions(0, 0); break;
+        case 1: showTcpOptions(0, TcpOptDialog::OPT_TCP_CLIENT); break;
+        case 2: showTcpOptions(0, TcpOptDialog::OPT_TCP_SERVER); break;
+        case 3: showTcpOptions(0, TcpOptDialog::OPT_NTRIP_SERVER); break;
+        case 4: showTcpOptions(0, TcpOptDialog::OPT_NTRIP_CASTER_CLIENT); break;
     }
 }
 //---------------------------------------------------------------------------
-void OutputStrDialog::btnStream2Clicked()
+void OutputStrDialog::showStream2Options()
 {
-    switch (cBStream2->currentIndex()) {
-        case 0: serialOptions(1, 0); break;
-        case 1: tcpOptions(1, 1); break;
-        case 2: tcpOptions(1, 0); break;
-        case 3: tcpOptions(1, 2); break;
-        case 4: tcpOptions(0, 4); break;
+    switch (ui->cBStream2->currentIndex()) {
+        case 0: showSerialOptions(1, 0); break;
+        case 1: showTcpOptions(1, TcpOptDialog::OPT_TCP_CLIENT); break;
+        case 2: showTcpOptions(1, TcpOptDialog::OPT_TCP_SERVER); break;
+        case 3: showTcpOptions(1, TcpOptDialog::OPT_NTRIP_SERVER); break;
+        case 4: showTcpOptions(0, TcpOptDialog::OPT_NTRIP_CASTER_CLIENT); break;
     }
 }
 //---------------------------------------------------------------------------
-QString OutputStrDialog::getFilePath(const QString path)
+QString OutputStrDialog::getFilePath(const QString &path)
 {
     return path.mid(0, path.indexOf("::"));
 }
 //---------------------------------------------------------------------------
-QString OutputStrDialog::setFilePath(const QString p)
+QString OutputStrDialog::setFilePath(const QString &p)
 {
     QString path = p;
     QString str;
     bool okay;
 
-    if (cBTimeTag->isChecked()) path += "::T";
-    str = cBSwapInterval->currentText();
+    if (ui->cBTimeTag->isChecked()) path += "::T";
+    str = ui->cBSwapInterval->currentText();
     str.toDouble(&okay);
     if (okay)
         path += "::S=" + str;
     return path;
 }
 //---------------------------------------------------------------------------
-void OutputStrDialog::serialOptions(int index, int opt)
+void OutputStrDialog::showSerialOptions(int index, int opt)
 {
-    serialOptDialog->path = paths[index][0];
-    serialOptDialog->options = opt;
+    serialOptDialog->setPath(paths[index][0]);
+    serialOptDialog->setOptions(opt);
 
     serialOptDialog->exec();
     if (serialOptDialog->result() != QDialog::Accepted) return;
 
-    paths[index][0] = serialOptDialog->path;
+    paths[index][0] = serialOptDialog->getPath();
 }
 //---------------------------------------------------------------------------
-void OutputStrDialog::tcpOptions(int index, int opt)
+void OutputStrDialog::showTcpOptions(int index, int opt)
 {
-    tcpOptDialog->path = paths[index][1];
-    tcpOptDialog->showOptions = opt;
-    for (int i = 0; i < 10; i++) {
-        tcpOptDialog->history[i] = history[i];
-	}
+    tcpOptDialog->setPath(paths[index][1]);
+    tcpOptDialog->setOptions(opt);
+    tcpOptDialog->setHistory(history, 10);
 
     tcpOptDialog->exec();
     if (tcpOptDialog->exec() != QDialog::Accepted) return;
 
-    paths[index][1] = tcpOptDialog->path;
+    paths[index][1] = tcpOptDialog->getPath();
     for (int i = 0; i < 10; i++) {
-        history[i] = tcpOptDialog->history[i];
+        history[i] = tcpOptDialog->getHistory()[i];
 	}
 }
 //---------------------------------------------------------------------------
-void OutputStrDialog::updateEnable(void)
+void OutputStrDialog::updateEnable()
 {
-    int ena = (cBStream1C->isChecked() && (cBStream1->currentIndex() == 5)) ||
-              (cBStream2C->isChecked() && (cBStream2->currentIndex() == 5));
+    int ena = (ui->cBStream1C->isChecked() && (ui->cBStream1->currentIndex() == 5)) ||
+              (ui->cBStream2C->isChecked() && (ui->cBStream2->currentIndex() == 5));
 
-    cBStream1->setEnabled(cBStream1C->isChecked());
-    cBStream2->setEnabled(cBStream2C->isChecked());
-    btnStream1->setEnabled(cBStream1C->isChecked() && cBStream1->currentIndex() <= 4);
-    btnStream2->setEnabled(cBStream2C->isChecked() && cBStream2->currentIndex() <= 4);
-    lEFilePath1->setEnabled(cBStream1C->isChecked() && cBStream1->currentIndex() == 5);
-    lEFilePath2->setEnabled(cBStream2C->isChecked() && cBStream2->currentIndex() == 5);
-    btnFile1->setEnabled(cBStream1C->isChecked() && cBStream1->currentIndex() == 5);
-    btnFile2->setEnabled(cBStream2C->isChecked() && cBStream2->currentIndex() == 5);
-    lblF1->setEnabled(ena);
-    lblSwapInterval->setEnabled(ena);
-    lblH->setEnabled(ena);
-    cBTimeTag->setEnabled(ena);
-    cBSwapInterval->setEnabled(ena);
-    btnKey->setEnabled(ena);
+    ui->cBStream1->setEnabled(ui->cBStream1C->isChecked());
+    ui->cBStream2->setEnabled(ui->cBStream2C->isChecked());
+    ui->btnStream1->setEnabled(ui->cBStream1C->isChecked() && ui->cBStream1->currentIndex() <= 4);
+    ui->btnStream2->setEnabled(ui->cBStream2C->isChecked() && ui->cBStream2->currentIndex() <= 4);
+    ui->lEFilePath1->setEnabled(ui->cBStream1C->isChecked() && ui->cBStream1->currentIndex() == 5);
+    ui->lEFilePath2->setEnabled(ui->cBStream2C->isChecked() && ui->cBStream2->currentIndex() == 5);
+    ui->lblF1->setEnabled(ena);
+    ui->lblSwapInterval->setEnabled(ena);
+    ui->lblH->setEnabled(ena);
+    ui->cBTimeTag->setEnabled(ena);
+    ui->cBSwapInterval->setEnabled(ena);
+    ui->btnKey->setEnabled(ena);
+}
+//---------------------------------------------------------------------------
+void OutputStrDialog::setStreamEnabled(int stream, int enabled)
+{
+    QCheckBox *cBStreamC[] = {ui->cBStream1C, ui->cBStream2C};
+    if (stream > 2) return;
+    cBStreamC[stream]->setChecked(enabled);
+
+    updateEnable();
+}
+//---------------------------------------------------------------------------
+int OutputStrDialog::getStreamEnabled(int stream)
+{
+    QCheckBox *cBStreamC[] = {ui->cBStream1C, ui->cBStream2C};
+    if (stream > 2) return -1;
+    return cBStreamC[stream]->isChecked();
+}
+//---------------------------------------------------------------------------
+void OutputStrDialog::setStreamType(int stream, int type)
+{
+    QComboBox *cBStream[] = {ui->cBStream1, ui->cBStream2};
+    if (stream > 2) return;
+    cBStream[stream]->setCurrentIndex(type);
+
+    updateEnable();
+}
+//---------------------------------------------------------------------------
+void OutputStrDialog::setStreamFormat(int stream, int format)
+{
+    QComboBox *cBFormat[] = {ui->cBFormat1, ui->cBFormat2};
+    if (stream > 2) return;
+    cBFormat[stream]->setCurrentIndex(format);
+    updateEnable();
+}
+//---------------------------------------------------------------------------
+int OutputStrDialog::getStreamFormat(int stream)
+{
+    QComboBox *cBFormat[] = {ui->cBFormat1, ui->cBFormat2};
+    if (stream > 2) return -1;
+    return cBFormat[stream]->currentIndex();
+}
+
+//---------------------------------------------------------------------------
+int OutputStrDialog::getStreamType(int stream)
+{
+    QComboBox *cBStream[] = {ui->cBStream1, ui->cBStream2};
+    if (stream > 2) return -1;
+    return cBStream[stream]->currentIndex();
+};
+//---------------------------------------------------------------------------
+void OutputStrDialog::setPath(int stream, int type, const QString &path)
+{
+    QLineEdit *edits[] = {ui->lEFilePath1, ui->lEFilePath2};
+    if (stream > 2) return;
+    paths[stream][type] = path;
+    if (type == 2)
+    {
+        edits[stream]->setText(path);
+    };
+}
+//---------------------------------------------------------------------------
+QString OutputStrDialog::getPath(int stream, int type)
+{
+    QLineEdit *edits[] = {ui->lEFilePath1, ui->lEFilePath2};
+    if (stream > 2) return "";
+    if (type == 2)
+        return setFilePath(edits[stream]->text());
+
+    return paths[stream][type];
+}
+//---------------------------------------------------------------------------
+void OutputStrDialog::setTimeTagEnabled(bool ena)
+{
+    ui->cBTimeTag->setChecked(ena);
+}
+//---------------------------------------------------------------------------
+bool OutputStrDialog::getTimeTagEnabled(){
+    return ui->cBTimeTag->isChecked();
+}
+//---------------------------------------------------------------------------
+void OutputStrDialog::setSwapInterval(const QString & swapInterval)
+{
+    QString interval_str = swapInterval + " h";
+    if (ui->cBSwapInterval->findText(interval_str) == -1)
+        ui->cBSwapInterval->insertItem(0, interval_str);
+    ui->cBSwapInterval->setCurrentText(interval_str);
+}
+//---------------------------------------------------------------------------
+QString OutputStrDialog::getSwapInterval()
+{
+    return ui->cBSwapInterval->currentText().split(' ').first();
+};
+//---------------------------------------------------------------------------
+void OutputStrDialog::setHistory(int i, const QString &history)
+{
+    this->history[i] = history;
+}
+//---------------------------------------------------------------------------
+const QString &OutputStrDialog::getHistory(int i)
+{
+    return history[i];
 }
 //---------------------------------------------------------------------------

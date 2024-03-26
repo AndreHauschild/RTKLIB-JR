@@ -3,25 +3,34 @@
 #ifndef mapviewoptH
 #define mapviewoptH
 //---------------------------------------------------------------------------
-#include "ui_mapviewopt.h"
-
 #include <QDialog>
 
+namespace Ui {
+class MapViewOpt;
+}
+
 //---------------------------------------------------------------------------
-class MapViewOptDialog : public QDialog, private Ui::MapViewOpt
+class MapViewOptDialog : public QDialog
 {
     Q_OBJECT
 
+public:
+    MapViewOptDialog(QWidget* parent);
+
+    void setApiKey(const QString &);
+    QString getApiKey();
+
+    void setMapStrings(int, const QString &, const QString &, const QString &);
+    void getMapStrings(int, QString &, QString &, QString &);
+
+private:
+    Ui::MapViewOpt *ui;
+
 protected:
-     void showEvent(QShowEvent*);
+    QString attrs[6];
 
 public slots:
-    void btnOkClicked();
-    void btnNotesClicked();
-public:
-    QString mapStrings[6][3];
-    QString apiKey;
-    MapViewOptDialog(QWidget* parent);
+    void showNotes();    
 };
 
 //---------------------------------------------------------------------------

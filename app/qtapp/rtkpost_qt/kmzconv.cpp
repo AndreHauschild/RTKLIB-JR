@@ -1,11 +1,4 @@
 //---------------------------------------------------------------------------
-#include <string.h>
-
-#include "postmain.h"
-#include "kmzconv.h"
-#include "rtklib.h"
-#include "viewer.h"
-
 #include <QShowEvent>
 #include <QFileDialog>
 #include <QFileInfo>
@@ -13,14 +6,34 @@
 #include <QtGlobal>
 #include <QFileSystemModel>
 #include <QCompleter>
+#include <QAction>
 
-extern MainForm *mainForm;
+#include <string.h>
+
+#include "postmain.h"
+#include "viewer.h"
+#include "helper.h"
+#include "kmzconv.h"
+
+#include "ui_kmzconv.h"
+
+#include "rtklib.h"
+
+#ifdef Q_OS_WIN
+#define GOOGLE_EARTH "C:\\Program Files\\Google\\Google Earth Pro\\client\\googleearth.exe"
+#endif
+#ifdef Q_OS_LINUX
+#define GOOGLE_EARTH "google-earth"
+#endif
+#ifndef GOOGLE_EARTH
+#define GOOGLE_EARTH ""
+#endif
 
 //---------------------------------------------------------------------------
 ConvDialog::ConvDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::ConvDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
     viewer = new TextViewer(this);
 
@@ -28,51 +41,52 @@ ConvDialog::ConvDialog(QWidget *parent)
     QFileSystemModel *fileModel = new QFileSystemModel(fileCompleter);
     fileModel->setRootPath("");
     fileCompleter->setModel(fileModel);
-    lEInputFile->setCompleter(fileCompleter);
-    lEOutputFile->setCompleter(fileCompleter);
-    lEGoogleEarthFile->setCompleter(fileCompleter);
+    ui->lEInputFile->setCompleter(fileCompleter);
+    ui->lEOutputFile->setCompleter(fileCompleter);
+    ui->lEGoogleEarthFile->setCompleter(fileCompleter);
 
-    connect(btnClose, &QPushButton::clicked, this, &ConvDialog::accept);
-    connect(btnConvert, &QPushButton::clicked, this, &ConvDialog::btnConvertClicked);
-    connect(btnGoogleEarthFile, &QPushButton::clicked, this, &ConvDialog::btnGoogleEarthFileClicked);
-    connect(btnView, &QPushButton::clicked, this, &ConvDialog::btnViewClicked);
-    connect(btnGoogleEarth, &QPushButton::clicked, this, &ConvDialog::btnGoogleEarthClick);
-    connect(cBAddOffset, &QCheckBox::clicked, this, &ConvDialog::updateEnable);
-    connect(cBTimeSpan, &QCheckBox::clicked, this, &ConvDialog::updateEnable);
-    connect(sBTimeInterval, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &ConvDialog::updateEnable);
-    connect(lEInputFile, &QLineEdit::editingFinished, this, &ConvDialog::updateEnable);
-    connect(cBCompress, &QCheckBox::clicked, this, &ConvDialog::updateOutputFile);
-    connect(lEGoogleEarthFile, &QLineEdit::editingFinished, this, &ConvDialog::googleEarthFileChanged);
-    connect(btnInputFile, &QPushButton::clicked, this, &ConvDialog::btnInputFileClicked);
-    connect(rBFormatKML, &QRadioButton::clicked, this, &ConvDialog::formatKMLClicked);
-    connect(rBFormatGPX, &QRadioButton::clicked, this, &ConvDialog::formatGPXClicked);
+    // Google Earth file line edit actions
+    QAction *acGoogleEarthFileSelect = ui->lEGoogleEarthFile->addAction(QIcon(":/buttons/folder"), QLineEdit::TrailingPosition);
+    acGoogleEarthFileSelect->setToolTip(tr("Select Google Earth Executable"));
 
-	updateEnable();
+    // input file line edit actions
+    QAction *acInputFileSelect = ui->lEInputFile->addAction(QIcon(":/buttons/folder"), QLineEdit::TrailingPosition);
+    acInputFileSelect->setToolTip(tr("Select File"));
+
+    connect(ui->btnClose, &QPushButton::clicked, this, &ConvDialog::accept);
+    connect(ui->btnConvert, &QPushButton::clicked, this, &ConvDialog::convert);
+    connect(acGoogleEarthFileSelect, &QAction::triggered, this, &ConvDialog::selectGoogleEarthFile);
+    connect(ui->btnView, &QPushButton::clicked, this, &ConvDialog::viewOutputFile);
+    connect(ui->btnGoogleEarth, &QPushButton::clicked, this, &ConvDialog::callGoogleEarth);
+    connect(ui->cBAddOffset, &QCheckBox::clicked, this, &ConvDialog::updateEnable);
+    connect(ui->cBTimeSpan, &QCheckBox::clicked, this, &ConvDialog::updateEnable);
+    connect(ui->sBTimeInterval, static_cast<void (QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), this, &ConvDialog::updateEnable);
+    connect(ui->lEInputFile, &QLineEdit::editingFinished, this, &ConvDialog::updateEnable);
+    connect(acInputFileSelect, &QAction::triggered, this, &ConvDialog::selectInputFile);
+    connect(ui->cBCompress, &QCheckBox::clicked, this, &ConvDialog::updateOutputFile);
+    connect(ui->rBFormatKML, &QRadioButton::clicked, this, &ConvDialog::formatChanged);
+    connect(ui->rBFormatGPX, &QRadioButton::clicked, this, &ConvDialog::formatChanged);
+
+    ui->rBFormatGPX->setChecked(!ui->rBFormatKML->isChecked());
+
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConvDialog::showEvent(QShowEvent *event)
+void ConvDialog::setInput(const QString &filename)
 {
-    if (event->spontaneous()) return;
-
-    rBFormatGPX->setChecked(!rBFormatKML->isChecked());
-    lEGoogleEarthFile->setText(mainForm->googleEarthFile);
-}
-//---------------------------------------------------------------------------
-void ConvDialog::setInput(const QString &File)
-{
-    lEInputFile->setText(File);
+    ui->lEInputFile->setText(filename);
 	updateOutputFile();
 }
 
 //---------------------------------------------------------------------------
-void ConvDialog::btnInputFileClicked()
+void ConvDialog::selectInputFile()
 {
-    lEInputFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open..."), lEInputFile->text(), tr("All (*.*)"))));
+    ui->lEInputFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open..."), ui->lEInputFile->text(), tr("All (*.*)"))));
 }
 //---------------------------------------------------------------------------
-void ConvDialog::btnConvertClicked()
+void ConvDialog::convert()
 {
-    QString InputFile_Text = lEInputFile->text(), OutputFile_Text = lEOutputFile->text();
+    QString OutputFilename = ui->lEOutputFile->text();
 	int stat;
     QString cmd;
     QStringList opt;
@@ -82,64 +96,65 @@ void ConvDialog::btnConvertClicked()
 
 	showMessage("");
 
-    if (lEInputFile->text() == "" || lEOutputFile->text() == "") return;
+    if (ui->lEInputFile->text().isEmpty() || ui->lEOutputFile->text().isEmpty()) return;
 
-    showMessage(tr("converting ..."));
+    showMessage(tr("Converting ..."));
 
-    if (cBTimeSpan->isChecked()) {
-        QDateTime start(dateTimeStart->dateTime());
-        QDateTime end(dateTimeStop->dateTime());
+    if (ui->cBTimeSpan->isChecked()) {
+        QDateTime start(ui->dateTimeStart->dateTime());
+        QDateTime end(ui->dateTimeStop->dateTime());
         ts.time = start.toSecsSinceEpoch(); ts.sec = start.time().msec() / 1000;
         te.time = end.toSecsSinceEpoch(); te.sec = end.time().msec() / 1000;
   }
 
-    if (cBAddOffset->isChecked()) {
-        offset[0] = sBOffset1->value();
-        offset[1] = sBOffset2->value();
-        offset[2] = sBOffset3->value();
+    if (ui->cBAddOffset->isChecked()) {
+        offset[0] = ui->sBOffset1->value();
+        offset[1] = ui->sBOffset2->value();
+        offset[2] = ui->sBOffset3->value();
 	}
 
-    if (cBTimeInterval->isChecked()) tint = sBTimeInterval->value();
+    if (ui->cBTimeInterval->isChecked())
+        tint = ui->sBTimeInterval->value();
 
-    strncpy(file, qPrintable(InputFile_Text), 1024);
+    strncpy(file, qPrintable(ui->lEInputFile->text()), 1023);
 
-    if (rBFormatKML->isChecked()) {
-        if (cBCompress->isChecked()) {
+    if (ui->rBFormatKML->isChecked()) {
+        if (ui->cBCompress->isChecked()) { // generate .kml file and compress it afterwards
             strncpy(kmlfile, file, 1020);
             if (!(p = strrchr(kmlfile, '.'))) p = kmlfile + strlen(kmlfile);
             strncpy(p, ".kml", 5);
         }
-        stat = convkml(file, cBCompress->isChecked() ? kmlfile : qPrintable(OutputFile_Text),
-                   ts, te, tint, cBQFlags->currentIndex(), offset,
-                   cBTrackColor->currentIndex(), cBPointColor->currentIndex(),
-                   cBOutputAltitude->currentIndex(), cBOutputTime->currentIndex());
+        stat = convkml(file, ui->cBCompress->isChecked() ? kmlfile : qPrintable(OutputFilename),
+                   ts, te, tint, ui->cBQFlags->currentIndex(), offset,
+                   ui->cBTrackColor->currentIndex(), ui->cBPointColor->currentIndex(),
+                   ui->cBOutputAltitude->currentIndex(), ui->cBOutputTime->currentIndex());
     } else {
-        stat = convgpx(file, cBCompress->isChecked() ? kmlfile : qPrintable(OutputFile_Text),
-                   ts, te, tint, cBQFlags->currentIndex(), offset,
-                   cBTrackColor->currentIndex(), cBPointColor->currentIndex(),
-                   cBOutputAltitude->currentIndex(), cBOutputTime->currentIndex());
+        stat = convgpx(file, ui->cBCompress->isChecked() ? kmlfile : qPrintable(OutputFilename),
+                   ts, te, tint, ui->cBQFlags->currentIndex(), offset,
+                   ui->cBTrackColor->currentIndex(), ui->cBPointColor->currentIndex(),
+                   ui->cBOutputAltitude->currentIndex(), ui->cBOutputTime->currentIndex());
     }
 
     if (stat < 0) {
-        if (stat == -1) showMessage(tr("error : read input file"));
-        else if (stat == -2) showMessage(tr("error : input file format"));
-        else if (stat == -3) showMessage(tr("error : no data in input file"));
-        else showMessage(tr("error : write kml file"));
+        if (stat == -1) showMessage(tr("Error : Reading input file"));
+        else if (stat == -2) showMessage(tr("Error : Input file format"));
+        else if (stat == -3) showMessage(tr("Error : No data in input file"));
+        else showMessage(tr("Error : Writing kml file"));
 		return;
 	}
-    if (rBFormatKML->isChecked() && cBCompress->isChecked()) {
+    if (ui->rBFormatKML->isChecked() && ui->cBCompress->isChecked()) {
 #ifdef Q_OS_WIN
         cmd = "zip.exe";
-        opt << "-j"
-        opt << QString("-m %1").arg(lEOutputFile->text()); //TODO: zip for other platforms
+        opt << "-j";
+        opt << QString("-m %1").arg(ui->lEOutputFile->text()); //TODO: zip for other platforms
 #endif
 #ifdef Q_OS_LINUX
         cmd = "gzip";
-        opt << QString("-3 %1 %2").arg(lEOutputFile->text());
+        opt << QString("-3 %1 %2").arg(ui->lEOutputFile->text());
 #endif
         opt << kmlfile;
         if (!execCommand(cmd, opt)) {
-            showMessage(tr("error : zip execution"));
+            showMessage(tr("Error : zip execution"));
 			return;
 		}
 	}
@@ -149,25 +164,26 @@ void ConvDialog::btnConvertClicked()
 //---------------------------------------------------------------------------
 void ConvDialog::updateEnable()
 {
-    sBOffset1->setEnabled(cBAddOffset->isChecked());
-    sBOffset2->setEnabled(cBAddOffset->isChecked());
-    sBOffset3->setEnabled(cBAddOffset->isChecked());
-    dateTimeStart->setEnabled(cBTimeSpan->isChecked());
-    dateTimeStop->setEnabled(cBTimeSpan->isChecked());
-    sBTimeInterval->setEnabled(cBTimeInterval->isChecked());
+    ui->sBOffset1->setEnabled(ui->cBAddOffset->isChecked());
+    ui->sBOffset2->setEnabled(ui->cBAddOffset->isChecked());
+    ui->sBOffset3->setEnabled(ui->cBAddOffset->isChecked());
+    ui->dateTimeStart->setEnabled(ui->cBTimeSpan->isChecked());
+    ui->dateTimeStop->setEnabled(ui->cBTimeSpan->isChecked());
+    ui->sBTimeInterval->setEnabled(ui->cBTimeInterval->isChecked());
 
-    cBCompress->setVisible(rBFormatKML->isChecked());
-    lEGoogleEarthFile->setEnabled(rBFormatKML->isChecked());
-    btnGoogleEarthFile->setEnabled(rBFormatKML->isChecked());
-    btnGoogleEarth->setEnabled(rBFormatKML->isChecked());
+    ui->lEGoogleEarthFile->setEnabled(ui->rBFormatKML->isChecked());
+    ui->btnGoogleEarth->setEnabled(ui->rBFormatKML->isChecked());
 
-    cBCompress->setEnabled(false);
+    if (ui->rBFormatKML->isChecked()) {
+        ui->cBCompress->setEnabled(false);
 #ifdef Q_OS_WIN
-    cBCompress->setEnabled(true);
+        ui->cBCompress->setEnabled(true);
 #endif
 #ifdef Q_OS_LINUX
-    cBCompress->setEnabled(true);
+        ui->cBCompress->setEnabled(true);
 #endif
+    } else
+        ui->cBCompress->setEnabled(false);
 }
 //---------------------------------------------------------------------------
 int ConvDialog::execCommand(const QString &cmd, const QStringList &opt)
@@ -177,68 +193,110 @@ int ConvDialog::execCommand(const QString &cmd, const QStringList &opt)
 //---------------------------------------------------------------------------
 void ConvDialog::showMessage(const QString &msg)
 {
-    lblMessage->setText(msg);
-    if (msg.toLower().contains("error")) lblMessage->setStyleSheet("QLabel {color : red}");
-    else lblMessage->setStyleSheet("QLabel {color : blue}");
+    ui->lblMessage->setText(msg);
+    if (msg.contains("error", Qt::CaseInsensitive))
+        setWidgetTextColor(ui->lblMessage, Qt::red);
+    else
+        setWidgetTextColor(ui->lblMessage, Qt::blue);
 }
 //---------------------------------------------------------------------------
 void ConvDialog::updateOutputFile()
 {
-    QString inputFile_Text = lEInputFile->text();
+    QString inputFilename = ui->lEInputFile->text();
 
-    if (inputFile_Text == "") return;
+    if (inputFilename.isEmpty()) return;
 
-    QFileInfo fi(inputFile_Text);
-    if (fi.suffix().isNull()) return;
+    QFileInfo fi(inputFilename);
+    if (fi.suffix().isEmpty()) return;
 
-    inputFile_Text = QDir::toNativeSeparators(fi.absolutePath() + QDir::separator() + fi.baseName());
-    inputFile_Text += rBFormatGPX->isChecked() ? ".gpx" : (cBCompress->isChecked() ? ".kmz" : ".kml");
-    lEOutputFile->setText(inputFile_Text);
+    QString filename = fi.baseName() + (ui->rBFormatGPX->isChecked() ? ".gpx" : (ui->cBCompress->isChecked() ? ".kmz" : ".kml"));
+
+    ui->lEOutputFile->setText(fi.absoluteDir().absoluteFilePath(filename));
 }
 //---------------------------------------------------------------------------
-void ConvDialog::googleEarthFileChanged()
+void ConvDialog::selectGoogleEarthFile()
 {
-    mainForm->googleEarthFile = lEGoogleEarthFile->text();
+    ui->lEGoogleEarthFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Google Earth Exe File"), ui->lEGoogleEarthFile->text())));
 }
 //---------------------------------------------------------------------------
-void ConvDialog::btnGoogleEarthFileClicked()
-{
-    lEGoogleEarthFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Google Earth Exe File"), lEGoogleEarthFile->text())));
-}
-//---------------------------------------------------------------------------
-void ConvDialog::btnGoogleEarthClick()
+void ConvDialog::callGoogleEarth()
 {
     QString cmd;
     QStringList opt;
 
-    cmd = lEGoogleEarthFile->text();
-    opt << lEOutputFile->text();
+    cmd = ui->lEGoogleEarthFile->text();
+    opt << ui->lEOutputFile->text();
     
     if (!execCommand(cmd, opt))
-        showMessage(tr("error : Google Earth execution"));
+        showMessage(tr("Error : Google Earth execution"));
 
     return;
 }
-void ConvDialog::formatKMLClicked()
+//---------------------------------------------------------------------------
+void ConvDialog::formatChanged()
 {
     updateOutputFile();
     updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConvDialog::formatGPXClicked()
+void ConvDialog::viewOutputFile()
 {
-    updateOutputFile();
-    updateEnable();
-}
-//---------------------------------------------------------------------------
-void ConvDialog::btnViewClicked()
-{
-    QString file = lEOutputFile->text();
+    QString file = ui->lEOutputFile->text();
 
-    if (file == "") return;
+    if (file.isEmpty()) return;
 
     viewer->setWindowTitle(file);
     viewer->show();
     viewer->read(file);
+}
+//---------------------------------------------------------------------------
+void ConvDialog::loadOptions(QSettings &ini)
+{
+    ui->cBTimeSpan->setChecked(ini.value("conv/timespan", 0).toInt());
+    ui->cBTimeInterval->setChecked(ini.value("conv/timeintf", 0).toInt());
+    ui->dateTimeStart->setDate(ini.value("conv/timey1", QDate(2000, 1, 1)).toDate());
+    ui->dateTimeStart->setTime(ini.value("conv/timeh1", QTime(0, 0, 0)).toTime());
+    ui->dateTimeStop->setDate(ini.value("conv/timey2", QDate(2000, 1, 1)).toDate());
+    ui->dateTimeStop->setTime(ini.value("conv/timeh2", QTime(0, 0, 0)).toTime());
+    ui->sBTimeInterval->setValue(ini.value ("conv/timeint", 0.0).toDouble());
+    ui->cBTrackColor->setCurrentIndex(ini.value("conv/trackcolor", 5).toInt());
+    ui->cBPointColor->setCurrentIndex(ini.value("conv/pointcolor", 5).toInt());
+    ui->cBOutputAltitude->setCurrentIndex(ini.value("conv/outputalt", 0).toInt());
+    ui->cBOutputTime->setCurrentIndex(ini.value("conv/outputtime",0).toInt());
+    ui->cBAddOffset->setChecked(ini.value("conv/addoffset", 0).toInt());
+    ui->sBOffset1->setValue(ini.value("conv/offset1", 0).toDouble());
+    ui->sBOffset2->setValue(ini.value("conv/offset2", 0).toDouble());
+    ui->sBOffset3->setValue(ini.value("conv/offset3", 0).toDouble());
+    ui->cBCompress->setChecked(ini.value("conv/compress", 0).toInt());
+    ui->rBFormatKML->setChecked(ini.value("conv/format", 0).toInt());
+
+    ui->lEGoogleEarthFile->setText(ini.value("opt/googleearthfile", GOOGLE_EARTH).toString());
+
+    viewer->loadOptions(ini);
+}
+//---------------------------------------------------------------------------
+void ConvDialog::saveOptions(QSettings &ini)
+{
+    ini.setValue ("conv/timespan", ui->cBTimeSpan->isChecked());
+    ini.setValue ("conv/timey1", ui->dateTimeStart->date());
+    ini.setValue ("conv/timeh1", ui->dateTimeStart->time());
+    ini.setValue ("conv/timey2", ui->dateTimeStop->date());
+    ini.setValue ("conv/timeh2", ui->dateTimeStop->time());
+    ini.setValue ("conv/timeintf", ui->cBTimeInterval->isChecked());
+    ini.setValue ("conv/timeint", ui->sBTimeInterval->text());
+    ini.setValue ("conv/trackcolor", ui->cBTrackColor->currentIndex());
+    ini.setValue ("conv/pointcolor", ui->cBPointColor->currentIndex());
+    ini.setValue ("conv/outputalt", ui->cBOutputAltitude->currentIndex());
+    ini.setValue ("conv/outputtime", ui->cBOutputTime->currentIndex());
+    ini.setValue ("conv/addoffset", ui->cBAddOffset ->isChecked());
+    ini.setValue ("conv/offset1", ui->sBOffset1->text());
+    ini.setValue ("conv/offset2", ui->sBOffset2->text());
+    ini.setValue ("conv/offset3", ui->sBOffset3->text());
+    ini.setValue ("conv/compress", ui->cBCompress->isChecked());
+    ini.setValue ("conv/format", ui->rBFormatKML->isChecked());
+
+    ini.setValue("opt/googleearthfile", ui->lEGoogleEarthFile->text());
+
+    viewer->saveOptions(ini);
 }
 //---------------------------------------------------------------------------

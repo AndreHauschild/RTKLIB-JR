@@ -2,12 +2,20 @@
 
 #ifndef freqdlgH
 #define freqdlgH
-//---------------------------------------------------------------------------
-#include "ui_freqdlg.h"
+
+#include <QDialog>
 
 //---------------------------------------------------------------------------
-class FreqDialog : public QDialog, private Ui::FreqDialog
+namespace Ui {
+class FreqDialog;
+}
+
+//---------------------------------------------------------------------------
+class FreqDialog : public QDialog
 {
+private:
+    Ui::FreqDialog *ui;
+
 public:
     FreqDialog(QWidget* parent);
 };

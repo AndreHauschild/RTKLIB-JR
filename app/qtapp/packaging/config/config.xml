@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Installer>
+    <Name>RtkLib</Name>
+    <Version>2.4.2-34</Version>
+    <Title>RtkLib Installer</Title>
+    <Publisher>RtkLib</Publisher>
+    <ProductUrl>https://www.rtklib.com/</ProductUrl>
+    <StartMenuDir>RtkLib</StartMenuDir>
+    <InstallerApplicationIcon>rtklib_icon</InstallerApplicationIcon>
+    <InstallerWindowIcon>rtklib.png</InstallerWindowIcon>
+    <Logo>rtklib_logo.png</Logo>
+    <!--<TargetDir>@HomeDir@/</TargetDir>-->
+</Installer>

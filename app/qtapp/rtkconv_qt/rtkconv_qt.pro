@@ -1,15 +1,11 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-01-30T18:29:59
-#
-#-------------------------------------------------
-
-QT       += widgets core gui
+QT += widgets core gui
 
 include(../qtapp.pri)
 
-TARGET = rtkconv_qt
 TEMPLATE = app
+TARGET = rtkconv_qt
+target.path = $$INSTALLROOT/bin
+INSTALLS += target
 
 INCLUDEPATH += ../../../src/ ../appcmn_qt
 
@@ -59,6 +55,21 @@ FORMS    += \
     ../appcmn_qt/freqdlg.ui
 
 RESOURCES += \
-    rtkconv_qt.qrc
+    ../appcmn_qt/appcmn_qt.qrc \
+    ../icon/resources.qrc
 
 RC_FILE = rtkconv_qt.rc
+
+desktop.path   = $$INSTALLROOT/share/applications/
+desktop.files += rtkconv_qt.desktop
+INSTALLS      += desktop
+
+icons.path   = $$INSTALLROOT/share/pixmaps/
+icons.files += ../icon/rtkconv.png
+INSTALLS    += icons
+
+win32 {
+CONFIG(release,debug|release) {
+QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$OUT_PWD/release/$${TARGET}.exe) $$shell_path($$PKGDIR/packages/com.rtklib.$${TARGET}/data)
+}
+}

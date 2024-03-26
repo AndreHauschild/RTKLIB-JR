@@ -9,39 +9,41 @@
 #include <QTreeView>
 #include <QFileSystemModel>
 #include <QRegularExpression>
+#include <QPushButton>
 
-extern Plot *plot;
+#include "ui_fileseldlg.h"
+
 
 //---------------------------------------------------------------------------
-FileSelDialog::FileSelDialog(QWidget *parent)
-    : QDialog(parent)
+FileSelDialog::FileSelDialog(Plot *plt, QWidget *parent)
+    : QDialog(parent), plot(plt), ui(new Ui::FileSelDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
     dirModel = new QFileSystemModel(this);
     dirModel->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
 #ifdef FLOATING_DIRSELECTOR
-    DirSelector = new QTreeView(0);
-    DirSelector->setWindowFlags(Qt::Window | Qt::X11BypassWindowManagerHint | Qt::FramelessWindowHint);
+    directorySelector = new QTreeView(0);
+    directorySelector->setWindowFlags(Qt::Window | Qt::X11BypassWindowManagerHint | Qt::FramelessWindowHint);
 #else
     directorySelector = new QTreeView(this);
 #endif
-    Panel2->layout()->addWidget(directorySelector);
+    ui->vPanelDirectory->layout()->addWidget(directorySelector);
     directorySelector->setModel(dirModel);
     directorySelector->hideColumn(1); directorySelector->hideColumn(2); directorySelector->hideColumn(3); //only show names
 
     fileModel = new QFileSystemModel(this);
     fileModel->setFilter((fileModel->filter() & ~QDir::Dirs & ~QDir::AllDirs));
     fileModel->setNameFilterDisables(false);
-    lVFileList->setModel(fileModel);
+    ui->lVFileList->setModel(fileModel);
 
-    connect(cBDriveSelect, SIGNAL(currentIndexChanged(int)), this, SLOT(driveSelectionChanged()));
-    connect(directorySelector, SIGNAL(clicked(QModelIndex)), this, SLOT(directroySelectChanged(QModelIndex)));
-    connect(directorySelector, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(directorySelectSelected(QModelIndex)));
-    connect(btnDirectorySelect, SIGNAL(clicked(bool)), this, SLOT(btnDirectorySelectClicked()));
-    connect(lVFileList, SIGNAL(clicked(QModelIndex)), this, SLOT(fileListClicked(QModelIndex)));
-    connect(cBFilter, SIGNAL(currentIndexChanged(int)), this, SLOT(filterClicked()));
+    connect(ui->cBDriveSelect, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &FileSelDialog::driveSelectionChanged);
+    connect(directorySelector, &QTreeView::clicked, this, &FileSelDialog::directroySelectChanged);
+    connect(directorySelector, &QTreeView::doubleClicked, this, &FileSelDialog::hideDirectorySelector);
+    connect(ui->btnDirectorySelect, &QPushButton::clicked, this, &FileSelDialog::toggleDirectorySelectorVisibility);
+    connect(ui->lVFileList, &QListView::clicked, this, &FileSelDialog::fileListClicked);
+    connect(ui->cBFilter, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &FileSelDialog::updateFilter);
 }
 //---------------------------------------------------------------------------
 FileSelDialog::~FileSelDialog()
@@ -55,39 +57,30 @@ void FileSelDialog::showEvent(QShowEvent *event)
 
     QFileInfoList drives = QDir::drives();
     if (drives.size() > 1 && drives.at(0).filePath() != "/") {
-        Panel1->setVisible(true);
-        cBDriveSelect->clear();
+        ui->cBDriveSelect->setVisible(true);
+        ui->cBDriveSelect->clear();
 
-        foreach(const QFileInfo &drive, drives) {
-            cBDriveSelect->addItem(drive.filePath());
-        }
+        foreach(const QFileInfo &drive, drives)
+            ui->cBDriveSelect->addItem(drive.filePath());
     } else {
-        Panel1->setVisible(false); // do not show drive selection on unix
+        ui->cBDriveSelect->setVisible(false); // do not show drive selection on unix
     }
-    if (directory == "") directory = drives.at(0).filePath();
-
-    cBDriveSelect->setCurrentText(directory.mid(0, directory.indexOf(":") + 2));
-    dirModel->setRootPath(directory);
-    directorySelector->setVisible(false);
-    lblDirectorySelected->setText(directory);
-    fileModel->setRootPath(directory);
-    lVFileList->setRootIndex(fileModel->index(directory));
 }
 //---------------------------------------------------------------------------
 void FileSelDialog::driveSelectionChanged()
 {
     directorySelector->setVisible(false);
 
-    directorySelector->setRootIndex(dirModel->index(cBDriveSelect->currentText()));
-    lblDirectorySelected->setText(cBDriveSelect->currentText());
+    directorySelector->setRootIndex(dirModel->index(ui->cBDriveSelect->currentText()));
+    ui->lblDirectorySelected->setText(ui->cBDriveSelect->currentText());
 }
 //---------------------------------------------------------------------------
-void FileSelDialog::btnDirectorySelectClicked()
+void FileSelDialog::toggleDirectorySelectorVisibility()
 {
 #ifdef FLOATING_DIRSELECTOR
-    QPoint pos = Panel5->mapToGlobal(BtnDirSel->pos());
-    pos.rx() += BtnDirSel->width() - DirSelector->width();
-    pos.ry() += BtnDirSel->height();
+    QPoint pos = Panel5->mapToGlobal(btnDirectorySelect->pos());
+    pos.rx() += btnDirectorySelect->width() - directorySelector->width();
+    pos.ry() += btnDirectorySelect->height();
 
     DirSelector->move(pos);
 #endif
@@ -98,13 +91,13 @@ void FileSelDialog::directroySelectChanged(QModelIndex index)
 {
     directorySelector->expand(index);
 
-    directory = dirModel->filePath(index);
-    lblDirectorySelected->setText(directory);
+    QString directory = dirModel->filePath(index);
+    ui->lblDirectorySelected->setText(directory);
     fileModel->setRootPath(directory);
-    lVFileList->setRootIndex(fileModel->index(directory));
+    ui->lVFileList->setRootIndex(fileModel->index(directory));
 }
 //---------------------------------------------------------------------------
-void FileSelDialog::directorySelectSelected(QModelIndex)
+void FileSelDialog::hideDirectorySelector(QModelIndex)
 {
     directorySelector->setVisible(false);
 }
@@ -119,9 +112,9 @@ void FileSelDialog::fileListClicked(QModelIndex index)
     directorySelector->setVisible(false);
 }
 //---------------------------------------------------------------------------
-void FileSelDialog::filterClicked()
+void FileSelDialog::updateFilter()
 {
-    QString filter = cBFilter->currentText();
+    QString filter = ui->cBFilter->currentText();
 
     // only keep data between brackets
     filter = filter.mid(filter.indexOf("(") + 1);
@@ -129,5 +122,26 @@ void FileSelDialog::filterClicked()
 
     fileModel->setNameFilters(filter.split(" "));
     directorySelector->setVisible(false);
+}
+//---------------------------------------------------------------------------
+QString FileSelDialog::getDirectory()
+{
+    return fileModel->rootPath();
+}
+//---------------------------------------------------------------------------
+void FileSelDialog::setDirectory(const QString &dir)
+{
+    QFileInfoList drives = QDir::drives();
+    QString directory = dir;
+
+    if (directory.isEmpty()) directory = drives.at(0).filePath();
+
+    ui->cBDriveSelect->setCurrentText(directory.mid(0, directory.indexOf(":") + 2));
+    dirModel->setRootPath(directory);
+    directorySelector->setVisible(false);
+    ui->lblDirectorySelected->setText(directory);
+    fileModel->setRootPath(directory);
+    ui->lVFileList->setRootIndex(fileModel->index(directory));
+
 }
 //---------------------------------------------------------------------------

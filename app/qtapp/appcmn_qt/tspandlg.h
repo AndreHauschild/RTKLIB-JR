@@ -18,19 +18,31 @@ class SpanDialog : public QDialog, public Ui::SpanDialog
 protected:
     void showEvent(QShowEvent*);
 
+    int timeValid[3];
+
 public slots:
-    void BtnOkClick();
-    void TimeStartFClick();
-    void TimeEndFClick();
-    void TimeIntFClick();
+    void showStartTimeDialog();
+    void showEndTimeDialog();
 
 private:
-    void UpdateEnable(void);
+    void updateEnable();
 
 public:
-    int TimeEna[3], TimeVal[3];
-    gtime_t TimeStart, TimeEnd;
-	double TimeInt;
+
+    gtime_t getStartTime();
+    void setStartTime(gtime_t);
+
+    gtime_t getEndTime();
+    void setEndTime(gtime_t);
+
+    double getTimeInterval();
+    void setTimeInterval(double);
+
+    int getTimeEnable(int i);
+    void setTimeEnable(int i, bool enable);
+
+    int getTimeValid(int i);
+    void setTimeValid(int i, int valid);
 
     explicit SpanDialog(QWidget* parent);
 };

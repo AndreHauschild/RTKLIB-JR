@@ -4,37 +4,45 @@
 
 //---------------------------------------------------------------------------
 #include <QDialog>
-
-#include "ui_fileseldlg.h"
+#include <QModelIndex>
 
 class QShowEVent;
 class QTreeView;
 class QFileSystemModel;
-class QModelIndex;
+class Plot;
+
+namespace Ui {
+class FileSelDialog;
+}
 
 //---------------------------------------------------------------------------
-class FileSelDialog : public QDialog, private Ui::FileSelDialog
+class FileSelDialog : public QDialog
 {
     Q_OBJECT
+
+public:
+    explicit FileSelDialog(Plot *plot, QWidget *parent=0);
+    ~FileSelDialog();
+
+    QString getDirectory();
+    void setDirectory(const QString &);
 
 public slots:
     void fileListClicked(QModelIndex);
     void directroySelectChanged(QModelIndex);
-    void directorySelectSelected(QModelIndex);
+    void hideDirectorySelector(QModelIndex);
     void driveSelectionChanged();
-    void filterClicked();
-    void btnDirectorySelectClicked();
+    void updateFilter();
+    void toggleDirectorySelectorVisibility();
 
 protected:
     void showEvent(QShowEvent*);
     QTreeView *directorySelector;
     QFileSystemModel *fileModel, *dirModel;
+    Plot *plot;
 
-public:
-    QString directory;
-
-    explicit FileSelDialog(QWidget *parent=0);
-    ~FileSelDialog();
+private:
+    Ui::FileSelDialog *ui;
 };
 //---------------------------------------------------------------------------
 #endif

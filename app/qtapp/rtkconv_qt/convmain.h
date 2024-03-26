@@ -5,9 +5,11 @@
 #include <QMainWindow>
 #include <QThread>
 
-#include "ui_convmain.h"
-
 #include "rtklib.h"
+
+namespace Ui {
+class MainWindow;
+}
 
 class QShowEvent;
 class QCloseEvent;
@@ -53,9 +55,14 @@ protected:
 };
 
 //---------------------------------------------------------------------------
-class MainWindow : public QMainWindow, public Ui::MainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
+
+public:
+    explicit MainWindow(QWidget *parent = 0);
+
+    void showMessage(const QString &);
 
 protected:
     void showEvent(QShowEvent*);
@@ -63,44 +70,44 @@ protected:
     void dragEnterEvent(QDragEnterEvent *);
     void dropEvent(QDropEvent *);
 
-public slots:
-    void showRtkPlot();
-    void btnOptionsClicked();
-    void btnAboutClicked();
-    void btnTimeStartClicked();
-    void btnTimeStopClicked();
-    void btnInputFileClicked();
-    void btnOutputFile1Clicked();
-    void btnOutputFile2Clicked();
-    void btnOutputFile3Clicked();
-    void btnOutputFile4Clicked();
-    void btnOutputFile5Clicked();
-    void btnOutputFile6Clicked();
-    void btnOutputFile7Clicked();
-    void btnOutputFile8Clicked();
-    void btnOutputFile9Clicked();
-    void btnOutputFileView1Clicked();
-    void btnOutputFileView2Clicked();
-    void btnOutputFileView3Clicked();
-    void btnOutputFileView4Clicked();
-    void btnOutputFileView5Clicked();
-    void btnOutputFileView6Clicked();
-    void btnOutputFileView7Clicked();
-    void btnOutputFileView8Clicked();
-    void btnOutputFileView9Clicked();
-    void btnAbortClicked();
-    void outputDirrectoryEnableClicked();
+protected slots:
+    void callRtkPlot();
+    void showOptions();
+    void showAboutDialog();
+    void showStartTimeDialog();
+    void showStopTimeDialog();
+    void selectInputFile();
+    void selectOutputFile1();
+    void selectOutputFile2();
+    void selectOutputFile3();
+    void selectOutputFile4();
+    void selectOutputFile5();
+    void selectOutputFile6();
+    void selectOutputFile7();
+    void selectOutputFile8();
+    void selectOutputFile9();
+    void viewOutputFile1();
+    void viewOutputFile2();
+    void viewOutputFile3();
+    void viewOutputFile4();
+    void viewOutputFile5();
+    void viewOutputFile6();
+    void viewOutputFile7();
+    void viewOutputFile8();
+    void viewOutputFile9();
+    void abort();
+    void outputDirectoryEnableClicked();
 	
     void inputFileChanged();
     void outputDirectoryChanged();
-    void btnOutputDirrectoryClicked();
-    void btnKeyClicked();
-    void btnPostClicked();
-    void btnInputFileViewClicked();
+    void selectOutputDirectory();
+    void showKeyDialog();
+    void callRtkPost();
+    void viewInputFile();
     void conversionFinished();
     void updateEnable();
 
-    void convertFile(void);
+    void convertFile();
 
 private:
     QString iniFile, commandPostExe;
@@ -115,8 +122,8 @@ private:
     void getTime(gtime_t *ts, gtime_t *te, double *tint, double *tunit);
     int  execCommand(const QString &cmd, QStringList &opt);
     QString repPath(const QString &File);
-    void loadOptions(void);
-    void saveOptions(void);
+    void loadOptions();
+    void saveOptions();
 		
     ConvOptDialog *convOptDialog;
     TimeDialog *timeDialog;
@@ -124,17 +131,8 @@ private:
     AboutDialog* aboutDialog;
     StartDialog* startDialog;
     TextViewer *viewer;
-public:
-    gtime_t rinexTime;
-    QString runBy, marker, markerNo, markerType, name[2], receiver[3], antenna[3];
-    QString rinexStationCode, comment[2], receiverOptions, excludedSatellites;
-    QString codeMask[7];
-    double approxPosition[3], antennaDelta[3], timeTolerance;
-    int rinexVersion, rinexFile, navSys, observationType, frequencyType, traceLevel;
-    int autoPosition, phaseShift, halfCycle, outputIonoCorr, outputTimeCorr, outputLeapSeconds, separateNavigation;
-    int enableGlonassFrequency, glonassFrequency[27];
-	
-    explicit MainWindow(QWidget *parent=0);
+
+    Ui::MainWindow *ui;
 };
 //---------------------------------------------------------------------------
 #endif

@@ -5,35 +5,46 @@
 
 #include <QDialog>
 
-#include "ui_refdlg.h"
+namespace Ui {
+class RefDialog;
+}
 
 //---------------------------------------------------------------------------
-class RefDialog : public QDialog, public Ui::RefDialog
+class RefDialog : public QDialog
 {
     Q_OBJECT
 
 protected:
     void  showEvent(QShowEvent *);
 
-public slots:
-    void  btnOKClicked();
-    void  stationListDblClick(int, int);
-    void  btnLoadClicked();
-    void  findList(void);
+protected slots:
+    void  saveClose();
+    void  stationSelected(int, int);
+    void  loadStations();
+    void  findList();
 
 private:
-    void  loadList(void);
-    void  loadSinex(void);
+    void  loadList(QString filename);
+    void  loadSinex(QString filename);
     void  addReference(int n, double *pos, const QString code, const QString name);
-    int   selectReference(void);
-    void  updateDistances(void);
+    int   validReference();
+    void  updateDistances();
+
+    int options, fontScale;
+    double roverPosition[3];
+    Ui::RefDialog *ui;
 
 public:
-    QString stationPositionFile, stationId, stationName;
-    int options, fontScale;
-    double position[3], roverPosition[3];
+    explicit RefDialog(QWidget* parent, int options = 0);
 
-    explicit RefDialog(QWidget* parent);
+    void setRoverPosition(double lat, double lon, double h);
+    double *getPosition();
+
+    QString getStationId();
+    QString getStationName();
+    void setLoadEnabled(bool);
+    bool getLoadEnabled();
+    QString stationPositionFile;
 };
 //---------------------------------------------------------------------------
 #endif

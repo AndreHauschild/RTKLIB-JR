@@ -6,147 +6,137 @@
 #include <QDebug>
 
 #include "rtklib.h"
-#include "refdlg.h"
 #include "pntdlg.h"
 #include "plotmain.h"
 
-extern Plot *plot;
+#include "ui_pntdlg.h"
 
 //---------------------------------------------------------------------------
-PntDialog::PntDialog(QWidget *parent)
-    : QDialog(parent)
+PntDialog::PntDialog(Plot *_plot, QWidget *parent)
+    : QDialog(parent), plot(_plot), ui(new Ui::PntDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
+    int width[] = {90, 90, 80, 90};
+    int fontScale = QFontMetrics(ui->tWPntList->font()).height() * 4;
     QStringList labels;
 
     labels << tr("Latitude (°)") << tr("Longitude (°)") << tr("Height (m)") << tr("Name");
 
-    tWPntList->setColumnCount(3);
-    tWPntList->setHorizontalHeaderLabels(labels);
+    ui->tWPntList->setColumnCount(4);
+    ui->tWPntList->setHorizontalHeaderLabels(labels);
+    for (int i = 0; i < 4; i++)
+        ui->tWPntList->setColumnWidth(i, width[i] * fontScale / 96);
 
     noUpdate = false;
 
-    connect(btnClose, SIGNAL(clicked(bool)), this, SLOT(close()));
-    connect(btnUpdate, SIGNAL(clicked(bool)), this, SLOT(btnUpdateClicked()));
-    connect(btnDelete, SIGNAL(clicked(bool)), this, SLOT(btnDeleteClicked()));
-    connect(btnAdd, SIGNAL(clicked(bool)), this, SLOT(btnAddClicked()));
-    connect(tWPntList, SIGNAL(itemChanged(QTableWidgetItem *)), this, SLOT(pntListSetEditText()));
-    connect(tWPntList, SIGNAL(itemSelectionChanged()), this, SLOT(pntListClicked()));
-    connect(tWPntList, SIGNAL(itemDoubleClicked(QTableWidgetItem *)), this, SLOT(pntListDblClicked(QTableWidgetItem *)));
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &PntDialog::close);
+    connect(ui->btnUpdate, &QPushButton::clicked, this, &PntDialog::updatePoints);
+    connect(ui->btnAdd, &QPushButton::clicked, this, &PntDialog::addPoint);
+    connect(ui->btnDelete, &QPushButton::clicked, this, &PntDialog::deletePoint);
+    connect(ui->tWPntList, &QTableWidget::itemChanged, this, &PntDialog::updatePoints);
+    connect(ui->tWPntList, &QTableWidget::itemSelectionChanged, this, &PntDialog::selectPoint);
+    connect(ui->tWPntList, &QTableWidget::itemDoubleClicked, this, &PntDialog::centerPoint);
 }
 //---------------------------------------------------------------------------
 void PntDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    int width[] = { 90, 90, 80, 90 };
-
-    fontScale = this->physicalDpiX();
-    for (int i = 0; i < 4; i++)
-        tWPntList->setColumnWidth(i, width[i] * fontScale / 96);
+    setPoints();
 }
 //---------------------------------------------------------------------------
-void PntDialog::btnAddClicked()
+void PntDialog::addPoint()
 {
-    double rr[3], pos[3] = { 0 };
+    double rr[3], pos[3] = {0};
 
-    if (tWPntList->rowCount() >= MAXWAYPNT) return;
     if (!plot->getCenterPosition(rr)) return;
     if (norm(rr, 3) <= 0.0) return;
     ecef2pos(rr, pos);
 
     noUpdate = true;
-    tWPntList->setRowCount(tWPntList->rowCount() + 1);
-    tWPntList->setItem(tWPntList->rowCount() - 1, 0, new QTableWidgetItem(QString("%1").arg(pos[0] * R2D, 0, 'f', 9)));
-    tWPntList->setItem(tWPntList->rowCount() - 1, 1, new QTableWidgetItem(QString("%1").arg(pos[1] * R2D, 0, 'f', 9)));
-    tWPntList->setItem(tWPntList->rowCount() - 1, 2, new QTableWidgetItem(QString("%1").arg(pos[2])));
-    tWPntList->setItem(tWPntList->rowCount() - 1, 4, new QTableWidgetItem(QString("Point%1").arg(tWPntList->rowCount(), 2)));
+    ui->tWPntList->setRowCount(ui->tWPntList->rowCount() + 1);
+    ui->tWPntList->setItem(ui->tWPntList->rowCount() - 1, 0, new QTableWidgetItem(QString("%1").arg(pos[0] * R2D, 0, 'f', 9)));
+    ui->tWPntList->setItem(ui->tWPntList->rowCount() - 1, 1, new QTableWidgetItem(QString("%1").arg(pos[1] * R2D, 0, 'f', 9)));
+    ui->tWPntList->setItem(ui->tWPntList->rowCount() - 1, 2, new QTableWidgetItem(QString("%1").arg(pos[2], 0, 'f', 4)));
+    ui->tWPntList->setItem(ui->tWPntList->rowCount() - 1, 3, new QTableWidgetItem(tr("Point%1").arg(ui->tWPntList->rowCount(), 2, 10, QChar('0'))));
     noUpdate = false;
 
-    updatePoint();
+    updatePoints();
 }
 //---------------------------------------------------------------------------
-void PntDialog::btnDeleteClicked()
+void PntDialog::deletePoint()
 {
-    QTableWidgetItem *sel = tWPntList->selectedItems().first();;
+    QList<QTableWidgetItem *> selections = ui->tWPntList->selectedItems();
+    if (selections.isEmpty()) return;
 
+    QTableWidgetItem *sel = selections.first();
     if (!sel) return;
 
     noUpdate = true;
-    for (int i = tWPntList->column(sel); i < tWPntList->rowCount(); i++) {
-        for (int j = 0; j < tWPntList->columnCount(); j++) {
-            if (i + 1 >= tWPntList->rowCount()) tWPntList->setItem(i, j, new QTableWidgetItem(""));
-            else tWPntList->setItem(i, j, new QTableWidgetItem(tWPntList->item(i + 1, j)->text()));
-		}
-	}
-    tWPntList->setRowCount(tWPntList->rowCount() - 1);
+    ui->tWPntList->removeRow(sel->row());
     noUpdate = false;
 
-    updatePoint();
-}
-//---------------------------------------------------------------------------
-void PntDialog::btnUpdateClicked()
-{
-    updatePoint();
-}
-//---------------------------------------------------------------------------
-void PntDialog::pntListSetEditText()
-{
-    updatePoint();
+    updatePoints();
 }
 
 //---------------------------------------------------------------------------
-void PntDialog::updatePoint()
+void PntDialog::updatePoints()
 {
-    int n = 0;
+    QList<WayPoint> wayPoints;
+    WayPoint wayPnt;
 
     if (noUpdate) return;
 
-    for (int i = 0; i < tWPntList->rowCount(); i++) {
-        if (!tWPntList->item(i, 0)) continue;
-        if (!tWPntList->item(i, 1)) continue;
-        if (!tWPntList->item(i, 2)) continue;
-        if (tWPntList->item(i, 2)->text() == "") continue;
-        plot->pointPosition[n][0] = tWPntList->item(i, 0)->text().toDouble();
-        plot->pointPosition[n][1] = tWPntList->item(i, 1)->text().toDouble();
-        plot->pointPosition[n][2] = tWPntList->item(i, 2)->text().toDouble();
-        plot->pointName[n++] = tWPntList->item(i, 3)->text();
+    for (int i = 0; i < ui->tWPntList->rowCount(); i++) {
+        if (!ui->tWPntList->item(i, 0)) continue;
+        if (!ui->tWPntList->item(i, 1)) continue;
+        if (!ui->tWPntList->item(i, 2)) continue;
+        if (ui->tWPntList->item(i, 2)->text().isEmpty()) continue;
+        wayPnt.position[0] = ui->tWPntList->item(i, 0)->text().toDouble();
+        wayPnt.position[1] = ui->tWPntList->item(i, 1)->text().toDouble();
+        wayPnt.position[2] = ui->tWPntList->item(i, 2)->text().toDouble();
+        wayPnt.name = ui->tWPntList->item(i, 3)->text();
+        wayPoints.append(wayPnt);
     }
-    plot->nWayPoint = n;
+    plot->setWayPoints(wayPoints);
 
     plot->updatePlot();
 }
 //---------------------------------------------------------------------------
-void PntDialog::setPoint(void)
+void PntDialog::setPoints()
 {
     noUpdate = true;
-    tWPntList->setRowCount(plot->nWayPoint);
-    for (int i = 0; i < plot->nWayPoint; i++) {
-        tWPntList->setItem(i, 0, new QTableWidgetItem(QString::number(plot->pointPosition[i][0], 'f', 9)));
-        tWPntList->setItem(i, 1, new QTableWidgetItem(QString::number(plot->pointPosition[i][1], 'f', 9)));
-        tWPntList->setItem(i, 2, new QTableWidgetItem(QString::number(plot->pointPosition[i][2], 'f', 4)));
-        tWPntList->setItem(i, 3, new QTableWidgetItem(plot->pointName[i]));
+    ui->tWPntList->setRowCount(plot->getWayPoints().size());
+    for (int i = 0; i < plot->getWayPoints().size(); i++) {
+        ui->tWPntList->setItem(i, 0, new QTableWidgetItem(QString::number(plot->getWayPoints()[i].position[0], 'f', 9)));
+        ui->tWPntList->setItem(i, 1, new QTableWidgetItem(QString::number(plot->getWayPoints()[i].position[1], 'f', 9)));
+        ui->tWPntList->setItem(i, 2, new QTableWidgetItem(QString::number(plot->getWayPoints()[i].position[2], 'f', 4)));
+        ui->tWPntList->setItem(i, 3, new QTableWidgetItem(plot->getWayPoints()[i].name));
     }
     noUpdate = false;
 }
 
 //---------------------------------------------------------------------------
-void PntDialog::pntListClicked()
+void PntDialog::selectPoint()
 {
-    QList<QTableWidgetItem *> selections = tWPntList->selectedItems();
+    plot->setSelectedWayPoint(-1);
+    QList<QTableWidgetItem *> selections = ui->tWPntList->selectedItems();
     if (selections.isEmpty()) return;
+
     QTableWidgetItem *item = selections.first();
     if (!item) return;
-    int sel = tWPntList->row(item);
-    plot->selectedWayPoint = sel < plot->nWayPoint ? sel : -1;
+
+    int sel = ui->tWPntList->row(item);
+    plot->setSelectedWayPoint(sel);
+
     plot->updatePlot();
 }
 //---------------------------------------------------------------------------
-void PntDialog::pntListDblClicked(QTableWidgetItem *w)
+void PntDialog::centerPoint(QTableWidgetItem *w)
 {
-    int sel = tWPntList->row(w);
+    int sel = ui->tWPntList->row(w);
 
-    if (sel >= plot->nWayPoint) return;
-    plot->setTrackCenter(plot->pointPosition[sel][0], plot->pointPosition[sel][1]);
+    if ((sel >= plot->getWayPoints().size()) ||(sel < 0)) return;
+    plot->setTrackCenter(plot->getWayPoints()[sel].position[0], plot->getWayPoints()[sel].position[1]);
 }
 //---------------------------------------------------------------------------

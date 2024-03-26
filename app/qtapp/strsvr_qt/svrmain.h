@@ -6,10 +6,12 @@
 #include <QTimer>
 #include <QSystemTrayIcon>
 
-#include "ui_svrmain.h"
-
 #include "rtklib.h"
 #include "tcpoptdlg.h"
+
+namespace Ui {
+class MainForm;
+}
 
 class QCloseEvent;
 class SvrOptDialog;
@@ -22,26 +24,26 @@ class StrMonDialog;
 #define MAXSTR        7    // number of streams
 
 //---------------------------------------------------------------------------
-class MainForm : public QDialog, private Ui::MainForm
+class MainForm : public QDialog
 {
     Q_OBJECT
 
 public slots:
-    void btnInputClicked();
-    void btnOutputClicked();
-    void serverStatusTimerTimeout();
-    void btnOptionsClicked();
-    void btnCommandClicked();
-    void btnAboutClicked();
-    void btnStreamMonitorClicked();
-    void streamMonitorTimerTimeout();
-    void btnTaskIconClicked();
-    void trayIconActivated(QSystemTrayIcon::ActivationReason);
-    void menuExpandClicked();
-    void btnConvertClicked();
-    void btnLogClicked();
-    void serverStart(void);
-    void serverStop(void);
+    void showInputOptions();
+    void showOptionsDialog();
+    void updateServerStat();
+    void showStreamOptionsDialog();
+    void showStreamCommandDialog();
+    void showAboutDialog();
+    void showMonitorDialog();
+    void updateStreamMonitor();
+    void minimizeToTaskTray();
+    void restoreFromTaskTray(QSystemTrayIcon::ActivationReason);
+    void expandFromTaskTray();
+    void showConvertDialog();
+    void showLogStreamDialog();
+    void startServer();
+    void stopServer();
 
 protected:
     void closeEvent(QCloseEvent*);
@@ -51,13 +53,10 @@ private:
     QString iniFile;
     QString paths[MAXSTR][4], commands[MAXSTR][3], commandsTcp[MAXSTR][3];
     QString tcpHistory[MAXHIST], tcpMountpointHistory[MAXHIST];
-    QString stationPositionFile, exeDirectory, localDirectory, swapInterval;
-    QString proxyAddress, logFile;
-    QString conversionMessage[MAXSTR - 1], conversionOptions[MAXSTR - 1], antennaType, receiverType;
+    QString conversionMessage[MAXSTR - 1], conversionOptions[MAXSTR - 1];
     QString pathLog[MAXSTR];
-    int conversionEnabled[MAXSTR - 1], conversionInputFormat[MAXSTR - 1], conversionOutputFormat[3], stationId, stationSelect;
-    int traceLevel, serverOptions[6], commandsEnabled[MAXSTR][3], commandsEnabledTcp[MAXSTR][3], nmeaRequest, fileSwapMargin, relayBack, progressBarRange, pathEnabled[MAXSTR];
-    double antennaPosition[3], antennaOffsets[3];
+    int conversionEnabled[MAXSTR - 1], conversionInputFormat[MAXSTR - 1], conversionOutputFormat[3];
+    int commandsEnabled[MAXSTR][3], commandsEnabledTcp[MAXSTR][3], pathEnabled[MAXSTR];
     gtime_t startTime, endTime;
     QSystemTrayIcon *trayIcon;
     SvrOptDialog *svrOptDialog;
@@ -78,11 +77,12 @@ private:
     void udpServerOptions(int index, int path);
     void fileOptions(int index, int path);
     void showMessage(const QString &msg);
-    void updateEnable(void);
+    void updateEnable();
     void setTrayIcon(int index);
-    void loadOptions(void);
-    void saveOptions(void);
+    void loadOptions();
+    void saveOptions();
 
+    Ui::MainForm *ui;
 public:
     explicit MainForm(QWidget *parent=0);
 };

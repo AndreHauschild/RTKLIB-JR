@@ -11,20 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>RTKNAVI</string>
-  </property>
-  <property name="toolTip">
-   <string/>
+   <string>RTKNavi Qt</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
-   <property name="spacing">
-    <number>0</number>
-   </property>
    <item>
-    <widget class="QWidget" name="Panel1" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="panelTop" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -62,11 +53,8 @@
          <string>Change the number of visible panels</string>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/square</normaloff>:/buttons/square</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -77,9 +65,6 @@
         </property>
         <property name="text">
          <string>GPST</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -100,29 +85,14 @@
         </property>
         <property name="sizeHint" stdset="0">
          <size>
-          <width>40</width>
-          <height>20</height>
+          <width>0</width>
+          <height>0</height>
          </size>
         </property>
        </spacer>
       </item>
       <item>
-       <widget class="QWidget" name="Panel12" native="true">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
-        </property>
+       <widget class="QWidget" name="panelStream" native="true">
         <property name="text" stdset="0">
          <string/>
         </property>
@@ -211,11 +181,8 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="toolTip">
-               <string/>
-              </property>
               <property name="pixmap">
-               <pixmap resource="rtknavi_qt.qrc">:/buttons/rarrow</pixmap>
+               <pixmap resource="../icon/resources.qrc">:/buttons/rarrow</pixmap>
               </property>
              </widget>
             </item>
@@ -237,11 +204,8 @@
                 <verstretch>0</verstretch>
                </sizepolicy>
               </property>
-              <property name="toolTip">
-               <string/>
-              </property>
               <property name="pixmap">
-               <pixmap resource="rtknavi_qt.qrc">:/buttons/rarrow</pixmap>
+               <pixmap resource="../icon/resources.qrc">:/buttons/rarrow</pixmap>
               </property>
              </widget>
             </item>
@@ -340,15 +304,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="panelSolution" native="true">
+    <widget class="QWidget" name="panelSolutionStatus" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -393,9 +354,6 @@
       </item>
       <item>
        <widget class="QLabel" name="lblSolutionS">
-        <property name="toolTip">
-         <string/>
-        </property>
         <property name="text">
          <string>----</string>
         </property>
@@ -403,9 +361,6 @@
       </item>
       <item>
        <widget class="QLabel" name="lblSolutionQ">
-        <property name="toolTip">
-         <string/>
-        </property>
         <property name="text">
          <string>Solution</string>
         </property>
@@ -423,11 +378,8 @@
          <string>Change solution format</string>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -435,7 +387,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Panel2" native="true">
+    <widget class="QWidget" name="panelMain" native="true">
      <property name="toolTip">
       <string/>
      </property>
@@ -445,7 +397,10 @@
      <layout class="QGridLayout" name="gridLayout_7">
       <item row="0" column="0">
        <widget class="QSplitter" name="splitter">
-        <widget class="QWidget" name="panel21" native="true">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <widget class="QWidget" name="panelSolution" native="true">
          <property name="toolTip">
           <string/>
          </property>
@@ -468,111 +423,14 @@
           <property name="spacing">
            <number>0</number>
           </property>
-          <item row="0" column="0">
-           <widget class="QWidget" name="Panel212" native="true">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="text" stdset="0">
-             <string/>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_6">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="topMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="Plabel0">
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="text">
-                <string>Lat/Lon/Height</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="lblIndicatorSolution">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="maximumSize">
-             <size>
-              <width>20</width>
-              <height>20</height>
-             </size>
-            </property>
-            <property name="toolTip">
-             <string>Solution state</string>
-            </property>
-            <property name="frameShape">
-             <enum>QFrame::Box</enum>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="0" colspan="3">
-           <widget class="QWidget" name="Panel211" native="true">
-            <property name="toolTip">
-             <string/>
-            </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
+          <item row="1" column="0" colspan="4">
+           <widget class="QWidget" name="panelSolutionData" native="true">
             <property name="text" stdset="0">
              <string/>
             </property>
             <layout class="QGridLayout" name="gridLayout">
-             <item row="0" column="0">
-              <widget class="QLabel" name="lblSolutionText">
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="text">
-                <string>Solution:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="1">
-              <widget class="QLabel" name="lblSolution">
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="text">
-                <string>----</string>
-               </property>
-              </widget>
-             </item>
              <item row="1" column="0">
               <widget class="QLabel" name="lblPositionText1">
-               <property name="toolTip">
-                <string/>
-               </property>
                <property name="text">
                 <string>N:</string>
                </property>
@@ -580,69 +438,62 @@
              </item>
              <item row="1" column="1" colspan="2">
               <widget class="QLabel" name="lblPosition1">
-               <property name="toolTip">
-                <string/>
-               </property>
                <property name="text">
                 <string>0 00' 00.0000&quot;</string>
-               </property>
-              </widget>
-             </item>
-             <item row="2" column="0">
-              <widget class="QLabel" name="lblPositionText2">
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="text">
-                <string>E:</string>
                </property>
               </widget>
              </item>
              <item row="2" column="1" colspan="2">
               <widget class="QLabel" name="lblPosition2">
-               <property name="toolTip">
-                <string/>
-               </property>
                <property name="text">
                 <string>0 00' 00.0000&quot;</string>
                </property>
               </widget>
              </item>
-             <item row="3" column="0">
-              <widget class="QLabel" name="lblPositionText3">
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="text">
-                <string>H:</string>
-               </property>
-              </widget>
-             </item>
-             <item row="3" column="1" colspan="2">
-              <widget class="QLabel" name="lblPosition3">
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="text">
-                <string>0.000 m</string>
-               </property>
-              </widget>
-             </item>
              <item row="4" column="0" colspan="3">
               <widget class="QLabel" name="lblStd">
-               <property name="toolTip">
-                <string/>
-               </property>
                <property name="text">
                 <string>E: 0.000 N: 0.000 U: 0.000 m</string>
                </property>
               </widget>
              </item>
+             <item row="3" column="0">
+              <widget class="QLabel" name="lblPositionText3">
+               <property name="text">
+                <string>H:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="1">
+              <widget class="QLabel" name="lblSolution">
+               <property name="text">
+                <string>----</string>
+               </property>
+              </widget>
+             </item>
+             <item row="0" column="0">
+              <widget class="QLabel" name="lblSolutionText">
+               <property name="text">
+                <string>Solution:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="2" column="0">
+              <widget class="QLabel" name="lblPositionText2">
+               <property name="text">
+                <string>E:</string>
+               </property>
+              </widget>
+             </item>
+             <item row="3" column="1" colspan="2">
+              <widget class="QLabel" name="lblPosition3">
+               <property name="text">
+                <string>0.000 m</string>
+               </property>
+              </widget>
+             </item>
              <item row="5" column="0" colspan="3">
               <widget class="QLabel" name="lblNSatellites">
-               <property name="toolTip">
-                <string/>
-               </property>
                <property name="text">
                 <string>Age: 0.0 s Ratio: 0.0 NSAT: 0</string>
                </property>
@@ -651,36 +502,13 @@
             </layout>
            </widget>
           </item>
-          <item row="0" column="1">
-           <widget class="QPushButton" name="btnSolutionType">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string>Change solution format</string>
-            </property>
-            <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
-              <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0" colspan="3">
-           <widget class="QWidget" name="Panel213" native="true">
+          <item row="3" column="0" colspan="4">
+           <widget class="QWidget" name="panelSolutionPosition" native="true">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
               <horstretch>0</horstretch>
               <verstretch>0</verstretch>
              </sizepolicy>
-            </property>
-            <property name="toolTip">
-             <string/>
             </property>
             <property name="text" stdset="0">
              <string/>
@@ -725,17 +553,64 @@
                <property name="toolTip">
                 <string>Save solutions</string>
                </property>
-               <property name="text">
-                <string>...</string>
+               <property name="icon">
+                <iconset resource="../icon/resources.qrc">
+                 <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
                </property>
               </widget>
              </item>
             </layout>
            </widget>
           </item>
+          <item row="0" column="0" colspan="2">
+           <widget class="QLabel" name="lblLatLonHeight">
+            <property name="text">
+             <string>Lat/Lon/Height</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QLabel" name="lblIndicatorSolution">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="maximumSize">
+             <size>
+              <width>20</width>
+              <height>20</height>
+             </size>
+            </property>
+            <property name="toolTip">
+             <string>Solution state</string>
+            </property>
+            <property name="frameShape">
+             <enum>QFrame::Box</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QPushButton" name="btnSolutionType">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="toolTip">
+             <string>Change solution format</string>
+            </property>
+            <property name="icon">
+             <iconset resource="../icon/resources.qrc">
+              <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
+            </property>
+           </widget>
+          </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="panel22" native="true">
+        <widget class="QWidget" name="panelDisplay1" native="true">
          <property name="toolTip">
           <string/>
          </property>
@@ -766,9 +641,6 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="toolTip">
-             <string/>
-            </property>
            </widget>
           </item>
           <item row="0" column="4">
@@ -783,11 +655,8 @@
              <string>Change plot type</string>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -803,11 +672,8 @@
              <string>Change frequency</string>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -820,11 +686,8 @@
              </sizepolicy>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/expand</normaloff>:/buttons/expand</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -837,20 +700,14 @@
              </sizepolicy>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/shrink</normaloff>:/buttons/shrink</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="panel23" native="true">
-         <property name="toolTip">
-          <string/>
-         </property>
+        <widget class="QWidget" name="panelDisplay2" native="true">
          <property name="text" stdset="0">
           <string/>
          </property>
@@ -878,9 +735,6 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="toolTip">
-             <string/>
-            </property>
            </widget>
           </item>
           <item row="0" column="0">
@@ -892,11 +746,8 @@
              </sizepolicy>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/expand</normaloff>:/buttons/expand</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -912,11 +763,8 @@
              <string>Change frequency</string>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -932,11 +780,8 @@
              <string>Change plot type</string>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -949,20 +794,14 @@
              </sizepolicy>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/shrink</normaloff>:/buttons/shrink</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="panel24" native="true">
-         <property name="toolTip">
-          <string/>
-         </property>
+        <widget class="QWidget" name="panelDisplay3" native="true">
          <property name="text" stdset="0">
           <string/>
          </property>
@@ -990,9 +829,6 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="toolTip">
-             <string/>
-            </property>
            </widget>
           </item>
           <item row="0" column="0">
@@ -1004,11 +840,8 @@
              </sizepolicy>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/expand</normaloff>:/buttons/expand</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1024,11 +857,8 @@
              <string>Change frequency</string>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1044,11 +874,8 @@
              <string>Change plot type</string>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1061,20 +888,14 @@
              </sizepolicy>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/shrink</normaloff>:/buttons/shrink</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
          </layout>
         </widget>
-        <widget class="QWidget" name="panel25" native="true">
-         <property name="toolTip">
-          <string/>
-         </property>
+        <widget class="QWidget" name="panelDisplay4" native="true">
          <property name="text" stdset="0">
           <string/>
          </property>
@@ -1102,9 +923,6 @@
               <verstretch>0</verstretch>
              </sizepolicy>
             </property>
-            <property name="toolTip">
-             <string/>
-            </property>
            </widget>
           </item>
           <item row="0" column="0">
@@ -1116,11 +934,8 @@
              </sizepolicy>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/expand</normaloff>:/buttons/expand</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1139,11 +954,8 @@
              <string>Change frequency</string>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1159,11 +971,8 @@
              <string>Change plot type</string>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1176,11 +985,8 @@
              </sizepolicy>
             </property>
             <property name="icon">
-             <iconset resource="rtknavi_qt.qrc">
+             <iconset resource="../icon/resources.qrc">
               <normaloff>:/buttons/shrink</normaloff>:/buttons/shrink</iconset>
-            </property>
-            <property name="flat">
-             <bool>true</bool>
             </property>
            </widget>
           </item>
@@ -1192,15 +998,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Panel3" native="true">
+    <widget class="QWidget" name="panelStatus" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -1227,11 +1030,8 @@
          <string>Open data monitor</string>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/square</normaloff>:/buttons/square</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -1243,90 +1043,55 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="btnTaskTray">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Ignored">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
-         <string/>
+         <string>Move to task tray</string>
+        </property>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/tray</normaloff>:/buttons/tray</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QWidget" name="Panel33" native="true">
+       <widget class="QPushButton" name="btnAbout">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Ignored">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
         <property name="toolTip">
+         <string>About</string>
+        </property>
+        <property name="text">
          <string/>
         </property>
-        <property name="text" stdset="0">
-         <string/>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/icons/rtknavi</normaloff>:/icons/rtknavi</iconset>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_3">
-         <property name="spacing">
-          <number>0</number>
-         </property>
-         <property name="leftMargin">
-          <number>0</number>
-         </property>
-         <property name="topMargin">
-          <number>0</number>
-         </property>
-         <property name="rightMargin">
-          <number>0</number>
-         </property>
-         <property name="bottomMargin">
-          <number>0</number>
-         </property>
-         <item>
-          <widget class="QPushButton" name="btnTaskTray">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Ignored">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>Move to task tray</string>
-           </property>
-           <property name="icon">
-            <iconset resource="rtknavi_qt.qrc">
-             <normaloff>:/buttons/tray</normaloff>:/buttons/tray</iconset>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="btnAbout">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Fixed" vsizetype="Ignored">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="toolTip">
-            <string>About</string>
-           </property>
-           <property name="text">
-            <string>?</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Panel4" native="true">
+    <widget class="QWidget" name="panelBottom" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -1353,7 +1118,7 @@
          <string>&amp;Start</string>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/start</normaloff>:/buttons/start</iconset>
         </property>
        </widget>
@@ -1367,8 +1132,8 @@
          <string>S&amp;top</string>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
-          <normaloff>:/buttons/stop</normaloff>:/buttons/stop</iconset>
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/stop2</normaloff>:/buttons/stop2</iconset>
         </property>
        </widget>
       </item>
@@ -1392,7 +1157,7 @@
          <string>&amp;Plot...</string>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/chart</normaloff>:/buttons/chart</iconset>
         </property>
        </widget>
@@ -1406,16 +1171,13 @@
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset resource="rtknavi_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/tool</normaloff>:/buttons/tool</iconset>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnExit">
-        <property name="toolTip">
-         <string/>
-        </property>
         <property name="text">
          <string>&amp;Exit</string>
         </property>
@@ -1432,8 +1194,41 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>btnPanel</tabstop>
+  <tabstop>btnTimeSys</tabstop>
+  <tabstop>btnInputStream</tabstop>
+  <tabstop>btnOutputStream</tabstop>
+  <tabstop>btnLogStream</tabstop>
+  <tabstop>btnSolutionType2</tabstop>
+  <tabstop>btnSave</tabstop>
+  <tabstop>btnMonitor</tabstop>
+  <tabstop>btnStart</tabstop>
+  <tabstop>btnStop</tabstop>
+  <tabstop>btnMark</tabstop>
+  <tabstop>btnPlot</tabstop>
+  <tabstop>btnOptions</tabstop>
+  <tabstop>btnExit</tabstop>
+  <tabstop>btnSolutionType</tabstop>
+  <tabstop>btnExpand1</tabstop>
+  <tabstop>btnShrink1</tabstop>
+  <tabstop>btnFrequencyType1</tabstop>
+  <tabstop>btnPlotType1</tabstop>
+  <tabstop>btnExpand2</tabstop>
+  <tabstop>btnShrink2</tabstop>
+  <tabstop>btnFrequencyType2</tabstop>
+  <tabstop>btnPlotType2</tabstop>
+  <tabstop>btnExpand3</tabstop>
+  <tabstop>btnShrink3</tabstop>
+  <tabstop>btnFrequencyType3</tabstop>
+  <tabstop>btnPlotType3</tabstop>
+  <tabstop>btnExpand4</tabstop>
+  <tabstop>btnShrink4</tabstop>
+  <tabstop>btnFrequencyType4</tabstop>
+  <tabstop>btnPlotType4</tabstop>
+ </tabstops>
  <resources>
-  <include location="rtknavi_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

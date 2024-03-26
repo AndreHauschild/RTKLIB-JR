@@ -68,7 +68,6 @@ void ScientificSpinBox::fixup(QString &input) const
     input.remove(locale().groupSeparator());
 }
 
-
 /*!
     \internal Multi purpose function that parses input, sets state to
     the appropriate state and returns the value it will be interpreted
@@ -183,16 +182,14 @@ QVariant ScientificSpinBox::validateAndInterpret(QString &input, int &pos, QVali
         // convert 'copy' to double, and check if that was 'ok'
         num = loc.toDouble(copy, &ok);
 
-
         // conversion to double did fail
         if (!ok) {
             // maybe group separator caused failure
 #if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
-            if (loc.groupSeparator()[0].isPrint())
+            if (loc.groupSeparator().at(0).isPrint())
 #else
             if (loc.groupSeparator().isPrint())
 #endif
-
             {
                 // if no group separator is possible but exist
                 if (max < 1000 && min > -1000 && copy.contains(loc.groupSeparator())) {
@@ -262,12 +259,10 @@ end:
     return QVariant(num);
 }
 
-
 /*!
     \internal
     Strips any prefix/suffix from \a text.
 */
-
 // reimplemented function, copied from QAbstractSpinBoxPrivate::stripped
 QString ScientificSpinBox::stripped(const QString &t, int *pos) const
 {

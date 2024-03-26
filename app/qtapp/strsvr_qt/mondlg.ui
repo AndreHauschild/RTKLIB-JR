@@ -13,15 +13,9 @@
   <property name="windowTitle">
    <string>Input Stream Monitor</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
     <widget class="QWidget" name="wgPanel1" native="true">
-     <property name="toolTip">
-      <string/>
-     </property>
      <property name="text" stdset="0">
       <string/>
      </property>
@@ -66,11 +60,8 @@
          <string>Clear message window</string>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/del</normaloff>:/buttons/del</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
         </property>
        </widget>
       </item>
@@ -80,13 +71,10 @@
          <string>Pause messages</string>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/pause</normaloff>:/buttons/pause</iconset>
         </property>
         <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
          <bool>true</bool>
         </property>
        </widget>
@@ -97,13 +85,10 @@
          <string>Scroll to bottom</string>
         </property>
         <property name="icon">
-         <iconset resource="strsvr_qt.qrc">
+         <iconset resource="../icon/resources.qrc">
           <normaloff>:/buttons/fitd</normaloff>:/buttons/fitd</iconset>
         </property>
         <property name="checkable">
-         <bool>true</bool>
-        </property>
-        <property name="flat">
          <bool>true</bool>
         </property>
        </widget>
@@ -135,12 +120,16 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="tWConsole"/>
+    <widget class="QTableWidget" name="tWConsole">
+     <property name="editTriggers">
+      <set>QAbstractItemView::NoEditTriggers</set>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
  <resources>
-  <include location="strsvr_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

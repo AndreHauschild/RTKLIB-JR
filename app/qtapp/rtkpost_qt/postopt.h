@@ -14,36 +14,36 @@ class OptDialog : public QDialog, public Ui::OptDialog
 
 public slots:
 
-    void btnOkClicked();
-    void btnAntennaPcvFileClicked();
-    void btnIonophereFileClicked();
-    void btnAntennaPcvViewClicked();
+    void saveClose();
+    void selectAntennaPcvFile();
+    void selectIonosphereFile();
+    void viewAntennaPcvFile();
 
-    void btnLoadClicked();
-    void btnSaveClicked();
-    void btnReferencePositionClicked();
-    void btnRoverPositionClicked();
-    void btnStationPositionViewClicked();
-    void btnStationPositionFileClicked();
+    void loadOptions();
+    void saveOptions();
+    void showReferencePositionDialog();
+    void showRoverPositionDialog();
+    void viewStationPositionFile();
+    void selectStationPositionFile();
 
     void referencePositionTypeChanged();
     void roverPositionTypeChanged();
     void getPosition(int type, QLineEdit **edit, double *pos);
     void setPosition(int type, QLineEdit **edit, double *pos);
 
-    void btnSatellitePcvFileClicked();
-    void btnSatelitePcvViewClicked();
-    void btnGeoidDataFileClicked();
+    void selectSatellitePcvFile();
+    void viewSatelitePcvFile();
+    void selectGeoidDataFile();
 
-    void btnDCBViewClicked();
-    void btnDCBFileClicked();
-    void btnHelpClicked();
-    void btnBLQFileViewClicked();
-    void btnBLQFileClicked();
-    void btnEOPFileClicked();
-    void btnEOPViewClicked();
-    void btnFrequenciesClicked();
-    void btnMaskClicked();
+    void viewDCBFile();
+    void selectDCBFile();
+    void showKeyDialog();
+    void viewBLQFile();
+    void selectBLQFile();
+    void selectEOPFile();
+    void viewEOPView();
+    void showFrequenciesDialog();
+    void showMaskDialog();
     void updateEnable();
 
 protected:
@@ -57,8 +57,8 @@ private:
 
     void getOptions(void);
     void setOptions(void);
-    void loadOptions(const QString &file);
-    void saveOptions(const QString &file);
+    void load(const QString &file);
+    void save(const QString &file);
     void readAntennaList(void);
     void updateEnableExtErr(void);
 

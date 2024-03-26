@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=StrSvr
+GenericName=RtkLib Stream Server
+Keywords=rtklib;GNSS
+Exec=strsvr_qt
+Icon=strsvr
+Categories=Science;Geoscience;

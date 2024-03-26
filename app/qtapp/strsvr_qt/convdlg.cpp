@@ -1,53 +1,81 @@
 //---------------------------------------------------------------------------
-#include <QShowEvent>
+#include "convdlg.h"
+
+#include "ui_convdlg.h"
 
 #include "rtklib.h"
-#include "convdlg.h"
-//---------------------------------------------------------------------------
+
 //---------------------------------------------------------------------------
 ConvDialog::ConvDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::ConvDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
     for (int i = 0; i <= MAXRCVFMT; i++)
-        cBInputFormat->addItem(formatstrs[i]);
-    cBInputFormat->setCurrentIndex(0);
+        ui->cBInputFormat->addItem(formatstrs[i]);
+    ui->cBInputFormat->setCurrentIndex(0);
 
-    connect(btnOk, &QPushButton::clicked, this, &ConvDialog::btnOkClicked);
-    connect(btnCancel, &QPushButton::clicked, this, &ConvDialog::reject);
-    connect(cBConversion, &QPushButton::clicked, this, &ConvDialog::updateEnable);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &ConvDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ConvDialog::reject);
+    connect(ui->cBConversion, &QCheckBox::toggled, this, &ConvDialog::updateEnable);
 }
 //---------------------------------------------------------------------------
-void ConvDialog::showEvent(QShowEvent *event)
+void ConvDialog::updateEnable()
 {
-    if (event->spontaneous()) return;
-
-    cBConversion->setChecked(conversionEnabled);
-    cBInputFormat->setCurrentIndex(conversionInputFormat);
-    cBOutputFormat->setCurrentIndex(conversionOutputFormat);
-    lEOutputMessages->setText(conversionMessage);
-    lEOptions->setText(conversionOptions);
-
+    ui->cBInputFormat->setEnabled(ui->cBConversion->isChecked());
+    ui->cBOutputFormat->setEnabled(ui->cBConversion->isChecked());
+    ui->lEOutputMessages->setEnabled(ui->cBConversion->isChecked());
+    ui->lEOptions->setEnabled(ui->cBConversion->isChecked());
+}
+//---------------------------------------------------------------------------
+void ConvDialog::setConversionEnabled(bool enable)
+{
+    ui->cBConversion->setChecked(enable);
     updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConvDialog::btnOkClicked()
+bool ConvDialog::getConversionEnabled()
 {
-    conversionEnabled = cBConversion->isChecked();
-    conversionInputFormat = cBInputFormat->currentIndex();
-    conversionOutputFormat = cBOutputFormat->currentIndex();
-    conversionMessage = lEOutputMessages->text();
-    conversionOptions = lEOptions->text();
-
-    accept();
+    return ui->cBConversion->isChecked();
 }
 //---------------------------------------------------------------------------
-void ConvDialog::updateEnable(void)
+void ConvDialog::setInputFormat(int format)
 {
-    cBInputFormat->setEnabled(cBConversion->isChecked());
-    cBOutputFormat->setEnabled(cBConversion->isChecked());
-    lEOutputMessages->setEnabled(cBConversion->isChecked());
-    lEOptions->setEnabled(cBConversion->isChecked());
+    ui->cBInputFormat->setCurrentIndex(format);
+}
+//---------------------------------------------------------------------------
+int ConvDialog::getInputFormat()
+{
+    return ui->cBInputFormat->currentIndex();
+}
+//---------------------------------------------------------------------------
+void ConvDialog::setOutputFormat(int format)
+{
+    ui->cBOutputFormat->setCurrentIndex(format);
+}
+//---------------------------------------------------------------------------
+int ConvDialog::getOutputFormat()
+{
+    return ui->cBOutputFormat->currentIndex();
+}
+//---------------------------------------------------------------------------
+void ConvDialog::setConversionMessage(const QString &msg)
+{
+    ui->lEOutputMessages->setText(msg);
+}
+//---------------------------------------------------------------------------
+QString ConvDialog::getConversionMessage()
+{
+    return ui->lEOutputMessages->text();
+}
+//---------------------------------------------------------------------------
+void ConvDialog::setConversionOptions(const QString &opt)
+{
+    ui->lEOptions->setText(opt);
+}
+//---------------------------------------------------------------------------
+QString ConvDialog::getConversionOptions()
+{
+    return ui->lEOptions->text();
 }
 //---------------------------------------------------------------------------

@@ -1,17 +1,13 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-02-09T19:09:57
-#
-#-------------------------------------------------
-
-QT       += core gui widgets serialport
+QT += core gui widgets serialport
 
 include(../qtapp.pri)
 
 INCLUDEPATH += ../../../src/ ../appcmn_qt
 
-TARGET = strsvr_qt
 TEMPLATE = app
+TARGET = strsvr_qt
+target.path = $$INSTALLROOT/bin
+INSTALLS += target
 
 SOURCES += \  
     convdlg.cpp \
@@ -64,7 +60,22 @@ FORMS    += \
     ../appcmn_qt/keydlg.ui \
     mondlg.ui
 
-RESOURCES +=  \
-    strsvr_qt.qrc
+RESOURCES += \
+    ../appcmn_qt/appcmn_qt.qrc \
+    ../icon/resources.qrc
 
 RC_FILE = strsvr_qt.rc
+
+desktop.path   = $$INSTALLROOT/share/applications/
+desktop.files += strsvr_qt.desktop
+INSTALLS      += desktop
+
+icons.path   = $$INSTALLROOT/share/pixmaps/
+icons.files += ../icon/strsvr.png
+INSTALLS    += icons
+
+win32 {
+CONFIG(release,debug|release) {
+QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$OUT_PWD/release/$${TARGET}.exe) $$shell_path($$PKGDIR/packages/com.rtklib.$${TARGET}/data)
+}
+}
