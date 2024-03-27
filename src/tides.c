@@ -220,7 +220,7 @@ static void tide_pole(gtime_t tut, const double *pos, const double *erpv,
 *                                 odisp[2+i*6]: constituent i amplitude south (m)
 *                                 odisp[3+i*6]: constituent i phase radial  (deg)
 *                                 odisp[4+i*6]: constituent i phase west    (deg)
-*                                 odisp[5+i*6]: / i phase south   (deg)
+*                                 odisp[5+i*6]: constituent i phase south   (deg)
 *                                (i=0:M2,1:S2,2:N2,3:K2,4:K1,5:O1,6:P1,7:Q1,
 *                                   8:Mf,9:Mm,10:Ssa)
 *          double *dr       O   displacement by earth tides (ecef) (m)
