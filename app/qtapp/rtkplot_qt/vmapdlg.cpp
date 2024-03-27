@@ -19,66 +19,66 @@ VecMapDialog::VecMapDialog(QWidget *parent)
 {
     setupUi(this);
 
-    connect(Color1, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color2, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color3, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color4, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color5, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color6, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color7, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color8, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color9, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color10, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color11, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color12, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color1F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color2F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color3F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color4F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color5F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color6F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color7F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color8F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color9F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color10F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color11F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Color12F, SIGNAL(clicked(bool)), this, SLOT(BtnColorClick()));
-    connect(Vis1, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis2, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis3, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis4, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis5, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis6, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis7, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis8, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis9, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis10, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis11, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Vis12, SIGNAL(clicked(bool)), this, SLOT(VisClick()));
-    connect(Layer1, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer2, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer3, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer4, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer5, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer6, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer7, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer8, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer9, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer10, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer11, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(Layer12, SIGNAL(clicked(bool)), this, SLOT(LayerClick()));
-    connect(BtnApply, SIGNAL(clicked(bool)), this, SLOT(BtnApplyClick()));
-    connect(BtnUp, SIGNAL(clicked(bool)), this, SLOT(BtnUpClick()));
-    connect(BtnDown, SIGNAL(clicked(bool)), this, SLOT(BtnDownClick()));
-    connect(BtnClose, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(btnColor1, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor2, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor3, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor4, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor5, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor6, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor7, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor8, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor9, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor10, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor11, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor12, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor1F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor2F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor3F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor4F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor5F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor6F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor7F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor8F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor9F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor10F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor11F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(btnColor12F, SIGNAL(clicked(bool)), this, SLOT(btnColorClicked()));
+    connect(cBVisible1, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible2, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible3, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible4, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible5, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible6, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible7, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible8, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible9, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible10, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible11, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(cBVisible12, SIGNAL(clicked(bool)), this, SLOT(visibilityClicked()));
+    connect(rBLayer1, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer2, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer3, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer4, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer5, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer6, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer7, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer8, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer9, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer10, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer11, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(rBLayer12, SIGNAL(clicked(bool)), this, SLOT(layerClicked()));
+    connect(btnApply, SIGNAL(clicked(bool)), this, SLOT(btnApplyClicked()));
+    connect(btnUp, SIGNAL(clicked(bool)), this, SLOT(btnUpClicked()));
+    connect(btnDown, SIGNAL(clicked(bool)), this, SLOT(btnDownClicked()));
+    connect(btnClose, SIGNAL(clicked(bool)), this, SLOT(reject()));
 }
 //---------------------------------------------------------------------------
-void VecMapDialog::BtnColorClick()
+void VecMapDialog::btnColorClicked()
 {
     QPushButton *color[]={
-        Color1,Color2,Color3,Color4,Color5,Color6,Color7,Color8,Color9,
-        Color10,Color11,Color12,Color1F,Color2F,Color3F,Color4F,Color5F,
-        Color6F,Color7F,Color8F,Color9F,Color10F,Color11F,Color12F,NULL
+        btnColor1, btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7, btnColor8, btnColor9,
+        btnColor10, btnColor11, btnColor12, btnColor1F, btnColor2F, btnColor3F, btnColor4F, btnColor5F,
+        btnColor6F, btnColor7F, btnColor8F, btnColor9F, btnColor10F, btnColor11F, btnColor12F, NULL
     };
     int i;
 
@@ -88,44 +88,44 @@ void VecMapDialog::BtnColorClick()
     if (color[i]) {
         QColorDialog dialog(this);
 
-        dialog.setCurrentColor(Colors[i]);
+        dialog.setCurrentColor(colors[i]);
 
         if (dialog.exec() != QDialog::Accepted) return;
 
         color[i]->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(dialog.currentColor())));
-        Colors[i] = dialog.currentColor();
+        colors[i] = dialog.currentColor();
 
-        UpdateMap();
+        updateMap();
     }
 }
 //---------------------------------------------------------------------------
-void VecMapDialog::LayerClick()
+void VecMapDialog::layerClicked()
 {
     QRadioButton *layer[] = {
-        Layer1,	 Layer2,  Layer3, Layer4, Layer5, Layer6, Layer7, Layer8, Layer9,
-        Layer10, Layer11, Layer12
+        rBLayer1, rBLayer2,  rBLayer3, rBLayer4, rBLayer5, rBLayer6, rBLayer7, rBLayer8, rBLayer9,
+        rBLayer10, rBLayer11, rBLayer12
 	};
 
     for (int i = 0; i < MAXMAPLAYER; i++)
         layer[i]->setChecked((layer[i] == (QRadioButton *)sender()));
 
-    UpdateMap();
+    updateMap();
 }
 //---------------------------------------------------------------------------
-void VecMapDialog::BtnUpClick()
+void VecMapDialog::btnUpClicked()
 {
     QRadioButton *layer[] = {
-        Layer1,	 Layer2,  Layer3, Layer4, Layer5, Layer6, Layer7, Layer8, Layer9,
-        Layer10, Layer11, Layer12
+        rBLayer1, rBLayer2,  rBLayer3, rBLayer4, rBLayer5, rBLayer6, rBLayer7, rBLayer8, rBLayer9,
+        rBLayer10, rBLayer11, rBLayer12
 	};
     QPushButton *color[]={
-               Color1,Color2,Color3,Color4,Color5,Color6,Color7,Color8,Color9,
-               Color10,Color11,Color12
+               btnColor1, btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7, btnColor8, btnColor9,
+               btnColor10, btnColor11, btnColor12
     };
     QString style;
     QPushButton *colorf[]={
-        Color1F,Color2F,Color3F,Color4F,Color5F,Color6F,Color7F,Color8F,
-        Color9F,Color10F,Color11F,Color12F
+        btnColor1F, btnColor2F, btnColor3F, btnColor4F, btnColor5F, btnColor6F, btnColor7F, btnColor8F,
+        btnColor9F, btnColor10F, btnColor11F, btnColor12F
     };
 	gisd_t *data;
 	char name[256];
@@ -134,15 +134,15 @@ void VecMapDialog::BtnUpClick()
     for (i = 0; i < MAXMAPLAYER; i++)
         if (layer[i]->isChecked()) break;
     if (i == 0 || i >= MAXMAPLAYER) return;
-    strcpy(name, Gis.name[i - 1]);
-    strcpy(Gis.name[i - 1], Gis.name[i]);
-    strcpy(Gis.name[i], name);
-    flag = Gis.flag[i - 1];
-    Gis.flag[i - 1] = Gis.flag[i];
-    Gis.flag[i] = flag;
-    data = Gis.data[i - 1];
-    Gis.data[i - 1] = Gis.data[i];
-    Gis.data[i] = data;
+    strcpy(name, gis.name[i - 1]);
+    strcpy(gis.name[i - 1], gis.name[i]);
+    strcpy(gis.name[i], name);
+    flag = gis.flag[i - 1];
+    gis.flag[i - 1] = gis.flag[i];
+    gis.flag[i] = flag;
+    data = gis.data[i - 1];
+    gis.data[i - 1] = gis.data[i];
+    gis.data[i] = data;
     style=color[i-1]->styleSheet();
     color[i-1]->setStyleSheet(color[i]->styleSheet());
     color[i]->setStyleSheet(style);
@@ -151,23 +151,23 @@ void VecMapDialog::BtnUpClick()
     colorf[i]->setStyleSheet(style);
     layer[i - 1]->setChecked(true);
     layer[i]->setChecked(false);
-    UpdateMap();
+    updateMap();
 }
 //---------------------------------------------------------------------------
-void VecMapDialog::BtnDownClick()
+void VecMapDialog::btnDownClicked()
 {
     QRadioButton *layer[] = {
-        Layer1,	 Layer2,  Layer3, Layer4, Layer5, Layer6, Layer7, Layer8, Layer9,
-        Layer10, Layer11, Layer12
+        rBLayer1, rBLayer2, rBLayer3, rBLayer4, rBLayer5, rBLayer6, rBLayer7, rBLayer8, rBLayer9,
+        rBLayer10, rBLayer11, rBLayer12
 	};
     QPushButton *color[]={
-               Color1,Color2,Color3,Color4,Color5,Color6,Color7,Color8,Color9,
-               Color10,Color11,Color12
+        btnColor1, btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7, btnColor8, btnColor9,
+        btnColor10, btnColor11, btnColor12
     };
     QString style;
     QPushButton *colorf[]={
-        Color1F,Color2F,Color3F,Color4F,Color5F,Color6F,Color7F,Color8F,
-        Color9F,Color10F,Color11F,Color12F
+        btnColor1F, btnColor2F, btnColor3F, btnColor4F, btnColor5F, btnColor6F, btnColor7F, btnColor8F,
+        btnColor9F, btnColor10F, btnColor11F, btnColor12F
     };
 	gisd_t *data;
 	char name[256];
@@ -176,15 +176,15 @@ void VecMapDialog::BtnDownClick()
     for (i = 0; i < MAXMAPLAYER; i++)
         if (layer[i]->isChecked()) break;
     if (i == MAXMAPLAYER - 1 || i >= MAXMAPLAYER) return;
-    strcpy(name, Gis.name[i + 1]);
-    strcpy(Gis.name[i + 1], Gis.name[i]);
-    strcpy(Gis.name[i], name);
-    flag = Gis.flag[i + 1];
-    Gis.flag[i + 1] = Gis.flag[i];
-    Gis.flag[i] = flag;
-    data = Gis.data[i + 1];
-    Gis.data[i + 1] = Gis.data[i];
-    Gis.data[i] = data;
+    strcpy(name, gis.name[i + 1]);
+    strcpy(gis.name[i + 1], gis.name[i]);
+    strcpy(gis.name[i], name);
+    flag = gis.flag[i + 1];
+    gis.flag[i + 1] = gis.flag[i];
+    gis.flag[i] = flag;
+    data = gis.data[i + 1];
+    gis.data[i + 1] = gis.data[i];
+    gis.data[i] = data;
     style=color[i+1]->styleSheet();
     color[i+1]->setStyleSheet(color[i]->styleSheet());
     color[i]->setStyleSheet(style);
@@ -194,19 +194,19 @@ void VecMapDialog::BtnDownClick()
 
     layer[i + 1]->setChecked(true);
     layer[i]->setChecked(false);
-    UpdateMap();
+    updateMap();
 }
 //---------------------------------------------------------------------------
-void VecMapDialog::VisClick()
+void VecMapDialog::visibilityClicked()
 {
     QCheckBox *vis[] = {
-        Vis1, Vis2, Vis3, Vis4, Vis5, Vis6, Vis7, Vis8, Vis9, Vis10, Vis11, Vis12
+        cBVisible1, cBVisible2, cBVisible3, cBVisible4, cBVisible5, cBVisible6, cBVisible7, cBVisible8, cBVisible9, cBVisible10, cBVisible11, cBVisible12
 	};
 
     for (int i = 0; i < MAXMAPLAYER; i++)
-        if (qobject_cast<QCheckBox *>(sender()) == vis[i]) Gis.flag[i] = vis[i]->isChecked() ? 1 : 0;
+        if (qobject_cast<QCheckBox *>(sender()) == vis[i]) gis.flag[i] = vis[i]->isChecked() ? 1 : 0;
 
-    UpdateMap();
+    updateMap();
 }
 //---------------------------------------------------------------------------
 void VecMapDialog::showEvent(QShowEvent *event)
@@ -214,50 +214,50 @@ void VecMapDialog::showEvent(QShowEvent *event)
     if (event->spontaneous()) return;
 
     QRadioButton *layer[] = {
-        Layer1,	 Layer2,  Layer3, Layer4, Layer5, Layer6, Layer7, Layer8, Layer9,
-        Layer10, Layer11, Layer12
+        rBLayer1, rBLayer2, rBLayer3, rBLayer4, rBLayer5, rBLayer6, rBLayer7, rBLayer8, rBLayer9,
+        rBLayer10, rBLayer11, rBLayer12
 	};
     QPushButton *color[] = {
-        Color1,	 Color2,  Color3, Color4, Color5, Color6, Color7, Color8, Color9,
-        Color10, Color11, Color12
+        btnColor1, btnColor2, btnColor3, btnColor4, btnColor5, btnColor6, btnColor7, btnColor8, btnColor9,
+        btnColor10, btnColor11, btnColor12
 	};
     QPushButton *colorf[]={
-        Color1F,Color2F,Color3F,Color4F,Color5F,Color6F,Color7F,Color8F,
-        Color9F,Color10F,Color11F,Color12F
+        btnColor1F, btnColor2F, btnColor3F, btnColor4F, btnColor5F, btnColor6F, btnColor7F, btnColor8F,
+        btnColor9F, btnColor10F, btnColor11F, btnColor12F
     };
-    Gis = plot->Gis;
+    gis = plot->gis;
     for (int i = 0; i < MAXMAPLAYER; i++) {
         layer[i]->setChecked(false);
-        color[i]->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MapColor[i])));
-        colorf[i]->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->MapColor[i])));
+        color[i]->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->mapColor[i])));
+        colorf[i]->setStyleSheet(QString("QPushButton {background-color: %1;}").arg(color2String(plot->mapColor[i])));
 	}
-    UpdateMap();
+    updateMap();
 }
 //---------------------------------------------------------------------------
-void VecMapDialog::BtnApplyClick()
+void VecMapDialog::btnApplyClicked()
 {
 
-    UpdateMap();
+    updateMap();
 
     accept();
 }
 //---------------------------------------------------------------------------
-void VecMapDialog::UpdateMap(void)
+void VecMapDialog::updateMap(void)
 {
     QRadioButton *layer[] = {
-        Layer1,	 Layer2,  Layer3, Layer4, Layer5, Layer6, Layer7, Layer8, Layer9,
-        Layer10, Layer11, Layer12
+        rBLayer1, rBLayer2, rBLayer3, rBLayer4, rBLayer5, rBLayer6, rBLayer7, rBLayer8, rBLayer9,
+        rBLayer10, rBLayer11, rBLayer12
 	};
     QCheckBox *vis[] = {
-        Vis1, Vis2, Vis3, Vis4, Vis5, Vis6, Vis7, Vis8, Vis9, Vis10, Vis11, Vis12
+        cBVisible1, cBVisible2, cBVisible3, cBVisible4, cBVisible5, cBVisible6, cBVisible7, cBVisible8, cBVisible9, cBVisible10, cBVisible11, cBVisible12
 	};
 
     for (int i = 0; i < MAXMAPLAYER; i++) {
-        layer[i]->setText(Gis.name[i]);
-        vis[i]->setChecked(Gis.flag[i]);
-        plot->MapColor [i]=Colors[i];
-        plot->MapColorF[i]=Colors[i+12];
+        layer[i]->setText(gis.name[i]);
+        vis[i]->setChecked(gis.flag[i]);
+        plot->mapColor [i]=colors[i];
+        plot->mapColorF[i]=colors[i+12];
     }
-    plot->Gis = Gis;
+    plot->gis = gis;
 }
 //---------------------------------------------------------------------------

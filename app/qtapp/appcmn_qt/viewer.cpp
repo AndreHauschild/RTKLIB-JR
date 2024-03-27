@@ -1,7 +1,5 @@
 //---------------------------------------------------------------------------
 // ported to Qt by Jens Reimann
-#include <stdio.h>
-
 #include <QShowEvent>
 #include <QFileDialog>
 #include <QPalette>
@@ -11,8 +9,8 @@
 #include "viewer.h"
 #include "vieweropt.h"
 
-QColor TextViewer::Color1 = Qt::black, TextViewer::Color2 = Qt::black;
-QFont TextViewer::FontD;
+QColor TextViewer::colorText = Qt::black, TextViewer::colorBackground = Qt::black;
+QFont TextViewer::font;
 
 //---------------------------------------------------------------------------
 TextViewer::TextViewer(QWidget *parent)
@@ -20,115 +18,110 @@ TextViewer::TextViewer(QWidget *parent)
 {
     setupUi(this);
 
-    Option = 1;
+    option = 1;
 
     viewerOptDialog = new ViewerOptDialog(this);
 
-    connect(BtnClose, SIGNAL(clicked(bool)), this, SLOT(BtnCloseClick()));
-    connect(BtnFind, SIGNAL(clicked(bool)), this, SLOT(BtnFindClick()));
-    connect(BtnOpt, SIGNAL(clicked(bool)), this, SLOT(BtnOptClick()));
-    connect(BtnRead, SIGNAL(clicked(bool)), this, SLOT(BtnReadClick()));
-    connect(BtnReload, SIGNAL(clicked(bool)), this, SLOT(BtnReloadClick()));
-    connect(FindStr, SIGNAL(editingFinished()), this, SLOT(BtnFindClick()));
+    connect(btnClose, &QPushButton::clicked, this, &TextViewer::accept);
+    connect(btnFind, &QPushButton::clicked, this, &TextViewer::btnFindClicked);
+    connect(btnOpt, &QPushButton::clicked, this, &TextViewer::btnOptionsClicked);
+    connect(btnRead, &QPushButton::clicked, this, &TextViewer::btnReadClicked);
+    connect(btnReload, &QPushButton::clicked, this, &TextViewer::btnReloadClicked);
+    connect(findStr, &QLineEdit::editingFinished, this, &TextViewer::btnFindClicked);
 }
 //---------------------------------------------------------------------------
 void TextViewer::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    if (Option == 0) {
-        BtnReload->setVisible(false);
-        BtnRead->setVisible(false);
-    } else if (Option == 2) {
-        BtnReload->setVisible(false);
-        BtnRead->setText(tr("Save..."));
+    if (option == 0) {
+        btnReload->setVisible(false);
+        btnRead->setVisible(false);
+    } else if (option == 2) {
+        btnReload->setVisible(false);
+        btnRead->setText(tr("Save..."));
 	}
 
-	UpdateText();
+	updateText();
 }
 //---------------------------------------------------------------------------
-void TextViewer::BtnReloadClick()
+void TextViewer::btnReloadClicked()
 {
-	Read(File);
+	read(file);
 }
 //---------------------------------------------------------------------------
-void TextViewer::BtnReadClick()
+void TextViewer::btnReadClicked()
 {
-    if (BtnRead->text() == tr("Save..."))
-        Save(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, QString(), File)));
+    if (btnRead->text() == tr("Save..."))
+        save(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, QString(), file)));
     else
-        Read(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, QString(), File)));
+        read(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, QString(), file)));
 }
 //---------------------------------------------------------------------------
-void TextViewer::BtnOptClick()
+void TextViewer::btnOptionsClicked()
 {
-    viewerOptDialog->Font = FontD;
-    viewerOptDialog->Color1 = Color1;
-    viewerOptDialog->Color2 = Color2;
+    viewerOptDialog->font = font;
+    viewerOptDialog->colorText = colorText;
+    viewerOptDialog->colorBackground = colorBackground;
 
     viewerOptDialog->move(this->size().width() / 2 - viewerOptDialog->size().width() / 2,
-                  this->size().height() / 2 - viewerOptDialog->size().height() / 2);
+                          this->size().height() / 2 - viewerOptDialog->size().height() / 2);
     viewerOptDialog->exec();
 
     if (viewerOptDialog->result() != QDialog::Accepted) return;
 
-    FontD = viewerOptDialog->Font;
-    Color1 = viewerOptDialog->Color1;
-    Color2 = viewerOptDialog->Color2;
+    font = viewerOptDialog->font;
+    colorText = viewerOptDialog->colorText;
+    colorBackground = viewerOptDialog->colorBackground;
 
-	UpdateText();
+	updateText();
 }
 //---------------------------------------------------------------------------
-void TextViewer::BtnCloseClick()
+void TextViewer::btnFindClicked()
 {
-    accept();
+    textEdit->find(findStr->text());
 }
 //---------------------------------------------------------------------------
-void TextViewer::BtnFindClick()
+bool TextViewer::read(const QString &path)
 {
-    Text->find(FindStr->text());
-}
-//---------------------------------------------------------------------------
-bool TextViewer::Read(const QString &path)
-{
-    char file[1024], *p[] = { file };
+    char filename[1024], *p[] = { filename };
 
     if (expath(qPrintable(path), p, 1) < 1) return false;
 
-    QFile f(file);
+    QFile f(filename);
 
     if (!f.open(QIODevice::ReadOnly)) return false;
-    Text->setPlainText("");
+    textEdit->setPlainText("");
 
     QString TextStr = f.readAll();
-    Text->appendPlainText(TextStr);
+    textEdit->appendPlainText(TextStr);
 
-    setWindowTitle(file);
-    File = file;
+    setWindowTitle(filename);
+    file = filename;
 
     return true;
 }
 //---------------------------------------------------------------------------
-bool TextViewer::Save(const QString &file)
+bool TextViewer::save(const QString &filename)
 {
-    QFile f(file);
+    QFile f(filename);
 
     if (!f.open(QIODevice::WriteOnly)) return false;
 
-    f.write(Text->toPlainText().toLocal8Bit());
-    File = file;
+    f.write(textEdit->toPlainText().toLocal8Bit());
+    file = filename;
 
     return true;
 }
 //---------------------------------------------------------------------------
-void TextViewer::UpdateText(void)
+void TextViewer::updateText(void)
 {
     QPalette pal;
 
-    Text->setFont(FontD);
-    pal = Text->palette();
-    pal.setColor(QPalette::Text, Color1);
-    pal.setColor(QPalette::Base, Color2);
-    Text->setPalette(pal);
+    textEdit->setFont(font);
+    pal = textEdit->palette();
+    pal.setColor(QPalette::Text, colorText);
+    pal.setColor(QPalette::Base, colorBackground);
+    textEdit->setPalette(pal);
 }
 //---------------------------------------------------------------------------

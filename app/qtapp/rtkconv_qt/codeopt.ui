@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>507</width>
-    <height>592</height>
+    <width>510</width>
+    <height>650</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,7 +21,7 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QGroupBox" name="GroupBox1">
+    <widget class="QGroupBox" name="groupBox1">
      <property name="toolTip">
       <string/>
      </property>
@@ -39,9 +39,6 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
        <number>0</number>
       </property>
       <item row="0" column="0">
@@ -321,7 +318,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox2">
+    <widget class="QGroupBox" name="groupBox2">
      <property name="toolTip">
       <string/>
      </property>
@@ -339,9 +336,6 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
        <number>0</number>
       </property>
       <item row="0" column="5">
@@ -517,7 +511,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox3">
+    <widget class="QGroupBox" name="groupBox3">
      <property name="toolTip">
       <string/>
      </property>
@@ -532,9 +526,6 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
        <number>0</number>
       </property>
       <item row="0" column="0">
@@ -788,7 +779,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox4">
+    <widget class="QGroupBox" name="groupBox4">
      <property name="toolTip">
       <string/>
      </property>
@@ -806,9 +797,6 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
        <number>0</number>
       </property>
       <item row="0" column="9">
@@ -1062,7 +1050,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox6">
+    <widget class="QGroupBox" name="groupBox6">
      <property name="toolTip">
       <string/>
      </property>
@@ -1080,9 +1068,6 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
        <number>0</number>
       </property>
       <item row="1" column="6">
@@ -1418,9 +1403,6 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <property name="spacing">
-       <number>0</number>
-      </property>
       <item row="1" column="2">
        <widget class="QCheckBox" name="I51">
         <property name="text">
@@ -1481,7 +1463,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="GroupBox5">
+    <widget class="QGroupBox" name="groupBox5">
      <property name="toolTip">
       <string/>
      </property>
@@ -1499,9 +1481,6 @@
        <number>0</number>
       </property>
       <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
        <number>0</number>
       </property>
       <item row="0" column="1">
@@ -1575,7 +1554,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnSetAll">
+       <widget class="QPushButton" name="btnSetAll">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1588,7 +1567,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOk">
+       <widget class="QPushButton" name="btnOk">
         <property name="enabled">
          <bool>true</bool>
         </property>
@@ -1607,7 +1586,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCancel">
+       <widget class="QPushButton" name="btnCancel">
         <property name="enabled">
          <bool>true</bool>
         </property>

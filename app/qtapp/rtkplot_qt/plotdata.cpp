@@ -24,7 +24,7 @@ static char path_str[MAXNFILE][1024];
 static const char *XMLNS = "http://www.topografix.com/GPX/1/1";
 
 // read solutions -----------------------------------------------------------
-void Plot::ReadSol(const QStringList &files, int sel)
+void Plot::readSolution(const QStringList &files, int sel)
 {
     solbuf_t sol;
     gtime_t ts, te;
@@ -42,64 +42,64 @@ void Plot::ReadSol(const QStringList &files, int sel)
 
     if (files.count() <= 0) return;
 
-    ReadWaitStart();
+    readWaitStart();
 
     for (i = 0; i < files.count() && n < MAXNFILE; i++)
         strcpy(paths[n++], qPrintable(files.at(i)));
-    TimeSpan(&ts, &te, &tint);
+    timeSpan(&ts, &te, &tint);
 
-    ShowMsg(tr("reading %1...").arg(paths[0]));
-    ShowLegend(NULL);
+    showMessage(tr("reading %1...").arg(paths[0]));
+    showLegend(NULL);
 
     if (!readsolt(paths, n, ts, te, tint, 0, &sol)) {
-        ShowMsg(tr("no solution data : %1...").arg(paths[0]));
-        ShowLegend(NULL);
-        ReadWaitEnd();
+        showMessage(tr("no solution data : %1...").arg(paths[0]));
+        showLegend(NULL);
+        readWaitEnd();
         return;
     }
-    freesolbuf(SolData + sel);
-    SolData[sel] = sol;
+    freesolbuf(solutionData + sel);
+    solutionData[sel] = sol;
 
-    if (SolFiles[sel] != files)
-        SolFiles[sel] = files;
+    if (solutionFiles[sel] != files)
+        solutionFiles[sel] = files;
     setWindowTitle("");
 
-    ReadSolStat(files, sel);
+    readSolutionStat(files, sel);
 
     for (i = 0; i < 2; i++) {
-        if (SolFiles[i].length() == 0) continue;
-        setWindowTitle(windowTitle() + SolFiles[i].at(0) + (SolFiles[i].count() > 1 ? "... " : " "));
+        if (solutionFiles[i].length() == 0) continue;
+        setWindowTitle(windowTitle() + solutionFiles[i].at(0) + (solutionFiles[i].count() > 1 ? "... " : " "));
     }
-    BtnSol12->setChecked(false);
-    if (sel == 0) BtnSol1->setChecked(true);
-    else BtnSol2->setChecked(true);
+    btnSolution12->setChecked(false);
+    if (sel == 0) btnSolution1->setChecked(true);
+    else btnSolution2->setChecked(true);
 
-    if (sel == 0 || SolData[0].n <= 0) {
-        time2gpst(SolData[sel].data[0].time, &Week);
-        UpdateOrigin();
+    if (sel == 0 || solutionData[0].n <= 0) {
+        time2gpst(solutionData[sel].data[0].time, &week);
+        updateOrigin();
     }
-    SolIndex[0] = SolIndex[1] = ObsIndex = 0;
-    TimeScroll->setValue(0);
+    solutionIndex[0] = solutionIndex[1] = observationIndex = 0;
+    sBTime->setValue(0);
 
     GEDataState[sel] = 0;
 
-    if (PlotType > PLOT_NSAT)
-        UpdateType(PLOT_TRK);
+    if (plotType > PLOT_NSAT)
+        updateType(PLOT_TRK);
     else
-        UpdatePlotType();
-    FitTime();
-    if (AutoScale && PlotType <= PLOT_SOLA)
-        FitRange(1);
+        updatePlotType();
+    fitTime();
+    if (autoScale && plotType <= PLOT_SOLA)
+        fitRange(1);
     else
-        SetRange(1, YRange);
-    ReadWaitEnd();
+        setRange(1, yRange);
+    readWaitEnd();
 
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
 // read solution status -----------------------------------------------------
-void Plot::ReadSolStat(const QStringList &files, int sel)
+void Plot::readSolutionStat(const QStringList &files, int sel)
 {
     gtime_t ts, te;
     double tint;
@@ -110,25 +110,25 @@ void Plot::ReadSolStat(const QStringList &files, int sel)
 
     setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
-    freesolstatbuf(SolStat + sel);
+    freesolstatbuf(solutionStat + sel);
 
     for (i = 0; i < MAXNFILE; i++) paths[i] = path_str[i];
 
-    TimeSpan(&ts, &te, &tint);
+    timeSpan(&ts, &te, &tint);
 
     for (i = 0; i < files.count() && n < MAXNFILE; i++)
         strcpy(paths[n++], qPrintable(files.at(i)));
-    ShowMsg(tr("reading %1...").arg(paths[0]));
-    ShowLegend(NULL);
+    showMessage(tr("reading %1...").arg(paths[0]));
+    showLegend(NULL);
 
-    readsolstatt(paths, n, ts, te, tint, SolStat + sel);
+    readsolstatt(paths, n, ts, te, tint, solutionStat + sel);
 
-    UpdateSatList();
+    updateSatelliteList();
 }
 // read observation data ----------------------------------------------------
-void Plot::ReadObs(const QStringList &files)
+void Plot::readObservation(const QStringList &files)
 {
-    obs_t obs = { 0, 0, NULL };
+    obs_t obs = {0};
     nav_t nav;
     sta_t sta;
     int nobs;
@@ -142,48 +142,48 @@ void Plot::ReadObs(const QStringList &files)
 
     if (files.size() == 0) return;
 
-    ReadWaitStart();
-    ShowLegend(NULL);
+    readWaitStart();
+    showLegend(NULL);
 
-    if ((nobs = ReadObsRnx(files, &obs, &nav, &sta)) <= 0) {
-        ReadWaitEnd();
+    if ((nobs = readObservationRinex(files, &obs, &nav, &sta)) <= 0) {
+        readWaitEnd();
         return;
     }
-    ClearObs();
+    clearObservation();
 
-    Obs = obs;
-    Nav = nav;
-    Sta = sta;
-    SimObs = 0;
+    observation = obs;
+    navigation = nav;
+    sta = sta;
+    simObservation = 0;
 
-    UpdateObs(nobs);
-    UpdateMp();
+    updateObservation(nobs);
+    updateMp();
 
-    if (ObsFiles != files)
-        ObsFiles = files;
-    NavFiles.clear();
+    if (observationFiles != files)
+        observationFiles = files;
+    navigationFiles.clear();
 
     setWindowTitle(files.at(0) + (files.size() > 1 ? "..." : ""));
 
-    BtnSol1->setChecked(true);
+    btnSolution1->setChecked(true);
 
-    time2gpst(Obs.data[0].time, &Week);
-    SolIndex[0] = SolIndex[1] = ObsIndex = 0;
+    time2gpst(observation.data[0].time, &week);
+    solutionIndex[0] = solutionIndex[1] = observationIndex = 0;
 
-    if (PlotType < PLOT_OBS || PLOT_DOP < PlotType)
-        UpdateType(PLOT_OBS);
+    if (plotType < PLOT_OBS || PLOT_DOP < plotType)
+        updateType(PLOT_OBS);
     else
-        UpdatePlotType();
-    FitTime();
+        updatePlotType();
+    fitTime();
 
-    ReadWaitEnd();
-    UpdateObsType();
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+    readWaitEnd();
+    updateObservationType();
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
 // read observation data rinex ----------------------------------------------
-int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
+int Plot::readObservationRinex(const QStringList &files, obs_t *obs, nav_t *nav,
              sta_t *sta)
 {
     gtime_t ts, te;
@@ -191,26 +191,26 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
     int i, n;
     char obsfile[1024], navfile[1024] = "", *p, *q, opt[2048];
 
-    strcpy(opt, qPrintable(RnxOpts));
+    strcpy(opt, qPrintable(rinexOptions));
 
     trace(3, "ReadObsRnx\n");
 
     setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
-    TimeSpan(&ts, &te, &tint);
+    timeSpan(&ts, &te, &tint);
 
     for (i = 0; i < files.count(); i++) {
         strcpy(obsfile, qPrintable(QDir::toNativeSeparators(files.at(i))));
 
-        ShowMsg(QString(tr("reading obs data... %1")).arg(obsfile));
+        showMessage(QString(tr("reading obs data... %1")).arg(obsfile));
         qApp->processEvents();
 
         if (readrnxt(obsfile, 1, ts, te, tint, opt, obs, nav, sta) < 0) {
-            ShowMsg(tr("error: insufficient memory"));
+            showMessage(tr("error: insufficient memory"));
             return -1;
         }
     }
-    ShowMsg(tr("reading nav data..."));
+    showMessage(tr("reading nav data..."));
     qApp->processEvents();
 
     for (i = 0; i < files.count(); i++) {
@@ -262,7 +262,7 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
         }
     }
     if (obs->n <= 0) {
-        ShowMsg(QString(tr("no observation data: %1...")).arg(files.at(0)));
+        showMessage(QString(tr("no observation data: %1...")).arg(files.at(0)));
         qApp->processEvents();
         freenav(nav, 0xFF);
         return 0;
@@ -271,14 +271,14 @@ int Plot::ReadObsRnx(const QStringList &files, obs_t *obs, nav_t *nav,
     return sortobs(obs);
 }
 // read navigation data -----------------------------------------------------
-void Plot::ReadNav(const QStringList &files)
+void Plot::readNavigation(const QStringList &files)
 {
     gtime_t ts, te;
     double tint;
     char navfile[1024], opt[2048];
     int i;
 
-    strcpy(opt, qPrintable(RnxOpts));
+    strcpy(opt, qPrintable(rinexOptions));
 
     trace(3, "ReadNav\n");
 
@@ -286,41 +286,41 @@ void Plot::ReadNav(const QStringList &files)
 
     setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
-    ReadWaitStart();
-    ShowLegend(NULL);
+    readWaitStart();
+    showLegend(NULL);
 
-    TimeSpan(&ts, &te, &tint);
+    timeSpan(&ts, &te, &tint);
 
-    freenav(&Nav, 0xFF);
+    freenav(&navigation, 0xFF);
 
-    ShowMsg(tr("reading nav data..."));
+    showMessage(tr("reading nav data..."));
 
     qApp->processEvents();
 
     for (i = 0; i < files.size(); i++) {
         strcpy(navfile, qPrintable(QDir::toNativeSeparators(files.at(i))));
-        readrnxt(navfile, 1, ts, te, tint, opt, NULL, &Nav, NULL);
+        readrnxt(navfile, 1, ts, te, tint, opt, NULL, &navigation, NULL);
     }
-    uniqnav(&Nav);
+    uniqnav(&navigation);
 
-    if (Nav.n <= 0 && Nav.ng <= 0 && Nav.ns <= 0) {
-        ShowMsg(QString(tr("no nav message: %1...")).arg(QDir::toNativeSeparators(files.at(i))));
-        ReadWaitEnd();
+    if (navigation.n <= 0 && navigation.ng <= 0 && navigation.ns <= 0) {
+        showMessage(QString(tr("no nav message: %1...")).arg(QDir::toNativeSeparators(files.at(i))));
+        readWaitEnd();
         return;
     }
-    if (NavFiles != files)
-        NavFiles = files;
-    for (i = 0; i < NavFiles.size(); i++) NavFiles[i] = QDir::toNativeSeparators(NavFiles.at(i));
+    if (navigationFiles != files)
+        navigationFiles = files;
+    for (i = 0; i < navigationFiles.size(); i++) navigationFiles[i] = QDir::toNativeSeparators(navigationFiles.at(i));
 
-    UpdateObs(NObs);
-    UpdateMp();
-    ReadWaitEnd();
+    updateObservation(nObservation);
+    updateMp();
+    readWaitEnd();
 
-    UpdatePlot();
-    UpdateEnable();
+    updatePlot();
+    updateEnable();
 }
 // read elevation mask data -------------------------------------------------
-void Plot::ReadElMaskData(const QString &file)
+void Plot::readElevationMaskData(const QString &file)
 {
     QFile fp(file);
     double az0 = 0.0, el0 = 0.0, az1, el1;
@@ -329,11 +329,11 @@ void Plot::ReadElMaskData(const QString &file)
 
     trace(3, "ReadElMaskData\n");
 
-    for (i = 0; i <= 360; i++) ElMaskData[i] = 0.0;
+    for (i = 0; i <= 360; i++) elevationMaskData[i] = 0.0;
 
     if (!fp.open(QIODevice::ReadOnly)) {
-        ShowMsg(QString(tr("no el mask data: %1...")).arg(file));
-        ShowLegend(NULL);
+        showMessage(QString(tr("no el mask data: %1...")).arg(file));
+        showLegend(NULL);
         return;
     }
     while (!fp.atEnd()) {
@@ -347,16 +347,16 @@ void Plot::ReadElMaskData(const QString &file)
         el1 = tokens.at(1).toDouble(&okay); if (!okay) continue;
 
         if (az0 < az1 && az1 <= 360.0 && 0.0 <= el1 && el1 <= 90.0) {
-            for (j = static_cast<int>(az0); j < static_cast<int>(az1); j++) ElMaskData[j] = el0 * D2R;
-            ElMaskData[j] = el1 * D2R;
+            for (j = static_cast<int>(az0); j < static_cast<int>(az1); j++) elevationMaskData[j] = el0 * D2R;
+            elevationMaskData[j] = el1 * D2R;
         }
         az0 = az1; el0 = el1;
     }
-    UpdatePlot();
-    UpdateEnable();
+    updatePlot();
+    updateEnable();
 }
 // generate visibility data ----------------------------------------------------
-void Plot::GenVisData(void)
+void Plot::generateVisibilityData(void)
 {
     gtime_t time, ts, te;
     obsd_t data;
@@ -369,31 +369,31 @@ void Plot::GenVisData(void)
 
     memset(&data, 0, sizeof(obsd_t));
 
-    ClearObs();
-    SimObs = 1;
+    clearObservation();
+    simObservation = 1;
 
-    ts = TimeStart;
-    te = TimeEnd;
-    tint = TimeInt;
-    matcpy(pos, OOPos, 3, 1);
+    ts = timeStart;
+    te = timeEnd;
+    tint = timeInterval;
+    matcpy(pos, ooPosition, 3, 1);
     pos2ecef(pos, rr);
 
-    ReadWaitStart();
-    ShowLegend(NULL);
-    ShowMsg(tr("generating satellite visibility..."));
+    readWaitStart();
+    showLegend(NULL);
+    showMessage(tr("generating satellite visibility..."));
     qApp->processEvents();
 
     for (time = ts; timediff(time, te) <= 0.0; time = timeadd(time, tint)) {
         for (i = 0; i < MAXSAT; i++) {
             satno2id(i + 1, name);
-            if (!tle_pos(time, name, "", "", &TLEData, NULL, rs)) continue;
+            if (!tle_pos(time, name, "", "", &tleData, NULL, rs)) continue;
             if ((geodist(rs, rr, e)) <= 0.0) continue;
             if (satazel(pos, e, azel) <= 0.0) continue;
-            if (Obs.n >= Obs.nmax) {
-                Obs.nmax = Obs.nmax <= 0 ? 4096 : Obs.nmax * 2;
-                Obs.data = static_cast<obsd_t *>(realloc(Obs.data, sizeof(obsd_t) * Obs.nmax));
-                if (!Obs.data) {
-                    Obs.n = Obs.nmax = 0;
+            if (observation.n >= observation.nmax) {
+                observation.nmax = observation.nmax <= 0 ? 4096 : observation.nmax * 2;
+                observation.data = static_cast<obsd_t *>(realloc(observation.data, sizeof(obsd_t) * observation.nmax));
+                if (!observation.data) {
+                    observation.n = observation.nmax = 0;
                     break;
                 }
             }
@@ -405,68 +405,68 @@ void Plot::GenVisData(void)
                 data.code[j] = CODE_NONE;
             }
             data.code[0] = CODE_L1C;
-            Obs.data[Obs.n++] = data;
+            observation.data[observation.n++] = data;
         }
         if (++nobs >= MAX_SIMOBS) break;
     }
-    if (Obs.n <= 0) {
-        ReadWaitEnd();
-        ShowMsg(tr("no satellite visibility"));
+    if (observation.n <= 0) {
+        readWaitEnd();
+        showMessage(tr("no satellite visibility"));
         return;
     }
-    UpdateObs(nobs);
+    updateObservation(nobs);
 
     setWindowTitle(tr("Satellite Visibility (Predicted)"));
-    BtnSol1->setChecked(true);
-    time2gpst(Obs.data[0].time, &Week);
-    SolIndex[0] = SolIndex[1] = ObsIndex = 0;
-    if (PlotType < PLOT_OBS || PLOT_DOP < PlotType)
-        UpdateType(PLOT_OBS);
+    btnSolution1->setChecked(true);
+    time2gpst(observation.data[0].time, &week);
+    solutionIndex[0] = solutionIndex[1] = observationIndex = 0;
+    if (plotType < PLOT_OBS || PLOT_DOP < plotType)
+        updateType(PLOT_OBS);
     else
-        UpdatePlotType();
-    FitTime();
-    ReadWaitEnd();
-    UpdateObsType();
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+        updatePlotType();
+    fitTime();
+    readWaitEnd();
+    updateObservationType();
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
 // read map image data ------------------------------------------------------
-void Plot::ReadMapData(const QString &file)
+void Plot::readMapData(const QString &file)
 {
     QImage image;
     double pos[3];
 
     trace(3, "ReadMapData\n");
 
-    ShowMsg(tr("reading map image... %1").arg(file));
+    showMessage(tr("reading map image... %1").arg(file));
 
     if (!image.load(file)) {
-        ShowMsg(tr("map file read error: %1").arg(file));
-        ShowLegend(NULL);
+        showMessage(tr("map file read error: %1").arg(file));
+        showLegend(NULL);
         return;
     }
-    MapImage = image;
-    MapImageFile = file;
-    MapSize[0] = MapImage.width();
-    MapSize[1] = MapImage.height();
+    mapImage = image;
+    mapImageFile = file;
+    mapSize[0] = mapImage.width();
+    mapSize[1] = mapImage.height();
 
-    ReadMapTag(file);
+    readMapTag(file);
 
-    if (norm(OPos, 3) <= 0.0 && (MapLat != 0.0 || MapLon != 0.0)) {
-        pos[0] = MapLat * D2R;
-        pos[1] = MapLon * D2R;
+    if (norm(oPosition, 3) <= 0.0 && (mapLatitude != 0.0 || mapLongitude != 0.0)) {
+        pos[0] = mapLatitude * D2R;
+        pos[1] = mapLongitude * D2R;
         pos[2] = 0.0;
-        pos2ecef(pos, OPos);
+        pos2ecef(pos, oPosition);
     }
 
-    BtnShowImg->setChecked(true);
+    btnShowImage->setChecked(true);
 
-    mapOptDialog->UpdateField();
-    UpdatePlot();
-    UpdateOrigin();
-    UpdateEnable();
-    ShowMsg("");
+    mapOptDialog->updateField();
+    updatePlot();
+    updateOrigin();
+    updateEnable();
+    showMessage("");
 }
 // resample image pixel -----------------------------------------------------
 #define ResPixelNN(img1, x, y, b1, pix) { \
@@ -503,9 +503,9 @@ static void YCrCb(const QRgb *pix, double *Y)
     Y[2] = (-0.169 * qRed(*pix) - 0.331 * qGreen(*pix) + 0.500 * qBlue(*pix)) / 255;        // Cb (-.5-.5)
 }
 // update sky image ---------------------------------------------------------
-void Plot::UpdateSky(void)
+void Plot::updateSky(void)
 {
-    QImage &bm1 = SkyImageI, &bm2 = SkyImageR;
+    QImage &bm1 = skyImageI, &bm2 = skyImageR;
     QRgb pix;
     double x, y, xp, yp, r, a, p[3], q[3], R[9] = { 0 }, dr, dist, Yz[3] = { 0 }, Y[3];
     int i, j, k, w1, h1, w2, h2, wz, nz = 0;
@@ -518,9 +518,9 @@ void Plot::UpdateSky(void)
 
     bm2.fill(QColor("silver")); // fill bitmap by silver
 
-    if (norm(SkyFov, 3) > 1e-12)
-        RPY(SkyFov, R);
-    if (SkyBinarize) {      // average of zenith image
+    if (norm(skyFOV, 3) > 1e-12)
+        RPY(skyFOV, R);
+    if (skyBinarize) {      // average of zenith image
         wz = h1 / 16;   // sky area size
         for (i = w1 / 2 - wz; i <= w1 / 2 + wz; i++) for (j = h1 / 2 - wz; j <= h1 / 2 + wz; j++) {
                 pix = bm1.pixel(i, j);
@@ -532,13 +532,13 @@ void Plot::UpdateSky(void)
             for (k = 0; k < 3; k++) Yz[k] /= nz;
     }
     for (j = 0; j < h2; j++) for (i = 0; i < w2; i++) {
-            xp = (w2 / 2.0 - i) / SkyScaleR;
-            yp = (j - h2 / 2.0) / SkyScaleR;
+            xp = (w2 / 2.0 - i) / skyScaleR;
+            yp = (j - h2 / 2.0) / skyScaleR;
             r = SQRT(SQR(xp) + SQR(yp));
-            if (SkyElMask && r > 1.0) continue;
+            if (skyElevationMask && r > 1.0) continue;
 
             // rotate coordinates roll-pitch-yaw
-            if (norm(SkyFov, 3) > 1e-12) {
+            if (norm(skyFOV, 3) > 1e-12) {
                 if (r < 1e-12) {
                     p[0] = p[1] = 0.0;
                     p[2] = 1.0;
@@ -561,41 +561,41 @@ void Plot::UpdateSky(void)
                 }
             }
             // correct lense distortion
-            if (SkyDestCorr) {
+            if (skyDestCorrection) {
                 if (r <= 0.0 || r >= 1.0) continue;
                 k = static_cast<int>(r * 9.0);
                 dr = r * 9.0 - k;
-                dist = k > 8 ? SkyDest[9] : (1.0 - dr) * SkyDest[k] + dr * SkyDest[k + 1];
+                dist = k > 8 ? skyDest[9] : (1.0 - dr) * skyDest[k] + dr * skyDest[k + 1];
                 xp *= dist / r;
                 yp *= dist / r;
             } else {
-                xp *= SkyScale;
-                yp *= SkyScale;
+                xp *= skyScale;
+                yp *= skyScale;
             }
-            if (SkyFlip) xp = -xp;
-            x = SkyCent[0] + xp;
-            y = SkyCent[1] + yp;
+            if (skyFlip) xp = -xp;
+            x = skyCenter[0] + xp;
+            y = skyCenter[1] + yp;
             if (x < 0.0 || x >= w1 - 1 || y < 0.0 || y >= h1 - 1) continue;
-            if (!SkyRes)
+            if (!skyRes)
                 ResPixelNN(bm1, x, y, b1, pix)
             else
                 ResPixelBL(bm1, x, y, b1, pix)
             bm2.setPixel(i, j, pix);
-            if (SkyBinarize) {
+            if (skyBinarize) {
                 YCrCb(&pix, Y);
                 for (k = 1; k < 3; k++) Y[k] -= Yz[k];
 
                 // threshold by brightness and color-distance
-                if (Y[0] > SkyBinThres1 && norm(Y + 1, 2) < SkyBinThres2)
+                if (Y[0] > skyBinThres1 && norm(Y + 1, 2) < skyBinThres2)
                     bm2.setPixel(i, j, qRgb(255, 255, 255));        // sky
                 else
                     bm2.setPixel(i, j, qRgb(96, 96, 96));           // others
             }
         }
-    UpdatePlot();
+    updatePlot();
 }
 // read sky tag data --------------------------------------------------------
-void Plot::ReadSkyTag(const QString &file)
+void Plot::readSkyTag(const QString &file)
 {
     QFile fp(file);
     QByteArray buff;
@@ -611,80 +611,80 @@ void Plot::ReadSkyTag(const QString &file)
         if (tokens.size() < 2) continue;
 
         if (tokens.at(0) == "centx") {
-            SkyCent[0] = tokens.at(1).toDouble();
+            skyCenter[0] = tokens.at(1).toDouble();
         } else if (tokens.at(0) == "centy") {
-            SkyCent[1] = tokens.at(1).toDouble();
+            skyCenter[1] = tokens.at(1).toDouble();
         } else if (tokens.at(0) == "scale") {
-            SkyScale = tokens.at(1).toDouble();
+            skyScale = tokens.at(1).toDouble();
         } else if (tokens.at(0) == "roll") {
-            SkyFov[0] = tokens.at(1).toDouble();
+            skyFOV[0] = tokens.at(1).toDouble();
         } else if (tokens.at(0) == "pitch") {
-            SkyFov[1] = tokens.at(1).toDouble();
+            skyFOV[1] = tokens.at(1).toDouble();
         } else if (tokens.at(0) == "yaw") {
-            SkyFov[2] = tokens.at(1).toDouble();
+            skyFOV[2] = tokens.at(1).toDouble();
         } else if (tokens.at(0) == "destcorr") {
-            SkyDestCorr = tokens.at(1).toInt();
+            skyDestCorrection = tokens.at(1).toInt();
         } else if (tokens.at(0) == "elmask") {
-            SkyElMask = tokens.at(1).toInt();
+            skyElevationMask = tokens.at(1).toInt();
         } else if (tokens.at(0) == "resample") {
-            SkyRes = tokens.at(1).toInt();
+            skyRes = tokens.at(1).toInt();
         } else if (tokens.at(0) == "flip") {
-            SkyFlip = tokens.at(1).toInt();
+            skyFlip = tokens.at(1).toInt();
         } else if (tokens.at(0) == "dest") {
             QList<QByteArray> t = tokens.at(1).split(' ');
             if (t.size() == 9)
-                for (int i = 0; i < 9; i++) SkyDest[i] = t.at(i).toDouble();
+                for (int i = 0; i < 9; i++) skyDest[i] = t.at(i).toDouble();
         } else if (tokens.at(0) == "binarize") {
-            SkyBinarize = tokens.at(1).toInt();
+            skyBinarize = tokens.at(1).toInt();
         } else if (tokens.at(0) == "binthr1") {
-            SkyBinThres1 = tokens.at(1).toInt();
+            skyBinThres1 = tokens.at(1).toInt();
         } else if (tokens.at(0) == "binthr2") {
-            SkyBinThres2 = tokens.at(1).toInt();
+            skyBinThres2 = tokens.at(1).toInt();
         }
     }
 }
 // read sky image data ------------------------------------------------------
-void Plot::ReadSkyData(const QString &file)
+void Plot::readSkyData(const QString &file)
 {
     QImage image;
     int i, w, h, wr;
 
     trace(3, "ReadSkyData\n");
 
-    ShowMsg(tr("reading sky data... %1").arg(file));
+    showMessage(tr("reading sky data... %1").arg(file));
 
     if (!image.load(file)) {
-        ShowMsg(QString(tr("sky image file read error: %1")).arg(file));
-        ShowLegend(NULL);
+        showMessage(QString(tr("sky image file read error: %1")).arg(file));
+        showLegend(NULL);
         return;
     }
-    SkyImageI = image;
-    SkyImageR = image;
-    w = MAX(SkyImageI.width(), SkyImageI.height());
-    h = MIN(SkyImageI.width(), SkyImageI.height());
+    skyImageI = image;
+    skyImageR = image;
+    w = MAX(skyImageI.width(), skyImageI.height());
+    h = MIN(skyImageI.width(), skyImageI.height());
     wr = MIN(w, MAX_SKYIMG_R);
-    SkyImageR = QImage(wr, wr, QImage::Format_RGB32);
-    SkyImageFile = file;
-    SkySize[0] = SkyImageI.width();
-    SkySize[1] = SkyImageI.height();
-    SkyCent[0] = SkySize[0] / 2.0;
-    SkyCent[1] = SkySize[1] / 2.0;
-    SkyFov[0] = SkyFov[1] = SkyFov[2] = 0.0;
-    SkyScale = h / 2.0;
-    SkyScaleR = SkyScale * wr / w;
-    SkyDestCorr = SkyRes = SkyFlip = 0;
-    SkyElMask = 1;
-    for (i = 0; i < 10; i++) SkyDest[i] = 0.0;
+    skyImageR = QImage(wr, wr, QImage::Format_RGB32);
+    skyImageFile = file;
+    skySize[0] = skyImageI.width();
+    skySize[1] = skyImageI.height();
+    skyCenter[0] = skySize[0] / 2.0;
+    skyCenter[1] = skySize[1] / 2.0;
+    skyFOV[0] = skyFOV[1] = skyFOV[2] = 0.0;
+    skyScale = h / 2.0;
+    skyScaleR = skyScale * wr / w;
+    skyDestCorrection = skyRes = skyFlip = 0;
+    skyElevationMask = 1;
+    for (i = 0; i < 10; i++) skyDest[i] = 0.0;
 
-    ReadSkyTag(file + ".tag");
+    readSkyTag(file + ".tag");
 
-    ShowMsg("");
-    BtnShowImg->setChecked(true);
+    showMessage("");
+    btnShowImage->setChecked(true);
 
-    UpdateSky();
+    updateSky();
 }
 // read map tag data --------------------------------------------------------
-void Plot::ReadMapTag(const QString &file)
+void Plot::readMapTag(const QString &file)
 {
     QFile fp(file + ".tag");
     QByteArray buff;
@@ -693,9 +693,9 @@ void Plot::ReadMapTag(const QString &file)
 
     if (!(fp.open(QIODevice::ReadOnly))) return;
 
-    MapScaleX = MapScaleY = 1.0;
-    MapScaleEq = 0;
-    MapLat = MapLon = 0.0;
+    mapScaleX = mapScaleY = 1.0;
+    mapScaleEqual = 0;
+    mapLatitude = mapLongitude = 0.0;
 
     while (!fp.atEnd()) {
         buff = fp.readLine();
@@ -703,51 +703,51 @@ void Plot::ReadMapTag(const QString &file)
         QList<QByteArray> tokens = buff.split('=');
         if (tokens.size() < 2) continue;
 
-        if (tokens.at(0) == "scalex") MapScaleX = tokens.at(1).toDouble();
-        else if (tokens.at(0) == "scaley") MapScaleY = tokens.at(1).toDouble();
-        else if (tokens.at(0) == "scaleeq") MapScaleEq = tokens.at(1).toInt();
-        else if (tokens.at(0) == "lat") MapLat = tokens.at(1).toDouble();
-        else if (tokens.at(0) == "lon") MapLon = tokens.at(1).toDouble();
+        if (tokens.at(0) == "scalex") mapScaleX = tokens.at(1).toDouble();
+        else if (tokens.at(0) == "scaley") mapScaleY = tokens.at(1).toDouble();
+        else if (tokens.at(0) == "scaleeq") mapScaleEqual = tokens.at(1).toInt();
+        else if (tokens.at(0) == "lat") mapLatitude = tokens.at(1).toDouble();
+        else if (tokens.at(0) == "lon") mapLongitude = tokens.at(1).toDouble();
     }
 }
 // read shapefile -----------------------------------------------------------
-void Plot::ReadShapeFile(const QStringList &files)
+void Plot::readShapeFile(const QStringList &files)
 {
     int i;
     double pos[3];
     char path[1024];
 
-    ReadWaitStart();
+    readWaitStart();
 
-    gis_free(&Gis);
+    gis_free(&gis);
 
     for (i = 0; i < files.count() && i < MAXMAPLAYER; i++) {
         strcpy(path, qPrintable(files.at(i)));
-        ShowMsg(tr("reading shapefile... %1").arg(path));
-        gis_read(path, &Gis, i);
+        showMessage(tr("reading shapefile... %1").arg(path));
+        gis_read(path, &gis, i);
 
         QFileInfo fi(files.at(i));
 
-        strcpy(Gis.name[i], qPrintable(fi.baseName()));
+        strcpy(gis.name[i], qPrintable(fi.baseName()));
     }
 
-    ReadWaitEnd();
-    ShowMsg("");
-    BtnShowMap->setChecked(true);
+    readWaitEnd();
+    showMessage("");
+    btnShowMap->setChecked(true);
 
-    if (norm(OPos, 3) <= 0.0) {
-        pos[0] = (Gis.bound[0] + Gis.bound[1]) / 2.0;
-        pos[1] = (Gis.bound[2] + Gis.bound[3]) / 2.0;
+    if (norm(oPosition, 3) <= 0.0) {
+        pos[0] = (gis.bound[0] + gis.bound[1]) / 2.0;
+        pos[1] = (gis.bound[2] + gis.bound[3]) / 2.0;
         pos[2] = 0.0;
-        pos2ecef(pos, OPos);
+        pos2ecef(pos, oPosition);
     }
 
-    UpdateOrigin();
-    UpdatePlot();
-    UpdateEnable();
+    updateOrigin();
+    updatePlot();
+    updateEnable();
 }
 // read GPX file ------------------------------------------------------------
-void Plot::ReadGpxFile(const QString &file)
+void Plot::readGpxFile(const QString &file)
 {
     QString label1("<ogr:?"),label2("<ogr:_?");
     QFile fp(file);
@@ -757,10 +757,10 @@ void Plot::ReadGpxFile(const QString &file)
 
     if (!fp.open(QIODevice::ReadOnly | QIODevice::Text)) return;
 
-    NWayPnt = 0;
+    nWayPoint = 0;
 
     QXmlStreamReader inputStream(&fp);
-    while (!inputStream.atEnd() && !inputStream.hasError() && NWayPnt < MAXWAYPNT) {
+    while (!inputStream.atEnd() && !inputStream.hasError() && nWayPoint < MAXWAYPNT) {
         inputStream.readNext();
         if (inputStream.isStartElement()) {
             QString tag = inputStream.name().toString();
@@ -776,28 +776,28 @@ void Plot::ReadGpxFile(const QString &file)
         } else if (inputStream.isEndElement()) {
             QString tag = inputStream.name().toString();
             if (tag.toLower() == "wpt") {
-                PntPos[NWayPnt][0] = pos[0];
-                PntPos[NWayPnt][1] = pos[1];
-                PntPos[NWayPnt][2] = pos[2];
-                PntName[NWayPnt++] = name;
+                pointPosition[nWayPoint][0] = pos[0];
+                pointPosition[nWayPoint][1] = pos[1];
+                pointPosition[nWayPoint][2] = pos[2];
+                pointName[nWayPoint++] = name;
                 pos[0] = pos[1] = pos[2] = 0.0;
                 name.clear();
             }
         }
     }
 
-    ReadWaitEnd();
-    ShowMsg("");
+    readWaitEnd();
+    showMessage("");
 
-    BtnShowMap->setChecked(true);
+    btnShowMap->setChecked(true);
 
-    UpdatePlot();
-    UpdateEnable();
+    updatePlot();
+    updateEnable();
 
-    pntDialog->SetPoint();
+    pntDialog->setPoint();
 }
 // read pos file ------------------------------------------------------------
-void Plot::ReadPosFile(const QString &file)
+void Plot::readPositionFile(const QString &file)
 {
     QFile fp(file);
     QString id, name;
@@ -808,9 +808,9 @@ void Plot::ReadPosFile(const QString &file)
     if (!fp.open(QIODevice::ReadOnly | QIODevice::Text))
             return;
 
-    NWayPnt=0;
+    nWayPoint=0;
 
-    while (!fp.atEnd() && NWayPnt<MAXWAYPNT) {
+    while (!fp.atEnd() && nWayPoint<MAXWAYPNT) {
         QByteArray line = fp.readLine();
 
         // remove comments
@@ -833,39 +833,39 @@ void Plot::ReadPosFile(const QString &file)
             name = tokens.at(4);
 
         if (n>=4) {
-            PntPos[NWayPnt][0]=pos[0];
-            PntPos[NWayPnt][1]=pos[1];
-            PntPos[NWayPnt][2]=pos[2];
-            PntName[NWayPnt++]=(n>=5)?name:id;
+            pointPosition[nWayPoint][0]=pos[0];
+            pointPosition[nWayPoint][1]=pos[1];
+            pointPosition[nWayPoint][2]=pos[2];
+            pointName[nWayPoint++]=(n>=5)?name:id;
         }
     }
     fp.close();
 }
 // read waypoint ------------------------------------------------------------
-void Plot::ReadWaypoint(const QString &file)
+void Plot::readWaypoint(const QString &file)
 {
     int type=0;
     int p;
 
     if ((p=file.indexOf('.'))&& (file.right(p)==".gpx")) type=1;
 
-    ReadWaitStart();
-    ShowMsg(QString("reading waypoint... %1").arg(file));
+    readWaitStart();
+    showMessage(QString("reading waypoint... %1").arg(file));
 
-    if (type) ReadGpxFile(file);
-    else      ReadPosFile(file);
+    if (type) readGpxFile(file);
+    else      readPositionFile(file);
 
-    ReadWaitEnd();
-    ShowMsg("");
+    readWaitEnd();
+    showMessage("");
 
-    BtnShowMap->setChecked(true);
+    btnShowMap->setChecked(true);
 
-    UpdatePlot();
-    UpdateEnable();
-    pntDialog->SetPoint();
+    updatePlot();
+    updateEnable();
+    pntDialog->setPoint();
 }
 // save GPX file ------------------------------------------------------------
-void Plot::SaveGpxFile(const QString &file)
+void Plot::saveGpxFile(const QString &file)
 {
     QFile fp(file);
     int i;
@@ -881,13 +881,13 @@ void Plot::SaveGpxFile(const QString &file)
     stream.writeAttribute("creator", "RTKLIB");
     stream.writeAttribute("xmlns", XMLNS);
 
-    for (i = 0; i < NWayPnt; i++) {
+    for (i = 0; i < nWayPoint; i++) {
         stream.writeStartElement("wpt");
-        stream.writeAttribute("lat", QString::number(PntPos[i][0], 'f', 9));
-        stream.writeAttribute("lon", QString::number(PntPos[i][1], 'f', 9));
-        if (PntPos[i][2] != 0.0)
-            stream.writeTextElement("ele", QString::number(PntPos[i][2], 'f', 4));
-        stream.writeTextElement("name", PntName[i]);
+        stream.writeAttribute("lat", QString::number(pointPosition[i][0], 'f', 9));
+        stream.writeAttribute("lon", QString::number(pointPosition[i][1], 'f', 9));
+        if (pointPosition[i][2] != 0.0)
+            stream.writeTextElement("ele", QString::number(pointPosition[i][2], 'f', 4));
+        stream.writeTextElement("name", pointName[i]);
         stream.writeEndElement();
     }
     stream.writeEndElement();
@@ -895,7 +895,7 @@ void Plot::SaveGpxFile(const QString &file)
     stream.writeEndDocument();
 }
 // save pos file ------------------------------------------------------------
-void Plot::SavePosFile(const QString &file)
+void Plot::savePositionFile(const QString &file)
 {
     QFile fp(file);
     int i;
@@ -905,32 +905,32 @@ void Plot::SavePosFile(const QString &file)
 
     stream << QString("# WAYPOINTS by RTKLIB %1\n").arg(VER_RTKLIB);
 
-    for (i=0;i<NWayPnt;i++) {
-        QString str(PntName[i]);
-        stream << QString("%13.9f %14.9f %10.4f %s\n").arg(PntPos[i][0],13,'f',9).arg(PntPos[i][1],14,'f',9).
-                arg(PntPos[i][2],10,'f',4).arg(str);
+    for (i=0;i<nWayPoint;i++) {
+        QString str(pointName[i]);
+        stream << QString("%13.9f %14.9f %10.4f %s\n").arg(pointPosition[i][0],13,'f',9).arg(pointPosition[i][1],14,'f',9).
+                arg(pointPosition[i][2],10,'f',4).arg(str);
     }
     fp.close();
 }
 // save waypoint ------------------------------------------------------------
-void Plot::SaveWaypoint(const QString &file)
+void Plot::saveWaypoint(const QString &file)
 {
     int type=0;
     int p;
 
     if ((p=file.indexOf('.'))&& (file.right(p)==".gpx")) type=1;
 
-    ReadWaitStart();
-    ShowMsg(QString("saving waypoint... %1").arg(file));
+    readWaitStart();
+    showMessage(QString("saving waypoint... %1").arg(file));
 
-    if (type) SaveGpxFile(file);
-    else      SavePosFile(file);
+    if (type) saveGpxFile(file);
+    else      savePositionFile(file);
 
-    ReadWaitEnd();
-    ShowMsg("");
+    readWaitEnd();
+    showMessage("");
 }
 // read station position data -----------------------------------------------
-void Plot::ReadStaPos(const QString &file, const QString &sta,
+void Plot::readStationPosition(const QString &file, const QString &sta,
               double *rr)
 {
     QFile fp(file);
@@ -970,7 +970,7 @@ void Plot::ReadStaPos(const QString &file, const QString &sta,
     }
 }
 // save dop -----------------------------------------------------------------
-void Plot::SaveDop(const QString &file)
+void Plot::saveDop(const QString &file)
 {
     QFile fp(file);
     gtime_t time;
@@ -984,33 +984,33 @@ void Plot::SaveDop(const QString &file)
 
     if (!(fp.open(QIODevice::WriteOnly))) return;
 
-    tlabel = TimeLabel <= 1 ? tr("TIME (GPST)") : (TimeLabel <= 2 ? tr("TIME (UTC)") : tr("TIME (JST))"));
+    tlabel = timeLabel <= 1 ? tr("TIME (GPST)") : (timeLabel <= 2 ? tr("TIME (UTC)") : tr("TIME (JST))"));
 
     data = QString(tr("%% %1 %2 %3 %4 %5 %6 (EL>=%7deg)\n"))
-           .arg(tlabel, TimeLabel == 0 ? 13 : 19).arg("NSAT", 6).arg("GDOP", 8).arg("PDOP", 8).arg("HDOP", 8).arg("VDOP", 8).arg(ElMask, 0, 'f', 0);
+           .arg(tlabel, timeLabel == 0 ? 13 : 19).arg("NSAT", 6).arg("GDOP", 8).arg("PDOP", 8).arg("HDOP", 8).arg("VDOP", 8).arg(elevationMask, 0, 'f', 0);
     fp.write(data.toLatin1());
 
-    for (i = 0; i < NObs; i++) {
+    for (i = 0; i < nObservation; i++) {
         ns = 0;
-        for (j = IndexObs[i]; j < Obs.n && j < IndexObs[i + 1]; j++) {
-            if (SatMask[Obs.data[j].sat - 1]) continue;
-            if (El[j] < ElMask * D2R) continue;
-            if (ElMaskP && El[j] < ElMaskData[static_cast<int>(Az[j] * R2D + 0.5)]) continue;
-            azel[ns * 2] = Az[j];
-            azel[1 + ns * 2] = El[j];
+        for (j = indexObservation[i]; j < observation.n && j < indexObservation[i + 1]; j++) {
+            if (satelliteMask[observation.data[j].sat - 1]) continue;
+            if (elevtion[j] < elevationMask * D2R) continue;
+            if (elevationMaskP && elevtion[j] < elevationMaskData[static_cast<int>(azimuth[j] * R2D + 0.5)]) continue;
+            azel[ns * 2] = azimuth[j];
+            azel[1 + ns * 2] = elevtion[j];
             ns++;
         }
         if (ns <= 0) continue;
 
-        dops(ns, azel, ElMask * D2R, dop);
+        dops(ns, azel, elevationMask * D2R, dop);
 
-        time = Obs.data[IndexObs[i]].time;
-        if (TimeLabel == 0) {
+        time = observation.data[indexObservation[i]].time;
+        if (timeLabel == 0) {
             tow = time2gpst(time, &week);
             sprintf(tstr, "%4d %8.1f ", week, tow);
-        } else if (TimeLabel == 1) {
+        } else if (timeLabel == 1) {
             time2str(time, tstr, 1);
-        } else if (TimeLabel == 2) {
+        } else if (timeLabel == 2) {
             time2str(gpst2utc(time), tstr, 1);
         } else {
             time2str(timeadd(gpst2utc(time), 9 * 3600.0), tstr, 1);
@@ -1021,10 +1021,10 @@ void Plot::SaveDop(const QString &file)
     }
 }
 // save snr and mp -------------------------------------------------------------
-void Plot::SaveSnrMp(const QString &file)
+void Plot::saveSnrMp(const QString &file)
 {
     QFile fp(file);
-    QString ObsTypeText = ObsType2->currentText();
+    QString ObsTypeText = cBObservationType2->currentText();
     gtime_t time;
     double tow;
     char sat[32], tstr[64], code[64];
@@ -1037,44 +1037,44 @@ void Plot::SaveSnrMp(const QString &file)
 
     if (!(fp.open(QIODevice::WriteOnly))) return;
 
-    tlabel = TimeLabel <= 1 ? tr("TIME (GPST)") : (TimeLabel <= 2 ? tr("TIME (UTC)") : tr("TIME (JST)"));
+    tlabel = timeLabel <= 1 ? tr("TIME (GPST)") : (timeLabel <= 2 ? tr("TIME (UTC)") : tr("TIME (JST)"));
 
     mp = ObsTypeText + " MP(m)";
-    data = QString("%% %1 %2 %3 %4 %5 %6\n").arg(tlabel, TimeLabel == 0 ? 13 : 19).arg("SAT", 6)
+    data = QString("%% %1 %2 %3 %4 %5 %6\n").arg(tlabel, timeLabel == 0 ? 13 : 19).arg("SAT", 6)
            .arg("AZ(deg)", 8).arg("EL(deg)", 8).arg("SNR(dBHz)", 9).arg(mp, 10);
     fp.write(data.toLatin1());
 
     for (i = 0; i < MAXSAT; i++) {
-        if (SatMask[i] || !SatSel[i]) continue;
+        if (satelliteMask[i] || !satelliteSelection[i]) continue;
         satno2id(i + 1, sat);
 
-        for (j = 0; j < Obs.n; j++) {
-            if (Obs.data[j].sat != i + 1) continue;
+        for (j = 0; j < observation.n; j++) {
+            if (observation.data[j].sat != i + 1) continue;
 
             for (k = 0; k < NFREQ + NEXOBS; k++)
-                if (strstr(code2obs(Obs.data[j].code[k]), code)) break;
+                if (strstr(code2obs(observation.data[j].code[k]), code)) break;
             if (k >= NFREQ + NEXOBS) continue;
 
-            time = Obs.data[j].time;
+            time = observation.data[j].time;
 
-            if (TimeLabel == 0) {
+            if (timeLabel == 0) {
                 tow = time2gpst(time, &week);
                 sprintf(tstr, "%4d %9.1f ", week, tow);
-            } else if (TimeLabel == 1) {
+            } else if (timeLabel == 1) {
                 time2str(time, tstr, 1);
-            } else if (TimeLabel == 2) {
+            } else if (timeLabel == 2) {
                 time2str(gpst2utc(time), tstr, 1);
             } else {
                 time2str(timeadd(gpst2utc(time), 9 * 3600.0), tstr, 1);
             }
-            data = QString("%1 %2 %3 %4 %5 %6f\n").arg(tstr).arg(sat, 6).arg(Az[j] * R2D, 8, 'f', 1)
-                   .arg(El[j] * R2D, 8, 'f', 1).arg(Obs.data[j].SNR[k] * SNR_UNIT, 9, 'f', 2).arg(!Mp[k] ? 0.0 : Mp[k][j], 10, 'f', 4);
+            data = QString("%1 %2 %3 %4 %5 %6f\n").arg(tstr).arg(sat, 6).arg(azimuth[j] * R2D, 8, 'f', 1)
+                   .arg(elevtion[j] * R2D, 8, 'f', 1).arg(observation.data[j].SNR[k] * SNR_UNIT, 9, 'f', 2).arg(!multipath[k] ? 0.0 : multipath[k][j], 10, 'f', 4);
             fp.write(data.toLatin1());
         }
     }
 }
 // save elev mask --------------------------------------------------------------
-void Plot::SaveElMask(const QString &file)
+void Plot::saveElevationMask(const QString &file)
 {
     QFile fp(file);
     QString data;
@@ -1089,7 +1089,7 @@ void Plot::SaveElMask(const QString &file)
     fp.write("%% AZ(deg) EL(deg)\n");
 
     for (az = 0; az <= 360; az++) {
-        el = floor(ElMaskData[az] * R2D / 0.1 + 0.5) * 0.1;
+        el = floor(elevationMaskData[az] * R2D / 0.1 + 0.5) * 0.1;
         if (qFuzzyCompare(el, el0)) continue;
         data = QString("%1 %2\n").arg(static_cast<double>(az), 9, 'f', 1).arg(el, 6, 'f', 1);
         fp.write(data.toLatin1());
@@ -1097,103 +1097,103 @@ void Plot::SaveElMask(const QString &file)
     }
 }
 // connect to external sources ----------------------------------------------
-void Plot::Connect(void)
+void Plot::connectStream(void)
 {
     char cmd[1024], path[1024], buff[MAXSTRPATH], *name[2] = { 0, 0 }, *p;
     int i, mode = STR_MODE_R;
 
     trace(3, "Connect\n");
 
-    if (ConnectState) return;
+    if (connectState) return;
 
     for (i = 0; i < 2; i++) {
-        if (RtStream[i] == STR_NONE) continue;
-        else if (RtStream[i] == STR_SERIAL) strcpy(path, qPrintable(StrPaths[i][0]));
-        else if (RtStream[i] == STR_FILE) strcpy(path, qPrintable(StrPaths[i][2]));
-        else if (RtStream[i] <= STR_NTRIPCLI) strcpy(path, qPrintable(StrPaths[i][1]));
+        if (rtStream[i] == STR_NONE) continue;
+        else if (rtStream[i] == STR_SERIAL) strcpy(path, qPrintable(streamPaths[i][0]));
+        else if (rtStream[i] == STR_FILE) strcpy(path, qPrintable(streamPaths[i][2]));
+        else if (rtStream[i] <= STR_NTRIPCLI) strcpy(path, qPrintable(streamPaths[i][1]));
         else continue;
 
-        if (RtStream[i] == STR_FILE || !SolData[i].cyclic || SolData[i].nmax != RtBuffSize + 1) {
-            Clear();
-            initsolbuf(SolData + i, 1, RtBuffSize + 1);
+        if (rtStream[i] == STR_FILE || !solutionData[i].cyclic || solutionData[i].nmax != rtBufferSize + 1) {
+            clear();
+            initsolbuf(solutionData + i, 1, rtBufferSize + 1);
         }
-        if (RtStream[i] == STR_SERIAL) mode |= STR_MODE_W;
+        if (rtStream[i] == STR_SERIAL) mode |= STR_MODE_W;
 
         strcpy(buff, path);
         if ((p = strstr(buff, "::"))) *p = '\0';
         if ((p = strstr(buff, "/:"))) *p = '\0';
         if ((p = strstr(buff, "@"))) name[i] = p + 1; else name[i] = buff;
 
-        if (!stropen(Stream + i, RtStream[i], mode, path)) {
-            ShowMsg(tr("connect error: %1").arg(name[0]));
-            ShowLegend(NULL);
-            trace(1, "stream open error: ch=%d type=%d path=%s\n", i + 1, RtStream[i], path);
+        if (!stropen(stream + i, rtStream[i], mode, path)) {
+            showMessage(tr("connect error: %1").arg(name[0]));
+            showLegend(NULL);
+            trace(1, "stream open error: ch=%d type=%d path=%s\n", i + 1, rtStream[i], path);
             continue;
         }
-        strsettimeout(Stream + i, RtTimeOutTime, RtReConnTime);
+        strsettimeout(stream + i, rtTimeoutTime, rtReconnectTime);
 
-        if (StrCmdEna[i][0]) {
-            strcpy(cmd, qPrintable(StrCmds[i][0]));
-            strwrite(Stream + i, (uint8_t *)cmd, strlen(cmd));
+        if (streamCommandEnabled[i][0]) {
+            strcpy(cmd, qPrintable(streamCommands[i][0]));
+            strwrite(stream + i, (uint8_t *)cmd, strlen(cmd));
         }
-        ConnectState = 1;
+        connectState = 1;
     }
-    if (!ConnectState) return;
+    if (!connectState) return;
 
-    if (Title != "") setWindowTitle(Title);
+    if (title != "") setWindowTitle(title);
     else setWindowTitle(tr("CONNECT %1 %2").arg(name[0]).arg(name[1]));
 
-    BtnConnect->setChecked(true);
-    BtnSol1->setChecked(name[0]);
-    BtnSol2->setChecked(name[1]);
-    BtnSol12->setChecked(false);
-    BtnShowTrack->setChecked(true);
-    BtnFixHoriz->setChecked(true);
-    BtnFixCent->setChecked(true);
+    btnConnect->setChecked(true);
+    btnSolution1->setChecked(name[0]);
+    btnSolution2->setChecked(name[1]);
+    btnSolution12->setChecked(false);
+    btnShowTrack->setChecked(true);
+    btnFixHorizontal->setChecked(true);
+    btnFixCenter->setChecked(true);
 
-    BtnReload->setVisible(false);
-    StrStatus->setVisible(true);
+    btnReload->setVisible(false);
+    wgStreamStatus->setVisible(true);
 
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
 // disconnect from external sources -----------------------------------------
-void Plot::Disconnect(void)
+void Plot::disconnectStream(void)
 {
     char cmd[1024];
     int i;
 
     trace(3, "Disconnect\n");
 
-    if (!ConnectState) return;
+    if (!connectState) return;
 
-    ConnectState = 0;
+    connectState = 0;
 
     for (i = 0; i < 2; i++) {
-        if (StrCmdEna[i][1]) {
-            strcpy(cmd, qPrintable(StrCmds[i][1]));
-            strwrite(Stream + i, (uint8_t *)cmd, strlen(cmd));
+        if (streamCommandEnabled[i][1]) {
+            strcpy(cmd, qPrintable(streamCommands[i][1]));
+            strwrite(stream + i, (uint8_t *)cmd, strlen(cmd));
         }
-        strclose(Stream + i);
+        strclose(stream + i);
     }
 
     if (windowTitle().indexOf(tr("CONNECT")))
         setWindowTitle(QString(tr("DISCONNECT%1")).arg(windowTitle().mid(7)));
 
-    StrStatus1->setStyleSheet(QStringLiteral("QLabel {color: gray;}"));
-    StrStatus2->setStyleSheet(QStringLiteral("QLabel {color: gray;}"));
-    ConnectMsg->setText("");
+    lblStreamStatus1->setStyleSheet(QStringLiteral("QLabel {color: gray;}"));
+    lblStreamStatus2->setStyleSheet(QStringLiteral("QLabel {color: gray;}"));
+    lblConnectMessage->setText("");
 
-    BtnReload->setVisible(true);
-    StrStatus->setVisible(false);
+    btnReload->setVisible(true);
+    wgStreamStatus->setVisible(false);
 
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
 // check observation data types ---------------------------------------------
-int Plot::CheckObs(const QString &file)
+int Plot::checkObservation(const QString &file)
 {
     if (!file.indexOf('.')) return 0;
     int p = file.lastIndexOf('.');
@@ -1205,7 +1205,7 @@ int Plot::CheckObs(const QString &file)
            file.mid(p + 3) == "d" || file.mid(p + 3) == "D";
 }
 // update observation data index, azimuth/elevation, satellite list ---------
-void Plot::UpdateObs(int nobs)
+void Plot::updateObservation(int nobs)
 {
     prcopt_t opt = prcopt_default;
     double rr[3]={0};
@@ -1213,54 +1213,56 @@ void Plot::UpdateObs(int nobs)
 
     trace(3, "UpdateObs\n");
 
-    delete [] IndexObs; IndexObs = NULL;
-    delete [] Az; Az = NULL;
-    delete [] El; El = NULL;
-    NObs = 0;
+    delete [] indexObservation; indexObservation = NULL;
+    delete [] azimuth; azimuth = NULL;
+    delete [] elevtion; elevtion = NULL;
+    nObservation = 0;
     if (nobs <= 0) return;
 
-    IndexObs = new int[nobs + 1];
-    Az = new double[Obs.n];
-    El = new double[Obs.n];
+    indexObservation = new int[nobs + 1];
+    azimuth = new double[observation.n];
+    elevtion = new double[observation.n];
 
-    ReadWaitStart();
-    ShowLegend(NULL);
+    readWaitStart();
+    showLegend(NULL);
 
-    for (int i = 0, j = 0; i < Obs.n; i = j) {
-        gtime_t time = Obs.data[i].time;
-        double pos[3],azel[2];
+    double *azel;
+    azel = (double*) malloc(sizeof(double)*2*observation.n);
+    for (int i = 0, j = 0; i < observation.n; i = j) {
+        gtime_t time = observation.data[i].time;
+        double pos[3];
         int svh;
 
-        for (j = i; j < Obs.n; j++)
-            if (timediff(Obs.data[j].time, time) > TTOL) break;
-        IndexObs[NObs++] = i;
+        for (j = i; j < observation.n; j++)
+            if (timediff(observation.data[j].time, time) > TTOL) break;
+        indexObservation[nObservation++] = i;
 
-        if (RcvPos==0) { // single point position
+        if (receiverPosition==0) { // single point position
             sol_t sol;
             memset(&sol, 1, sizeof(sol_t));
             char msg[128];
 
             opt.err[0]=900.0;
-            pntpos(Obs.data + i, j - i, &Nav, &opt, &sol, azel, NULL, msg);
+            pntpos(observation.data + i, j - i, &navigation, &opt, &sol, azel, NULL, msg);
             matcpy(rr, sol.rr, 3, 1);
             ecef2pos(rr, pos);
-        } else if (RcvPos==1) { // lat/lon/height
-            matcpy(pos,OOPos,3,1);
+        } else if (receiverPosition==1) { // lat/lon/height
+            matcpy(pos,ooPosition,3,1);
             pos2ecef(pos, rr);
         } else { // RINEX header position
-            matcpy(rr,Sta.pos,3,1);
+            matcpy(rr,station.pos,3,1);
             ecef2pos(rr, pos);
         }
         for (int k = 0; k < j - i; k++) {
             double e[3],rs[6],dts[2],var;
-            int sat=Obs.data[i+k].sat;
-            if (SimObs) {
+            int sat=observation.data[i+k].sat;
+            if (simObservation) {
                 char name[16];
                 satno2id(sat,name);
-                if (!tle_pos(time,name,"","",&TLEData,NULL,rs)) continue;
+                if (!tle_pos(time,name,"","",&tleData,NULL,rs)) continue;
             }
             else {
-                if (!satpos(time,time,sat,EPHOPT_BRDC,&Nav,rs,dts,&var,&svh)) {
+                if (!satpos(time,time,sat,EPHOPT_BRDC,&navigation,rs,dts,&var,&svh)) {
                     continue;
                 }
             }
@@ -1271,23 +1273,24 @@ void Plot::UpdateObs(int nobs)
             else {
                 azel[0]=azel[1]=0.0;
             }
-            Az[i+k]=azel[0];
-            El[i+k]=azel[1];
+            azimuth[i+k]=azel[0];
+            elevtion[i+k]=azel[1];
         }
-        per = (i + 1) * 100 / Obs.n;
+        per = (i + 1) * 100 / observation.n;
         if (per != per_) {
-            ShowMsg(tr("updating azimuth/elevation... (%1%)").arg(per_ = per));
+            showMessage(tr("updating azimuth/elevation... (%1%)").arg(per_ = per));
             qApp->processEvents();
         }
     }
-    IndexObs[NObs] = Obs.n;
+    free(azel);
+    indexObservation[nObservation] = observation.n;
 
-    UpdateSatList();
+    updateSatelliteList();
 
-    ReadWaitEnd();
+    readWaitEnd();
 }
 // update Multipath ------------------------------------------------------------
-void Plot::UpdateMp(void)
+void Plot::updateMp(void)
 {
     obsd_t *data;
     double freq1,freq2,freq,I,B;
@@ -1296,206 +1299,206 @@ void Plot::UpdateMp(void)
     trace(3, "UpdateMp\n");
 
     for (i = 0; i < NFREQ + NEXOBS; i++) {
-        delete [] Mp[i]; Mp[i] = NULL;
+        delete [] multipath[i]; multipath[i] = NULL;
     }
-    if (Obs.n <= 0) return;
+    if (observation.n <= 0) return;
 
     for (i = 0; i < NFREQ + NEXOBS; i++) {
-        Mp[i] = new double[Obs.n];
-        for (j=0;j<Obs.n;j++) Mp[i][j]=0.0;
+        multipath[i] = new double[observation.n];
+        for (j=0;j<observation.n;j++) multipath[i][j]=0.0;
     }
-    ReadWaitStart();
-    ShowLegend(NULL);
+    readWaitStart();
+    showLegend(NULL);
 
-    for (i = 0; i < Obs.n; i++) {
-        data = Obs.data + i;
-        freq1=sat2freq(data->sat,data->code[0],&Nav);
-        freq2=sat2freq(data->sat,data->code[1],&Nav);
+    for (i = 0; i < observation.n; i++) {
+        data = observation.data + i;
+        freq1=sat2freq(data->sat,data->code[0],&navigation);
+        freq2=sat2freq(data->sat,data->code[1],&navigation);
         if (data->L[0]==0.0||data->L[1]==0.0||freq1==0.0||freq2==0.0) continue;
         I=-CLIGHT*(data->L[0]/freq1-data->L[1]/freq2)/(1.0-SQR(freq1/freq2));
 
         for (j = 0; j < NFREQ + NEXOBS; j++) {
-            freq=sat2freq(data->sat,data->code[j],&Nav);
+            freq=sat2freq(data->sat,data->code[j],&navigation);
             if (data->P[j]==0.0||data->L[j]==0.0||freq==0.0) continue;
-            Mp[j][i]=data->P[j]-CLIGHT*data->L[j]/freq-2.0*SQR(freq1/freq)*I;
+            multipath[j][i]=data->P[j]-CLIGHT*data->L[j]/freq-2.0*SQR(freq1/freq)*I;
 
         }
     }
     for (sat=1;sat<=MAXSAT;sat++) {
         for (j=0;j<NFREQ+NEXOBS;j++) {
-            for (i=n=m=0,B=0.0;i<Obs.n;i++) {
-                data=Obs.data+i;
+            for (i=n=m=0,B=0.0;i<observation.n;i++) {
+                data=observation.data+i;
                 if (data->sat!=sat) continue;
                 if ((data->LLI[j]&1)||(data->LLI[0]&1)||(data->LLI[1]&1)||
-                    fabs(Mp[j][i]-B)>5.0) {
+                    fabs(multipath[j][i]-B)>5.0) {
                     for (k=m;k<i;k++) {
-                        if (Obs.data[k].sat==sat&&Mp[j][k]!=0.0) Mp[j][k]-=B;
+                        if (observation.data[k].sat==sat&&multipath[j][k]!=0.0) multipath[j][k]-=B;
                     }
                     n=0; m=i; B=0.0;
                 }
-                if (Mp[j][i]!=0.0) B+=(Mp[j][i]-B)/++n;
+                if (multipath[j][i]!=0.0) B+=(multipath[j][i]-B)/++n;
             }
-            for (k=m;k<Obs.n;k++) {
-               if (Obs.data[k].sat==sat&&Mp[j][k]!=0.0) Mp[j][k]-=B;
+            for (k=m;k<observation.n;k++) {
+               if (observation.data[k].sat==sat&&multipath[j][k]!=0.0) multipath[j][k]-=B;
             }
         }
         per = sat * 100 / MAXSAT;
         if (per != per_) {
-            ShowMsg(tr("updating multipath... (%1%)").arg(per));
+            showMessage(tr("updating multipath... (%1%)").arg(per));
             per_ = per;
             qApp->processEvents();
         }
     }
-    ReadWaitEnd();
+    readWaitEnd();
 }
 // set connect path ---------------------------------------------------------
-void Plot::ConnectPath(const QString &path, int ch)
+void Plot::connectPath(const QString &path, int ch)
 {
     trace(3, "ConnectPath: path=%s ch=%d\n", qPrintable(path), ch);
 
-    RtStream[ch] = STR_NONE;
+    rtStream[ch] = STR_NONE;
 
     if (!path.indexOf("://")) return;
-    if (path.indexOf("serial") != -1) RtStream[ch] = STR_SERIAL;
-    else if (path.indexOf("tcpsvr") != -1) RtStream[ch] = STR_TCPSVR;
-    else if (path.indexOf("tcpcli") != -1) RtStream[ch] = STR_TCPCLI;
-    else if (path.indexOf("ntrip") != -1) RtStream[ch] = STR_NTRIPCLI;
-    else if (path.indexOf("file") != -1) RtStream[ch] = STR_FILE;
+    if (path.indexOf("serial") != -1) rtStream[ch] = STR_SERIAL;
+    else if (path.indexOf("tcpsvr") != -1) rtStream[ch] = STR_TCPSVR;
+    else if (path.indexOf("tcpcli") != -1) rtStream[ch] = STR_TCPCLI;
+    else if (path.indexOf("ntrip") != -1) rtStream[ch] = STR_NTRIPCLI;
+    else if (path.indexOf("file") != -1) rtStream[ch] = STR_FILE;
     else return;
 
-    StrPaths[ch][1] = path.mid(path.indexOf("://") + 3);
-    RtFormat[ch] = SOLF_LLH;
-    RtTimeForm = 0;
-    RtDegForm = 0;
-    RtFieldSep = " ";
-    RtTimeOutTime = 0;
-    RtReConnTime = 10000;
+    streamPaths[ch][1] = path.mid(path.indexOf("://") + 3);
+    rtFormat[ch] = SOLF_LLH;
+    rtTimeFormat = 0;
+    rtDegFormat = 0;
+    rtFieldSeperator = " ";
+    rtTimeoutTime = 0;
+    rtReconnectTime = 10000;
 
-    BtnShowTrack->setChecked(true);
-    BtnFixHoriz->setChecked(true);
-    BtnFixVert->setChecked(true);
-    BtnFixCent->setChecked(true);
+    btnShowTrack->setChecked(true);
+    btnFixHorizontal->setChecked(true);
+    btnFixVertical->setChecked(true);
+    btnFixCenter->setChecked(true);
 }
 // clear obs data --------------------------------------------------------------
-void Plot::ClearObs(void)
+void Plot::clearObservation(void)
 {
     sta_t sta0;
     int i;
 
     memset(&sta0, 0, sizeof(sta_t));
 
-    freeobs(&Obs);
-    freenav(&Nav, 0xFF);
-    delete [] IndexObs; IndexObs = NULL;
-    delete [] Az; Az = NULL;
-    delete [] El; El = NULL;
+    freeobs(&observation);
+    freenav(&navigation, 0xFF);
+    delete [] indexObservation; indexObservation = NULL;
+    delete [] azimuth; azimuth = NULL;
+    delete [] elevtion; elevtion = NULL;
     for (i = 0; i < NFREQ + NEXOBS; i++) {
-        delete [] Mp[i]; Mp[i] = NULL;
+        delete [] multipath[i]; multipath[i] = NULL;
     }
-    ObsFiles.clear();
-    NavFiles.clear();
-    NObs = 0;
-    Sta = sta0;
-    ObsIndex = 0;
-    SimObs = 0;
+    observationFiles.clear();
+    navigationFiles.clear();
+    nObservation = 0;
+    station = sta0;
+    observationIndex = 0;
+    simObservation = 0;
 }
 // clear solution --------------------------------------------------------------
-void Plot::ClearSol(void)
+void Plot::clearSolution(void)
 {
     int i;
 
     for (i = 0; i < 2; i++) {
-        freesolbuf(SolData + i);
-        free(SolStat[i].data);
-        SolStat[i].n = 0;
-        SolStat[i].data = NULL;
+        freesolbuf(solutionData + i);
+        free(solutionStat[i].data);
+        solutionStat[i].n = 0;
+        solutionStat[i].data = NULL;
     }
-    SolFiles[0].clear();
-    SolFiles[1].clear();
-    SolIndex[0] = SolIndex[1] = 0;
+    solutionFiles[0].clear();
+    solutionFiles[1].clear();
+    solutionIndex[0] = solutionIndex[1] = 0;
 }
 // clear data ------------------------------------------------------------------
-void Plot::Clear(void)
+void Plot::clear(void)
 {
     double ep[] = { 2010, 1, 1, 0, 0, 0 };
     int i;
 
     trace(3, "Clear\n");
 
-    Week = 0;
+    week = 0;
 
-    ClearObs();
-    ClearSol();
-    gis_free(&Gis);
+    clearObservation();
+    clearSolution();
+    gis_free(&gis);
 
-    MapImage = QImage();
-    MapImageFile = "";
-    MapSize[0] = MapSize[1] = 0;
+    mapImage = QImage();
+    mapImageFile = "";
+    mapSize[0] = mapSize[1] = 0;
 
     for (i = 0; i < 3; i++)
-        TimeEna[i] = 0;
-    TimeStart = TimeEnd = epoch2time(ep);
-    BtnAnimate->setChecked(false);
+        timeEnabled[i] = 0;
+    timeStart = timeEnd = epoch2time(ep);
+    btnAnimate->setChecked(false);
 
-    if (PlotType > PLOT_NSAT)
-        UpdateType(PLOT_TRK);
-    if (!ConnectState) {
-        initsolbuf(SolData, 0, 0);
-        initsolbuf(SolData + 1, 0, 0);
-        setWindowTitle(Title != "" ? Title : tr("%1 ver.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
+    if (plotType > PLOT_NSAT)
+        updateType(PLOT_TRK);
+    if (!connectState) {
+        initsolbuf(solutionData, 0, 0);
+        initsolbuf(solutionData + 1, 0, 0);
+        setWindowTitle(title != "" ? title : tr("%1 ver.%2 %3").arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
     } else {
-        initsolbuf(SolData, 1, RtBuffSize + 1);
-        initsolbuf(SolData + 1, 1, RtBuffSize + 1);
+        initsolbuf(solutionData, 1, rtBufferSize + 1);
+        initsolbuf(solutionData + 1, 1, rtBufferSize + 1);
     }
 
-    for (i=0;i<=360;i++) ElMaskData[i]=0.0;
+    for (i=0;i<=360;i++) elevationMaskData[i]=0.0;
 
-    NWayPnt=0;
-    SelWayPnt=-1;
+    nWayPoint=0;
+    selectedWayPoint=-1;
 
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
 // reload data --------------------------------------------------------------
-void Plot::Reload(void)
+void Plot::reload(void)
 {
     QStringList obsfiles, navfiles;
 
     trace(3, "Reload\n");
 
-    if (SimObs) {
-        GenVisData();
+    if (simObservation) {
+        generateVisibilityData();
         return;
     }
-    obsfiles = ObsFiles;
-    navfiles = NavFiles;
+    obsfiles = observationFiles;
+    navfiles = navigationFiles;
 
-    ReadObs(obsfiles);
-    ReadNav(navfiles);
-    ReadSol(SolFiles[0], 0);
-    ReadSol(SolFiles[1], 1);
+    readObservation(obsfiles);
+    readNavigation(navfiles);
+    readSolution(solutionFiles[0], 0);
+    readSolution(solutionFiles[1], 1);
 }
 // read wait start ----------------------------------------------------------
-void Plot::ReadWaitStart(void)
+void Plot::readWaitStart(void)
 {
     MenuFile->setEnabled(false);
     MenuEdit->setEnabled(false);
     MenuView->setEnabled(false);
     MenuHelp->setEnabled(false);
     Panel1->setEnabled(false);
-    Disp->setEnabled(false);
+    lblDisplay->setEnabled(false);
     setCursor(Qt::WaitCursor);
 }
 // read wait end ------------------------------------------------------------
-void Plot::ReadWaitEnd(void)
+void Plot::readWaitEnd(void)
 {
     MenuFile->setEnabled(true);
     MenuEdit->setEnabled(true);
     MenuView->setEnabled(true);
     MenuHelp->setEnabled(true);
     Panel1->setEnabled(true);
-    Disp->setEnabled(true);
+    lblDisplay->setEnabled(true);
     setCursor(Qt::ArrowCursor);
 }
 // --------------------------------------------------------------------------

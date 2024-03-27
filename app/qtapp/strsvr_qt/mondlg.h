@@ -16,23 +16,21 @@ class StrMonDialog : public QDialog, private Ui::StrMonDialog
 {
     Q_OBJECT
 public slots:
-    void BtnCloseClick();
-    void BtnClearClick();
-    void BtnDownClick();
-    void SelFmtChange();
+    void btnClearClicked();
+    void btnDownClicked();
+    void selectFormatChanged();
 
 private:
-    QStringList ConBuff;
-    int Stop;
+    QStringList consoleBuffer;
     rtcm_t rtcm;
     raw_t raw;
 
-    void AddConsole(unsigned char *msg, int len, int mode);
+    void addConsole(unsigned char *msg, int len, int mode, bool newline);
 
 public:
-    int StrFmt;
+    int streamFormat;
     explicit StrMonDialog(QWidget *parent);
-    void AddMsg(unsigned char *buff, int n);
+    void addMessage(unsigned char *buff, int n);
 };
 //---------------------------------------------------------------------------
 #endif

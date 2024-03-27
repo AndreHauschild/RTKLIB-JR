@@ -15,18 +15,19 @@ void AboutDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    QPixmap icon[] = { QPixmap(":/icons/rtk1.bmp"),
-                       QPixmap(":/icons/rtk2.bmp"),
-                       QPixmap(":/icons/rtk3.bmp"),
-                       QPixmap(":/icons/rtk4.bmp"),
-                       QPixmap(":/icons/rtk5.bmp"),
-                       QPixmap(":/icons/rtk6.bmp"),
-                       QPixmap(":/icons/rtk7.bmp") };
+    QPixmap icon[] = { QPixmap(":/icons/rtk1"),
+                       QPixmap(":/icons/rtk2"),
+                       QPixmap(":/icons/rtk3"),
+                       QPixmap(":/icons/rtk4"),
+                       QPixmap(":/icons/rtk5"),
+                       QPixmap(":/icons/rtk6"),
+                       QPixmap(":/icons/rtk7") };
 
-    if ((IconIndex > 0) && (IconIndex < 7)) wgIcon->setPixmap(icon[IconIndex - 1]);
-    lbAbout->setText(About);
-    lbVersion->setText(QString(tr("with RTKLIB ver.%1 %2")).arg(VER_RTKLIB).arg(PATCH_LEVEL));
+    if ((iconIndex > 0) && (iconIndex < 7)) wgIcon->setPixmap(icon[iconIndex - 1]);
+
+    lbAbout->setText(aboutString);
+    lbVersion->setText(tr("with RTKLIB ver.%1 %2").arg(VER_RTKLIB).arg(PATCH_LEVEL));
     lbCopyright->setText(COPYRIGHT_RTKLIB);
 
-    connect(pbOkay, SIGNAL(clicked(bool)), this, SLOT(accept()));
+    connect(pbOkay, &QPushButton::clicked, this, &AboutDialog::accept);
 }

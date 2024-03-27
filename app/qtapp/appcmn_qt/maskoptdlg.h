@@ -16,14 +16,11 @@ protected:
     void  showEvent(QShowEvent*);
 
 public slots:
-    void  BtnOkClick();
-    void  MaskEnaClick();
-
-private:
-    void  UpdateEnable(void);
+    void  btnOkClicked();
+    void  updateEnable(void);
 
 public:
-	snrmask_t Mask;
+    snrmask_t mask;
     explicit MaskOptDialog(QWidget* parent);
 };
 //---------------------------------------------------------------------------

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>697</width>
-    <height>468</height>
+    <height>482</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,25 +72,19 @@
           <number>0</number>
          </property>
          <item row="0" column="0" colspan="2">
-          <widget class="QCheckBox" name="TimeStart">
+          <widget class="QCheckBox" name="cBTimeStart">
            <property name="toolTip">
-            <string/>
+            <string>Specify start time</string>
            </property>
            <property name="text">
             <string>Time Start (GPST)</string>
            </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="0" column="2">
-          <widget class="QPushButton" name="BtnTime1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnTimeStart">
            <property name="toolTip">
-            <string/>
+            <string>Show start time details</string>
            </property>
            <property name="text">
             <string>?</string>
@@ -101,25 +95,19 @@
           </widget>
          </item>
          <item row="0" column="3" colspan="2">
-          <widget class="QCheckBox" name="TimeEnd">
+          <widget class="QCheckBox" name="cBTimeEnd">
            <property name="toolTip">
-            <string/>
+            <string>Specify end time</string>
            </property>
            <property name="text">
             <string>Time End (GPST)</string>
            </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="0" column="5">
-          <widget class="QPushButton" name="BtnTime2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnTimeStop">
            <property name="toolTip">
-            <string/>
+            <string>Show end time etails</string>
            </property>
            <property name="text">
             <string>?</string>
@@ -130,33 +118,30 @@
           </widget>
          </item>
          <item row="0" column="6" colspan="2">
-          <widget class="QCheckBox" name="TimeIntF">
+          <widget class="QCheckBox" name="cBTimeIntervalF">
            <property name="toolTip">
-            <string/>
+            <string>Specify processing interval</string>
            </property>
            <property name="text">
             <string>Interval</string>
            </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="0" column="8">
-          <widget class="QCheckBox" name="TimeUnitF">
+          <widget class="QCheckBox" name="cBTimeUnitF">
            <property name="toolTip">
-            <string/>
+            <string>Enable time unit selection</string>
            </property>
            <property name="text">
             <string>Unit</string>
            </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="1" column="0" colspan="3">
-          <widget class="QDateTimeEdit" name="dateTime1">
+          <widget class="QDateTimeEdit" name="dtDateTimeStart">
+           <property name="toolTip">
+            <string>Select start time</string>
+           </property>
            <property name="calendarPopup">
             <bool>true</bool>
            </property>
@@ -166,12 +151,9 @@
           </widget>
          </item>
          <item row="1" column="6">
-          <widget class="QComboBox" name="TimeInt">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBTimeInterval">
            <property name="toolTip">
-            <string/>
+            <string>Select processing interval</string>
            </property>
            <property name="editable">
             <bool>true</bool>
@@ -244,10 +226,7 @@
           </widget>
          </item>
          <item row="1" column="7">
-          <widget class="QLabel" name="LabelTimeInt">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblTimeInterval">
            <property name="toolTip">
             <string/>
            </property>
@@ -257,10 +236,7 @@
           </widget>
          </item>
          <item row="1" column="9">
-          <widget class="QLabel" name="LabelTimeUnit">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblTimeUnit">
            <property name="toolTip">
             <string/>
            </property>
@@ -270,12 +246,9 @@
           </widget>
          </item>
          <item row="1" column="8">
-          <widget class="QLineEdit" name="TimeUnit">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLineEdit" name="lETimeUnit">
            <property name="toolTip">
-            <string/>
+            <string>Specify the time unit for multiple-session conversion and include proper keywords into the input file names.</string>
            </property>
            <property name="text">
             <string>24</string>
@@ -283,7 +256,10 @@
           </widget>
          </item>
          <item row="1" column="3" colspan="3">
-          <widget class="QDateTimeEdit" name="dateTime2">
+          <widget class="QDateTimeEdit" name="dtDateTimeStop">
+           <property name="toolTip">
+            <string>Select end time</string>
+           </property>
            <property name="calendarPopup">
             <bool>true</bool>
            </property>
@@ -326,16 +302,7 @@
           <number>0</number>
          </property>
          <item row="0" column="0">
-          <widget class="QLabel" name="LabelInputFile1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-             <horstretch>0</horstretch>
-             <verstretch>0</verstretch>
-            </sizepolicy>
-           </property>
+          <widget class="QLabel" name="lblInputFile1">
            <property name="toolTip">
             <string/>
            </property>
@@ -345,12 +312,9 @@
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QPushButton" name="BtnKeyword">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnKeyword">
            <property name="toolTip">
-            <string/>
+            <string>Show valid keys allow to specify in input paths</string>
            </property>
            <property name="text">
             <string>?</string>
@@ -361,19 +325,19 @@
           </widget>
          </item>
          <item row="0" column="4">
-          <widget class="QPushButton" name="BtnInputPlot1">
-           <property name="enabled">
-            <bool>true</bool>
+          <widget class="QPushButton" name="btnInputPlot1">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
+            <string>Call rtkplot on (rover) observations</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/chart.bmp</normaloff>:/buttons/chart.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/chart</normaloff>:/buttons/chart</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -381,19 +345,19 @@
           </widget>
          </item>
          <item row="0" column="5">
-          <widget class="QPushButton" name="BtnInputView1">
-           <property name="enabled">
-            <bool>true</bool>
+          <widget class="QPushButton" name="btnInputView1">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
+            <string>View content of (rover) observation file</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -401,12 +365,9 @@
           </widget>
          </item>
          <item row="1" column="0" colspan="5">
-          <widget class="QComboBox" name="InputFile1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBInputFile1">
            <property name="toolTip">
-            <string/>
+            <string>Specify the (rover) observation file, e.g. *.obs</string>
            </property>
            <property name="editable">
             <bool>true</bool>
@@ -414,63 +375,17 @@
           </widget>
          </item>
          <item row="1" column="5">
-          <widget class="QPushButton" name="BtnInputFile1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QPushButton" name="btnInputFile1">
            <property name="toolTip">
-            <string/>
+            <string>Select (rover) observation file</string>
            </property>
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="LabelInputFile3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblInputFile3">
            <property name="toolTip">
             <string/>
            </property>
@@ -480,19 +395,13 @@
           </widget>
          </item>
          <item row="2" column="4">
-          <widget class="QPushButton" name="BtnInputPlot2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnInputPlot2">
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
+            <string>Call rtkplot on base station observations</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/chart.bmp</normaloff>:/buttons/chart.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/chart</normaloff>:/buttons/chart</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -500,19 +409,19 @@
           </widget>
          </item>
          <item row="2" column="5">
-          <widget class="QPushButton" name="BtnInputView2">
-           <property name="enabled">
-            <bool>true</bool>
+          <widget class="QPushButton" name="btnInputView2">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
+            <string>View content of base station observation file</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -520,12 +429,9 @@
           </widget>
          </item>
          <item row="3" column="0" colspan="5">
-          <widget class="QComboBox" name="InputFile2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBInputFile2">
            <property name="toolTip">
-            <string/>
+            <string>Specify observation file of the base station</string>
            </property>
            <property name="editable">
             <bool>true</bool>
@@ -533,63 +439,17 @@
           </widget>
          </item>
          <item row="3" column="5">
-          <widget class="QPushButton" name="BtnInputFile2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QPushButton" name="btnInputFile2">
            <property name="toolTip">
-            <string/>
+            <string>Select base station observation file</string>
            </property>
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="4" column="0" colspan="2">
-          <widget class="QLabel" name="LabelInputFile2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLabel" name="lblInputFile2">
            <property name="toolTip">
             <string/>
            </property>
@@ -599,19 +459,19 @@
           </widget>
          </item>
          <item row="4" column="2">
-          <widget class="QPushButton" name="BtnInputView3">
-           <property name="enabled">
-            <bool>true</bool>
+          <widget class="QPushButton" name="btnInputView3">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
+            <string>View content of first additional input file</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -619,19 +479,19 @@
           </widget>
          </item>
          <item row="4" column="3">
-          <widget class="QPushButton" name="BtnInputView4">
-           <property name="enabled">
-            <bool>true</bool>
+          <widget class="QPushButton" name="btnInputView4">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
+            <string>View content of second additional input file</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -639,19 +499,13 @@
           </widget>
          </item>
          <item row="4" column="4">
-          <widget class="QPushButton" name="BtnInputView5">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnInputView5">
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
+            <string>View content of third additional input file</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -659,19 +513,19 @@
           </widget>
          </item>
          <item row="4" column="5">
-          <widget class="QPushButton" name="BtnInputView6">
-           <property name="enabled">
-            <bool>true</bool>
+          <widget class="QPushButton" name="btnInputView6">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
            </property>
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
+            <string>View content of forth additional input file</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -679,12 +533,9 @@
           </widget>
          </item>
          <item row="5" column="0" colspan="5">
-          <widget class="QComboBox" name="InputFile3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBInputFile3">
            <property name="toolTip">
-            <string/>
+            <string>Specify additional input files, e.g. clocks, biases, ephemeris</string>
            </property>
            <property name="editable">
             <bool>true</bool>
@@ -692,65 +543,19 @@
           </widget>
          </item>
          <item row="5" column="5">
-          <widget class="QPushButton" name="BtnInputFile3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QPushButton" name="btnInputFile3">
            <property name="toolTip">
-            <string/>
+            <string>Select additional input file</string>
            </property>
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="6" column="0" colspan="5">
-          <widget class="QComboBox" name="InputFile4">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBInputFile4">
            <property name="toolTip">
-            <string/>
+            <string>Specify additional input files, e.g. clocks, biases, ephemeris</string>
            </property>
            <property name="editable">
             <bool>true</bool>
@@ -758,65 +563,19 @@
           </widget>
          </item>
          <item row="6" column="5">
-          <widget class="QPushButton" name="BtnInputFile4">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QPushButton" name="btnInputFile4">
            <property name="toolTip">
-            <string/>
+            <string>Select additional input file</string>
            </property>
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="7" column="0" colspan="5">
-          <widget class="QComboBox" name="InputFile5">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBInputFile5">
            <property name="toolTip">
-            <string/>
+            <string>Specify additional input files, e.g. clocks, biases, ephemeris</string>
            </property>
            <property name="editable">
             <bool>true</bool>
@@ -824,65 +583,19 @@
           </widget>
          </item>
          <item row="7" column="5">
-          <widget class="QPushButton" name="BtnInputFile5">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QPushButton" name="btnInputFile5">
            <property name="toolTip">
-            <string/>
+            <string>Select additional input file</string>
            </property>
            <property name="text">
             <string>...</string>
            </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="8" column="0" colspan="5">
-          <widget class="QComboBox" name="InputFile6">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBInputFile6">
            <property name="toolTip">
-            <string/>
+            <string>Specify additional input files, e.g. clocks, biases, ephemeris</string>
            </property>
            <property name="editable">
             <bool>true</bool>
@@ -890,55 +603,12 @@
           </widget>
          </item>
          <item row="8" column="5">
-          <widget class="QPushButton" name="BtnInputFile6">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QPushButton" name="btnInputFile6">
            <property name="toolTip">
-            <string/>
+            <string>Select additional input file</string>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -972,11 +642,18 @@
          <property name="bottomMargin">
           <number>0</number>
          </property>
-         <item row="0" column="0">
-          <widget class="QLabel" name="Label1">
-           <property name="enabled">
+         <item row="1" column="0" colspan="3">
+          <widget class="QComboBox" name="cBOutputFile">
+           <property name="toolTip">
+            <string>Speficy output file name</string>
+           </property>
+           <property name="editable">
             <bool>true</bool>
            </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="Label1">
            <property name="toolTip">
             <string/>
            </property>
@@ -985,161 +662,40 @@
            </property>
           </widget>
          </item>
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="OutDirEna">
+         <item row="0" column="2">
+          <widget class="QLineEdit" name="lEOutputDirectory">
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="checked">
-            <bool>false</bool>
+            <string>Specify output directory</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="LabelOutDir">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="cBOutputDirectoryEnable">
            <property name="toolTip">
-            <string/>
+            <string>Enable output directory selection</string>
            </property>
            <property name="text">
             <string>Dir</string>
            </property>
           </widget>
          </item>
+         <item row="1" column="3">
+          <widget class="QPushButton" name="btnOutputFile">
+           <property name="toolTip">
+            <string>Select output file</string>
+           </property>
+           <property name="text">
+            <string>...</string>
+           </property>
+          </widget>
+         </item>
          <item row="0" column="3">
-          <widget class="QLineEdit" name="OutDir">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
+          <widget class="QPushButton" name="btnOutputDirectory">
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="4">
-          <widget class="QPushButton" name="BtnOutDir">
-           <property name="enabled">
-            <bool>false</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
-           <property name="toolTip">
-            <string/>
+            <string>Select output directory</string>
            </property>
            <property name="text">
             <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="0" colspan="4">
-          <widget class="QComboBox" name="OutputFile">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="editable">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="4">
-          <widget class="QPushButton" name="BtnOutputFile">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>0</red>
-                 <green>0</green>
-                 <blue>0</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>...</string>
-           </property>
-           <property name="flat">
-            <bool>false</bool>
            </property>
           </widget>
          </item>
@@ -1168,10 +724,7 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="BtnOutputView2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnOutputView2">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -1179,14 +732,11 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>Show Debug Trace</string>
-           </property>
-           <property name="text">
-            <string/>
+            <string>View content of trace file</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -1194,10 +744,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="BtnOutputView1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnOutputView1">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -1205,14 +752,11 @@
             </sizepolicy>
            </property>
            <property name="toolTip">
-            <string>Show Stat File</string>
-           </property>
-           <property name="text">
-            <string/>
+            <string>View content of .stat file</string>
            </property>
            <property name="icon">
-            <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-             <normaloff>:/buttons/sqr.bmp</normaloff>:/buttons/sqr.bmp</iconset>
+            <iconset resource="rtkpost_qt.qrc">
+             <normaloff>:/buttons/square</normaloff>:/buttons/square</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -1220,108 +764,22 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="Message">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
+          <widget class="QLabel" name="lblMessage">
            <property name="toolTip">
             <string/>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="BtnAbout">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnAbout">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
-           <property name="palette">
-            <palette>
-             <active>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </active>
-             <inactive>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </inactive>
-             <disabled>
-              <colorrole role="WindowText">
-               <brush brushstyle="SolidPattern">
-                <color alpha="255">
-                 <red>128</red>
-                 <green>128</green>
-                 <blue>128</blue>
-                </color>
-               </brush>
-              </colorrole>
-             </disabled>
-            </palette>
-           </property>
            <property name="toolTip">
-            <string/>
+            <string>About...</string>
            </property>
            <property name="text">
             <string>?</string>
@@ -1335,24 +793,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QProgressBar" name="Progress">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QProgressBar" name="pBProgress">
         <property name="toolTip">
-         <string/>
-        </property>
-        <property name="minimum">
-         <number>0</number>
-        </property>
-        <property name="maximum">
-         <number>100</number>
-        </property>
-        <property name="value">
-         <number>0</number>
-        </property>
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <string>Processing progress</string>
         </property>
        </widget>
       </item>
@@ -1389,126 +832,96 @@
       <property name="rightMargin">
        <number>0</number>
       </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
-       <widget class="QPushButton" name="BtnPlot">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnPlot">
         <property name="toolTip">
-         <string/>
+         <string>Call rtkplot on results</string>
         </property>
         <property name="text">
          <string>&amp;Plot...</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/chart.bmp</normaloff>:/buttons/chart.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+         <iconset resource="rtkpost_qt.qrc">
+          <normaloff>:/buttons/chart</normaloff>:/buttons/chart</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnView">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnView">
         <property name="toolTip">
-         <string/>
+         <string>View results</string>
         </property>
         <property name="text">
          <string>&amp;View...</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/doc.bmp</normaloff>:/buttons/doc.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+         <iconset resource="rtkpost_qt.qrc">
+          <normaloff>:/buttons/doc</normaloff>:/buttons/doc</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnToKML">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnToKML">
         <property name="toolTip">
-         <string/>
+         <string>Generate KML / GPX file from result</string>
         </property>
         <property name="text">
          <string>KML/GPX...</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOption">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOption">
         <property name="toolTip">
-         <string/>
+         <string>View options...</string>
         </property>
         <property name="text">
          <string>&amp;Options...</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/toolbmp</normaloff>:/buttons/toolbmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+         <iconset resource="rtkpost_qt.qrc">
+          <normaloff>:/buttons/tool</normaloff>:/buttons/tool</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnExec">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnExec">
         <property name="toolTip">
-         <string/>
+         <string>Start processing</string>
         </property>
         <property name="text">
          <string>E&amp;xecute</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/start.bmp</normaloff>:/buttons/start.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
+         <iconset resource="rtkpost_qt.qrc">
+          <normaloff>:/buttons/start</normaloff>:/buttons/start</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnAbort">
+       <widget class="QPushButton" name="btnAbort">
+        <property name="toolTip">
+         <string>Abort</string>
+        </property>
         <property name="text">
          <string>Abort</string>
         </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/stop2.bmp</normaloff>:/buttons/stop2.bmp</iconset>
+         <iconset resource="rtkpost_qt.qrc">
+          <normaloff>:/buttons/stop2</normaloff>:/buttons/stop2</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnExit">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnExit">
         <property name="toolTip">
-         <string/>
+         <string>Exit</string>
         </property>
         <property name="text">
          <string>&amp;Exit</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -1518,55 +931,55 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>BtnExec</tabstop>
-  <tabstop>BtnAbort</tabstop>
-  <tabstop>BtnExit</tabstop>
-  <tabstop>TimeStart</tabstop>
-  <tabstop>BtnTime1</tabstop>
-  <tabstop>TimeEnd</tabstop>
-  <tabstop>BtnTime2</tabstop>
-  <tabstop>TimeIntF</tabstop>
-  <tabstop>TimeUnitF</tabstop>
-  <tabstop>dateTime1</tabstop>
-  <tabstop>dateTime2</tabstop>
-  <tabstop>TimeInt</tabstop>
-  <tabstop>TimeUnit</tabstop>
-  <tabstop>BtnKeyword</tabstop>
-  <tabstop>BtnInputPlot1</tabstop>
-  <tabstop>BtnInputView1</tabstop>
-  <tabstop>InputFile1</tabstop>
-  <tabstop>BtnInputFile1</tabstop>
-  <tabstop>BtnInputPlot2</tabstop>
-  <tabstop>BtnInputView2</tabstop>
-  <tabstop>InputFile2</tabstop>
-  <tabstop>BtnInputFile2</tabstop>
-  <tabstop>BtnInputView3</tabstop>
-  <tabstop>BtnInputView4</tabstop>
-  <tabstop>BtnInputView5</tabstop>
-  <tabstop>BtnInputView6</tabstop>
-  <tabstop>InputFile3</tabstop>
-  <tabstop>BtnInputFile3</tabstop>
-  <tabstop>InputFile4</tabstop>
-  <tabstop>BtnInputFile4</tabstop>
-  <tabstop>InputFile5</tabstop>
-  <tabstop>BtnInputFile5</tabstop>
-  <tabstop>InputFile6</tabstop>
-  <tabstop>BtnInputFile6</tabstop>
-  <tabstop>OutDirEna</tabstop>
-  <tabstop>OutDir</tabstop>
-  <tabstop>BtnOutDir</tabstop>
-  <tabstop>OutputFile</tabstop>
-  <tabstop>BtnOutputFile</tabstop>
-  <tabstop>BtnOutputView2</tabstop>
-  <tabstop>BtnOutputView1</tabstop>
-  <tabstop>BtnAbout</tabstop>
-  <tabstop>BtnPlot</tabstop>
-  <tabstop>BtnView</tabstop>
-  <tabstop>BtnToKML</tabstop>
-  <tabstop>BtnOption</tabstop>
+  <tabstop>btnExec</tabstop>
+  <tabstop>btnAbort</tabstop>
+  <tabstop>btnExit</tabstop>
+  <tabstop>cBTimeStart</tabstop>
+  <tabstop>btnTimeStart</tabstop>
+  <tabstop>cBTimeEnd</tabstop>
+  <tabstop>btnTimeStop</tabstop>
+  <tabstop>cBTimeIntervalF</tabstop>
+  <tabstop>cBTimeUnitF</tabstop>
+  <tabstop>dtDateTimeStart</tabstop>
+  <tabstop>dtDateTimeStop</tabstop>
+  <tabstop>cBTimeInterval</tabstop>
+  <tabstop>lETimeUnit</tabstop>
+  <tabstop>btnKeyword</tabstop>
+  <tabstop>btnInputPlot1</tabstop>
+  <tabstop>btnInputView1</tabstop>
+  <tabstop>cBInputFile1</tabstop>
+  <tabstop>btnInputFile1</tabstop>
+  <tabstop>btnInputPlot2</tabstop>
+  <tabstop>btnInputView2</tabstop>
+  <tabstop>cBInputFile2</tabstop>
+  <tabstop>btnInputFile2</tabstop>
+  <tabstop>btnInputView3</tabstop>
+  <tabstop>btnInputView4</tabstop>
+  <tabstop>btnInputView5</tabstop>
+  <tabstop>btnInputView6</tabstop>
+  <tabstop>cBInputFile3</tabstop>
+  <tabstop>btnInputFile3</tabstop>
+  <tabstop>cBInputFile4</tabstop>
+  <tabstop>btnInputFile4</tabstop>
+  <tabstop>cBInputFile5</tabstop>
+  <tabstop>btnInputFile5</tabstop>
+  <tabstop>cBInputFile6</tabstop>
+  <tabstop>btnInputFile6</tabstop>
+  <tabstop>cBOutputDirectoryEnable</tabstop>
+  <tabstop>lEOutputDirectory</tabstop>
+  <tabstop>btnOutputDirectory</tabstop>
+  <tabstop>cBOutputFile</tabstop>
+  <tabstop>btnOutputFile</tabstop>
+  <tabstop>btnOutputView2</tabstop>
+  <tabstop>btnOutputView1</tabstop>
+  <tabstop>btnAbout</tabstop>
+  <tabstop>btnPlot</tabstop>
+  <tabstop>btnView</tabstop>
+  <tabstop>btnToKML</tabstop>
+  <tabstop>btnOption</tabstop>
  </tabstops>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="rtkpost_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

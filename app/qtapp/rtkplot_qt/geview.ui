@@ -34,7 +34,7 @@
     </property>
     <property name="icon">
      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-      <normaloff>:/buttons/expand.bmp</normaloff>:/buttons/expand.bmp</iconset>
+      <normaloff>:/buttons/expand</normaloff>:/buttons/expand</iconset>
     </property>
     <property name="flat" stdset="0">
      <bool>true</bool>
@@ -60,7 +60,7 @@
     </property>
     <property name="icon">
      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-      <normaloff>:/buttons/headup.bmp</normaloff>:/buttons/headup.bmp</iconset>
+      <normaloff>:/buttons/headup</normaloff>:/buttons/headup</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -89,7 +89,7 @@
     </property>
     <property name="icon">
      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-      <normaloff>:/buttons/point.bmp</normaloff>:/buttons/point.bmp</iconset>
+      <normaloff>:/buttons/point</normaloff>:/buttons/point</iconset>
     </property>
     <property name="flat" stdset="0">
      <bool>true</bool>
@@ -115,7 +115,7 @@
     </property>
     <property name="icon">
      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-      <normaloff>:/buttons/tilt.bmp</normaloff>:/buttons/tilt.bmp</iconset>
+      <normaloff>:/buttons/tilt</normaloff>:/buttons/tilt</iconset>
     </property>
     <property name="flat" stdset="0">
      <bool>true</bool>
@@ -141,7 +141,7 @@
     </property>
     <property name="icon">
      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-      <normaloff>:/buttons/navctr.bmp</normaloff>:/buttons/navctr.bmp</iconset>
+      <normaloff>:/buttons/navctr</normaloff>:/buttons/navctr</iconset>
     </property>
     <property name="flat" stdset="0">
      <bool>true</bool>
@@ -167,7 +167,7 @@
     </property>
     <property name="icon">
      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-      <normaloff>:/buttons/norm.bmp</normaloff>:/buttons/norm.bmp</iconset>
+      <normaloff>:/buttons/norm</normaloff>:/buttons/norm</iconset>
     </property>
     <property name="flat" stdset="0">
      <bool>true</bool>
@@ -193,7 +193,7 @@
     </property>
     <property name="icon">
      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-      <normaloff>:/buttons/rotl.bmp</normaloff>:/buttons/rotl.bmp</iconset>
+      <normaloff>:/buttons/rotl</normaloff>:/buttons/rotl</iconset>
     </property>
     <property name="flat" stdset="0">
      <bool>true</bool>
@@ -219,7 +219,7 @@
     </property>
     <property name="icon">
      <iconset resource="rtkplot_qt.qrc">
-      <normaloff>:/buttons/alt.bmp</normaloff>:/buttons/alt.bmp</iconset>
+      <normaloff>:/buttons/alt</normaloff>:/buttons/alt</iconset>
     </property>
     <property name="checkable">
      <bool>true</bool>
@@ -248,7 +248,7 @@
     </property>
     <property name="icon">
      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-      <normaloff>:/buttons/shrink.bmp</normaloff>:/buttons/shrink.bmp</iconset>
+      <normaloff>:/buttons/shrink</normaloff>:/buttons/shrink</iconset>
     </property>
     <property name="flat" stdset="0">
      <bool>true</bool>
@@ -274,7 +274,7 @@
     </property>
     <property name="icon">
      <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-      <normaloff>:/buttons/rotr.bmp</normaloff>:/buttons/rotr.bmp</iconset>
+      <normaloff>:/buttons/rotr</normaloff>:/buttons/rotr</iconset>
     </property>
     <property name="flat" stdset="0">
      <bool>true</bool>
@@ -404,7 +404,7 @@
        </property>
        <property name="icon">
         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-         <normaloff>:/buttons/navctr.bmp</normaloff>:/buttons/navctr.bmp</iconset>
+         <normaloff>:/buttons/navctr</normaloff>:/buttons/navctr</iconset>
        </property>
        <property name="flat" stdset="0">
         <bool>true</bool>
@@ -424,7 +424,7 @@
        </property>
        <property name="icon">
         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-         <normaloff>:/buttons/grid.bmp</normaloff>:/buttons/grid.bmp</iconset>
+         <normaloff>:/buttons/grid</normaloff>:/buttons/grid</iconset>
        </property>
        <property name="flat" stdset="0">
         <bool>true</bool>
@@ -444,7 +444,7 @@
        </property>
        <property name="icon">
         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-         <normaloff>:/buttons/scale.bmp</normaloff>:/buttons/scale.bmp</iconset>
+         <normaloff>:/buttons/scale</normaloff>:/buttons/scale</iconset>
        </property>
        <property name="flat" stdset="0">
         <bool>true</bool>
@@ -464,7 +464,7 @@
        </property>
        <property name="icon">
         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-         <normaloff>:/buttons/vmap.bmp</normaloff>:/buttons/vmap.bmp</iconset>
+         <normaloff>:/buttons/vmap</normaloff>:/buttons/vmap</iconset>
        </property>
        <property name="flat" stdset="0">
         <bool>true</bool>
@@ -484,7 +484,7 @@
        </property>
        <property name="icon">
         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-         <normaloff>:/buttons/status.bmp</normaloff>:/buttons/status.bmp</iconset>
+         <normaloff>:/buttons/status</normaloff>:/buttons/status</iconset>
        </property>
        <property name="flat" stdset="0">
         <bool>true</bool>
@@ -504,7 +504,7 @@
        </property>
        <property name="icon">
         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-         <normaloff>:/buttons/undu.bmp</normaloff>:/buttons/undu.bmp</iconset>
+         <normaloff>:/buttons/undu</normaloff>:/buttons/undu</iconset>
        </property>
        <property name="flat" stdset="0">
         <bool>true</bool>
@@ -524,7 +524,7 @@
        </property>
        <property name="icon">
         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-         <normaloff>:/buttons/road.bmp</normaloff>:/buttons/road.bmp</iconset>
+         <normaloff>:/buttons/road</normaloff>:/buttons/road</iconset>
        </property>
        <property name="flat" stdset="0">
         <bool>true</bool>
@@ -544,7 +544,7 @@
        </property>
        <property name="icon">
         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-         <normaloff>:/buttons/building.bmp</normaloff>:/buttons/building.bmp</iconset>
+         <normaloff>:/buttons/building</normaloff>:/buttons/building</iconset>
        </property>
        <property name="flat" stdset="0">
         <bool>true</bool>
@@ -564,7 +564,7 @@
        </property>
        <property name="icon">
         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-         <normaloff>:/buttons/border.bmp</normaloff>:/buttons/border.bmp</iconset>
+         <normaloff>:/buttons/border</normaloff>:/buttons/border</iconset>
        </property>
        <property name="flat" stdset="0">
         <bool>true</bool>

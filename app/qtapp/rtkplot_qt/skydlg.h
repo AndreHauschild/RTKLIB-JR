@@ -15,24 +15,24 @@ protected:
     void showEvent(QShowEvent*);
 
 public slots:
-    void BtnCloseClick();
-    void BtnUpdateClick();
-    void BtnSaveClick();
-    void SkyResChange();
-    void BtnLoadClick();
-    void BtnGenMaskClick();
-    void SkyElMaskClicked();
-    void SkyDestCorrClicked();
-    void SkyFlipClicked();
-    void SkyBinarizeClicked();
+    void btnCloseClicked();
+    void btnUpdateClicked();
+    void btnSaveClicked();
+    void skyResampleChanged();
+    void btnLoadClicked();
+    void btnGenMaskClicked();
+    void skyElevationMaskClicked();
+    void skyDestCorrectionClicked();
+    void skyFlipClicked();
+    void skyBinarizeClicked();
+    void updateEnable(void);
 
 private:
-    void UpdateSky(void);
-    void UpdateEnable(void);
+    void updateSky(void);
 	
 public:
     explicit SkyImgDialog(QWidget *parent = NULL);
-    void UpdateField(void);
+    void updateField(void);
 };
 //---------------------------------------------------------------------------
 #endif

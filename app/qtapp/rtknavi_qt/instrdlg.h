@@ -23,36 +23,30 @@ protected:
     void  showEvent(QShowEvent*);
 
 public slots:
-    void  BtnStr1Click();
-    void  BtnStr2Click();
-    void  BtnStr3Click();
-    void  Stream1Change(int);
-    void  Stream2Change(int);
-    void  Stream3Change(int);
-    void  BtnCmd1Click();
-    void  BtnCmd2Click();
-    void  BtnCmd3Click();
-    void  BtnFile1Click();
-    void  BtnFile2Click();
-    void  BtnFile3Click();
-    void  StreamC1Click();
-    void  StreamC2Click();
-    void  StreamC3Click();
-    void  BtnRcvOpt1Click();
-    void  BtnRcvOpt2Click();
-    void  BtnRcvOpt3Click();
-    void  TimeTagCClick();
-    void  NmeaReqLChange(int);
-    void  BtnOkClick();
-    void  BtnPosClick();
+    void  btnStream1Clicked();
+    void  btnStream2Clicked();
+    void  btnStream3Clicked();
+    void  btnCmd1Clicked();
+    void  btnCmd2Clicked();
+    void  btnCmd3Clicked();
+    void  btnFile1Clicked();
+    void  btnFile2Clicked();
+    void  btnFile3Clicked();
+    void  btnReceiverOptions1Clicked();
+    void  btnReceiverOptions2Clicked();
+    void  btnReceiverOptions3Clicked();
+    void  btnOkClicked();
+    void  btnPositionClicked();
+    void  updateEnable();
 
 private:
-    QString  GetFilePath(const QString &path);
-    QString  SetFilePath(const QString &path);
-    void  SerialOpt(int index, int opt);
-    void  TcpOpt(int index, int opt);
-    void  FtpOpt(int index, int opt);
-    void  UpdateEnable(void);
+    QString  getFilePath(const QString &path);
+    QString  setFilePath(const QString &path);
+    void  serialOptions(int index, int opt);
+    void  tcpOptions(int index, int opt);
+    void  ftpOptions(int index, int opt);
+    void showCommandDialog(int streamNo);
+    void showReceiverOptionDialog(int streamNo);
 
     CmdOptDialog *cmdOptDialog;
     RcvOptDialog *rcvOptDialog;
@@ -61,13 +55,13 @@ private:
     TcpOptDialog *tcpOptDialog;
     FtpOptDialog *ftpOptDialog;
 public:
-    bool StreamC[3], TimeTag;
-    int Stream[3], Format[3], CmdEna[3][3], CmdEnaTcp[3][3];
-    int NmeaReq, NRcv, Time64Bit;
-    double NmeaPos[3], MaxBL;
-    QString Paths[3][4], Cmds[3][3], CmdsTcp[3][3], TimeStart, TimeSpeed;
-    QString RcvOpt[3], ResetCmd;
-    QString History[10];
+    bool streamEnabled[3], timeTag;
+    int stream[3], format[3], commandEnable[3][3], commandEnableTcp[3][3];
+    int nmeaReq, NReceivers, time64Bit;
+    double nmeaPosition[3], maxBaseLine;
+    QString paths[3][4], commands[3][3], commandsTcp[3][3], timeStart, timeSpeed;
+    QString receiverOptions[3], resetCommand;
+    QString history[10];
 
     explicit InputStrDialog(QWidget* parent);
 };

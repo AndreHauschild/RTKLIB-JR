@@ -10,20 +10,20 @@ RcvOptDialog::RcvOptDialog(QWidget *parent)
 {
     setupUi(this);
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(btnOk, &QPushButton::clicked, this, &RcvOptDialog::btnOkClicked);
+    connect(btnCancel, &QPushButton::clicked, this, &RcvOptDialog::reject);
 }
 //---------------------------------------------------------------------------
 void RcvOptDialog::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) return;
 
-    OptionE->setText(Option);
+    lEOption->setText(options);
 }
 //---------------------------------------------------------------------------
-void RcvOptDialog::BtnOkClick()
+void RcvOptDialog::btnOkClicked()
 {
-    Option = OptionE->text();
+    options = lEOption->text();
 
     accept();
 }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="150mm"
+   height="150mm"
+   viewBox="0 0 150 150"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.3 (0e150ed6c4, 2023-07-21)"
+   sodipodi:docname="data04.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="mm"
+     inkscape:zoom="0.71624579"
+     inkscape:cx="181.50194"
+     inkscape:cy="149.39006"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Ebene 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-56.888057,-108.97388)">
+    <path
+       style="font-size:105.833px;line-height:1.35;font-family:'Linux Libertine Mono O';-inkscape-font-specification:'Linux Libertine Mono O';stroke-width:0.264583"
+       d="m 136.09547,158.47365 v 32.91407 h -24.34159 c 5.39748,-9.41914 15.66328,-22.4366 24.34159,-32.91407 z m 20.95493,32.91407 h -12.06496 v -33.3374 c 0,-5.71498 0,-9.9483 0.21166,-10.79496 l -0.21166,-0.42334 h -4.12749 c -0.635,0 -1.58749,0.9525 -2.01083,1.37583 -7.61997,8.36081 -22.85992,27.51658 -32.59656,43.81487 0.10583,1.79916 0.84666,4.76248 4.02165,4.76248 h 25.82326 v 10.37163 c 0,5.18582 -7.19665,5.50332 -11.64163,5.60915 -0.635,0.635 -0.635,3.28083 0,3.91582 3.38665,-0.10583 10.79496,-0.21166 15.66328,-0.21166 4.12749,0 12.06496,0.10583 15.45162,0.21166 0.635,-0.63499 0.635,-3.28082 0,-3.91582 -5.29165,-0.3175 -10.5833,-0.63499 -10.5833,-5.60915 V 196.7852 h 10.5833 c 1.48166,0 2.96332,-2.11666 2.96332,-3.49249 0,-1.16416 -0.3175,-1.90499 -1.48166,-1.90499 z"
+       id="text1"
+       aria-label="4" />
+  </g>
+</svg>

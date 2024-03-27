@@ -66,19 +66,13 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnSync">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnSync">
         <property name="toolTip">
          <string>Fix Plot Center</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
-          <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+         <iconset resource="rtkplot_qt.qrc">
+          <normaloff>:/buttons/trackc</normaloff>:/buttons/trackc</iconset>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -89,19 +83,13 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnShrink">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnShrink">
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text">
-         <string/>
-        </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
-          <normaloff>:/buttons/shrink.bmp</normaloff>:/buttons/shrink.bmp</iconset>
+         <iconset resource="rtkplot_qt.qrc">
+          <normaloff>:/buttons/shrink</normaloff>:/buttons/shrink</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -109,19 +97,13 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnExpand">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnExpand">
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text">
-         <string/>
-        </property>
         <property name="icon">
-         <iconset resource="../rtkplot_qt/rtkplot_qt.qrc">
-          <normaloff>:/buttons/expand.bmp</normaloff>:/buttons/expand.bmp</iconset>
+         <iconset resource="rtkplot_qt.qrc">
+          <normaloff>:/buttons/expand</normaloff>:/buttons/expand</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -142,31 +124,28 @@
        </spacer>
       </item>
       <item>
-       <widget class="QRadioButton" name="MapSel1">
+       <widget class="QRadioButton" name="rBMapSelect1">
         <property name="text">
          <string>Leaflet</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QRadioButton" name="MapSel2">
+       <widget class="QRadioButton" name="rBMapSelect2">
         <property name="text">
          <string>Google Maps</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOpt">
+       <widget class="QPushButton" name="btnOptions">
         <property name="text">
          <string>Options...</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClose">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnClose">
         <property name="toolTip">
          <string/>
         </property>
@@ -185,10 +164,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Panel2" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="panel2" native="true">
      <property name="toolTip">
       <string/>
      </property>
@@ -203,7 +179,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../rtkplot_qt/rtkplot_qt.qrc"/>
+  <include location="rtkplot_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -26,6 +26,7 @@ SOURCES += \
     ../appcmn_qt/vieweropt.cpp \
     ../appcmn_qt/glofcndlg.cpp \
     ../appcmn_qt/mntpoptdlg.cpp \
+    ../appcmn_qt/helper.cpp \
     ../appcmn_qt/freqdlg.cpp
 
 HEADERS  += \ 
@@ -40,6 +41,7 @@ HEADERS  += \
     ../appcmn_qt/vieweropt.h \
     ../appcmn_qt/glofcndlg.h \
     ../appcmn_qt/mntpoptdlg.h \
+    ../appcmn_qt/helper.h \
     ../appcmn_qt/freqdlg.h
 
 FORMS    += \

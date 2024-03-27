@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1035</width>
+    <width>1156</width>
     <height>502</height>
    </rect>
   </property>
@@ -48,15 +48,12 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QComboBox" name="Type">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBType">
         <property name="toolTip">
-         <string/>
+         <string>Select Information to display</string>
         </property>
         <property name="maxVisibleItems">
-         <number>35</number>
+         <number>40</number>
         </property>
         <item>
          <property name="text">
@@ -156,7 +153,10 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="SelSys">
+       <widget class="QComboBox" name="cBSelectNavigationSystems">
+        <property name="toolTip">
+         <string>Select navigation systems</string>
+        </property>
         <item>
          <property name="text">
           <string>All</string>
@@ -200,7 +200,10 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="SelSys2">
+       <widget class="QComboBox" name="cBSelectSingleNavigationSystem">
+        <property name="toolTip">
+         <string>Select nagivation system</string>
+        </property>
         <item>
          <property name="text">
           <string>GPS</string>
@@ -239,12 +242,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="SelObs">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBSelectObservation">
         <property name="toolTip">
-         <string>Stream</string>
+         <string>Select only normal or also the extended observations</string>
         </property>
         <item>
          <property name="text">
@@ -259,12 +259,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="SelSat">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBSelectSatellites">
         <property name="toolTip">
-         <string>Stream</string>
+         <string>Select shown satellies</string>
         </property>
         <item>
          <property name="text">
@@ -279,10 +276,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClose">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnClose">
         <property name="toolTip">
          <string/>
         </property>
@@ -311,12 +305,9 @@
        </spacer>
       </item>
       <item>
-       <widget class="QComboBox" name="SelStr">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBSelectInputStream">
         <property name="toolTip">
-         <string>Stream</string>
+         <string>Select stream</string>
         </property>
         <item>
          <property name="text">
@@ -341,12 +332,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="SelStr2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBSelectSolutionStream">
         <property name="toolTip">
-         <string>Stream</string>
+         <string>Select stream</string>
         </property>
         <item>
          <property name="text">
@@ -376,19 +364,13 @@
           <number>0</number>
          </property>
          <item>
-          <widget class="QPushButton" name="BtnClear">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnClear">
            <property name="toolTip">
-            <string>Clear</string>
-           </property>
-           <property name="text">
-            <string/>
+            <string>Clear Buffer</string>
            </property>
            <property name="icon">
             <iconset resource="rtknavi_qt.qrc">
-             <normaloff>:/buttons/del.bmp</normaloff>:/buttons/del.bmp</iconset>
+             <normaloff>:/buttons/del</normaloff>:/buttons/del</iconset>
            </property>
            <property name="flat">
             <bool>true</bool>
@@ -396,19 +378,13 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="BtnPause">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnPause">
            <property name="toolTip">
             <string>Pause</string>
            </property>
-           <property name="text">
-            <string/>
-           </property>
            <property name="icon">
             <iconset resource="rtknavi_qt.qrc">
-             <normaloff>:/buttons/pause.bmp</normaloff>:/buttons/pause.bmp</iconset>
+             <normaloff>:/buttons/pause</normaloff>:/buttons/pause</iconset>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -419,19 +395,13 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="BtnDown">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnDown">
            <property name="toolTip">
             <string>Scroll Down</string>
            </property>
-           <property name="text">
-            <string/>
-           </property>
            <property name="icon">
             <iconset resource="rtknavi_qt.qrc">
-             <normaloff>:/buttons/fitd.bmp</normaloff>:/buttons/fitd.bmp</iconset>
+             <normaloff>:/buttons/fitd</normaloff>:/buttons/fitd</iconset>
            </property>
            <property name="checkable">
             <bool>true</bool>
@@ -448,12 +418,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="SelEph">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBSelectEphemeris">
         <property name="toolTip">
-         <string>Stream</string>
+         <string>Select Ephemeris</string>
         </property>
         <item>
          <property name="text">
@@ -478,12 +445,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="SelFmt">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBSelectFormat">
         <property name="toolTip">
-         <string>Stream</string>
+         <string>Select Display Format</string>
         </property>
         <item>
          <property name="text">
@@ -498,10 +462,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="Label">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLabel" name="lblInformation">
         <property name="toolTip">
          <string/>
         </property>
@@ -514,7 +475,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="Console"/>
+    <widget class="QTableWidget" name="tWConsole"/>
    </item>
   </layout>
  </widget>

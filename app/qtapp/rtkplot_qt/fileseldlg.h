@@ -18,20 +18,20 @@ class FileSelDialog : public QDialog, private Ui::FileSelDialog
     Q_OBJECT
 
 public slots:
-    void FileListClick(QModelIndex);
-    void DirSelChange(QModelIndex);
-    void DirSelSelected(QModelIndex);
-    void DriveSelChanged();
-    void FilterClick();
-    void BtnDirSelClick();
+    void fileListClicked(QModelIndex);
+    void directroySelectChanged(QModelIndex);
+    void directorySelectSelected(QModelIndex);
+    void driveSelectionChanged();
+    void filterClicked();
+    void btnDirectorySelectClicked();
 
 protected:
     void showEvent(QShowEvent*);
-    QTreeView *DirSelector;
+    QTreeView *directorySelector;
     QFileSystemModel *fileModel, *dirModel;
 
 public:
-    QString Dir;
+    QString directory;
 
     explicit FileSelDialog(QWidget *parent=0);
     ~FileSelDialog();

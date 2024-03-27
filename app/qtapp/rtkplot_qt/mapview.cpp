@@ -38,24 +38,24 @@ MapView::MapView(QWidget *parent)
 {
     loaded = false;
     setupUi(this);
-
-    MapSel=0;
-    Lat=Lon=0.0;
+    
+    selectedMap=0;
+    center_latitude=center_longitude=0.0;
     for (int i=0;i<2;i++) {
-        MarkState[0]=MarkState[1]=0;
-        MarkPos[i][0]=MarkPos[i][1]=0.0;
+        markState[0]=markState[1]=0;
+        markPosition[i][0]=markPosition[i][1]=0.0;
     }
     mapViewOptDialog = new MapViewOptDialog(this);
 
-    connect(BtnClose, SIGNAL(clicked(bool)), this, SLOT(BtnCloseClick()));
-    connect(BtnOpt, SIGNAL(clicked(bool)), this, SLOT(BtnOptClick()));
-    connect(BtnShrink, SIGNAL(clicked(bool)), this, SLOT(BtnZoomOutClick()));
-    connect(BtnExpand, SIGNAL(clicked(bool)), this, SLOT(BtnZoomInClick()));
-    connect(BtnSync, SIGNAL(clicked(bool)), this, SLOT(BtnSyncClick()));
-    connect(&Timer1, SIGNAL(timeout()), this, SLOT(Timer1Timer()));
-    connect(&Timer2, SIGNAL(timeout()), this, SLOT(Timer2Timer()));
-    connect(MapSel1, SIGNAL(clicked(bool)), this, SLOT(MapSel1Click()));
-    connect(MapSel2, SIGNAL(clicked(bool)), this, SLOT(MapSel2Click()));
+    connect(btnClose, SIGNAL(clicked(bool)), this, SLOT(btnCloseClicked()));
+    connect(btnOptions, SIGNAL(clicked(bool)), this, SLOT(btnOptionsClicked()));
+    connect(btnShrink, SIGNAL(clicked(bool)), this, SLOT(btnZoomOutClicked()));
+    connect(btnExpand, SIGNAL(clicked(bool)), this, SLOT(btnZoomInClicked()));
+    connect(btnSync, SIGNAL(clicked(bool)), this, SLOT(btnSyncClicked()));
+    connect(&timerLL, SIGNAL(timeout()), this, SLOT(timer1Timer()));
+    connect(&timerGM, SIGNAL(timeout()), this, SLOT(timer2Timer()));
+    connect(rBMapSelect1, SIGNAL(clicked(bool)), this, SLOT(mapSelect1Clicked()));
+    connect(rBMapSelect2, SIGNAL(clicked(bool)), this, SLOT(mapSelect2Clicked()));
 
 #ifdef QWEBKIT
     WebBrowser = new QWebView(Panel2);
@@ -64,106 +64,106 @@ MapView::MapView(QWidget *parent)
     Panel2->setLayout(layout);
 #endif
 #ifdef QWEBENGINE
-    WebBrowser = new QWebEngineView(Panel2);
+    webBrowser = new QWebEngineView(panel2);
     QHBoxLayout *layout = new QHBoxLayout();
-    layout->addWidget(WebBrowser);
-    Panel2->setLayout(layout);
+    layout->addWidget(webBrowser);
+    panel2->setLayout(layout);
     pageState = new MapViewPageState(this);
 
-    connect(WebBrowser, SIGNAL(loadFinished(bool)), this, SLOT(PageLoaded(bool)));
+    connect(webBrowser, SIGNAL(loadFinished(bool)), this, SLOT(pageLoaded(bool)));
 #endif
 }
 //---------------------------------------------------------------------------
 void MapView::showEvent(QShowEvent*)
 {
-    MapSel1->setChecked(!MapSel);
-    MapSel2->setChecked(MapSel);
-    SelectMap(MapSel);
-    ShowMap(MapSel);
+    rBMapSelect1->setChecked(!selectedMap);
+    rBMapSelect2->setChecked(selectedMap);
+    selectMap(selectedMap);
+    showMap(selectedMap);
 }
 //---------------------------------------------------------------------------
-void MapView::BtnCloseClick()
+void MapView::btnCloseClicked()
 {
     close();
 }
 //---------------------------------------------------------------------------
-void MapView::MapSel1Click()
+void MapView::mapSelect1Clicked()
 {
-    SelectMap(0);
+    selectMap(0);
 }
 //---------------------------------------------------------------------------
-void MapView::MapSel2Click()
+void MapView::mapSelect2Clicked()
 {
-    SelectMap(1);
+    selectMap(1);
 }
 //---------------------------------------------------------------------------
-void MapView::BtnOptClick()
+void MapView::btnOptionsClicked()
 {
     mapViewOptDialog->move(x()+width()/2-mapViewOptDialog->width()/2,
                            y()+height()/2-mapViewOptDialog->height()/2);
 
-    mapViewOptDialog->ApiKey=plot->ApiKey;
+    mapViewOptDialog->apiKey=plot->apiKey;
     for (int i=0;i<6;i++) for (int j=0;j<3;j++) {
-        mapViewOptDialog->MapStrs[i][j]=plot->MapStrs[i][j];
+        mapViewOptDialog->mapStrings[i][j]=plot->mapStreams[i][j];
     }
     if (mapViewOptDialog->exec()!=QDialog::Accepted) return;
 
-    plot->ApiKey=mapViewOptDialog->ApiKey;
+    plot->apiKey=mapViewOptDialog->apiKey;
     for (int i=0;i<6;i++) for (int j=0;j<3;j++) {
-        plot->MapStrs[i][j]=mapViewOptDialog->MapStrs[i][j];
+        plot->mapStreams[i][j]=mapViewOptDialog->mapStrings[i][j];
     }
-    ShowMap(MapSel);
+    showMap(selectedMap);
 }
 //---------------------------------------------------------------------------
-void MapView::PageLoaded(bool ok)
+void MapView::pageLoaded(bool ok)
 {
     if (!ok) return;
 
 #ifdef QWEBENGINE
     QFile webchannel(":/html/qwebchannel.js");
     webchannel.open(QIODevice::ReadOnly);
-    WebBrowser->page()->runJavaScript(webchannel.readAll());
-    WebBrowser->page()->runJavaScript("new QWebChannel(qt.webChannelTransport,function(channel) {channel.objects.state.text=document.getElementById('state').value;});");
+    webBrowser->page()->runJavaScript(webchannel.readAll());
+    webBrowser->page()->runJavaScript("new QWebChannel(qt.webChannelTransport,function(channel) {channel.objects.state.text=document.getElementById('state').value;});");
 #endif
     loaded = true;
 }
 //---------------------------------------------------------------------------
-void MapView::BtnZoomOutClick()
+void MapView::btnZoomOutClicked()
 {
-    ExecFunc(MapSel,"ZoomOut()");
+    execFunction(selectedMap,"ZoomOut()");
 }
 //---------------------------------------------------------------------------
-void MapView::BtnZoomInClick()
+void MapView::btnZoomInClicked()
 {
-    ExecFunc(MapSel,"ZoomIn()");
+    execFunction(selectedMap,"ZoomIn()");
 }
 //---------------------------------------------------------------------------
-void MapView::BtnSyncClick()
+void MapView::btnSyncClicked()
 {
-    if (BtnSync->isChecked()) {
-        SetCent(Lat,Lon);
+    if (btnSync->isChecked()) {
+        setCenter(center_latitude,center_longitude);
     }
 }
 //---------------------------------------------------------------------------
 void MapView::resizeEvent(QResizeEvent *)
 {
-    if (BtnSync->isChecked()) SetCent(Lat, Lon);
+    if (btnSync->isChecked()) setCenter(center_latitude, center_longitude);
 }
 //---------------------------------------------------------------------------
-void MapView::ShowMap(int map)
+void MapView::showMap(int map)
 {
     if (map==0) {
-        ShowMapLL();
+        showMapLL();
     }
     else if (map==1) {
-        ShowMapGM();
+        showMapGM();
     }
     else {
-        UpdateMap();
+        updateMap();
     }
 }
 //---------------------------------------------------------------------------
-void MapView::ShowMapLL(void)
+void MapView::showMapLL(void)
 {
     QString pageSource;
     int i, j;
@@ -181,10 +181,10 @@ void MapView::ShowMapLL(void)
         if (buff.contains("<script src=\"qrc:/leaflet/leaflet.js\"></script>")) out << "<script type=\"text/javascript\" src=\"https://getfirebug.com/firebug-lite.js\"></script>\n";
         if (!buff.contains("// start map tiles")) continue;
         for (i=0,j=1;i<6;i++) {
-            if (plot->MapStrs[i][0]=="") continue;
-            QString title=plot->MapStrs[i][0];
-            QString url  =plot->MapStrs[i][1];
-            QString attr =plot->MapStrs[i][2];
+            if (plot->mapStreams[i][0]=="") continue;
+            QString title=plot->mapStreams[i][0];
+            QString url  =plot->mapStreams[i][1];
+            QString attr =plot->mapStreams[i][2];
 
             out << QString("var tile%1 = L.tileLayer('%2', {\n").arg(j).arg(url);
             out << QString("  attribution: \"<a href='%1' target='_blank'>%2</a>\",\n")
@@ -194,8 +194,8 @@ void MapView::ShowMapLL(void)
         }
         out << "var basemaps = {";
         for (i=0,j=1;i<6;i++) {
-            if (plot->MapStrs[i][0]=="") continue;
-            QString title=plot->MapStrs[i][0];
+            if (plot->mapStreams[i][0]=="") continue;
+            QString title=plot->mapStreams[i][0];
             out << QString("%1\"%2\":tile%3").arg((j==1)?"":",").arg(title).arg(j);
             j++;
         }
@@ -205,34 +205,34 @@ void MapView::ShowMapLL(void)
 
 
 #ifdef QWEBKIT
-    /*WebBrowser->load(QUrl::fromLocalFile(ofile));
+    WebBrowser->load(QUrl::fromLocalFile(ofile));
     WebBrowser->show();
-    loaded = true;*/
+    loaded = true;
 #endif
 #ifdef QWEBENGINE
-    WebBrowser->setHtml(pageSource);
+    webBrowser->setHtml(pageSource);
     QWebChannel *channel = new QWebChannel(this);
     channel->registerObject(QStringLiteral("state"), pageState);
 
-    WebBrowser->page()->setWebChannel(channel);
+    webBrowser->page()->setWebChannel(channel);
 
-    WebBrowser->show();
+    webBrowser->show();
 #endif
-
-    Timer1.start();
+    
+    timerLL.start();
 }
 //---------------------------------------------------------------------------
-void MapView::Timer1Timer()
+void MapView::timer1Timer()
 {
-    if (!GetState(0)) return;
-
-    SetView(0,Lat,Lon,INIT_ZOOM);
-    AddMark(0,1,MarkPos[0][0],MarkPos[0][1],MarkState[0]);
-    AddMark(0,2,MarkPos[1][0],MarkPos[1][1],MarkState[1]);
-
-    Timer1.stop();
+    if (!setState(0)) return;
+    
+    setView(0,center_latitude,center_longitude,INIT_ZOOM);
+    addMark(0,1,markPosition[0][0],markPosition[0][1],markState[0]);
+    addMark(0,2,markPosition[1][0],markPosition[1][1],markState[1]);
+    
+    timerLL.stop();
 }
-void MapView::ShowMapGM(void)
+void MapView::showMapGM(void)
 {
     QString pageSource;
     int p;
@@ -247,9 +247,9 @@ void MapView::ShowMapGM(void)
     while (!ifp.atEnd()) {
         QString buff = ifp.readLine();
 
-        if ((!plot->ApiKey.isEmpty())&&(p=buff.indexOf(QLatin1String(URL_GM_API)))!=-1) {
+        if ((!plot->apiKey.isEmpty())&&(p=buff.indexOf(QLatin1String(URL_GM_API)))!=-1) {
             p+=strlen(URL_GM_API);
-            buff.insert(p, QString("?key=%1").arg(plot->ApiKey));
+            buff.insert(p, QString("?key=%1").arg(plot->apiKey));
         }
 
         out<<buff;
@@ -257,108 +257,106 @@ void MapView::ShowMapGM(void)
     ifp.close();
 
 #ifdef QWEBKIT
-    /*
     WebBrowser->load(QUrl::fromLocalFile(ofile));
     WebBrowser->show();
     loaded = true;
-    */
 #endif
 #ifdef QWEBENGINE
-    WebBrowser->setHtml(pageSource);
+    webBrowser->setHtml(pageSource);
     QWebChannel *channel = new QWebChannel(this);
     channel->registerObject(QStringLiteral("state"), pageState);
 
-    WebBrowser->page()->setWebChannel(channel);
+    webBrowser->page()->setWebChannel(channel);
 
-    WebBrowser->show();
+    webBrowser->show();
 #endif
-
-    Timer2.start();
+    
+    timerGM.start();
 
 }
 //---------------------------------------------------------------------------
-void MapView::Timer2Timer()
+void MapView::timer2Timer()
 {
-    if (!GetState(1)) return;
-
-    SetView(1,Lat,Lon,INIT_ZOOM);
-        AddMark(1,1,MarkPos[0][0],MarkPos[0][1],MarkState[0]);
-        AddMark(1,2,MarkPos[1][0],MarkPos[1][1],MarkState[1]);
-        Timer2.stop();
+    if (!setState(1)) return;
+    
+    setView(1,center_latitude,center_longitude,INIT_ZOOM);
+        addMark(1,1,markPosition[0][0],markPosition[0][1],markState[0]);
+        addMark(1,2,markPosition[1][0],markPosition[1][1],markState[1]);
+        timerGM.stop();
 }
 
 //---------------------------------------------------------------------------
-void MapView::SetView(int map, double lat, double lon, int zoom)
+void MapView::setView(int map, double lat, double lon, int zoom)
 {
-    ExecFunc(map, QString("SetView(%1,%2,%3)").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9).arg(zoom));
+    execFunction(map, QString("SetView(%1,%2,%3)").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9).arg(zoom));
 }
 
 //---------------------------------------------------------------------------
-void MapView::AddMark(int map, int index, double lat, double lon,
+void MapView::addMark(int map, int index, double lat, double lon,
                 int state)
 {
     QString func = QString("AddMark(%1,%2,'SOL%3','SOLUTION %4')").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9).arg(index).arg(index);
 
-   ExecFunc(map,func);
+   execFunction(map,func);
    if (state) func = QString("ShowMark('SOL%1')").arg(index);
    else       func = QString("HideMark('SOL%1')").arg(index);
-   ExecFunc(map,func);
+   execFunction(map,func);
 }
 //---------------------------------------------------------------------------
-void MapView::UpdateMap(void)
+void MapView::updateMap(void)
 {
-    SetCent(Lat,Lon);
+    setCenter(center_latitude,center_longitude);
     for (int i=0;i<2;i++) {
-        SetMark(i+1,MarkPos[i][0],MarkPos[i][1]);
-        if (MarkState[i]) ShowMark(i+1); else HideMark(i+1);
+        setMark(i+1,markPosition[i][0],markPosition[i][1]);
+        if (markState[i]) showMark(i+1); else hideMark(i+1);
     }
 }
 //---------------------------------------------------------------------------
-void MapView::SelectMap(int map)
+void MapView::selectMap(int map)
 {
-    MapSel=map;
-    ShowMap(map);
+    selectedMap=map;
+    showMap(map);
 }
 
 //---------------------------------------------------------------------------
-void MapView::SetCent(double lat, double lon)
+void MapView::setCenter(double lat, double lon)
 {
     QString func=QString("SetCent(%1,%2)").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9);
-    Lat = lat; Lon = lon;
+    center_latitude = lat; center_longitude = lon;
 
-    if (BtnSync->isChecked()) {
-        ExecFunc(MapSel,func);
+    if (btnSync->isChecked()) {
+        execFunction(selectedMap,func);
     }
 }
 //---------------------------------------------------------------------------
-void MapView::SetMark(int index, double lat, double lon)
+void MapView::setMark(int index, double lat, double lon)
 {
     QString func = QString("PosMark(%1,%2,'SOL%3')").arg(lat, 0, 'f', 9).arg(lon, 0, 'f', 9).arg(index);
 
-    MarkPos[index-1][0]=lat;
-    MarkPos[index-1][1]=lon;
-
-    ExecFunc(MapSel,func);
+    markPosition[index-1][0]=lat;
+    markPosition[index-1][1]=lon;
+    
+    execFunction(selectedMap,func);
 
 }
 //---------------------------------------------------------------------------
-void MapView::ShowMark(int index)
+void MapView::showMark(int index)
 {
     QString func = QString("ShowMark('SOL%1')").arg(index);
 
-    MarkState[index-1]=1;
-    ExecFunc(MapSel,func);
+    markState[index-1]=1;
+    execFunction(selectedMap,func);
 }
 //---------------------------------------------------------------------------
-void MapView::HideMark(int index)
+void MapView::hideMark(int index)
 {
     QString func = QString("HideMark('SOL%1')").arg(index);
 
-    MarkState[index-1]=0;
-    ExecFunc(MapSel,func);
+    markState[index-1]=0;
+    execFunction(selectedMap,func);
 }
 //---------------------------------------------------------------------------
-int MapView::GetState(int map)
+int MapView::setState(int map)
 {
     Q_UNUSED(map)
 #ifdef QWEBKIT
@@ -390,7 +388,7 @@ int MapView::GetState(int map)
 #endif
 }
 //---------------------------------------------------------------------------
-void MapView::ExecFunc(int map, const QString &func)
+void MapView::execFunction(int map, const QString &func)
 {
     Q_UNUSED(map)
 #ifdef QWEBKIT
@@ -404,7 +402,7 @@ void MapView::ExecFunc(int map, const QString &func)
 #ifdef QWEBENGINE
     if (!loaded) return;
 
-    QWebEnginePage *page = WebBrowser->page();
+    QWebEnginePage *page = webBrowser->page();
     if (page == NULL) return;
 
     page->runJavaScript(func);

@@ -15,21 +15,6 @@
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
     <item>
      <widget class="QWidget" name="widget" native="true">
       <layout class="QVBoxLayout" name="verticalLayout">
@@ -49,7 +34,7 @@
         <number>0</number>
        </property>
        <item>
-        <widget class="QWidget" name="Panel1" native="true">
+        <widget class="QWidget" name="HeaderPanel" native="true">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -76,10 +61,7 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QPushButton" name="BtnList">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QPushButton" name="btnList">
             <property name="toolTip">
              <string>Update Caster List</string>
             </property>
@@ -88,15 +70,12 @@
             </property>
             <property name="icon">
              <iconset resource="srctblbrows_qt.qrc">
-              <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
+              <normaloff>:/buttons/reload</normaloff>:/buttons/reload</iconset>
             </property>
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="Address">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QComboBox" name="cBAddress">
             <property name="sizePolicy">
              <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -112,19 +91,13 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="BtnUpdate">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QPushButton" name="btnUpdate">
             <property name="toolTip">
              <string>Update Data Streams</string>
             </property>
-            <property name="text">
-             <string/>
-            </property>
             <property name="icon">
              <iconset resource="srctblbrows_qt.qrc">
-              <normaloff>:/buttons/load.bmp</normaloff>:/buttons/load.bmp</iconset>
+              <normaloff>:/buttons/load</normaloff>:/buttons/load</iconset>
             </property>
             <property name="flat">
              <bool>true</bool>
@@ -132,10 +105,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="TypeStr">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QToolButton" name="btnTypeStr">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -154,10 +124,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="TypeCas">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QToolButton" name="btnTypeCas">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -165,7 +132,7 @@
              </sizepolicy>
             </property>
             <property name="toolTip">
-             <string/>
+             <string>Caster</string>
             </property>
             <property name="text">
              <string>CAS</string>
@@ -176,10 +143,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="TypeNet">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QToolButton" name="btnTypeNet">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -198,10 +162,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QToolButton" name="TypeSrc">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QToolButton" name="btnTypeSrc">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -220,10 +181,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="BtnMap">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QPushButton" name="btnMap">
             <property name="toolTip">
              <string/>
             </property>
@@ -233,10 +191,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QComboBox" name="FiltFmt">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
+           <widget class="QComboBox" name="cBFilterFormat">
             <property name="toolTip">
              <string/>
             </property>
@@ -263,7 +218,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QCheckBox" name="StaMask">
+           <widget class="QCheckBox" name="cBStatationMask">
             <property name="toolTip">
              <string/>
             </property>
@@ -276,46 +231,9 @@
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="BtnSta">
+           <widget class="QPushButton" name="btnSta">
             <property name="enabled">
              <bool>true</bool>
-            </property>
-            <property name="palette">
-             <palette>
-              <active>
-               <colorrole role="WindowText">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>0</red>
-                  <green>0</green>
-                  <blue>0</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </active>
-              <inactive>
-               <colorrole role="WindowText">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>0</red>
-                  <green>0</green>
-                  <blue>0</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </inactive>
-              <disabled>
-               <colorrole role="WindowText">
-                <brush brushstyle="SolidPattern">
-                 <color alpha="255">
-                  <red>0</red>
-                  <green>0</green>
-                  <blue>0</blue>
-                 </color>
-                </brush>
-               </colorrole>
-              </disabled>
-             </palette>
             </property>
             <property name="toolTip">
              <string/>
@@ -332,21 +250,19 @@
         </widget>
        </item>
        <item>
-        <widget class="QTableWidget" name="Table1"/>
-       </item>
-       <item>
-        <widget class="QPlainTextEdit" name="Table3">
-         <property name="enabled">
+        <widget class="QTableWidget" name="tWTableCas">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="sortingEnabled">
           <bool>true</bool>
          </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPlainTextEdit" name="tETableSrc">
          <property name="toolTip">
           <string/>
-         </property>
-         <property name="frameShape">
-          <enum>QFrame::Panel</enum>
-         </property>
-         <property name="frameShadow">
-          <enum>QFrame::Sunken</enum>
          </property>
          <property name="plainText">
           <string/>
@@ -354,13 +270,27 @@
         </widget>
        </item>
        <item>
-        <widget class="QTableWidget" name="Table2"/>
+        <widget class="QTableWidget" name="tWTableNet">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QTableWidget" name="Table0"/>
+        <widget class="QTableWidget" name="tWTableStr">
+         <property name="selectionBehavior">
+          <enum>QAbstractItemView::SelectRows</enum>
+         </property>
+         <property name="sortingEnabled">
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
        <item>
-        <widget class="QWidget" name="Panel2" native="true">
+        <widget class="QWidget" name="wgMessage" native="true">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -390,46 +320,10 @@
            <number>0</number>
           </property>
           <item>
-           <widget class="QWidget" name="Panel3" native="true">
-            <property name="enabled">
-             <bool>true</bool>
-            </property>
-            <property name="toolTip">
+           <widget class="QLabel" name="lblMessage">
+            <property name="text">
              <string/>
             </property>
-            <property name="layoutDirection">
-             <enum>Qt::LeftToRight</enum>
-            </property>
-            <property name="text" stdset="0">
-             <string/>
-            </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <property name="spacing">
-              <number>0</number>
-             </property>
-             <property name="leftMargin">
-              <number>0</number>
-             </property>
-             <property name="rightMargin">
-              <number>0</number>
-             </property>
-             <property name="bottomMargin">
-              <number>0</number>
-             </property>
-             <item>
-              <widget class="QLabel" name="Message">
-               <property name="enabled">
-                <bool>true</bool>
-               </property>
-               <property name="toolTip">
-                <string/>
-               </property>
-               <property name="text">
-                <string/>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
          </layout>
@@ -446,10 +340,10 @@
      <x>0</x>
      <y>0</y>
      <width>1098</width>
-     <height>30</height>
+     <height>23</height>
     </rect>
    </property>
-   <widget class="QMenu" name="File1">
+   <widget class="QMenu" name="File">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -459,12 +353,12 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="MenuOpen"/>
-    <addaction name="MenuSave"/>
+    <addaction name="actMenuOpen"/>
+    <addaction name="actMenuSave"/>
     <addaction name="separator"/>
-    <addaction name="MenuQuit"/>
+    <addaction name="actMenuQuit"/>
    </widget>
-   <widget class="QMenu" name="Edit1">
+   <widget class="QMenu" name="Edit">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -474,11 +368,11 @@
     <property name="title">
      <string>&amp;Edit</string>
     </property>
-    <addaction name="MenuUpdateCaster"/>
+    <addaction name="actMenuUpdateCaster"/>
     <addaction name="separator"/>
-    <addaction name="MenuUpdateTable"/>
+    <addaction name="actMenuUpdateTable"/>
    </widget>
-   <widget class="QMenu" name="View1">
+   <widget class="QMenu" name="View">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -488,13 +382,13 @@
     <property name="title">
      <string>&amp;View</string>
     </property>
-    <addaction name="MenuViewStr"/>
-    <addaction name="MenuViewCas"/>
-    <addaction name="MenuViewNet"/>
+    <addaction name="actMenuViewStr"/>
+    <addaction name="actMenuViewCas"/>
+    <addaction name="actMenuViewNet"/>
     <addaction name="separator"/>
-    <addaction name="MenuViewSrc"/>
+    <addaction name="actMenuViewSrc"/>
    </widget>
-   <widget class="QMenu" name="Help1">
+   <widget class="QMenu" name="Help">
     <property name="enabled">
      <bool>true</bool>
     </property>
@@ -504,40 +398,40 @@
     <property name="title">
      <string>&amp;Help</string>
     </property>
-    <addaction name="MenuAbout"/>
+    <addaction name="actMenuAbout"/>
    </widget>
-   <addaction name="File1"/>
-   <addaction name="Edit1"/>
-   <addaction name="View1"/>
-   <addaction name="Help1"/>
+   <addaction name="File"/>
+   <addaction name="Edit"/>
+   <addaction name="View"/>
+   <addaction name="Help"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
-  <action name="MenuOpen">
+  <action name="actMenuOpen">
    <property name="text">
     <string>&amp;Open Source Table...</string>
    </property>
   </action>
-  <action name="MenuSave">
+  <action name="actMenuSave">
    <property name="text">
     <string>&amp;Save Source Table...</string>
    </property>
   </action>
-  <action name="MenuQuit">
+  <action name="actMenuQuit">
    <property name="text">
     <string>&amp;Quit</string>
    </property>
   </action>
-  <action name="MenuUpdateCaster">
+  <action name="actMenuUpdateCaster">
    <property name="text">
     <string>Update &amp;Caster List</string>
    </property>
   </action>
-  <action name="MenuUpdateTable">
+  <action name="actMenuUpdateTable">
    <property name="text">
     <string>Update Source &amp;Table</string>
    </property>
   </action>
-  <action name="MenuViewStr">
+  <action name="actMenuViewStr">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -545,7 +439,7 @@
     <string>&amp;Stream List</string>
    </property>
   </action>
-  <action name="MenuViewCas">
+  <action name="actMenuViewCas">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -553,7 +447,7 @@
     <string>&amp;Caster List</string>
    </property>
   </action>
-  <action name="MenuViewNet">
+  <action name="actMenuViewNet">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -561,7 +455,7 @@
     <string>&amp;Network List</string>
    </property>
   </action>
-  <action name="MenuViewSrc">
+  <action name="actMenuViewSrc">
    <property name="checkable">
     <bool>true</bool>
    </property>
@@ -569,7 +463,7 @@
     <string>S&amp;ource Table</string>
    </property>
   </action>
-  <action name="MenuAbout">
+  <action name="actMenuAbout">
    <property name="text">
     <string>&amp;About...</string>
    </property>

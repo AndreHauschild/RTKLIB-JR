@@ -1,0 +1,123 @@
+<!------------------------------------------------------------------------------
+* rtkplot_gm.htm: rtkplot google map view
+*
+* history: 2013/01/20 1.0  new
+*------------------------------------------------------------------------------>
+<!DOCTYPE html>
+<html>
+<head>
+<title>RTKLIB_GM</title>
+
+<script src="https://polyfill.io/v3/polyfill.min.js?features=default"></script>
+
+<script type="text/javascript">
+
+var map = null;
+var marks = [];
+var markh = null;
+var markz = 0;
+var info = null;
+//var icon0="http://maps.google.co.jp/mapfiles/ms/icons/yellow-dot.png";
+//var icon1="http://maps.google.co.jp/mapfiles/ms/icons/red-dot.png";
+var icon0="qrc:/image/marker_yellow.png";
+var icon1="qrc:/image/marker_red.png";
+
+
+async function init() {
+  //@ts-ignore
+  const { Map } = await google.maps.importLibrary("maps");
+
+  map = new Map(document.getElementById("map"), {
+    center: { lat: 0, lng: 0 },
+    zoom: 12,
+  });
+  document.getElementById('state').value='1';
+}
+
+
+function SetView(lat,lon,zoom) {
+    if (map == null) return;
+    map.setCenter(new google.maps.LatLng(lat,lon));
+    map.setZoom(zoom);
+}
+
+function SetCent(lat,lon) {
+    if (map == null) return;
+    map.setCenter(new google.maps.LatLng(lat,lon));
+}
+
+function ZoomIn() {
+    if (map == null) return;
+    map.setZoom(map.getZoom()+1);
+}
+
+function ZoomOut() {
+    if (map == null) return;
+    map.setZoom(map.getZoom()-1);
+}
+
+function ClearMark(lat,lon,title) {
+    for (var i in marks) {
+        marks[i].setMap(null);
+    }
+    marks.length = 0;
+    markh = null;
+}
+
+function AddMark(lat,lon,title,msg) {
+    var pos = new google.maps.LatLng(lat,lon);
+    var opt = {map: map, position: pos, title: title, icon: icon0};
+    var mark = new google.maps.Marker(opt);
+    if (title == "SOL2") mark.setIcon(icon1);
+    google.maps.event.addListener(mark,'click',function(event) {
+        if (info) {info.close();}
+        info = new google.maps.InfoWindow({content: msg});
+        info.open(mark.getMap(),mark);
+    });
+    marks.push(mark);
+}
+
+function PosMark(lat,lon,title) {
+    for (var i in marks) {
+        if (marks[i].title==title) {
+            marks[i].setPosition(new google.maps.LatLng(lat,lon));
+            break;
+        }
+    }
+}
+
+function ShowMark(title) {
+    for (var i in marks) {
+        if (marks[i].title==title) {
+            marks[i].setVisible(true);
+            break;
+        }
+    }
+}
+
+function HideMark(title) {
+    for (var i in marks) {
+        if (marks[i].title==title) {
+            marks[i].setVisible(false);
+            break;
+        }
+    }
+}
+
+
+</script>
+</head>
+
+<body style="margin: 0;"; scroll="no";>
+    <div id="map" style="height: 100%; width: 100%;"> </div>
+    <input id="state" type="hidden" value="0">
+
+<script>
+(g=>{var h,a,k,p="The Google Maps JavaScript API",c="google",l="importLibrary",q="__ib__",m=document,b=window;b=b[c]||(b[c]={});var d=b.maps||(b.maps={}),r=new Set,e=new URLSearchParams,u=()=>h||(h=new Promise(async(f,n)=>{await (a=m.createElement("script"));e.set("libraries",[...r]+"");for(k in g)e.set(k.replace(/[A-Z]/g,t=>"_"+t[0].toLowerCase()),g[k]);e.set("callback",c+".maps."+q);a.src=`https://maps.${c}apis.com/maps/api/js?`+e;d[q]=f;a.onerror=()=>h=n(Error(p+" could not load."));a.nonce=m.querySelector("script[nonce]")?.nonce||"";m.head.append(a)}));d[l]?console.warn(p+" only loads once. Ignoring:",g):d[l]=(f,...n)=>r.add(f)&&u().then(()=>d[l](f,...n))})
+        ({key: "_insertKeyHere_", v: "weekly"});
+  init();
+</script>
+
+
+</body>
+</html>

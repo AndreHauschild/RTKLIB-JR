@@ -18,30 +18,30 @@ protected:
     void showEvent(QShowEvent*);
 
 public slots:
-    void BtnOKClick();
-    void BtnColor1Click();
-    void BtnColor2Click();
-    void BtnColor3Click();
-    void BtnColor4Click();
-    void BtnRefPosClick();
-    void OriginChange();
-    void AutoScaleChange();
-    void MColorClick();
-    void BtnFontClick();
-    void RcvPosChange();
-    void BtnTLEFileClick();
-    void BtnShapeFileClick();
-    void BtnTLESatFileClick();
-    void BtnTLEViewClick();
-    void BtnTLESatViewClick();
-    void ChkTimeSyncClick();
+    void btnOKClicked();
+    void btnColor1Clicked();
+    void btnColor2Clicked();
+    void btnColor3Clicked();
+    void btnColor4Clicked();
+    void btnReferencePositionClicked();
+    void originChanged();
+    void autoScaleChanged();
+    void mColorClicked();
+    void btnFontClicked();
+    void receiverPositionChanged();
+    void btnTLEFileClicked();
+    void btnShapeFileClicked();
+    void btnTLESatelliteFileClicked();
+    void btnTLEViewClicked();
+    void btnTLESatelliteViewClicked();
+    void timeSyncClicked();
 
 private:
-    void UpdateFont(void);
-    void UpdateEnable(void);
-    QColor MColor[2][8]; // {{mark1 0-7},{mark2 0-7}}
-    QColor CColor[4];    // {background,grid,text,line}
-    QFont FontOpt;
+    void updateFont(void);
+    void updateEnable(void);
+    QColor mColor[2][8]; // {{mark1 0-7},{mark2 0-7}}
+    QColor cColor[4];    // {background,grid,text,line}
+    QFont fontOption;
 
 public:
     Plot *plot;

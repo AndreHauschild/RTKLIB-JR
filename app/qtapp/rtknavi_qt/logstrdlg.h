@@ -23,33 +23,27 @@ protected:
     TcpOptDialog *tcpOptDialog;
 
 public slots:
-    void BtnOkClick();
-    void Stream1Change(int);
-    void Stream2Change(int);
-    void BtnStr1Click();
-    void BtnStr2Click();
-    void BtnFile1Click();
-    void BtnFile2Click();
-    void Stream1CClick();
-    void Stream2CClick();
-    void BtnKeyClick();
-    void BtnStr3Click();
-    void BtnFile3Click();
-    void Stream3CClick();
-    void Stream3Change(int);
+    void btnOkClicked();
+    void btnStream1Clicked();
+    void btnStream2Clicked();
+    void btnStream3Clicked();
+    void btnFile1Clicked();
+    void btnFile2Clicked();
+    void btnKeyClicked();
+    void btnFile3Clicked();
+    void updateEnable();
 
 private:
-    QString GetFilePath(const QString &path);
-    QString SetFilePath(const QString &path);
+    QString getFilePath(const QString &path);
+    QString setFilePath(const QString &path);
 
-    void SerialOpt(int index, int opt);
-    void TcpOpt(int index, int opt);
-    void UpdateEnable(void);
+    void serialOptions(int index, int opt);
+    void tcpOptions(int index, int opt);
 
 public:
-    int StreamC[3], Stream[3], LogTimeTag, LogAppend;
-    QString Paths[3][4], SwapInterval;
-    QString History[10];
+    int streamEnabled[3], stream[3], logTimeTag, logAppend;
+    QString paths[3][4], swapInterval;
+    QString history[10];
 
     explicit LogStrDialog(QWidget* parent);
 };
