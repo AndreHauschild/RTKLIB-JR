@@ -159,7 +159,7 @@ typedef struct {            /* file control type */
     double start;           /* start offset (s) */
     double speed;           /* replay speed (time factor) */
     double swapintv;        /* swap interval (hr) (0: no swap) */
-    lock_t lock;            /* lock flag */
+    rtklib_lock_t lock;     /* lock flag */
 } file_t;
 
 typedef struct {            /* tcp control type */
@@ -191,7 +191,7 @@ typedef struct {            /* serial control type */
     int state,wp,rp;        /* state,write/read pointer */
     int buffsize;           /* write buffer size (bytes) */
     HANDLE thread;          /* write thread */
-    lock_t lock;            /* lock flag */
+    rtklib_lock_t lock;     /* lock flag */
     uint8_t *buff;          /* write buffer */
 #endif
     tcpsvr_t *tcpsvr;       /* tcp server for received stream */
@@ -250,13 +250,13 @@ typedef struct {            /* ftp download control type */
     char local[1024];       /* local file path */
     int topts[4];           /* time options {poff,tint,toff,tretry} (s) */
     gtime_t tnext;          /* next retry time (gpst) */
-    thread_t thread;        /* download thread */
+    rtklib_thread_t thread; /* download thread */
 } ftp_t;
 
 typedef struct {            /* memory buffer type */
     int state,wp,rp;        /* state,write/read pointer */
     int bufsize;            /* buffer size (bytes) */
-    lock_t lock;            /* lock flag */
+    rtklib_lock_t lock;     /* lock flag */
     uint8_t *buf;           /* write buffer */
 } membuf_t;
 
@@ -285,12 +285,12 @@ static int readseribuff(serial_t *serial, uint8_t *buff, int nmax)
     
     tracet(5,"readseribuff: dev=%d\n",serial->dev);
     
-    lock(&serial->lock);
+    rtklib_lock(&serial->lock);
     for (ns=0;serial->rp!=serial->wp&&ns<nmax;ns++) {
        buff[ns]=serial->buff[serial->rp];
        if (++serial->rp>=serial->buffsize) serial->rp=0;
     }
-    unlock(&serial->lock);
+    rtklib_unlock(&serial->lock);
     tracet(5,"readseribuff: ns=%d rp=%d wp=%d\n",ns,serial->rp,serial->wp);
     return ns;
 }
@@ -300,7 +300,7 @@ static int writeseribuff(serial_t *serial, uint8_t *buff, int n)
     
     tracet(5,"writeseribuff: dev=%d n=%d\n",serial->dev,n);
     
-    lock(&serial->lock);
+    rtklib_lock(&serial->lock);
     for (ns=0;ns<n;ns++) {
         serial->buff[wp=serial->wp]=buff[ns];
         if (++wp>=serial->buffsize) wp=0;
@@ -310,7 +310,7 @@ static int writeseribuff(serial_t *serial, uint8_t *buff, int n)
             break;
         }
     }
-    unlock(&serial->lock);
+    rtklib_unlock(&serial->lock);
     tracet(5,"writeseribuff: ns=%d rp=%d wp=%d\n",ns,serial->rp,serial->wp);
     return ns;
 }
@@ -385,7 +385,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
         sscanf(p,"#%d",&tcp_port);
     }
     for (i=0;i<13;i++) if (br[i]==brate) break;
-    if (i>=14) {
+    if (i>=13) {
         sprintf(msg,"bitrate error (%d)",brate);
         tracet(1,"openserial: %s path=%s\n",msg,path);
         free(serial);
@@ -429,7 +429,7 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     PurgeComm(serial->dev,PURGE_TXABORT|PURGE_RXABORT|PURGE_TXCLEAR|PURGE_RXCLEAR);
     
     /* create write thread */
-    initlock(&serial->lock);
+    rtklib_initlock(&serial->lock);
     serial->state=serial->wp=serial->rp=serial->error=0;
     serial->buffsize=buffsize;
     if (!(serial->buff=(uint8_t *)malloc(buffsize))) {
@@ -710,7 +710,7 @@ static file_t *openfile(const char *path, int mode, char *msg)
     file->start=start;
     file->speed=speed;
     file->swapintv=swapintv;
-    initlock(&file->lock);
+    rtklib_initlock(&file->lock);
     
     time=utc2gpst(timeget());
     
@@ -1628,7 +1628,7 @@ static int rspntrip_c(ntrip_t *ntrip, char *msg)
         ntrip->state=2;
         sprintf(msg,"%s/%s",ntrip->tcp->svr.saddr,ntrip->mntpnt);
         tracet(3,"rspntrip_c: response ok nb=%d\n",ntrip->nb);
-		ntrip->tcp->tirecon=ticonnect;
+        ntrip->tcp->tirecon=ticonnect;
         return 1;
     }
     if ((p=strstr((char *)ntrip->buff,NTRIP_RSP_SRCTBL))) { /* source table */
@@ -1643,7 +1643,7 @@ static int rspntrip_c(ntrip_t *ntrip, char *msg)
         ntrip->nb=0;
         ntrip->buff[0]='\0';
         ntrip->state=0;
-		/* increase subsequent disconnect time to avoid too many reconnect requests */
+        /* increase subsequent disconnect time to avoid too many reconnect requests */
         if (ntrip->tcp->tirecon>300000) ntrip->tcp->tirecon=ntrip->tcp->tirecon*5/4;
 
         discontcp(&ntrip->tcp->svr,ntrip->tcp->tirecon);
@@ -2071,6 +2071,7 @@ static udp_t *genudp(int type, int port, const char *saddr, char *msg)
     strcpy(udp->saddr,saddr);
     
     if ((udp->sock=socket(AF_INET,SOCK_DGRAM,0))==(socket_t)-1) {
+        free(udp);
         sprintf(msg,"socket error (%d)",errsock());
         return NULL;
     }
@@ -2317,7 +2318,7 @@ static void *ftpthread(void *arg)
     reppath(ftp->file,remote,time,"","");
     
     if ((p=strrchr(remote,'/'))) p++; else p=remote;
-    sprintf(local,"%.768s%c%.254s",localdir,FILEPATHSEP,p);
+    sprintf(local,"%.768s%c%.254s",localdir,RTKLIB_FILEPATHSEP,p);
     sprintf(errfile,"%.1019s.err",local);
     
     /* if local file exist, skip download */
@@ -2501,7 +2502,7 @@ static membuf_t *openmembuf(const char *path, char *msg)
         return NULL;
     }
     membuf->bufsize=bufsize;
-    initlock(&membuf->lock);
+    rtklib_initlock(&membuf->lock);
     
     sprintf(msg,"membuf sizebuf=%d",bufsize);
     
@@ -2524,14 +2525,14 @@ static int readmembuf(membuf_t *membuf, uint8_t *buff, int n, char *msg)
     
     if (!membuf) return 0;
     
-    lock(&membuf->lock);
+    rtklib_lock(&membuf->lock);
     
     for (i=membuf->rp;i!=membuf->wp&&nr<n;i++) {
         if (i>=membuf->bufsize) i=0;
         buff[nr++]=membuf->buf[i];
     }
     membuf->rp=i;
-    unlock(&membuf->lock);
+    rtklib_unlock(&membuf->lock);
     return nr;
 }
 /* write memory buffer -------------------------------------------------------*/
@@ -2543,7 +2544,7 @@ static int writemembuf(membuf_t *membuf, uint8_t *buff, int n, char *msg)
     
     if (!membuf) return 0;
     
-    lock(&membuf->lock);
+    rtklib_lock(&membuf->lock);
     
     for (i=0;i<n;i++) {
         membuf->buf[membuf->wp++]=buff[i];
@@ -2551,11 +2552,11 @@ static int writemembuf(membuf_t *membuf, uint8_t *buff, int n, char *msg)
         if (membuf->wp==membuf->rp) {
            strcpy(msg,"mem-buffer overflow");
            membuf->state=-1;
-           unlock(&membuf->lock);
+           rtklib_unlock(&membuf->lock);
            return i+1;
         }
     }
-    unlock(&membuf->lock);
+    rtklib_unlock(&membuf->lock);
     return i;
 }
 /* get state memory buffer ---------------------------------------------------*/
@@ -2607,7 +2608,7 @@ extern void strinit(stream_t *stream)
     stream->state=0;
     stream->inb=stream->inr=stream->outb=stream->outr=0;
     stream->tick_i=stream->tick_o=stream->tact=stream->inbt=stream->outbt=0;
-    initlock(&stream->lock);
+    rtklib_initlock(&stream->lock);
     stream->port=NULL;
     stream->path[0]='\0';
     stream->msg [0]='\0';
@@ -2812,8 +2813,8 @@ extern void strsync(stream_t *stream1, stream_t *stream2)
 * args   : stream_t *stream I  stream
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void strlock  (stream_t *stream) {lock  (&stream->lock);}
-extern void strunlock(stream_t *stream) {unlock(&stream->lock);}
+extern void strlock  (stream_t *stream) {rtklib_lock  (&stream->lock);}
+extern void strunlock(stream_t *stream) {rtklib_unlock(&stream->lock);}
 
 /* read stream -----------------------------------------------------------------
 * read data from stream (unblocked)

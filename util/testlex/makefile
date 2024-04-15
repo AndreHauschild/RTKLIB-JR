@@ -1,19 +1,21 @@
 # makefile for testlex
 
 SRC    = ../../src
-#CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAQZS -DENAGLO -DENALEX
-CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAQZS -DENAGLO
+#CFLAGS = -std=c99 -Wall -O3 -pedantic -I$(SRC) -DTRACE -DENAQZS -DENAGLO -DENALEX
+CFLAGS = -std=c99 -Wall -O3 -pedantic -I$(SRC) -DTRACE -DENAQZS -DENAGLO
 LDFLAGS= -lm -lrt
 
 all        : convlex dumplex dumpssr outlexion
 
-convlex    : rtkcmn.o preceph.o qzslex.o
-dumplex    : rtkcmn.o preceph.o qzslex.o
-dumpssr    : rtkcmn.o preceph.o rtcm.o rtcm3.o rtcm2.o dumpssr.o
-outlexion  : rtkcmn.o preceph.o qzslex.o
+convlex    : rtkcmn.o trace.o preceph.o qzslex.o
+dumplex    : rtkcmn.o trace.o preceph.o qzslex.o
+dumpssr    : rtkcmn.o trace.o preceph.o rtcm.o rtcm3.o rtcm2.o dumpssr.o
+outlexion  : rtkcmn.o trace.o preceph.o qzslex.o
 
 rtkcmn.o   : $(SRC)/rtklib.h $(SRC)/rtkcmn.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtkcmn.c
+trace.o   : $(SRC)/rtklib.h $(SRC)/trace.c
+	$(CC) -c $(CFLAGS) $(SRC)/trace.c
 preceph.o  : $(SRC)/rtklib.h $(SRC)/preceph.c
 	$(CC) -c $(CFLAGS) $(SRC)/preceph.c
 qzslex.o   : $(SRC)/rtklib.h $(SRC)/qzslex.c

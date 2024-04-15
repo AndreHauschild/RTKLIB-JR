@@ -18,7 +18,7 @@ void dbout2(double *x, double *P, int n)
     printf("xu=[\n"); matprint(x,n,1,8,4); printf("];\n");
     printf("Pu=[\n"); matprint(P,n,n,8,4); printf("];\n");
     printf("K=P*H'/(H*P*H'+R);\n");
-    
+
     printf("xd=x+K*y;\n");
     printf("Pd=P-K*H*P\n");
     printf("xu-xd,Pu-Pd\n");
@@ -101,18 +101,18 @@ void utest3(void)
 {
     int i,j;
     double C[6];
-    matmul("TT",3,2,2,1.0,A,B,0.0,C);
+    matmul("TT",3,2,2,A,B,C);
     for (i=0;i<3;i++) for (j=0;j<2;j++) assert(fabs(C[i+j*3]-AB[j+i*2])<1E-9);
-    
-    matmul("NN",2,3,2,1.0,B,A,0.0,C);
+
+    matmul("NN",2,3,2,A,B,C);
     for (i=0;i<2;i++) for (j=0;j<3;j++) assert(fabs(C[i+j*2]-AB[i+j*2])<1E-9);
-    
-    matmul("TN",3,2,2,1.0,A,B,0.0,C);
+
+    matmul("TN",3,2,2,A,B,C);
     for (i=0;i<3;i++) for (j=0;j<2;j++) assert(fabs(C[i+j*3]-ABT[j+i*2])<1E-9);
-    
-    matmul("TN",2,3,2,1.0,B,A,0.0,C);
+
+    matmul("TN",2,3,2,A,B,C);
     for (i=0;i<2;i++) for (j=0;j<3;j++) assert(fabs(C[i+j*2]-ABT[i+j*2])<1E-9);
-    
+
     printf("%s utest3 : OK\n",__FILE__);
 }
 /* matinv() */
@@ -125,7 +125,7 @@ void utest4(void)
     for (i=0;i<2;i++) for (j=0;j<2;j++) assert(fabs(B[i+j*2]-invB[i+j*2])<1E-9);
     matinv(B,2);
     for (i=0;i<2;i++) for (j=0;j<2;j++) assert(fabs(B[i+j*2]-C[i+j*2])<1E-9);
-    
+
     printf("%s utest4 : OK\n",__FILE__);
 }
 static double H[]={
@@ -158,7 +158,7 @@ void utest5(void)
     lsq(H,y,3,4,x,Q);
     for (i=0;i<3;i++) assert(fabs(x[i]-xs[i])<1E-9);
     for (i=0;i<9;i++) assert(fabs(Q[i]-Qs[i])<1E-9);
-    
+
     printf("%s utest5 : OK\n",__FILE__);
 }
 /* matcpy() */

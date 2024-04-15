@@ -1317,7 +1317,7 @@ extern int outnmea_gga(uint8_t *buff, const sol_t *sol)
 {
     gtime_t time;
     double h,ep[6],pos[3],dms1[3],dms2[3],dop=1.0;
-    int solq,refid=0;
+    int solq;
     char *p=(char *)buff,*q,sum;
 
     trace(3,"outnmea_gga:\n");
@@ -1341,7 +1341,7 @@ extern int outnmea_gga(uint8_t *buff, const sol_t *sol)
                "%d,%02d,%.1f,%.3f,M,%.3f,M,%.1f,%04d",
                NMEA_TID,ep[3],ep[4],ep[5],dms1[0],dms1[1]+dms1[2]/60.0,
                pos[0]>=0?"N":"S",dms2[0],dms2[1]+dms2[2]/60.0,pos[1]>=0?"E":"W",
-               solq,sol->ns,dop,pos[2]-h,h,sol->age,refid);
+               solq,sol->ns,dop,pos[2]-h,h,sol->age,sol->refstationid);
     for (q=(char *)buff+1,sum=0;*q;q++) sum^=*q; /* check-sum */
     p+=sprintf(p,"*%02X\r\n",sum);
     return (int)(p-(char *)buff);

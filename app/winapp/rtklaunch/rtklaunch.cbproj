@@ -177,6 +177,9 @@
         <CppCompile Include="..\..\..\src\rtkcmn.c">
             <BuildOrder>2</BuildOrder>
         </CppCompile>
+        <CppCompile Include="..\..\..\src\trace.c">
+            <BuildOrder>3</BuildOrder>
+        </CppCompile>
         <FormResources Include="launchmain.dfm"/>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
@@ -301,6 +304,12 @@
                 </DeployFile>
                 <DeployFile LocalName="..\..\..\src\rtkcmn.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName=".\Release\rtklaunch.exe" Configuration="Release" Class="ProjectOutput"/>
+                <DeployFile LocalName=".\Release\rtklaunch.exe" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win64">
+                        <RemoteName>rtklaunch.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="iOSSimulator">
                         <Operation>1</Operation>

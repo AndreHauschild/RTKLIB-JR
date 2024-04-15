@@ -1182,6 +1182,7 @@ int __fastcall TPlot::CheckObs(AnsiString file)
         return *(p-1)=='o'||*(p-1)=='O'||*(p-1)=='d'||*(p-1)=='D';
     }
     return !strcmp(p,".obs")||!strcmp(p,".OBS")||
+           !strcmp(p,".rnx")||!strcmp(p,".RNX")||
            !strcmp(p+3,"o" )||!strcmp(p+3,"O" )||
            !strcmp(p+3,"d" )||!strcmp(p+3,"D" );
 }

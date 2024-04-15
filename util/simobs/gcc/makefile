@@ -2,12 +2,12 @@
 
 BINDIR = ../../../bin
 SRC    = ../../../src
-#CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAGAL -DENAQZS -DNFREQ=4 -DMAXOBS=128
-CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=5 -DIERS_MODEL
+#CFLAGS = -std=c99 -Wall -O3 -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAGAL -DENAQZS -DNFREQ=4 -DMAXOBS=128
+CFLAGS = -std=c99 -Wall -O3 -pedantic -I$(SRC) -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=5 -DIERS_MODEL
 #LDLIBS  = -lm
 LDLIBS  = ../../../lib/iers/gcc/iers.a -lgfortran -lm -lrt
 
-simobs     : simobs.o geoid.o ephemeris.o ionex.o ppp.o ppp_ar.o preceph.o rinex.o rtkcmn.o sbas.o tides.o
+simobs     : simobs.o geoid.o ephemeris.o ionex.o ppp.o ppp_ar.o preceph.o rinex.o rtkcmn.o trace.o sbas.o tides.o
 
 simobs.o   : ../simobs.c
 	$(CC) -c $(CFLAGS) ../simobs.c
@@ -27,6 +27,8 @@ rinex.o     : $(SRC)/rinex.c
 	$(CC) -c $(CFLAGS) $(SRC)/rinex.c
 rtkcmn.o    : $(SRC)/rtkcmn.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtkcmn.c
+trace.o   : $(SRC)/rtklib.h $(SRC)/trace.c
+	$(CC) -c $(CFLAGS) $(SRC)/trace.c
 sbas.o      : $(SRC)/sbas.c
 	$(CC) -c $(CFLAGS) $(SRC)/sbas.c
 tides.o     : $(SRC)/tides.c

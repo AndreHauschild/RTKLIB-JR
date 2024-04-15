@@ -586,7 +586,7 @@ void MainForm::selectInputFile5()
 void MainForm::selectInputFile6()
 {
     ui->cBInputFile6->setCurrentText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("RINEX NAV/CLK,SP3,Bias-SINEX,IONEX or SBAS/EMS File"), ui->cBInputFile6->currentText(),
-                                                                                           tr("All (*.*);;Bias-SINEX (*.BIA *.BSX),IONEX (*.*i *.ionex),SBAS (*.sbs *.ems)"))));
+                                                                                           tr("All (*.*);;Bias-SINEX (*.BIA *.BSX),IONEX (*.*i *.ionex, *.inx),SBAS (*.sbs *.ems)"))));
 }
 // callback on button-outputfile --------------------------------------------
 void MainForm::selectOutputFile()

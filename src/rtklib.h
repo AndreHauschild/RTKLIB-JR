@@ -59,7 +59,7 @@ extern "C" {
 
 #define VER_RTKLIB  "demo5"             /* library version */
 
-#define PATCH_LEVEL "b34h"               /* patch level */
+#define PATCH_LEVEL "b34i"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2020 T.Takasu\nAll rights reserved."
@@ -525,23 +525,19 @@ extern "C" {
 #define P2_55       2.775557561562891E-17 /* 2^-55 */
 
 #ifdef WIN32
-#define thread_t    HANDLE
-#define lock_t      CRITICAL_SECTION
-#define initlock(f) InitializeCriticalSection(f)
-#define lock(f)     EnterCriticalSection(f)
-#define unlock(f)   LeaveCriticalSection(f)
-#define FILEPATHSEP '\\'
+#define rtklib_thread_t    HANDLE
+#define rtklib_lock_t      CRITICAL_SECTION
+#define rtklib_initlock(f) InitializeCriticalSection(f)
+#define rtklib_lock(f)     EnterCriticalSection(f)
+#define rtklib_unlock(f)   LeaveCriticalSection(f)
+#define RTKLIB_FILEPATHSEP '\\'
 #else
-#define thread_t    pthread_t
-#define lock_t      pthread_mutex_t
-#if defined( INHIBIT_RTK_LOCK_MACROS)
-#else
-/* these defs break apple mutex */
-#define initlock(f) pthread_mutex_init((f),NULL)
-#define lock(f)     pthread_mutex_lock(f)
-#define unlock(f)   pthread_mutex_unlock(f)
-#endif
-#define FILEPATHSEP '/'
+#define rtklib_thread_t    pthread_t
+#define rtklib_lock_t      pthread_mutex_t
+#define rtklib_initlock(f) pthread_mutex_init(f,NULL)
+#define rtklib_lock(f)     pthread_mutex_lock(f)
+#define rtklib_unlock(f)   pthread_mutex_unlock(f)
+#define RTKLIB_FILEPATHSEP '/'
 #endif
 
 /* type definitions ----------------------------------------------------------*/
@@ -889,9 +885,10 @@ typedef struct {        /* solution type */
     uint8_t ns;         /* number of valid satellites */
     float age;          /* age of differential (s) */
     float ratio;        /* AR ratio factor for validation */
-    float prev_ratio1;   /* previous initial AR ratio factor for validation */
-    float prev_ratio2;   /* previous final AR ratio factor for validation */
+    float prev_ratio1;  /* previous initial AR ratio factor for validation */
+    float prev_ratio2;  /* previous final AR ratio factor for validation */
     float thres;        /* AR ratio threshold for validation */
+    int refstationid;   /* ref station ID */
 } sol_t;
 
 typedef struct {        /* solution buffer type */
@@ -1231,7 +1228,7 @@ typedef struct {        /* stream type */
     uint32_t tick_o;    /* output tick */
     uint32_t tact;      /* active tick */
     uint32_t inbt,outbt; /* input/output bytes at tick */
-    lock_t lock;        /* lock flag */
+    rtklib_lock_t lock; /* lock flag */
     void *port;         /* type dependent port control struct */
     char path[MAXSTRPATH]; /* stream path */
     char msg [MAXSTRMSG];  /* stream message */
@@ -1266,8 +1263,8 @@ typedef struct {        /* stream server type */
     stream_t stream[16]; /* input/output streams */
     stream_t strlog[16]; /* return log streams */
     strconv_t *conv[16]; /* stream converter */
-    thread_t thread;    /* server thread */
-    lock_t lock;        /* lock flag */
+    rtklib_thread_t thread; /* server thread */
+    rtklib_lock_t lock; /* lock flag */
 } strsvr_t;
 
 typedef struct {        /* RTK server type */
@@ -1301,7 +1298,7 @@ typedef struct {        /* RTK server type */
     stream_t stream[8]; /* streams {rov,base,corr,sol1,sol2,logr,logb,logc} */
     stream_t *moni;     /* monitor stream */
     uint32_t tick;      /* start tick */
-    thread_t thread;    /* server thread */
+    rtklib_thread_t thread; /* server thread */
     int cputime;        /* CPU time (ms) for a processing cycle */
     int prcout;         /* missing observation data count */
     int nave;           /* number of averaging base pos */
@@ -1309,7 +1306,7 @@ typedef struct {        /* RTK server type */
     char cmds_periodic[3][MAXRCVCMD]; /* periodic commands */
     char cmd_reset[MAXRCVCMD]; /* reset command */
     double bl_reset;    /* baseline length to reset (km) */
-    lock_t lock;        /* lock flag */
+    rtklib_lock_t lock; /* lock flag */
 } rtksvr_t;
 
 typedef struct {        /* GIS data point type */
@@ -1373,13 +1370,19 @@ EXPORT double *mat  (int n, int m);
 EXPORT int    *imat (int n, int m);
 EXPORT double *zeros(int n, int m);
 EXPORT double *eye  (int n);
+EXPORT double dot2(const double *a, const double *b);
+EXPORT double dot3(const double *a, const double *b);
 EXPORT double dot (const double *a, const double *b, int n);
 EXPORT double norm(const double *a, int n);
 EXPORT void cross3(const double *a, const double *b, double *c);
 EXPORT int  normv3(const double *a, double *b);
 EXPORT void matcpy(double *A, const double *B, int n, int m);
-EXPORT void matmul(const char *tr, int n, int k, int m, double alpha,
-                   const double *A, const double *B, double beta, double *C);
+EXPORT void matmul(const char *tr, int n, int k, int m,
+                   const double *A, const double *B, double *C);
+EXPORT void matmulp(const char *tr, int n, int k, int m,
+                    const double *A, const double *B, double *C);
+EXPORT void matmulm(const char *tr, int n, int k, int m,
+                    const double *A, const double *B, double *C);
 EXPORT int  matinv(double *A, int n);
 EXPORT int  solve (const char *tr, const double *A, const double *Y, int n,
                    int m, double *X);
@@ -1457,20 +1460,53 @@ EXPORT int  readerp(const char *file, erp_t *erp);
 EXPORT int  geterp (const erp_t *erp, gtime_t time, double *val);
 
 /* debug trace functions -----------------------------------------------------*/
+#ifdef TRACE
+#define trace(level, ...) do { if (level <= gettracelevel()) trace_impl(level, __VA_ARGS__); } while (0)
+#define tracet(level, ...) do { if (level <= gettracelevel()) tracet_impl(level, __VA_ARGS__); } while (0)
+#define tracemat(level, ...) do { if (level <= gettracelevel()) tracemat_impl(level, __VA_ARGS__); } while (0)
+#define traceobs(level, ...) do { if (level <= gettracelevel()) traceobs_impl(level, __VA_ARGS__); } while (0)
+#define tracenav(level, ...) do { if (level <= gettracelevel()) tracenav_impl(level, __VA_ARGS__); } while (0)
+#define tracegnav(level, ...) do { if (level <= gettracelevel()) tracegnav_impl(level, __VA_ARGS__); } while (0)
+#define tracehnav(level, ...) do { if (level <= gettracelevel()) tracehnav_impl(level, __VA_ARGS__); } while (0)
+#define tracepeph(level, ...) do { if (level <= gettracelevel()) tracepeph_impl(level, __VA_ARGS__); } while (0)
+#define tracepclk(level, ...) do { if (level <= gettracelevel()) tracepclk_impl(level, __VA_ARGS__); } while (0)
+#define traceb(level, ...) do { if (level <= gettracelevel()) traceb_impl(level, __VA_ARGS__); } while (0)
+
 EXPORT void traceopen(const char *file);
 EXPORT void traceclose(void);
 EXPORT void tracelevel(int level);
-EXPORT void trace    (int level, const char *format, ...);
-EXPORT void tracet   (int level, const char *format, ...);
-EXPORT void tracemat (int level, const double *A, int n, int m, int p, int q);
-EXPORT void traceobs (int level, const obsd_t *obs, int n);
-EXPORT void tracenav (int level, const nav_t *nav);
-EXPORT void tracegnav(int level, const nav_t *nav);
-EXPORT void tracehnav(int level, const nav_t *nav);
-EXPORT void tracepeph(int level, const nav_t *nav);
-EXPORT void tracepclk(int level, const nav_t *nav);
-EXPORT void traceb   (int level, const uint8_t *p, int n);
 EXPORT int gettracelevel(void);
+
+EXPORT void trace_impl    (int level, const char *format, ...);
+EXPORT void tracet_impl   (int level, const char *format, ...);
+EXPORT void tracemat_impl (int level, const double *A, int n, int m, int p, int q);
+EXPORT void traceobs_impl (int level, const obsd_t *obs, int n);
+EXPORT void tracenav_impl (int level, const nav_t *nav);
+EXPORT void tracegnav_impl(int level, const nav_t *nav);
+EXPORT void tracehnav_impl(int level, const nav_t *nav);
+EXPORT void tracepeph_impl(int level, const nav_t *nav);
+EXPORT void tracepclk_impl(int level, const nav_t *nav);
+EXPORT void traceb_impl   (int level, const uint8_t *p, int n);
+
+#else
+
+#define traceopen(file)       ((void)0)
+#define traceclose()          ((void)0)
+#define tracelevel(level)     ((void)0)
+#define gettracelevel() 0
+
+#define trace(level, ...)     ((void)0)
+#define tracet(level, ...)    ((void)0)
+#define tracemat(level, ...)  ((void)0)
+#define traceobs(level, ...)  ((void)0)
+#define tracenav(level, ...)  ((void)0)
+#define tracegnav(level, ...) ((void)0)
+#define tracehnav(level, ...) ((void)0)
+#define tracepeph(level, ...) ((void)0)
+#define tracepclk(level, ...) ((void)0)
+#define traceb(level, ...)    ((void)0)
+
+#endif /* TRACE */
 
 /* platform dependent functions ----------------------------------------------*/
 EXPORT int execcmd(const char *cmd);

@@ -155,8 +155,8 @@ extern int convgpx(const char *infile, const char *outfile, gtime_t ts,
     /* read solution file */
     if (!readsolt((char **)&infile,1,ts,te,tint,qflg,&solbuf)) return -1;
     
-	/* mean position */
-	for (i=0;i<3;i++) {
+    /* mean position */
+    for (i=0;i<3;i++) {
         for (j=0;j<solbuf.n;j++) rr[i]+=solbuf.data[j].rr[i];
         rr[i]/=solbuf.n;
     }

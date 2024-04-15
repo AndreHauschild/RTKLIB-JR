@@ -125,6 +125,7 @@
     <ClCompile Include="..\..\..\src\rtcm2.c" />
     <ClCompile Include="..\..\..\src\rtcm3.c" />
     <ClCompile Include="..\..\..\src\rtkcmn.c" />
+    <ClCompile Include="..\..\..\src\trace.c" />
     <ClCompile Include="..\..\..\src\sbas.c" />
     <ClCompile Include="..\..\..\src\rcv\skytraq.c" />
     <ClCompile Include="..\..\..\src\rcv\ublox.c" />

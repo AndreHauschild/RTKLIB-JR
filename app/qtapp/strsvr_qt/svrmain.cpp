@@ -640,13 +640,13 @@ void MainForm::updateStreamMonitor()
     int i, len, inb, inr, outb, outr;
 
     if (strMonDialog->getStreamFormat()) {
-        lock(&strsvr.lock);
+        rtklib_lock(&strsvr.lock);
         len = strsvr.npb;
         if (len > 0 && (msg = (unsigned char *)malloc(len))) {
             memcpy(msg, strsvr.pbuf, len);
             strsvr.npb = 0;
         }
-        unlock(&strsvr.lock);
+        rtklib_unlock(&strsvr.lock);
         if (len <= 0 || !msg) return;
         strMonDialog->addMessage(msg, len);
         free(msg);

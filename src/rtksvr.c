@@ -322,7 +322,7 @@ static void update_svr(rtksvr_t *svr, int ret, obs_t *obs, nav_t *nav,
     else if (ret==9) { /* ion/utc parameters */
         update_ionutc(svr,nav,index);
     }
-    else if (ret==5) { /* antenna postion */
+    else if (ret==5) { /* antenna position */
         update_antpos(svr,index);
     }
     else if (ret==7) { /* dgps correction */
@@ -490,73 +490,73 @@ static void periodic_cmd(int cycle, const char *cmd, stream_t *stream)
             strsendcmd(stream,msg);
         }
         if (!*q) break;
-	}
+    }
 }
 /* baseline length -----------------------------------------------------------*/
 static double baseline_len(const rtk_t *rtk)
 {
-	double dr[3];
-	int i;
+    double dr[3];
+    int i;
 
-	if (norm(rtk->sol.rr,3)<=0.0||norm(rtk->rb,3)<=0.0) return 0.0;
+    if (norm(rtk->sol.rr,3)<=0.0||norm(rtk->rb,3)<=0.0) return 0.0;
 
-	for (i=0;i<3;i++) {
-		dr[i]=rtk->sol.rr[i]-rtk->rb[i];
-	}
-	return norm(dr,3)*0.001; /* (km) */
+    for (i=0;i<3;i++) {
+        dr[i]=rtk->sol.rr[i]-rtk->rb[i];
+    }
+    return norm(dr,3)*0.001; /* (km) */
 }
 /* send nmea request to base/nrtk input stream -------------------------------*/
 static void send_nmea(rtksvr_t *svr, uint32_t *tickreset)
 {
-	sol_t sol_nmea={{0}};
-	double vel,bl;
-	uint32_t tick=tickget();
-	int i;
+    sol_t sol_nmea={{0}};
+    double vel,bl;
+    uint32_t tick=tickget();
+    int i;
 
-	if (svr->stream[1].state!=1) return;
-	sol_nmea.ns=10; /* Some servers don't like when ns = 0 */
+    if (svr->stream[1].state!=1) return;
+    sol_nmea.ns=10; /* Some servers don't like when ns = 0 */
 
-	if (svr->nmeareq==1) { /* lat-lon-hgt mode */
-		sol_nmea.stat=SOLQ_SINGLE;
-		sol_nmea.time=utc2gpst(timeget());
-		matcpy(sol_nmea.rr,svr->nmeapos,3,1);
-		strsendnmea(svr->stream+1,&sol_nmea);
-	}
-	else if (svr->nmeareq==2) { /* single-solution mode */
-		if (norm(svr->rtk.sol.rr,3)<=0.0) return;
-		sol_nmea.stat=SOLQ_SINGLE;
-		sol_nmea.time=utc2gpst(timeget());
-		matcpy(sol_nmea.rr,svr->rtk.sol.rr,3,1);
-		strsendnmea(svr->stream+1,&sol_nmea);
-	}
-	else if (svr->nmeareq==3) { /* reset-and-single-sol mode */
+    if (svr->nmeareq==1) { /* lat-lon-hgt mode */
+        sol_nmea.stat=SOLQ_SINGLE;
+        sol_nmea.time=utc2gpst(timeget());
+        matcpy(sol_nmea.rr,svr->nmeapos,3,1);
+        strsendnmea(svr->stream+1,&sol_nmea);
+    }
+    else if (svr->nmeareq==2) { /* single-solution mode */
+        if (norm(svr->rtk.sol.rr,3)<=0.0) return;
+        sol_nmea.stat=SOLQ_SINGLE;
+        sol_nmea.time=utc2gpst(timeget());
+        matcpy(sol_nmea.rr,svr->rtk.sol.rr,3,1);
+        strsendnmea(svr->stream+1,&sol_nmea);
+    }
+    else if (svr->nmeareq==3) { /* reset-and-single-sol mode */
 
-		/* send reset command if baseline over threshold */
-		bl=baseline_len(&svr->rtk);
-		if (bl>=svr->bl_reset&&(int)(tick-*tickreset)>MIN_INT_RESET) {
-			strsendcmd(svr->stream+1,svr->cmd_reset);
-			
-			tracet(2,"send reset: bl=%.3f rr=%.3f %.3f %.3f rb=%.3f %.3f %.3f\n",
-				   bl,svr->rtk.sol.rr[0],svr->rtk.sol.rr[1],svr->rtk.sol.rr[2],
-				   svr->rtk.rb[0],svr->rtk.rb[1],svr->rtk.rb[2]);
-			*tickreset=tick;
-		}
-		if (norm(svr->rtk.sol.rr,3)<=0.0) return;
-		sol_nmea.stat=SOLQ_SINGLE;
-		sol_nmea.time=utc2gpst(timeget());
-		matcpy(sol_nmea.rr,svr->rtk.sol.rr,3,1);
+        /* send reset command if baseline over threshold */
+        bl=baseline_len(&svr->rtk);
+        if (bl>=svr->bl_reset&&(int)(tick-*tickreset)>MIN_INT_RESET) {
+            strsendcmd(svr->stream+1,svr->cmd_reset);
+            
+            tracet(2,"send reset: bl=%.3f rr=%.3f %.3f %.3f rb=%.3f %.3f %.3f\n",
+                   bl,svr->rtk.sol.rr[0],svr->rtk.sol.rr[1],svr->rtk.sol.rr[2],
+                   svr->rtk.rb[0],svr->rtk.rb[1],svr->rtk.rb[2]);
+            *tickreset=tick;
+        }
+        if (norm(svr->rtk.sol.rr,3)<=0.0) return;
+        sol_nmea.stat=SOLQ_SINGLE;
+        sol_nmea.time=utc2gpst(timeget());
+        matcpy(sol_nmea.rr,svr->rtk.sol.rr,3,1);
 
-		/* set predicted position if velocity > 36km/h */
-		if ((vel=norm(svr->rtk.sol.rr+3,3))>10.0) {
-			for (i=0;i<3;i++) {
-				sol_nmea.rr[i]+=svr->rtk.sol.rr[i+3]/vel*svr->bl_reset*0.8;
-			}
-		}
-		strsendnmea(svr->stream+1,&sol_nmea);
+        /* set predicted position if velocity > 36km/h */
+        if ((vel=norm(svr->rtk.sol.rr+3,3))>10.0) {
+            for (i=0;i<3;i++) {
+                sol_nmea.rr[i]+=svr->rtk.sol.rr[i+3]/vel*svr->bl_reset*0.8;
+            }
+        }
+        strsendnmea(svr->stream+1,&sol_nmea);
 
-		tracet(3,"send nmea: rr=%.3f %.3f %.3f\n",sol_nmea.rr[0],sol_nmea.rr[1],
-			   sol_nmea.rr[2]);
-	}
+        tracet(3,"send nmea: rr=%.3f %.3f %.3f\n",sol_nmea.rr[0],sol_nmea.rr[1],
+               sol_nmea.rr[2]);
+    }
 }
 /* rtk server thread ---------------------------------------------------------*/
 #ifdef WIN32
@@ -610,6 +610,7 @@ static void *rtksvrthread(void *arg)
             else {
                 /* decode receiver raw/rtcm data */
                 fobs[i]=decoderaw(svr,i);
+                if (1==i&&svr->rtcm[1].staid>0) sol.refstationid=svr->rtcm[1].staid; 
             }
         }
         /* averaging single base pos */
@@ -756,7 +757,7 @@ extern int rtksvrinit(rtksvr_t *svr)
     for (i=0;i<3;i++) *svr->cmds_periodic[i]='\0';
     *svr->cmd_reset='\0';
     svr->bl_reset=10.0;
-    initlock(&svr->lock);
+    rtklib_initlock(&svr->lock);
     
     return 1;
 }
@@ -782,8 +783,8 @@ extern void rtksvrfree(rtksvr_t *svr)
 * args   : rtksvr_t *svr    IO rtk server
 * return : status (1:ok 0:error)
 *-----------------------------------------------------------------------------*/
-extern void rtksvrlock  (rtksvr_t *svr) {lock  (&svr->lock);}
-extern void rtksvrunlock(rtksvr_t *svr) {unlock(&svr->lock);}
+extern void rtksvrlock  (rtksvr_t *svr) {rtklib_lock  (&svr->lock);}
+extern void rtksvrunlock(rtksvr_t *svr) {rtklib_unlock(&svr->lock);}
 
 /* start rtk server ------------------------------------------------------------
 * start rtk server thread

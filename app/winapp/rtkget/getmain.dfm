@@ -9,7 +9,7 @@ object MainForm: TMainForm
   BorderIcons = [biSystemMenu, biMinimize]
   Caption = 'RTKGET'
   ClientHeight = 349
-  ClientWidth = 516
+  ClientWidth = 512
   Color = clWhite
   Constraints.MaxHeight = 800
   Constraints.MaxWidth = 800
@@ -21,17 +21,15 @@ object MainForm: TMainForm
   Font.Height = -11
   Font.Name = 'Tahoma'
   Font.Style = []
-  OldCreateOrder = False
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
-  PixelsPerInch = 96
   TextHeight = 13
   object Panel2: TPanel
     AlignWithMargins = True
     Left = 2
     Top = 2
-    Width = 512
+    Width = 508
     Height = 236
     Margins.Left = 2
     Margins.Top = 2
@@ -41,12 +39,13 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     TabOrder = 0
     OnResize = Panel2Resize
+    ExplicitWidth = 512
     object Panel5: TPanel
       AlignWithMargins = True
       Left = 1
       Top = 1
       Width = 140
-      Height = 234
+      Height = 235
       Margins.Left = 1
       Margins.Top = 1
       Margins.Right = 1
@@ -55,6 +54,7 @@ object MainForm: TMainForm
       BevelOuter = bvNone
       Constraints.MinWidth = 140
       TabOrder = 0
+      ExplicitHeight = 234
       object DataList: TListBox
         Left = 0
         Top = 23
@@ -95,7 +95,7 @@ object MainForm: TMainForm
           Left = 70
           Top = 0
           Width = 70
-          Height = 21
+          Height = 23
           Align = alRight
           AutoComplete = False
           Style = csDropDownList
@@ -119,7 +119,7 @@ object MainForm: TMainForm
       AlignWithMargins = True
       Left = 143
       Top = 1
-      Width = 368
+      Width = 364
       Height = 234
       Margins.Left = 1
       Margins.Top = 1
@@ -128,10 +128,11 @@ object MainForm: TMainForm
       Align = alClient
       BevelOuter = bvNone
       TabOrder = 1
+      ExplicitWidth = 368
       object Panel8: TPanel
         AlignWithMargins = True
         Left = 1
-        Top = 213
+        Top = 214
         Width = 367
         Height = 21
         Margins.Left = 1
@@ -143,6 +144,7 @@ object MainForm: TMainForm
         Color = clWhite
         ParentBackground = False
         TabOrder = 1
+        ExplicitTop = 213
         object Dir: TComboBox
           AlignWithMargins = True
           Left = 5
@@ -158,11 +160,9 @@ object MainForm: TMainForm
           TabOrder = 0
           OnChange = DirChange
           OnCloseUp = ComboCloseUp
-          ExplicitLeft = -1
-          ExplicitWidth = 340
         end
         object BtnDir: TButton
-          Left = 342
+          Left = 338
           Top = 0
           Width = 25
           Height = 21
@@ -181,7 +181,7 @@ object MainForm: TMainForm
         end
       end
       object Panel9: TPanel
-        Left = 228
+        Left = 224
         Top = 0
         Width = 140
         Height = 211
@@ -192,6 +192,7 @@ object MainForm: TMainForm
         BevelOuter = bvNone
         Constraints.MinWidth = 140
         TabOrder = 2
+        ExplicitLeft = 228
         object StaList: TListBox
           AlignWithMargins = True
           Left = 0
@@ -210,8 +211,6 @@ object MainForm: TMainForm
           ShowHint = True
           TabOrder = 0
           OnClick = StaListClick
-          ExplicitLeft = -1
-          ExplicitHeight = 186
         end
         object Panel15: TPanel
           Left = 0
@@ -285,11 +284,12 @@ object MainForm: TMainForm
       object Panel10: TPanel
         Left = 0
         Top = 0
-        Width = 228
+        Width = 224
         Height = 211
         Align = alClient
         BevelOuter = bvNone
         TabOrder = 0
+        ExplicitWidth = 228
         object Panel11: TPanel
           Left = 0
           Top = 0
@@ -428,12 +428,13 @@ object MainForm: TMainForm
         end
         object Panel4: TPanel
           Left = 0
-          Top = 103
+          Top = 104
           Width = 228
           Height = 48
           Align = alBottom
           BevelOuter = bvNone
           TabOrder = 4
+          ExplicitTop = 103
           object Label4: TLabel
             Left = 10
             Top = 6
@@ -525,11 +526,12 @@ object MainForm: TMainForm
         object Panel1: TPanel
           Left = 0
           Top = 151
-          Width = 228
+          Width = 224
           Height = 60
           Align = alBottom
           BevelOuter = bvNone
           TabOrder = 5
+          ExplicitWidth = 228
           object BtnKeyword: TSpeedButton
             Left = 119
             Top = 41
@@ -572,7 +574,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 0
     Top = 316
-    Width = 516
+    Width = 512
     Height = 33
     Margins.Left = 0
     Margins.Top = 1
@@ -582,6 +584,7 @@ object MainForm: TMainForm
     BevelOuter = bvNone
     TabOrder = 4
     OnResize = Panel3Resize
+    ExplicitWidth = 516
     object BtnFile: TButton
       Left = 1
       Top = 1
@@ -641,7 +644,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 1
     Top = 240
-    Width = 514
+    Width = 510
     Height = 25
     Margins.Left = 1
     Margins.Top = 0
@@ -661,11 +664,12 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 1
+    ExplicitWidth = 514
     object MsgLabel1: TLabel
       Left = 2
       Top = 2
-      Width = 510
-      Height = 21
+      Width = 3
+      Height = 13
       Margins.Left = 1
       Margins.Top = 1
       Margins.Right = 1
@@ -673,15 +677,13 @@ object MainForm: TMainForm
       Align = alClient
       Alignment = taCenter
       Layout = tlCenter
-      ExplicitWidth = 3
-      ExplicitHeight = 13
     end
   end
   object Msg3: TPanel
     AlignWithMargins = True
     Left = 1
     Top = 290
-    Width = 514
+    Width = 510
     Height = 25
     Margins.Left = 1
     Margins.Top = 0
@@ -701,18 +703,17 @@ object MainForm: TMainForm
     ParentDoubleBuffered = False
     ParentFont = False
     TabOrder = 3
+    ExplicitWidth = 514
     object MsgLabel3: TLabel
       Left = 25
       Top = 2
-      Width = 464
-      Height = 21
+      Width = 3
+      Height = 13
       Align = alClient
       Alignment = taCenter
       Color = clWhite
       ParentColor = False
       Layout = tlCenter
-      ExplicitWidth = 3
-      ExplicitHeight = 13
     end
     object BtnTray: TSpeedButton
       Left = 489
@@ -761,7 +762,7 @@ object MainForm: TMainForm
     AlignWithMargins = True
     Left = 1
     Top = 265
-    Width = 514
+    Width = 510
     Height = 25
     Margins.Left = 1
     Margins.Top = 0
@@ -781,16 +782,15 @@ object MainForm: TMainForm
     ParentShowHint = False
     ShowHint = True
     TabOrder = 2
+    ExplicitWidth = 514
     object MsgLabel2: TLabel
       Left = 2
       Top = 2
-      Width = 487
-      Height = 21
+      Width = 3
+      Height = 13
       Align = alClient
       Alignment = taCenter
       Layout = tlCenter
-      ExplicitWidth = 3
-      ExplicitHeight = 13
     end
     object Panel16: TPanel
       Left = 489

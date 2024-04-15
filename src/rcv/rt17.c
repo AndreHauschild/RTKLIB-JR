@@ -142,7 +142,7 @@
 | 5. Positions AKA Stream Positions
 |    (NOT RECOMMENDED)
 |
-| Streamed postions are of no use to RTKLIB. They will be ignored. RTKLIB
+| Streamed positions are of no use to RTKLIB. They will be ignored. RTKLIB
 | computes positions from the raw satellite data. It has no use for the
 | receiver's position solutions. Streamed positions also consume
 | considerable bandwidth in the stream and/or space in a file.
@@ -470,7 +470,7 @@ EXPORT void free_rt17(raw_t *Raw)
 /* init_rt17 = Initialize RT17 dependent private storage */
 EXPORT int init_rt17(raw_t *Raw)
 {
-	rt17_t *rt17 = NULL;
+    rt17_t *rt17 = NULL;
     uint8_t *MessageBuffer = NULL, *PacketBuffer = NULL;
 
     if (Raw->format != STRFMT_RT17)
@@ -731,8 +731,8 @@ EXPORT int input_rt17f(raw_t *Raw, FILE *fp)
     
     for (i = 0; i < 4096; i++)
     {
-	if ((Data = fgetc(fp)) == EOF) return -2;
-	    if ((Ret = input_rt17(Raw, (uint8_t) Data))) return Ret;
+        if ((Data = fgetc(fp)) == EOF) return -2;
+            if ((Ret = input_rt17(Raw, (uint8_t) Data))) return Ret;
     }
 
     return 0; /* return at every 4k bytes */

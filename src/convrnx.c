@@ -161,8 +161,9 @@ static strfile_t *gen_strfile(int format, const char *opt)
     
     if (format==STRFMT_RTCM2||format==STRFMT_RTCM3) {
         if (!init_rtcm(&str->rtcm)) {
+            free(str);
             showmsg("init rtcm error");
-            return 0;
+            return NULL;
         }
         str->rtcm.time=time0;
         str->obs=&str->rtcm.obs;
@@ -172,8 +173,9 @@ static strfile_t *gen_strfile(int format, const char *opt)
     }
     else if (format<=MAXRCVFMT) {
         if (!init_raw(&str->raw,format)) {
+            free(str);
             showmsg("init raw error");
-            return 0;
+            return NULL;
         }
         str->raw.time=time0;
         str->obs=&str->raw.obs;
@@ -183,8 +185,9 @@ static strfile_t *gen_strfile(int format, const char *opt)
     }
     else if (format==STRFMT_RINEX) {
         if (!init_rnxctr(&str->rnx)) {
+            free(str);
             showmsg("init rnx error");
-            return 0;
+            return NULL;
         }
         str->rnx.time=time0;
         str->obs=&str->rnx.obs;
@@ -192,7 +195,10 @@ static strfile_t *gen_strfile(int format, const char *opt)
         str->sta=&str->rnx.sta;
         strcpy(str->rnx.opt,opt);
     }
-    else return 0;
+    else {
+        free(str);
+        return NULL;
+    }
 
     str->stas=NULL;
     for (i=0;i<MAXSAT;i++) for (j=0;j<NFREQ+NEXOBS;j++) {
@@ -557,7 +563,7 @@ static void setopt_sta(const strfile_t *str, rnxopt_t *opt)
         ;
     }
     else if (norm(sta->del,3)>0.0) {
-        if (!sta->deltype&&norm(sta->del,3)>0.0) { /* enu */
+        if (!sta->deltype) { /* enu */
             opt->antdel[0]=sta->del[2]; /* h */
             opt->antdel[1]=sta->del[0]; /* e */
             opt->antdel[2]=sta->del[1]; /* n */
@@ -568,6 +574,8 @@ static void setopt_sta(const strfile_t *str, rnxopt_t *opt)
             opt->antdel[0]=enu[2]; /* h */
             opt->antdel[1]=enu[0]; /* e */
             opt->antdel[2]=enu[1]; /* n */
+        } else {
+            trace(2,"failed to update RINEX option antenna delta from xyz due to no station position\n");
         }
     }
     else {
@@ -931,7 +939,7 @@ static void outrnxevent(FILE *fp, const rnxopt_t *opt, gtime_t time, int event,
         
         /* antenna delta */
         if (norm(p->sta.del,3)>0.0) {
-            if (!p->sta.deltype&&norm(p->sta.del,3)>0.0) { /* enu */
+            if (!p->sta.deltype) { /* enu */
                 del[0]=p->sta.del[2]; /* h */
                 del[1]=p->sta.del[0]; /* e */
                 del[2]=p->sta.del[1]; /* n */
@@ -942,6 +950,9 @@ static void outrnxevent(FILE *fp, const rnxopt_t *opt, gtime_t time, int event,
                 del[0]=enu[2]; /* h */
                 del[1]=enu[0]; /* e */
                 del[2]=enu[1]; /* n */
+            } else {
+                trace(2,"failed to output RINEX option antenna delta from xyz due to no station position\n");
+                del[0]=del[1]=del[2]=0.0;
             }
         }
         else {
@@ -1073,7 +1084,7 @@ static void convnav(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n)
     ts=opt->ts;
     if (ts.time!=0) ts=timeadd(ts,-dtoe);
     if (!screent(str->time,ts,opt->te,0.0)) return;
-    
+
     if (sys==SYS_GPS) {
         if (ofp[1]) {
             outrnxnavb(ofp[1],opt,str->nav->eph+sat-1+MAXSAT*set);
@@ -1317,8 +1328,6 @@ static int convrnx_s(int sess, int format, rnxopt_t *opt, const char *file,
         for (j=0;(type=input_strfile(str))>=-1;j++) {
             
             if (!(j%11)&&(abort=showstat(sess,str->time,str->time,n))) break;
-            
-            if (opt->ts.time&&timediff(str->time,opt->ts)<-opt->ttol) continue;
             if (opt->te.time&&timediff(str->time,opt->te)>-opt->ttol) break;
             
             /* convert message */

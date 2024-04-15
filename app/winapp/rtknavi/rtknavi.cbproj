@@ -455,6 +455,9 @@
         <CppCompile Include="..\..\..\src\tle.c">
             <BuildOrder>53</BuildOrder>
         </CppCompile>
+        <CppCompile Include="..\..\..\src\trace.c">
+            <BuildOrder>59</BuildOrder>
+        </CppCompile>
         <FormResources Include="..\appcmn\mntpoptdlg.dfm"/>
         <FormResources Include="..\appcmn\maskoptdlg.dfm"/>
         <FormResources Include="..\appcmn\keydlg.dfm"/>
@@ -641,65 +644,47 @@
                 </DeployFile>
                 <DeployFile LocalName="..\..\..\src\datum.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\datum.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\datum.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ephemeris.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\ephemeris.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ephemeris.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\geoid.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\geoid.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\geoid.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ionex.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\ionex.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ionex.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\lambda.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\lambda.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\lambda.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\options.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\options.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\options.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\pntpos.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\pntpos.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\pntpos.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ppp.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ppp.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\ppp.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ppp_ar.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\ppp_ar.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ppp_ar.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ppp_corr.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\ppp_corr.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\preceph.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\preceph.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\preceph.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\qzslex.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\qzslex.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\binex.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcv\binex.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\binex.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\cmr.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\cmr.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\crescent.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\crescent.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcv\crescent.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\gw10.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\gw10.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\javad.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\javad.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcv\javad.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\novatel.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcv\novatel.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\novatel.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\nvs.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\nvs.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcv\nvs.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\rt17.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcv\rt17.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\rt17.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\septentrio.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\septentrio.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcv\septentrio.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\skytraq.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcv\skytraq.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\skytraq.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\ss2.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\ss2.c" Configuration="Release" Class="ProjectFile"/>
@@ -708,56 +693,50 @@
                 <DeployFile LocalName="..\..\..\src\rcv\tersus.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\ublox.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcv\ublox.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcv\ublox.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcvraw.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rcvraw.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rcvraw.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rinex.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rinex.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rinex.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtcm.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rtcm.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtcm.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtcm2.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtcm2.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rtcm2.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtcm3.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rtcm3.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtcm3.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtcm3e.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtcm3e.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rtcm3e.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtkcmn.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rtkcmn.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtkcmn.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtkpos.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtkpos.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rtkpos.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtksvr.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\rtksvr.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\rtksvr.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\sbas.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\sbas.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\sbas.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\solution.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\solution.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\solution.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\stream.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\stream.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\stream.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\tides.c" Configuration="Debug" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\tides.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\tides.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\tle.c" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="..\..\..\src\tle.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="..\..\..\src\tle.c" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="Debug_Build\rtknavi.exe" Configuration="Debug" Class="ProjectOutput"/>
                 <DeployFile LocalName="Debug_Build\rtknavi.exe" Configuration="Debug" Class="ProjectOutput"/>
                 <DeployFile LocalName="Release_Build\rtknavi.exe" Configuration="Release" Class="ProjectOutput"/>
-                <DeployFile LocalName="Release_Build\rtknavi.exe" Configuration="Release" Class="ProjectOutput"/>
+                <DeployFile LocalName="Release_Build\rtknavi.exe" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win64">
+                        <RemoteName>rtknavi.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployFile LocalName="rtknavi.res" Configuration="Debug" Class="ProjectFile"/>
                 <DeployFile LocalName="rtknavi.res" Configuration="Release" Class="ProjectFile"/>
-                <DeployFile LocalName="rtknavi.res" Configuration="Release" Class="ProjectFile"/>
+                <DeployFile LocalName="rtknavi.res" Configuration="Release" Class="ProjectFile">
+                    <Platform Name="Win64">
+                        <RemoteDir>.\</RemoteDir>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="iOSSimulator">
                         <Operation>1</Operation>

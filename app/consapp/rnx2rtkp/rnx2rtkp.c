@@ -58,7 +58,7 @@ static const char *help[]={
 " -c        forward/backward combined solutions [off]",
 " -i        instantaneous integer ambiguity resolution [off]",
 " -h        fix and hold for integer ambiguity resolution [off]",
-" -bl bl,blstd baseline dist and stdev",
+" -bl bl,std baseline distance and stdev",
 " -e        output x/y/z-ecef position [latitude/longitude/height]",
 " -a        output e/n/u-baseline [latitude/longitude/height]",
 " -n        output NMEA-0183 GGA sentence [off]",
@@ -136,6 +136,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-p")&&i+1<argc) prcopt.mode=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-f")&&i+1<argc) prcopt.nf=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-sys")&&i+1<argc) {
+            prcopt.navsys=0;
             for (p=argv[++i];*p;p++) {
                 switch (*p) {
                     case 'G': prcopt.navsys|=SYS_GPS;break;

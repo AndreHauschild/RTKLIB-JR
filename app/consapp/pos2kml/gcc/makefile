@@ -2,10 +2,10 @@
 
 BINDIR = /usr/local/bin
 SRC    = ../../../../src
-CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) -DTRACE
+CFLAGS = -std=c99 -Wall -O3 -pedantic -I$(SRC) -DTRACE
 LDLIBS  = -lm -lrt
 
-pos2kml    : pos2kml.o convkml.o convgpx.o solution.o geoid.o rtkcmn.o preceph.o
+pos2kml    : pos2kml.o convkml.o convgpx.o solution.o geoid.o rtkcmn.o trace.o preceph.o
 
 pos2kml.o  : ../pos2kml.c
 	$(CC) -c $(CFLAGS) ../pos2kml.c
@@ -19,6 +19,8 @@ geoid.o    : $(SRC)/geoid.c
 	$(CC) -c $(CFLAGS) $(SRC)/geoid.c
 rtkcmn.o   : $(SRC)/rtkcmn.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtkcmn.c
+trace.o   : $(SRC)/trace.c
+	$(CC) -c $(CFLAGS) $(SRC)/trace.c
 preceph.o  : $(SRC)/preceph.c
 	$(CC) -c $(CFLAGS) $(SRC)/preceph.c
 
@@ -28,6 +30,7 @@ convgpx.o  : $(SRC)/rtklib.h
 solution.o : $(SRC)/rtklib.h
 geoid.o    : $(SRC)/rtklib.h
 rtkcmn.o   : $(SRC)/rtklib.h
+trace.o    : $(SRC)/rtklib.h
 preceph.o  : $(SRC)/rtklib.h
 
 install:

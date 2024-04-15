@@ -1156,6 +1156,7 @@ int Plot::isObservation(const QString &file)
         return file.at(p - 1) == 'o' || file.at(p - 1) == 'O' || file.at(p - 1) == 'd' || file.at(p - 1) == 'D';
 
     return file.indexOf(".obs") || file.indexOf(".OBS") ||
+           file.indexOf(".rnx") || file.indexOf(".RNX") ||
            file.mid(p + 3) == "o" || file.mid(p + 3) == "O" ||
            file.mid(p + 3) == "d" || file.mid(p + 3) == "D";
 }

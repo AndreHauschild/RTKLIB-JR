@@ -1093,8 +1093,8 @@ void OptDialog::save(const QString &file)
 
     setsysopts(&procOpts, &solOpts, &filopt);
 
-    if (!saveopts(qPrintable(file), "w", comment, sysopts) ||
-        !saveopts(qPrintable(file), "a", "", appOptions)) return;
+    if (!saveopts(qPrintable(file), "w", comment, sysopts)) return;
+    if (appOptions && !saveopts(qPrintable(file), "a", "", appOptions)) return;
 
     if (options == NaviOptions) {
         strncpy(proxyaddr, qPrintable(proxyAddress), 1023);

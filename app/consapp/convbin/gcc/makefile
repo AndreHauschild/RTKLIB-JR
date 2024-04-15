@@ -9,13 +9,13 @@ SRC    = ../../../../src
 INCLUDE= -I$(SRC)
 OPTIONS= -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=3 -DNEXOBS=3
 
-CFLAGS = -O3 -ansi -pedantic -Wall -Wno-unused-but-set-variable $(INCLUDE) $(OPTIONS) -g
+CFLAGS = -std=c99 -O3 -pedantic -Wall -Wno-unused-but-set-variable $(INCLUDE) $(OPTIONS) -g
 
 LDLIBS = -lm -lrt
 
 all  : convbin
 
-convbin    : convbin.o rtkcmn.o rinex.o sbas.o preceph.o rcvraw.o convrnx.o
+convbin    : convbin.o rtkcmn.o trace.o rinex.o sbas.o preceph.o rcvraw.o convrnx.o
 convbin    : rtcm.o rtcm2.o rtcm3.o rtcm3e.o pntpos.o ephemeris.o ionex.o
 convbin    : novatel.o ublox.o crescent.o skytraq.o javad.o nvs.o
 convbin    : binex.o rt17.o septentrio.o swiftnav.o
@@ -24,6 +24,8 @@ convbin.o  : ../convbin.c
 	$(CC) -c $(CFLAGS) ../convbin.c
 rtkcmn.o   : $(SRC)/rtkcmn.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtkcmn.c
+trace.o   : $(SRC)/trace.c
+	$(CC) -c $(CFLAGS) $(SRC)/trace.c
 rinex.o    : $(SRC)/rinex.c
 	$(CC) -c $(CFLAGS) $(SRC)/rinex.c
 sbas.o     : $(SRC)/sbas.c
@@ -73,6 +75,7 @@ swiftnav.o: $(SRC)/rcv/septentrio.c
 
 convbin.o  : $(SRC)/rtklib.h
 rtkcmn.o   : $(SRC)/rtklib.h
+trace.o    : $(SRC)/rtklib.h
 rinex.o    : $(SRC)/rtklib.h
 sbas.o     : $(SRC)/rtklib.h
 preceph.o  : $(SRC)/rtklib.h

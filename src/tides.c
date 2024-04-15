@@ -61,7 +61,7 @@ static void tide_pl(const double *eu, const double *rp, double GMp,
     p=(3.0*sinl*sinl-1.0)/2.0;
     H2=0.6078-0.0006*p;
     L2=0.0847+0.0002*p;
-    a=dot(ep,eu,3);
+    a=dot3(ep,eu);
     dp=K2*3.0*L2*a;
     du=K2*(H2*(1.5*a*a-0.5)-3.0*L2*a*a);
 
@@ -276,12 +276,12 @@ extern void tidedisp(gtime_t tutc, const double *rr, int opt, const erp_t *erp,
     }
     if ((opt&2)&&odisp) { /* ocean tide loading */
         tide_oload(tut,odisp,denu);
-        matmul("TN",3,1,3,1.0,E,denu,0.0,drt);
+        matmul("TN",3,1,3,E,denu,drt);
         for (i=0;i<3;i++) dr[i]+=drt[i];
     }
     if ((opt&4)&&erp) { /* pole tide */
         tide_pole(tut,pos,erpv,denu);
-        matmul("TN",3,1,3,1.0,E,denu,0.0,drt);
+        matmul("TN",3,1,3,E,denu,drt);
         for (i=0;i<3;i++) dr[i]+=drt[i];
     }
     trace(5,"tidedisp: dr=%.3f %.3f %.3f\n",dr[0],dr[1],dr[2]);

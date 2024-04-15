@@ -1,5 +1,8 @@
 //---------------------------------------------------------------------------
-#define INHIBIT_RTK_LOCK_MACROS
+
+#include <stdio.h>
+#include "rtklib.h"
+
 #include <QShowEvent>
 #include <QKeyEvent>
 #include <QTextStream>

@@ -82,9 +82,9 @@ static void printephdiff(gtime_t time, int sat, int eph1, int eph2,
     cross3(rs2,rs2+3,rc);
     if (!normv3(rc,ec)) return;
     cross3(ea,ec,er);
-    drss[0]=dot(drs,er,3); /* radial/along-trk/cross-trk */
-    drss[1]=dot(drs,ea,3);
-    drss[2]=dot(drs,ec,3);
+    drss[0]=dot3(drs,er); /* radial/along-trk/cross-trk */
+    drss[1]=dot3(drs,ea);
+    drss[2]=dot3(drs,ec);
     
     if (topt) {
         time2str(time,tstr,0);

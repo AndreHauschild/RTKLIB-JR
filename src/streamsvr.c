@@ -510,11 +510,11 @@ static void *strsvrthread(void *arg)
             /* write data to log stream */
             strwrite(svr->strlog,svr->buff,n);
             
-            lock(&svr->lock);
+            rtklib_lock(&svr->lock);
             for (i=0;i<n&&svr->npb<svr->buffsize;i++) {
                 svr->pbuf[svr->npb++]=svr->buff[i];
             }
-            unlock(&svr->lock);
+            rtklib_unlock(&svr->lock);
         }
         for (i=1;i<svr->nstr;i++) {
             
@@ -579,7 +579,7 @@ extern void strsvrinit(strsvr_t *svr, int nout)
     svr->nstr=i;
     for (i=0;i<16;i++) svr->conv[i]=NULL;
     svr->thread=0;
-    initlock(&svr->lock);
+    rtklib_initlock(&svr->lock);
 }
 /* start stream server ---------------------------------------------------------
 * start stream server
@@ -779,7 +779,7 @@ extern int strsvrpeek(strsvr_t *svr, uint8_t *buff, int nmax)
     
     if (!svr->state) return 0;
     
-    lock(&svr->lock);
+    rtklib_lock(&svr->lock);
     n=svr->npb<nmax?svr->npb:nmax;
     if (n>0) {
         memcpy(buff,svr->pbuf,n);
@@ -788,7 +788,7 @@ extern int strsvrpeek(strsvr_t *svr, uint8_t *buff, int nmax)
         memmove(svr->pbuf,svr->pbuf+n,svr->npb-n);
     }
     svr->npb-=n;
-    unlock(&svr->lock);
+    rtklib_unlock(&svr->lock);
     return n;
 }
 

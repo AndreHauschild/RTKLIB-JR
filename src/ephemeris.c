@@ -167,7 +167,6 @@ extern void alm2pos(gtime_t time, const alm_t *alm, double *rs, double *dts)
     }
     if (n>=MAX_ITER_KEPLER) {
         trace(2,"alm2pos: kepler iteration overflow sat=%2d\n",alm->sat);
-        return;
     }
     sinE=sin(E); cosE=cos(E);
     u=atan2(sqrt(1.0-alm->e*alm->e)*sinE,cosE-alm->e)+alm->omg;
@@ -245,7 +244,6 @@ extern void eph2pos(gtime_t time, const eph_t *eph, double *rs, double *dts,
     }
     if (n>=MAX_ITER_KEPLER) {
         trace(2,"eph2pos: kepler iteration overflow sat=%2d\n",eph->sat);
-        return;
     }
     sinE=sin(E); cosE=cos(E);
 
@@ -293,7 +291,7 @@ extern void eph2pos(gtime_t time, const eph_t *eph, double *rs, double *dts,
 /* glonass orbit differential equations --------------------------------------*/
 static void deq(const double *x, double *xdot, const double *acc)
 {
-    double a,b,c,r2=dot(x,x,3),r3=r2*sqrt(r2),omg2=SQR(OMGE_GLO);
+    double a,b,c,r2=dot3(x,x),r3=r2*sqrt(r2),omg2=SQR(OMGE_GLO);
 
     if (r2<=0.0) {
         xdot[0]=xdot[1]=xdot[2]=xdot[3]=xdot[4]=xdot[5]=0.0;
@@ -603,7 +601,7 @@ static int satpos_sbas(gtime_t time, gtime_t teph, int sat, const nav_t *nav,
     }
     if (i>=nav->sbssat.nsat) {
         trace(2,"no sbas, use brdcast: %s sat=%2d\n",time_str(time,0),sat);
-        ephpos(time,teph,sat,nav,-1,rs,dts,var,svh);
+        if (!ephpos(time,teph,sat,nav,-1,rs,dts,var,svh)) return 0;
         /* *svh=-1; */ /* use broadcast if no sbas */
         return 1;
     }
@@ -684,7 +682,7 @@ static int satpos_ssr(gtime_t time, gtime_t teph, int sat, const nav_t *nav,
         dts[1]=eph->f1+2.0*eph->f2*tk;
 
         /* relativity correction */
-        dts[0]-=2.0*dot(rs,rs+3,3)/CLIGHT/CLIGHT;
+        dts[0]-=2.0*dot3(rs,rs+3)/CLIGHT/CLIGHT;
     }
     /* radial-along-cross directions in ecef */
     if (!normv3(rs+3,ea)) return 0;

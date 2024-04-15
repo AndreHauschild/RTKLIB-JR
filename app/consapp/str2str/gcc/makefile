@@ -8,11 +8,11 @@ SRC    = ../../../../src
 CTARGET=
 
 OPTION = -DENAGLO -DENAGAL -DENAQZS -DENACMP -DENAIRN -DTRACE -DNFREQ=3 -DNEXOBS=3 -DSVR_REUSEADDR
-CFLAGS = -Wall -O3 -ansi -pedantic -Wno-unused-but-set-variable -I$(SRC) $(OPTION) $(CTARGET) -g
+CFLAGS = -std=c99 -Wall -O3 -pedantic -Wno-unused-but-set-variable -I$(SRC) $(OPTION) $(CTARGET) -g
 LDLIBS  = -lm -lrt -lpthread
 
 all        : str2str
-str2str    : str2str.o stream.o rtkcmn.o solution.o sbas.o geoid.o
+str2str    : str2str.o stream.o rtkcmn.o trace.o solution.o sbas.o geoid.o
 str2str    : rcvraw.o novatel.o ublox.o crescent.o skytraq.o javad.o
 str2str    : nvs.o binex.o rt17.o rtcm.o rtcm2.o rtcm3.o rtcm3e.o preceph.o streamsvr.o
 str2str    : septentrio.o swiftnav.o
@@ -25,6 +25,8 @@ streamsvr.o: $(SRC)/streamsvr.c
 	$(CC) -c $(CFLAGS) $(SRC)/streamsvr.c
 rtkcmn.o   : $(SRC)/rtkcmn.c
 	$(CC) -c $(CFLAGS) $(SRC)/rtkcmn.c
+trace.o   : $(SRC)/trace.c
+	$(CC) -c $(CFLAGS) $(SRC)/trace.c
 solution.o : $(SRC)/solution.c
 	$(CC) -c $(CFLAGS) $(SRC)/solution.c
 sbas.o     : $(SRC)/sbas.c
@@ -70,6 +72,7 @@ str2str.o  : $(SRC)/rtklib.h
 stream.o   : $(SRC)/rtklib.h
 streamsvr.o: $(SRC)/rtklib.h
 rtkcmn.o   : $(SRC)/rtklib.h
+trace.o    : $(SRC)/rtklib.h
 solution.o : $(SRC)/rtklib.h
 sbas.o     : $(SRC)/rtklib.h
 geoid.o    : $(SRC)/rtklib.h

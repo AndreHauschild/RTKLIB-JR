@@ -568,13 +568,13 @@ void __fastcall TMainForm::Timer2Timer(TObject *Sender)
 	int i,len,inb,inr,outb,outr;
 	
 	if (StrMonDialog->StrFmt) {
-		lock(&strsvr.lock);
+		rtklib_lock(&strsvr.lock);
 		len=strsvr.npb;
 		if (len>0&&(msg=(char *)malloc(len))) {
 			memcpy(msg,strsvr.pbuf,len);
 			strsvr.npb=0;
 		}
-		unlock(&strsvr.lock);
+		rtklib_unlock(&strsvr.lock);
 		if (len<=0||!msg) return;
 		StrMonDialog->AddMsg((uint8_t *)msg,len);
 		free(msg);

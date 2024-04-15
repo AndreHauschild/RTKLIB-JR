@@ -2,7 +2,7 @@
 
 BINDIR = /usr/local/bin
 SRC    = ../../../src
-CFLAGS = -Wall -O3 -ansi -pedantic
+CFLAGS = -std=c99 -Wall -O3 -pedantic
 LDLIBS  = -lm
 
 all        : gencrc genxor genmsk

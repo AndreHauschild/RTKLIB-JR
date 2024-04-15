@@ -268,12 +268,12 @@ static char *obscodes[]={       /* observation code strings */
 };
 static char codepris[7][MAXFREQ][16]={  /* code priority for each freq-index */
     /* L1/E1/B1I L2/E5b/B2I L5/E5a/B3I E6/LEX/B2A E5(a+b)         */
-    {"CPYWMNSL","CPYWMNDLSX","IQX"     ,""       ,""       ,""}, /* GPS */
+    {"CPYWMNSLX","CPYWMNDLSX","IQX"     ,""       ,""       ,""}, /* GPS */
     {"CPABX"   ,"CPABX"     ,"IQX"     ,""       ,""       ,""}, /* GLO */
     {"CABXZ"   ,"XIQ"       ,"XIQ"     ,"ABCXZ"  ,"IQX"    ,""}, /* GAL */
     {"CLSXZ"   ,"LSX"       ,"IQXDPZ"  ,"LSXEZ"  ,""       ,""}, /* QZS */
     {"C"       ,"IQX"       ,""        ,""       ,""       ,""}, /* SBS */
-    {"IQXDPAN" ,"IQXDPZ"    ,"DPX"     ,"IQXA"   ,"DPX"    ,""}, /* BDS */
+    {"IQXDPAN" ,"IQXDPZ"    ,"IQXA"    ,"DPX"   ,"DPX"    ,""}, /* BDS */
     {"ABCX"    ,"ABCX"      ,""        ,""       ,""       ,""}  /* IRN */
 };
 static fatalfunc_t *fatalfunc=NULL; /* fatal callback function */
@@ -1021,6 +1021,24 @@ extern double *eye(int n)
     if ((p=zeros(n,n))) for (i=0;i<n;i++) p[i+i*n]=1.0;
     return p;
 }
+
+/* dot product -----------------------------------------------------------------
+ * inner product of vectors of size 2
+ * args   : double *a,*b     I   vectors a and b
+ * return : a'*b
+ *-----------------------------------------------------------------------------*/
+extern double dot2(const double* a, const double* b) { return a[0] * b[0] + a[1] * b[1]; }
+
+/* dot product -----------------------------------------------------------------
+ * inner product of vectors of size 3
+ * args   : double *a,*b     I   vectors a and b
+ * return : a'*b
+ *-----------------------------------------------------------------------------*/
+extern double dot3(const double* a, const double* b)
+{
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
 /* inner product ---------------------------------------------------------------
 * inner product of vectors
 * args   : double *a,*b     I   vector a,b (n x 1)
@@ -1034,6 +1052,7 @@ extern double dot(const double *a, const double *b, int n)
     while (--n>=0) c+=a[n]*b[n];
     return c;
 }
+
 /* euclid norm -----------------------------------------------------------------
 * euclid norm of vector
 * args   : double *a        I   vector a (n x 1)
@@ -1087,19 +1106,42 @@ extern void matcpy(double *A, const double *B, int n, int m)
 #ifdef LAPACK /* with LAPACK/BLAS or MKL */
 
 /* multiply matrix (wrapper of blas dgemm) -------------------------------------
-* multiply matrix by matrix (C=alpha*A*B+beta*C)
+* multiply matrix by matrix (C=A*B)
 * args   : char   *tr       I  transpose flags ("N":normal,"T":transpose)
 *          int    n,k,m     I  size of (transposed) matrix A,B
-*          double alpha     I  alpha
 *          double *A,*B     I  (transposed) matrix A (n x m), B (m x k)
-*          double beta      I  beta
-*          double *C        IO matrix C (n x k)
+*          double *C        O matrix C (n x k)
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void matmul(const char *tr, int n, int k, int m, double alpha,
-                   const double *A, const double *B, double beta, double *C)
+extern void matmul(const char *tr, int n, int k, int m,
+                   const double *A, const double *B, double *C)
 {
     int lda=tr[0]=='T'?m:n,ldb=tr[1]=='T'?k:m;
+    const double alpha=1,beta=0;
+
+    dgemm_((char *)tr,(char *)tr+1,&n,&k,&m,&alpha,(double *)A,&lda,(double *)B,
+           &ldb,&beta,C,&n);
+}
+/* multiply matrix (wrapper of blas dgemm) -------------------------------------
+* multiply matrix by matrix (C=C+A*B)
+*-----------------------------------------------------------------------------*/
+extern void matmulp(const char *tr, int n, int k, int m,
+                    const double *A, const double *B, double *C)
+{
+    int lda=tr[0]=='T'?m:n,ldb=tr[1]=='T'?k:m;
+    const double alpha=1,beta=1;
+
+    dgemm_((char *)tr,(char *)tr+1,&n,&k,&m,&alpha,(double *)A,&lda,(double *)B,
+           &ldb,&beta,C,&n);
+}
+/* multiply matrix (wrapper of blas dgemm) -------------------------------------
+* multiply matrix by matrix (C=C-A*B)
+*-----------------------------------------------------------------------------*/
+extern void matmulm(const char *tr, int n, int k, int m,
+                    const double *A, const double *B, double *C)
+{
+    int lda=tr[0]=='T'?m:n,ldb=tr[1]=='T'?k:m;
+    const double alpha=-1,beta=1;
 
     dgemm_((char *)tr,(char *)tr+1,&n,&k,&m,&alpha,(double *)A,&lda,(double *)B,
            &ldb,&beta,C,&n);
@@ -1149,21 +1191,136 @@ extern int solve(const char *tr, const double *A, const double *Y, int n,
 #else /* without LAPACK/BLAS or MKL */
 
 /* multiply matrix -----------------------------------------------------------*/
-extern void matmul(const char *tr, int n, int k, int m, double alpha,
-                   const double *A, const double *B, double beta, double *C)
+extern void matmul(const char *tr, int n, int k, int m,
+                   const double *A, const double *B, double *C)
 {
-    double d;
-    int i,j,x,f=tr[0]=='N'?(tr[1]=='N'?1:2):(tr[1]=='N'?3:4);
+    int f=(tr[0]!='N')*2+(tr[1]!='N');
 
-    for (i=0;i<n;i++) for (j=0;j<k;j++) {
-        d=0.0;
-        switch (f) {
-            case 1: for (x=0;x<m;x++) d+=A[i+x*n]*B[x+j*m]; break;
-            case 2: for (x=0;x<m;x++) d+=A[i+x*n]*B[j+x*k]; break;
-            case 3: for (x=0;x<m;x++) d+=A[x+i*m]*B[x+j*m]; break;
-            case 4: for (x=0;x<m;x++) d+=A[x+i*m]*B[j+x*k]; break;
-        }
-        if (beta==0.0) C[i+j*n]=alpha*d; else C[i+j*n]=alpha*d+beta*C[i+j*n];
+    switch (f) {
+        case 0: /* NN */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[i+x*n]*B[x+j*m];
+                  C[i+j*n]=d;
+              }
+          }
+          break;
+        case 1: /* NT */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[i+x*n]*B[j+x*k];
+                  C[i+j*n]=d;
+              }
+          }
+          break;
+        case 2: /* TN */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[x+i*m]*B[x+j*m];
+                  C[i+j*n]=d;
+              }
+          }
+          break;
+        case 3: /* TT */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[x+i*m]*B[j+x*k];
+                  C[i+j*n]=d;
+              }
+          }
+          break;
+    }
+}
+extern void matmulp(const char *tr, int n, int k, int m,
+                    const double *A, const double *B, double *C)
+{
+    int f=(tr[0]!='N')*2+(tr[1]!='N');
+
+    switch (f) {
+        case 0: /* NN */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[i+x*n]*B[x+j*m];
+                  C[i+j*n]+=d;
+              }
+          }
+          break;
+        case 1: /* NT */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[i+x*n]*B[j+x*k];
+                  C[i+j*n]+=d;
+              }
+          }
+          break;
+        case 2: /* TN */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[x+i*m]*B[x+j*m];
+                  C[i+j*n]+=d;
+              }
+          }
+          break;
+        case 3: /* TT */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[x+i*m]*B[j+x*k];
+                  C[i+j*n]+=d;
+              }
+          }
+          break;
+    }
+}
+extern void matmulm(const char *tr, int n, int k, int m,
+                    const double *A, const double *B, double *C)
+{
+    int f=(tr[0]!='N')*2+(tr[1]!='N');
+
+    switch (f) {
+        case 0: /* NN */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[i+x*n]*B[x+j*m];
+                  C[i+j*n]-=d;
+              }
+          }
+          break;
+        case 1: /* NT */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[i+x*n]*B[j+x*k];
+                  C[i+j*n]-=d;
+              }
+          }
+          break;
+        case 2: /* TN */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[x+i*m]*B[x+j*m];
+                  C[i+j*n]-=d;
+              }
+          }
+          break;
+        case 3: /* TT */
+          for (int j=0;j<k;j++) {
+              for (int i=0;i<n;i++) {
+                  double d=0.0;
+                  for (int x=0;x<m;x++) d+=A[x+i*m]*B[j+x*k];
+                  C[i+j*n]-=d;
+              }
+          }
+          break;
     }
 }
 /* LU decomposition ----------------------------------------------------------*/
@@ -1240,11 +1397,12 @@ extern int solve(const char *tr, const double *A, const double *Y, int n,
     int info;
 
     matcpy(B,A,n,n);
-    if (!(info=matinv(B,n))) matmul(tr[0]=='N'?"NN":"TN",n,m,n,1.0,B,Y,0.0,X);
+    if (!(info=matinv(B,n))) matmul(tr[0]=='N'?"NN":"TN",n,m,n,B,Y,X);
     free(B);
     return info;
 }
 #endif
+
 /* end of matrix routines ----------------------------------------------------*/
 
 /* least square estimation -----------------------------------------------------
@@ -1266,9 +1424,9 @@ extern int lsq(const double *A, const double *y, int n, int m, double *x,
 
     if (m<n) return -1;
     Ay=mat(n,1);
-    matmul("NN",n,1,m,1.0,A,y,0.0,Ay); /* Ay=A*y */
-    matmul("NT",n,n,m,1.0,A,A,0.0,Q);  /* Q=A*A' */
-    if (!(info=matinv(Q,n))) matmul("NN",n,1,n,1.0,Q,Ay,0.0,x); /* x=Q^-1*Ay */
+    matmul("NN",n,1,m,A,y,Ay); /* Ay=A*y */
+    matmul("NT",n,n,m,A,A,Q);  /* Q=A*A' */
+    if (!(info=matinv(Q,n))) matmul("NN",n,1,n,Q,Ay,x); /* x=Q^-1*Ay */
     free(Ay);
     return info;
 }
@@ -1298,13 +1456,13 @@ static int filter_(const double *x, const double *P, const double *H,
 
     matcpy(Q,R,m,m);
     matcpy(xp,x,n,1);
-    matmul("NN",n,m,n,1.0,P,H,0.0,F);       /* Q=H'*P*H+R */
-    matmul("TN",m,m,n,1.0,H,F,1.0,Q);
+    matmul("NN",n,m,n,P,H,F);       /* Q=H'*P*H+R */
+    matmulp("TN",m,m,n,H,F,Q);
     if (!(info=matinv(Q,m))) {
-        matmul("NN",n,m,m,1.0,F,Q,0.0,K);   /* K=P*H*Q^-1 */
-        matmul("NN",n,1,m,1.0,K,v,1.0,xp);  /* xp=x+K*v */
-        matmul("NT",n,n,m,-1.0,K,H,1.0,I);  /* Pp=(I-K*H')*P */
-        matmul("NN",n,n,n,1.0,I,P,0.0,Pp);
+        matmul("NN",n,m,m,F,Q,K);   /* K=P*H*Q^-1 */
+        matmulp("NN",n,1,m,K,v,xp);  /* xp=x+K*v */
+        matmulm("NT",n,n,m,K,H,I);  /* Pp=(I-K*H')*P */
+        matmul("NN",n,n,n,I,P,Pp);
     }
     free(F); free(Q); free(K); free(I);
     return info;
@@ -1361,9 +1519,9 @@ extern int smoother(const double *xf, const double *Qf, const double *xb,
     if (!matinv(invQf,n)&&!matinv(invQb,n)) {
         for (i=0;i<n*n;i++) Qs[i]=invQf[i]+invQb[i];
         if (!(info=matinv(Qs,n))) {
-            matmul("NN",n,1,n,1.0,invQf,xf,0.0,xx);
-            matmul("NN",n,1,n,1.0,invQb,xb,1.0,xx);
-            matmul("NN",n,1,n,1.0,Qs,xx,0.0,xs);
+            matmul("NN",n,1,n,invQf,xf,xx);
+            matmulp("NN",n,1,n,invQb,xb,xx);
+            matmul("NN",n,1,n,Qs,xx,xs);
         }
     }
     free(invQf); free(invQb); free(xx);
@@ -1399,13 +1557,20 @@ extern void matprint(const double A[], int n, int m, int p, int q)
 *-----------------------------------------------------------------------------*/
 extern double str2num(const char *s, int i, int n)
 {
-    double value;
     char str[256],*p=str;
 
-    if (i<0||(int)strlen(s)<i||(int)sizeof(str)-1<n) return 0.0;
-    for (s+=i;*s&&--n>=0;s++) *p++=*s=='d'||*s=='D'?'E':*s;
+    if (i<0||(int)sizeof(str)-1<n) return 0.0;
+    /* Special case i==0, skipping the strlen check.
+     * Note: Could usefully use strnlen(s,i) here */
+    if (i>0&&(int)strlen(s)<i) return 0.0;
+
+    for (s+=i;--n>=0;s++) {
+        char c=*s;
+        if (!c) break;
+        *p++=((c|0x20)=='d')?'E':c;
+    }
     *p='\0';
-    return sscanf(str,"%lf",&value)==1?value:0.0;
+    return strtod(str,NULL);
 }
 /* string to time --------------------------------------------------------------
 * convert substring in string to gtime_t struct
@@ -1937,7 +2102,7 @@ extern double dms2deg(const double *dms)
     double sign=dms[0]<0.0?-1.0:1.0;
     return sign*(fabs(dms[0])+dms[1]/60.0+dms[2]/3600.0);
 }
-/* transform ecef to geodetic postion ------------------------------------------
+/* transform ecef to geodetic position -----------------------------------------
 * transform ecef position to geodetic position
 * args   : double *r        I   ecef position {x,y,z} (m)
 *          double *pos      O   geodetic position {lat,lon,h} (rad,m)
@@ -1946,7 +2111,7 @@ extern double dms2deg(const double *dms)
 *-----------------------------------------------------------------------------*/
 extern void ecef2pos(const double *r, double *pos)
 {
-    double e2=FE_WGS84*(2.0-FE_WGS84),r2=dot(r,r,2),z,zk,v=RE_WGS84,sinp;
+    double e2=FE_WGS84*(2.0-FE_WGS84),r2=dot2(r,r),z,zk,v=RE_WGS84,sinp;
 
     for (z=r[2],zk=0.0;fabs(z-zk)>=1E-4;) {
         zk=z;
@@ -2001,7 +2166,7 @@ extern void ecef2enu(const double *pos, const double *r, double *e)
     double E[9];
 
     xyz2enu(pos,E);
-    matmul("NN",3,1,3,1.0,E,r,0.0,e);
+    matmul("NN",3,1,3,E,r,e);
 }
 /* transform local vector to ecef coordinate -----------------------------------
 * transform local tangential coordinate vector to ecef
@@ -2015,7 +2180,7 @@ extern void enu2ecef(const double *pos, const double *e, double *r)
     double E[9];
 
     xyz2enu(pos,E);
-    matmul("TN",3,1,3,1.0,E,e,0.0,r);
+    matmul("TN",3,1,3,E,e,r);
 }
 /* transform covariance to local tangential coordinate --------------------------
 * transform ecef covariance to local tangential coordinate
@@ -2029,8 +2194,8 @@ extern void covenu(const double *pos, const double *P, double *Q)
     double E[9],EP[9];
 
     xyz2enu(pos,E);
-    matmul("NN",3,3,3,1.0,E,P,0.0,EP);
-    matmul("NT",3,3,3,1.0,EP,E,0.0,Q);
+    matmul("NN",3,3,3,E,P,EP);
+    matmul("NT",3,3,3,EP,E,Q);
 }
 /* transform local enu coordinate covariance to xyz-ecef -----------------------
 * transform local enu covariance to xyz-ecef coordinate
@@ -2044,8 +2209,8 @@ extern void covecef(const double *pos, const double *Q, double *P)
     double E[9],EQ[9];
 
     xyz2enu(pos,E);
-    matmul("TN",3,3,3,1.0,E,Q,0.0,EQ);
-    matmul("NN",3,3,3,1.0,EQ,E,0.0,P);
+    matmul("TN",3,3,3,E,Q,EQ);
+    matmul("NN",3,3,3,EQ,E,P);
 }
 /* coordinate rotation matrix ------------------------------------------------*/
 #define Rx(t,X) do { \
@@ -2252,14 +2417,14 @@ extern void eci2ecef(gtime_t tutc, const double *erpv, double *U, double *gmst)
     z =(2306.2181*t+1.09468*t2+0.018203*t3)*AS2R;
     eps=(84381.448-46.8150*t-0.00059*t2+0.001813*t3)*AS2R;
     Rz(-z,R1); Ry(th,R2); Rz(-ze,R3);
-    matmul("NN",3,3,3,1.0,R1,R2,0.0,R);
-    matmul("NN",3,3,3,1.0,R, R3,0.0,P); /* P=Rz(-z)*Ry(th)*Rz(-ze) */
+    matmul("NN",3,3,3,R1,R2,R);
+    matmul("NN",3,3,3,R, R3,P); /* P=Rz(-z)*Ry(th)*Rz(-ze) */
 
     /* iau 1980 nutation */
     nut_iau1980(t,f,&dpsi,&deps);
     Rx(-eps-deps,R1); Rz(-dpsi,R2); Rx(eps,R3);
-    matmul("NN",3,3,3,1.0,R1,R2,0.0,R);
-    matmul("NN",3,3,3,1.0,R ,R3,0.0,N); /* N=Rx(-eps)*Rz(-dspi)*Rx(eps) */
+    matmul("NN",3,3,3,R1,R2,R);
+    matmul("NN",3,3,3,R ,R3,N); /* N=Rx(-eps)*Rz(-dspi)*Rx(eps) */
 
     /* greenwich aparent sidereal time (rad) */
     gmst_=utc2gmst(tutc_,erpv[2]);
@@ -2268,10 +2433,10 @@ extern void eci2ecef(gtime_t tutc, const double *erpv, double *U, double *gmst)
 
     /* eci to ecef transformation matrix */
     Ry(-erpv[0],R1); Rx(-erpv[1],R2); Rz(gast,R3);
-    matmul("NN",3,3,3,1.0,R1,R2,0.0,W );
-    matmul("NN",3,3,3,1.0,W ,R3,0.0,R ); /* W=Ry(-xp)*Rx(-yp) */
-    matmul("NN",3,3,3,1.0,N ,P ,0.0,NP);
-    matmul("NN",3,3,3,1.0,R ,NP,0.0,U_); /* U=W*Rz(gast)*N*P */
+    matmul("NN",3,3,3,R1,R2,W );
+    matmul("NN",3,3,3,W ,R3,R ); /* W=Ry(-xp)*Rx(-yp) */
+    matmul("NN",3,3,3,N ,P ,NP);
+    matmul("NN",3,3,3,R ,NP,U_); /* U=W*Rz(gast)*N*P */
 
     for (i=0;i<9;i++) U[i]=U_[i];
     if (gmst) *gmst=gmst_;
@@ -3032,220 +3197,6 @@ extern void freenav(nav_t *nav, int opt)
     if (opt&0x20) {free(nav->alm ); nav->alm =NULL; nav->na=nav->namax=0;}
     if (opt&0x40) {free(nav->tec ); nav->tec =NULL; nav->nt=nav->ntmax=0;}
 }
-/* debug trace functions -----------------------------------------------------*/
-#ifdef TRACE
-
-static FILE *fp_trace=NULL;     /* file pointer of trace */
-static char file_trace[1024];   /* trace file */
-static int level_trace=0;       /* level of trace */
-static uint32_t tick_trace=0;   /* tick time at traceopen (ms) */
-static gtime_t time_trace={0};  /* time at traceopen */
-static lock_t lock_trace;       /* lock for trace */
-
-static void traceswap(void)
-{
-    gtime_t time=utc2gpst(timeget());
-    char path[1024];
-
-    lock(&lock_trace);
-
-    if ((int)(time2gpst(time      ,NULL)/INT_SWAP_TRAC)==
-        (int)(time2gpst(time_trace,NULL)/INT_SWAP_TRAC)) {
-        unlock(&lock_trace);
-        return;
-    }
-    time_trace=time;
-
-    if (!reppath(file_trace,path,time,"","")) {
-        unlock(&lock_trace);
-        return;
-    }
-    if (fp_trace) fclose(fp_trace);
-
-    if (!(fp_trace=fopen(path,"w"))) {
-        fp_trace=stderr;
-    }
-    unlock(&lock_trace);
-}
-extern void traceopen(const char *file)
-{
-    gtime_t time=utc2gpst(timeget());
-    char path[1024];
-
-    reppath(file,path,time,"","");
-    if (!*path||!(fp_trace=fopen(path,"w"))) fp_trace=stderr;
-    strcpy(file_trace,file);
-    tick_trace=tickget();
-    time_trace=time;
-    initlock(&lock_trace);
-}
-extern void traceclose(void)
-{
-    if (fp_trace&&fp_trace!=stderr) fclose(fp_trace);
-    fp_trace=NULL;
-    file_trace[0]='\0';
-}
-extern void tracelevel(int level)
-{
-    level_trace=level;
-}
-extern int gettracelevel(void)
-{
-    return level_trace;
-}
-extern void trace(int level, const char *format, ...)
-{
-    va_list ap;
-
-    /* print error message to stderr */
-    if (level<=1) {
-        va_start(ap,format); vfprintf(stderr,format,ap); va_end(ap);
-    }
-    if (!fp_trace||level>level_trace) return;
-    traceswap();
-    fprintf(fp_trace,"%d ",level);
-    va_start(ap,format); vfprintf(fp_trace,format,ap); va_end(ap);
-    fflush(fp_trace);
-}
-extern void tracet(int level, const char *format, ...)
-{
-    va_list ap;
-
-    if (!fp_trace||level>level_trace) return;
-    traceswap();
-    fprintf(fp_trace,"%d %9.3f: ",level,(tickget()-tick_trace)/1000.0);
-    va_start(ap,format); vfprintf(fp_trace,format,ap); va_end(ap);
-    fflush(fp_trace);
-}
-extern void tracemat(int level, const double *A, int n, int m, int p, int q)
-{
-    if (!fp_trace||level>level_trace) return;
-    matfprint(A,n,m,p,q,fp_trace); fflush(fp_trace);
-}
-extern void traceobs(int level, const obsd_t *obs, int n)
-{
-    char str[64],id[16];
-    int i;
-
-    if (!fp_trace||level>level_trace) return;
-    for (i=0;i<n;i++) {
-        time2str(obs[i].time,str,3);
-        satno2id(obs[i].sat,id);
-        fprintf(fp_trace," (%2d) %s %-3s rcv%d %13.3f %13.3f %13.3f %13.3f %d %d %d %d %x %x %3.1f %3.1f\n",
-              i+1,str,id,obs[i].rcv,obs[i].L[0],obs[i].L[1],obs[i].P[0],
-              obs[i].P[1],obs[i].LLI[0],obs[i].LLI[1],obs[i].code[0],
-              obs[i].code[1],obs[i].Lstd[0],obs[i].Pstd[0],obs[i].SNR[0]*SNR_UNIT,obs[i].SNR[1]*SNR_UNIT);
-    }
-    fflush(fp_trace);
-}
-extern void tracenav(int level, const nav_t *nav)
-{
-    char s1[64],s2[64],id[16];
-    int i;
-
-    if (!fp_trace||level>level_trace) return;
-    for (i=0;i<nav->n;i++) {
-        time2str(nav->eph[i].toe,s1,0);
-        time2str(nav->eph[i].ttr,s2,0);
-        satno2id(nav->eph[i].sat,id);
-        fprintf(fp_trace,"(%3d) %-3s : %s %s %3d %3d %02x\n",i+1,
-                id,s1,s2,nav->eph[i].iode,nav->eph[i].iodc,nav->eph[i].svh);
-    }
-    fprintf(fp_trace,"(ion) %9.4e %9.4e %9.4e %9.4e\n",nav->ion_gps[0],
-            nav->ion_gps[1],nav->ion_gps[2],nav->ion_gps[3]);
-    fprintf(fp_trace,"(ion) %9.4e %9.4e %9.4e %9.4e\n",nav->ion_gps[4],
-            nav->ion_gps[5],nav->ion_gps[6],nav->ion_gps[7]);
-    fprintf(fp_trace,"(ion) %9.4e %9.4e %9.4e %9.4e\n",nav->ion_gal[0],
-            nav->ion_gal[1],nav->ion_gal[2],nav->ion_gal[3]);
-}
-extern void tracegnav(int level, const nav_t *nav)
-{
-    char s1[64],s2[64],id[16];
-    int i;
-
-    if (!fp_trace||level>level_trace) return;
-    for (i=0;i<nav->ng;i++) {
-        time2str(nav->geph[i].toe,s1,0);
-        time2str(nav->geph[i].tof,s2,0);
-        satno2id(nav->geph[i].sat,id);
-        fprintf(fp_trace,"(%3d) %-3s : %s %s %2d %2d %8.3f\n",i+1,
-                id,s1,s2,nav->geph[i].frq,nav->geph[i].svh,nav->geph[i].taun*1E6);
-    }
-}
-extern void tracehnav(int level, const nav_t *nav)
-{
-    char s1[64],s2[64],id[16];
-    int i;
-
-    if (!fp_trace||level>level_trace) return;
-    for (i=0;i<nav->ns;i++) {
-        time2str(nav->seph[i].t0,s1,0);
-        time2str(nav->seph[i].tof,s2,0);
-        satno2id(nav->seph[i].sat,id);
-        fprintf(fp_trace,"(%3d) %-3s : %s %s %2d %2d\n",i+1,
-                id,s1,s2,nav->seph[i].svh,nav->seph[i].sva);
-    }
-}
-extern void tracepeph(int level, const nav_t *nav)
-{
-    char s[64],id[16];
-    int i,j;
-
-    if (!fp_trace||level>level_trace) return;
-
-    for (i=0;i<nav->ne;i++) {
-        time2str(nav->peph[i].time,s,0);
-        for (j=0;j<MAXSAT;j++) {
-            satno2id(j+1,id);
-            fprintf(fp_trace,"%-3s %d %-3s %13.3f %13.3f %13.3f %13.3f %6.3f %6.3f %6.3f %6.3f\n",
-                    s,nav->peph[i].index,id,
-                    nav->peph[i].pos[j][0],nav->peph[i].pos[j][1],
-                    nav->peph[i].pos[j][2],nav->peph[i].pos[j][3]*1E9,
-                    nav->peph[i].std[j][0],nav->peph[i].std[j][1],
-                    nav->peph[i].std[j][2],nav->peph[i].std[j][3]*1E9);
-        }
-    }
-}
-extern void tracepclk(int level, const nav_t *nav)
-{
-    char s[64],id[16];
-    int i,j;
-
-    if (!fp_trace||level>level_trace) return;
-
-    for (i=0;i<nav->nc;i++) {
-        time2str(nav->pclk[i].time,s,0);
-        for (j=0;j<MAXSAT;j++) {
-            satno2id(j+1,id);
-            fprintf(fp_trace,"%-3s %d %-3s %13.3f %6.3f\n",
-                    s,nav->pclk[i].index,id,
-                    nav->pclk[i].clk[j][0]*1E9,nav->pclk[i].std[j][0]*1E9);
-        }
-    }
-}
-extern void traceb(int level, const uint8_t *p, int n)
-{
-    int i;
-    if (!fp_trace||level>level_trace) return;
-    for (i=0;i<n;i++) fprintf(fp_trace,"%02X%s",*p++,i%8==7?" ":"");
-    fprintf(fp_trace,"\n");
-}
-#else
-extern void traceopen(const char *file) {}
-extern void traceclose(void) {}
-extern void tracelevel(int level) {}
-extern void trace   (int level, const char *format, ...) {}
-extern void tracet  (int level, const char *format, ...) {}
-extern void tracemat(int level, const double *A, int n, int m, int p, int q) {}
-extern void traceobs(int level, const obsd_t *obs, int n) {}
-extern void tracenav(int level, const nav_t *nav) {}
-extern void tracegnav(int level, const nav_t *nav) {}
-extern void tracehnav(int level, const nav_t *nav) {}
-extern void tracepeph(int level, const nav_t *nav) {}
-extern void tracepclk(int level, const nav_t *nav) {}
-extern void traceb  (int level, const uint8_t *p, int n) {}
-
-#endif /* TRACE */
 
 /* execute command -------------------------------------------------------------
 * execute command line by operating system shell
@@ -3361,7 +3312,7 @@ static int mkdir_r(const char *dir)
     if (!*dir||!strcmp(dir+1,":\\")) return 1;
 
     sprintf(pdir,"%.1023s",dir);
-    if ((p=strrchr(pdir,FILEPATHSEP))) {
+    if ((p=strrchr(pdir,RTKLIB_FILEPATHSEP))) {
         *p='\0';
         h=FindFirstFile(pdir,&data);
         if (h==INVALID_HANDLE_VALUE) {
@@ -3378,7 +3329,7 @@ static int mkdir_r(const char *dir)
     if (!*dir) return 1;
 
     sprintf(pdir,"%.1023s",dir);
-    if ((p=strrchr(pdir,FILEPATHSEP))) {
+    if ((p=strrchr(pdir,RTKLIB_FILEPATHSEP))) {
         *p='\0';
         if (!(fp=fopen(pdir,"r"))) {
             if (!mkdir_r(pdir)) return 0;
@@ -3403,7 +3354,7 @@ extern void createdir(const char *path)
     tracet(3,"createdir: path=%s\n",path);
 
     strcpy(buff,path);
-    if (!(p=strrchr(buff,FILEPATHSEP))) return;
+    if (!(p=strrchr(buff,RTKLIB_FILEPATHSEP))) return;
     *p='\0';
 
     mkdir_r(buff);
@@ -3567,7 +3518,7 @@ extern double satazel(const double *pos, const double *e, double *azel)
 
     if (pos[2]>-RE_WGS84) {
         ecef2enu(pos,e,enu);
-        az=dot(enu,enu,2)<1E-12?0.0:atan2(enu[0],enu[1]);
+        az=dot2(enu,enu)<1E-12?0.0:atan2(enu[0],enu[1]);
         if (az<0.0) az+=2*PI;
         el=asin(enu[2]);
     }
@@ -3602,7 +3553,7 @@ extern void dops(int ns, const double *azel, double elmin, double *dop)
     }
     if (n<4) return;
 
-    matmul("NT",4,4,n,1.0,H,H,0.0,Q);
+    matmul("NT",4,4,n,H,H,Q);
     if (!matinv(Q,4)) {
         dop[0]=SQRT(Q[0]+Q[5]+Q[10]+Q[15]); /* GDOP */
         dop[1]=SQRT(Q[0]+Q[5]+Q[10]);       /* PDOP */
@@ -3677,16 +3628,20 @@ extern double ionmapf(const double *pos, const double *azel)
 *          double re        I   earth radius (km)
 *          double hion      I   altitude of ionosphere (km)
 *          double *posp     O   pierce point position {lat,lon,h} (rad,m)
-* return : slant factor
+* return : slant factor, the single-layer mapping function.
 * notes  : see ref [2], only valid on the earth surface
 *          fixing bug on ref [2] A.4.4.10.1 A-22,23
 *-----------------------------------------------------------------------------*/
 extern double ionppp(const double *pos, const double *azel, double re,
                      double hion, double *posp)
 {
-    double cosaz,rp,ap,sinap,tanap;
+    double cosaz,r,rp,ap,sinap,tanap;
 
-    rp=re/(re+hion)*cos(azel[1]);
+    /* The radius at the receiver station. */
+    r=re+pos[2];
+    /* asin(rp) is the zenith angle at the IPP. */
+    rp=r/(re+hion)*cos(azel[1]);
+    /* The angle at the center of the earth. */
     ap=PI/2.0-azel[1]-asin(rp);
     sinap=sin(ap);
     tanap=tan(ap);
@@ -3700,6 +3655,7 @@ extern double ionppp(const double *pos, const double *azel, double re,
     else {
         posp[1]=pos[1]+asin(sinap*sin(azel[0])/cos(posp[0]));
     }
+    /* Equivalent to 1/cos(asin(rp)) */
     return 1.0/sqrt(1.0-rp*rp);
 }
 /* select iono-free linear combination (L1/L2 or L1/L5) ----------------------*/
@@ -3927,7 +3883,7 @@ extern void antmodel(const pcv_t *pcv, const double *del, const double *azel,
     for (i=0;i<NFREQ;i++) {
         for (j=0;j<3;j++) off[j]=pcv->off[i][j]+del[j];
 
-        dant[i]=-dot(off,e,3)+(opt?interpvar(90.0-azel[1]*R2D,pcv->var[i]):0.0);
+        dant[i]=-dot3(off,e)+(opt?interpvar(90.0-azel[1]*R2D,pcv->var[i]):0.0);
     }
     trace(4,"antmodel: dant=%6.3f %6.3f\n",dant[0],dant[1]);
 }
@@ -4021,8 +3977,8 @@ extern void sunmoonpos(gtime_t tutc, const double *erpv, double *rsun,
     eci2ecef(tutc,erpv,U,&gmst_);
 
     /* sun and moon position in ecef */
-    if (rsun ) matmul("NN",3,1,3,1.0,U,rs,0.0,rsun );
-    if (rmoon) matmul("NN",3,1,3,1.0,U,rm,0.0,rmoon);
+    if (rsun ) matmul("NN",3,1,3,U,rs,rsun );
+    if (rmoon) matmul("NN",3,1,3,U,rm,rmoon);
     if (gmst ) *gmst=gmst_;
 }
 /* uncompress file -------------------------------------------------------------

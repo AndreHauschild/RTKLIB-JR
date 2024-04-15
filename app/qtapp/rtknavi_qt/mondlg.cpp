@@ -515,9 +515,9 @@ void MonitorDialog::showRtk()
     ui->tWConsole->setItem(row, 0, new QTableWidgetItem(tr("Time of Receiver Clock Rover")));
     ui->tWConsole->setItem(row++, 1, new QTableWidgetItem(rtk.sol.time.time ? tstr : "-"));
 
-    ui->tWConsole->setItem(row, 0, new QTableWidgetItem(tr("Time System Offset/Receiver Bias\n (GLO-GPS, GAL-GPS, BDS-GPS, IRN-GPS) (ns)")));
+    ui->tWConsole->setItem(row, 0, new QTableWidgetItem(tr("Time System Offset/Receiver Bias\n (GLO-GPS, GAL-GPS, BDS-GPS, IRN-GPS, QZS-GPS) (ns)")));
     ui->tWConsole->setItem(row++, 1, new QTableWidgetItem(QString("%1, %2, %3, %4").arg(rtk.sol.dtr[1] * 1E9, 0, 'f', 3).arg(rtk.sol.dtr[2] * 1E9, 0, 'f', 3)
-                                                              .arg(rtk.sol.dtr[3] * 1E9, 0, 'f', 3).arg(rtk.sol.dtr[4] * 1E9, 0, 'f', 3)));
+                                                              .arg(rtk.sol.dtr[3] * 1E9, 0, 'f', 3).arg(rtk.sol.dtr[4] * 1E9, 0, 'f', 3).arg(rtk.sol.dtr[5] * 1E9, 0, 'f', 3)));
 
     ui->tWConsole->setItem(row, 0, new QTableWidgetItem(tr("Solution Interval (s)")));
     ui->tWConsole->setItem(row++, 1, new QTableWidgetItem(QString::number(rtk.tt, 'f', 3)));

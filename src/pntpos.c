@@ -31,7 +31,8 @@
 #define SQR(x)      ((x)*(x))
 #define MAX(x,y)    ((x)>=(y)?(x):(y))
 
-#if 0 /* enable GPS-QZS time offset estimation */
+#define QZSDT /* enable GPS-QZS time offset estimation */
+#ifdef QZSDT
 #define NX          (4+5)       /* # of estimated parameters */
 #else
 #define NX          (4+4)       /* # of estimated parameters */
@@ -322,8 +323,9 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
                 continue;
             }
             if ((freq=sat2freq(sat,obs[i].code[0],nav))==0.0) continue;
+            /* Convert from FREQL1 to freq */
             dion*=SQR(FREQL1/freq);
-            vion*=SQR(FREQL1/freq);
+            vion*=SQR(SQR(FREQL1/freq));
         
             /* tropospheric correction */
             if (!tropcorr(time,nav,pos,azel+i*2,opt->tropopt,&dtrp,&vtrp)) {
@@ -347,7 +349,7 @@ static int rescode(int iter, const obsd_t *obs, int n, const double *rs,
         else if (sys==SYS_GAL) {v[nv]-=x[5]; H[5+nv*NX]=1.0; mask[2]=1;}
         else if (sys==SYS_CMP) {v[nv]-=x[6]; H[6+nv*NX]=1.0; mask[3]=1;}
         else if (sys==SYS_IRN) {v[nv]-=x[7]; H[7+nv*NX]=1.0; mask[4]=1;}
-#if 0 /* enable QZS-GPS time offset estimation */
+#ifdef QZSDT
         else if (sys==SYS_QZS) {v[nv]-=x[8]; H[8+nv*NX]=1.0; mask[5]=1;}
 #endif
         else mask[0]=1;
@@ -413,7 +415,7 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
     
     trace(3,"estpos  : n=%d\n",n);
     
-    v=mat(n+4,1); H=mat(NX,n+4); var=mat(n+4,1);
+    v=mat(n+NX-3,1); H=mat(NX,n+NX-3); var=mat(n+NX-3,1);
     
     for (i=0;i<3;i++) x[i]=sol->rr[i];
 
@@ -449,6 +451,9 @@ static int estpos(const obsd_t *obs, int n, const double *rs, const double *dts,
             sol->dtr[2]=x[5]/CLIGHT; /* GAL-GPS time offset (s) */
             sol->dtr[3]=x[6]/CLIGHT; /* BDS-GPS time offset (s) */
             sol->dtr[4]=x[7]/CLIGHT; /* IRN-GPS time offset (s) */
+#ifdef QZSDT
+            sol->dtr[5]=x[8]/CLIGHT; /* QZS-GPS time offset (s) */
+#endif
             for (j=0;j<6;j++) sol->rr[j]=j<3?x[j]:0.0;
             for (j=0;j<3;j++) sol->qr[j]=(float)Q[j+j*NX];
             sol->qr[3]=(float)Q[1];    /* cov xy */
@@ -570,15 +575,15 @@ static int resdop(const obsd_t *obs, int n, const double *rs, const double *dts,
         a[0]=sin(azel[i*2])*cosel;
         a[1]=cos(azel[i*2])*cosel;
         a[2]=sin(azel[1+i*2]);
-        matmul("TN",3,1,3,1.0,E,a,0.0,e);
+        matmul("TN",3,1,3,E,a,e);
         
         /* satellite velocity relative to receiver in ECEF */
         for (j=0;j<3;j++) {
             vs[j]=rs[j+3+i*6]-x[j];
         }
         /* range rate with earth rotation correction */
-        rate=dot(vs,e,3)+OMGE/CLIGHT*(rs[4+i*6]*rr[0]+rs[1+i*6]*x[0]-
-                                      rs[3+i*6]*rr[1]-rs[  i*6]*x[1]);
+        rate=dot3(vs,e)+OMGE/CLIGHT*(rs[4+i*6]*rr[0]+rs[1+i*6]*x[0]-
+                                     rs[3+i*6]*rr[1]-rs[  i*6]*x[1]);
         
         /* Std of range rate error (m/s) */
         sig=(err<=0.0)?1.0:err*CLIGHT/freq;

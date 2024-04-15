@@ -8,7 +8,6 @@
 #include <QPixmap>
 #include <QSystemTrayIcon>
 
-#define INHIBIT_RTK_LOCK_MACROS
 #include "rtklib.h"
 
 namespace Ui {

@@ -127,7 +127,7 @@ static void remot2local(const char *remot, const char *dir, char *local)
     else if ((p=strrchr(remot,'/'))) p++;
     else p=(char *)remot;
     
-    sprintf(local,"%s%c%s",dir,FILEPATHSEP,p);
+    sprintf(local,"%s%c%s",dir,RTKLIB_FILEPATHSEP,p);
 }
 /* test file existence -------------------------------------------------------*/
 static int exist_file(const char *local)
@@ -292,7 +292,7 @@ static int mkdir_r(const char *dir)
     if (!*dir||!strcmp(dir+1,":\\")) return 1;
     
     strcpy(pdir,dir);
-    if ((p=strrchr(pdir,FILEPATHSEP))) {
+    if ((p=strrchr(pdir,RTKLIB_FILEPATHSEP))) {
         *p='\0';
         h=FindFirstFile(pdir,&data);
         if (h==INVALID_HANDLE_VALUE) {
@@ -311,7 +311,7 @@ static int mkdir_r(const char *dir)
     if (!*dir) return 1;
     
     strcpy(pdir,dir);
-    if ((p=strrchr(pdir,FILEPATHSEP))) {
+    if ((p=strrchr(pdir,RTKLIB_FILEPATHSEP))) {
         *p='\0';
         if (!(fp=fopen(pdir,"r"))) {
             if (!mkdir_r(pdir)) return 0;
@@ -362,7 +362,7 @@ static int rep_paths(path_t *path, const char *file)
     strcpy(buff1,path->remot);
     strcpy(buff2,path->local);
     if ((p=strrchr(buff1,'/'))) p++; else p=buff1;
-    if ((q=strrchr(buff2,FILEPATHSEP))) q++; else q=buff2;
+    if ((q=strrchr(buff2,RTKLIB_FILEPATHSEP))) q++; else q=buff2;
     strcpy(p,file);
     strcpy(q,file);
     
@@ -388,7 +388,12 @@ static int test_list(path_t *path)
     
     if (!(fp=fopen(FTP_LISTING,"r"))) return 1;
     
-    if ((p=strrchr(path->remot,'/'))) file=p+1; else return 1;
+    if ((p=strrchr(path->remot,'/')))
+        file=p+1;
+    else {
+        fclose(fp);
+        return 1;
+    }
     
     /* search file in remote file list */
     while (fgets(buff,sizeof(buff),fp)) {
@@ -434,7 +439,7 @@ static int exec_down(path_t *path, char *remot_p, const char *usr,
     opt2=" 2> /dev/null";
 #endif
     strcpy(dir,path->local);
-    if ((p=strrchr(dir,FILEPATHSEP))) *p='\0';
+    if ((p=strrchr(dir,RTKLIB_FILEPATHSEP))) *p='\0';
     
     if      (!strncmp(path->remot,"ftp://"  ,6)) proto=0;
     else if (!strncmp(path->remot,"ftps://" ,7)) proto=2;
@@ -562,17 +567,16 @@ static int test_local(gtime_t ts, gtime_t te, double ti, const char *path,
     int stat,abort=0;
     
     for (time=ts;timediff(time,te)<=1E-3;time=timeadd(time,ti)) {
-        
-        sprintf(str,"%s->%s",path,local);
-        
-        if (showmsg(str)) {
-            abort=1;
-            break;
-        }
         genpath(path,sta,time,0,remot);
         genpath(dir ,sta,time,0,dir_t);
         remot2local(remot,dir_t,local);
         
+        sprintf(str,"%s->%s",path,local);
+        if (showmsg(str)) {
+            abort=1;
+            break;
+        }
+
         stat=test_file(local);
         
         fprintf(fp," %s",stat==0?"-":(stat==1?"o":"z"));

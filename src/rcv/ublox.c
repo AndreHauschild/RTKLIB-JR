@@ -423,9 +423,10 @@ static int decode_rxmrawx(raw_t *raw)
         frqid=U1(p+23);    /* freqId (fcn + 7) */
         lockt=U2(p+24);    /* locktime (ms) */
         cn0  =U1(p+26);    /* cn0 (dBHz) */
-        prstd=U1(p+27)&15; /* pseudorange std-dev */
-        cpstd=U1(p+28)&15; /* cpStdev (m) */
-        prstd=1<<(prstd>=5?prstd-5:0); /* prstd=2^(x-5) */
+        prstd=U1(p+27)&15; /* pseudorange std-dev: (0.01*2^n meters) */
+        cpstd=U1(p+28)&15; /* cpStdev (n*0.004 m) */
+        /* subtract offset to use valid rinex format range (0->9) */
+        prstd=prstd>=5?prstd-5:0; /* prstd=0.01*2^(x-5) meters*/
 
         tstat=U1(p+30);    /* trkStat */
         if (!(tstat&1)) P=0.0;
@@ -480,13 +481,13 @@ static int decode_rxmrawx(raw_t *raw)
         if (cpstd>=cpstd_slip) slip=LLI_SLIP;
         if (slip) raw->lockflag[sat-1][idx]=slip;
         raw->lockt[sat-1][idx]=lockt*1E-3;
-        raw->halfc[sat-1][idx]=halfc;
         /* LLI: bit0=slip,bit1=half-cycle-unresolved */
         LLI=!halfv&&L!=0.0?LLI_HALFC:0;
         /* half cycle adjusted */
         LLI|=halfc?LLI_HALFA:0; 
         /* set cycle slip if half cycle subtract bit changed state */
         LLI|=halfc!=raw->halfc[sat-1][idx]?LLI_SLIP:0;
+        raw->halfc[sat-1][idx]=halfc;
         /* set cycle slip flag if first valid phase since slip */
         if (L!=0.0) LLI|=raw->lockflag[sat-1][idx]>0.0?LLI_SLIP:0;
 
@@ -1760,7 +1761,7 @@ extern int gen_ubx(const char *msg, uint8_t *buff)
         if (!*vcmd[k]) return 0;
 
         setU4(q,(unsigned long) vid[k]);
-	    q+=4;
+        q+=4;
 
         /* Set value */
         switch (vprm[k]) {

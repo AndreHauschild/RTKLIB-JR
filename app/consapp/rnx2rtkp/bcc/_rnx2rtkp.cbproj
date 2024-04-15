@@ -224,6 +224,9 @@
         <CppCompile Include="..\..\..\..\src\tides.c">
             <BuildOrder>22</BuildOrder>
         </CppCompile>
+        <CppCompile Include="..\..\..\..\src\trace.c">
+            <BuildOrder>21</BuildOrder>
+        </CppCompile>
         <BuildConfiguration Include="Base">
             <Key>Base</Key>
         </BuildConfiguration>
@@ -406,6 +409,12 @@
                 <DeployFile LocalName="..\..\..\..\src\tides.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="..\rnx2rtkp.c" Configuration="Release" Class="ProjectFile"/>
                 <DeployFile LocalName="Release_Build\_rnx2rtkp.exe" Configuration="Release" Class="ProjectOutput"/>
+                <DeployFile LocalName="Release_Build\_rnx2rtkp.exe" Configuration="Release" Class="ProjectOutput">
+                    <Platform Name="Win64">
+                        <RemoteName>_rnx2rtkp.exe</RemoteName>
+                        <Overwrite>true</Overwrite>
+                    </Platform>
+                </DeployFile>
                 <DeployClass Name="AdditionalDebugSymbols">
                     <Platform Name="OSX32">
                         <Operation>1</Operation>

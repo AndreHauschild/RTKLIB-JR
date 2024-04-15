@@ -10,7 +10,6 @@
 
 #include "graph.h"
 #include "console.h"
-#define INHIBIT_RTK_LOCK_MACROS
 #include "rtklib.h"
 
 #define MAXNFILE    256                 // max number of solution files
