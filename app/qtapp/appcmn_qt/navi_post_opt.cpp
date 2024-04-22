@@ -44,6 +44,8 @@ OptDialog::OptDialog(QWidget *parent, int opts)
     processingOptions = prcopt_default;
     solutionOptions = solopt_default;
 
+    appOptions = nullptr;
+
     serverCycle = serverBufferSize = 0;
     solutionBufferSize = 1000;
     panelStacking = 0;
