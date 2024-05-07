@@ -3,6 +3,8 @@
 #define navioptH
 //---------------------------------------------------------------------------
 #include <QDialog>
+#include <QRegularExpression>
+
 #include "rtklib.h"
 
 namespace Ui {
@@ -13,6 +15,7 @@ class TextViewer;
 class FreqDialog;
 class QLineEdit;
 class QSettings;
+class QRegularExpressionValidator;
 
 //---------------------------------------------------------------------------
 class OptDialog : public QDialog
@@ -56,6 +59,10 @@ protected:
 
     TextViewer *textViewer;
     FreqDialog * freqDialog;
+    QRegularExpression regExDMS;
+    QRegularExpression regExLat;
+    QRegularExpression regExLon;
+    QRegularExpression regExDistance;
 
 protected slots:
     void saveClose();

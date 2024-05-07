@@ -246,7 +246,7 @@ void OutputStrDialog::setSwapInterval(const QString & swapInterval)
 //---------------------------------------------------------------------------
 QString OutputStrDialog::getSwapInterval()
 {
-    return ui->cBSwapInterval->currentText().split(' ').first();
+    return ui->cBSwapInterval->currentText().split(' ', Qt::SkipEmptyParts).first();
 };
 //---------------------------------------------------------------------------
 void OutputStrDialog::setHistory(int i, const QString &history)

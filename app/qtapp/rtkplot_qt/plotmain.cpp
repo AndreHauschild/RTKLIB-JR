@@ -994,7 +994,7 @@ void Plot::showPlotOptionsDialog()
         double range;
         QString unit;
 
-        QStringList tokens = str.split(' ');
+        QStringList tokens = str.split(' ', Qt::SkipEmptyParts);
         if (tokens.length() == 2) {
             bool ok;
             range = tokens.at(0).toInt(&ok);
@@ -1285,7 +1285,7 @@ double Plot::getYRange()
 
     if ((i = ui->lWRangeList->currentItem()) == NULL) return defaultYRange;
 
-    QStringList tokens = i->text().split(" ");
+    QStringList tokens = i->text().split(" ", Qt::SkipEmptyParts);
 
     if (tokens.length() != 2) return defaultYRange;
 
@@ -2252,7 +2252,7 @@ void Plot::updateSatelliteMask()
         if (!(satsys(sat, &prn) & plotOptDialog->getNavSys())) satelliteMask[sat - 1] = 1;
 
     if (!plotOptDialog->getExcludedSatellites().isEmpty()) {
-        foreach (QString sat, plotOptDialog->getExcludedSatellites().split(' ')) {
+        foreach (QString sat, plotOptDialog->getExcludedSatellites().split(' ', Qt::SkipEmptyParts)) {
             unsigned char ex;
             int satNo;
             if (sat[0] == '+')
@@ -2713,7 +2713,7 @@ void Plot::loadOptions()
         QString unit;
         bool ok;
 
-        QStringList tokens = s.split(' ');
+        QStringList tokens = s.split(' ', Qt::SkipEmptyParts);
         if (tokens.size() == 2) {
             range = tokens.at(0).toInt(&ok);
             unit = tokens.at(1);
@@ -2824,7 +2824,7 @@ void Plot::filterClicked()
     filter = filter.mid(filter.indexOf("(") + 1);
     filter.remove(")");
 
-    fileModel->setNameFilters(filter.split(" "));
+    fileModel->setNameFilters(filter.split(" ", Qt::SkipEmptyParts));
     tVdirectorySelector->setVisible(false);
 }
 //---------------------------------------------------------------------------

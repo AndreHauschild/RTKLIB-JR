@@ -346,7 +346,7 @@ int PlotOptDialog::getAutoScale()
 //---------------------------------------------------------------------------
 double PlotOptDialog::getYRange()
 {
-    QStringList tokens = ui->cBYRange->currentText().split(' ');
+    QStringList tokens = ui->cBYRange->currentText().split(' ', Qt::SkipEmptyParts);
     if (tokens.length() == 2) {
         bool ok;
         int range = tokens.at(0).toInt(&ok);
@@ -515,7 +515,7 @@ void PlotOptDialog::loadOptions(QSettings & settings)
         QString unit;
 
         QString s = ui->cBYRange->itemText(i);
-        QStringList tokens = s.split(' ');
+        QStringList tokens = s.split(' ', Qt::SkipEmptyParts);
 
         if (tokens.length() != 2) continue;
 

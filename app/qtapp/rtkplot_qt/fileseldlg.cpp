@@ -120,7 +120,7 @@ void FileSelDialog::updateFilter()
     filter = filter.mid(filter.indexOf("(") + 1);
     filter.remove(")");
 
-    fileModel->setNameFilters(filter.split(" "));
+    fileModel->setNameFilters(filter.split(" ", Qt::SkipEmptyParts));
     directorySelector->setVisible(false);
 }
 //---------------------------------------------------------------------------
