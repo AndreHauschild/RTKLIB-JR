@@ -13,6 +13,8 @@
 #include <QFileInfo>
 #include <QDateTime>
 
+#include <locale.h>
+
 #include "rtklib.h"
 #include "plotmain.h"
 #include "mapoptdlg.h"

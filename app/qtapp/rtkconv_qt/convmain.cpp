@@ -906,7 +906,7 @@ void MainWindow::convertFile()
         for (i = 0; i < MAXPRNGLO; i++) conversionThread->rnxopt.glofcn[i] = convOptDialog->glonassFrequency[i];
     }
 
-    QStringList exsatsLst = convOptDialog->excludedSatellites.split(" ");
+    QStringList exsatsLst = convOptDialog->excludedSatellites.split(" ", Qt::SkipEmptyParts);
     foreach(const QString &sat, exsatsLst){
         int satid;
 

@@ -41,6 +41,13 @@ OptDialog::OptDialog(QWidget *parent, int opts)
 
     ui->setupUi(this);
 
+    // inspired by https://stackoverflow.com/questions/18321779/degrees-minutes-and-seconds-regex
+    // and https://stackoverflow.com/questions/3518504/regular-expression-for-matching-latitude-longitude-coordinates
+    regExDMS = QRegularExpression("^([-+]?[0-8]?[0-9]|90)°\\s([0-5]?[0-9])'?\\s(([0-5]\\d|\\d)([\\.|,]\\d{1,20}))?\"$");
+    regExLat = QRegularExpression("^([-+]?[1-8]?\\d([\\.|,]\\d+)?|90([\\.|,]0+)?)\\s°$");
+    regExLon = QRegularExpression("([-+]?180([\\.|,]0+)?|([-+]?(1[0-7]\\d)|([-+]?[1-9]?\\d))([\\.|,]\\d+)?)\\s°");
+    regExDistance = QRegularExpression("^([-+]?\\d+([\\.|,]\\d*)?)\\sm$");
+
     processingOptions = prcopt_default;
     solutionOptions = solopt_default;
 
@@ -1632,28 +1639,45 @@ void OptDialog::getPosition(int type, QLineEdit **edit, double *pos)
 {
     double p[3] = { 0 }, dms1[3] = { 0 }, dms2[3] = { 0 };
 
-    if (type == 1) { /* lat/lon/height dms/m */
-        QStringList tokens = edit[0]->text().split(" ");
-        for (int i = 0; i < 3 || i < tokens.size(); i++)
-            dms1[i] = tokens.at(i).toDouble();
+    printf("%s %s %s\n", qPrintable(edit[0]->text()), qPrintable(edit[1]->text()), qPrintable(edit[2]->text()));
 
-        tokens = edit[1]->text().split(" ");
-        for (int i = 0; i < 3 || i < tokens.size(); i++)
-            dms2[i] = tokens.at(i).toDouble();
+    if (type == 1) { /* lat/lon/height dms/m */
+        auto lat = regExDMS.match(edit[0]->text());
+        auto lon = regExDMS.match(edit[1]->text());
+        auto height = regExDistance.match(edit[2]->text());
+        auto a= lat.captured(2);
+
+        for (int i = 0; i < 3; i++)
+            dms1[i] = lat.captured(i+1).toDouble();
+
+        for (int i = 0; i < 3; i++)
+            dms2[i] = lon.captured(i+1).toDouble();
 
         p[0] = (dms1[0] < 0 ? -1 : 1) * (fabs(dms1[0]) + dms1[1] / 60 + dms1[2] / 3600) * D2R;
         p[1] = (dms2[0] < 0 ? -1 : 1) * (fabs(dms2[0]) + dms2[1] / 60 + dms2[2] / 3600) * D2R;
-        p[2] = edit[2]->text().toDouble();
+        p[2] = height.captured(1).toDouble();
         pos2ecef(p, pos);
     } else if (type == 2) { /* x/y/z-ecef */
-        pos[0] = edit[0]->text().toDouble();
-        pos[1] = edit[1]->text().toDouble();
-        pos[2] = edit[2]->text().toDouble();
+        auto x = regExDistance.match(edit[0]->text());
+        auto y = regExDistance.match(edit[1]->text());
+        auto z = regExDistance.match(edit[2]->text());
+
+        if (x.hasMatch() && y.hasMatch() && z.hasMatch()) {
+            pos[0] = x.captured(1).toDouble();
+            pos[1] = y.captured(1).toDouble();
+            pos[2] = z.captured(1).toDouble();
+        }
     } else {   /* lat/lon/hight decimal */
-        p[0] = edit[0]->text().toDouble() * D2R;
-        p[1] = edit[1]->text().toDouble() * D2R;
-        p[2] = edit[2]->text().toDouble();
-        pos2ecef(p, pos);
+        auto lat = regExLat.match(edit[0]->text());
+        auto lon = regExLon.match(edit[1]->text());
+        auto height = regExDistance.match(edit[2]->text());
+
+        if (lat.hasMatch() && lon.hasMatch() && height.hasMatch()) {
+            p[0] = lat.captured(1).toDouble() * D2R;
+            p[1] = lon.captured(1).toDouble() * D2R;
+            p[2] = height.captured(1).toDouble();
+            pos2ecef(p, pos);
+        }
     }
 }
 //---------------------------------------------------------------------------
@@ -1672,18 +1696,31 @@ void OptDialog::setPosition(int type, QLineEdit **edit, double *pos)
         dms2[0] = floor(p[1]); p[1] = (p[1] - dms2[0]) * 60.0;
         dms2[1] = floor(p[1]); dms2[2] = (p[1] - dms2[1]) * 60.0;
 
-        edit[0]->setText(QString("%1 %2 %3").arg(s1 * dms1[0], 0, 'f', 0).arg(dms1[1], 2, 'f', 0, '0').arg(dms1[2], 9, 'f', 6, '0'));
-        edit[1]->setText(QString("%1 %2 %3").arg(s2 * dms2[0], 0, 'f', 0).arg(dms2[1], 2, 'f', 0, '0').arg(dms2[2], 9, 'f', 6, '0'));
-        edit[2]->setText(QString::number(p[2], 'f', 4));
+        edit[0]->setValidator(new QRegularExpressionValidator(regExDMS, this));
+        edit[1]->setValidator(new QRegularExpressionValidator(regExDMS, this));
+        edit[2]->setValidator(new QRegularExpressionValidator(regExDistance, this));
+
+        edit[0]->setText(QString("%1° %2' %3\"").arg(s1 * dms1[0], 0, 'f', 0).arg(dms1[1], 2, 'f', 0, '0').arg(dms1[2], 9, 'f', 6, '0'));
+        edit[1]->setText(QString("%1° %2' %3\"").arg(s2 * dms2[0], 0, 'f', 0).arg(dms2[1], 2, 'f', 0, '0').arg(dms2[2], 9, 'f', 6, '0'));
+        edit[2]->setText(QString("%1 m").arg(p[2], 0, 'f', 4));
+
     } else if (type == 2) { /* x/y/z-ecef */
-        edit[0]->setText(QString::number(pos[0], 'f', 4));
-        edit[1]->setText(QString::number(pos[1], 'f', 4));
-        edit[2]->setText(QString::number(pos[2], 'f', 4));
+        edit[0]->setValidator(new QRegularExpressionValidator(regExDistance, this));
+        edit[1]->setValidator(new QRegularExpressionValidator(regExDistance, this));
+        edit[2]->setValidator(new QRegularExpressionValidator(regExDistance, this));
+
+        edit[0]->setText(QString("%1 m").arg(pos[0], 0, 'f', 4));
+        edit[1]->setText(QString("%1 m").arg(pos[1], 0, 'f', 4));
+        edit[2]->setText(QString("%1 m").arg(pos[2], 0, 'f', 4));
     } else {   /* lat/lon/hight decimal */
+        edit[0]->setValidator(new QRegularExpressionValidator(regExLat, this));
+        edit[1]->setValidator(new QRegularExpressionValidator(regExLon, this));
+        edit[2]->setValidator(new QRegularExpressionValidator(regExDistance, this));
+
         ecef2pos(pos, p);
-        edit[0]->setText(QString::number(p[0] * R2D, 'f', 9));
-        edit[1]->setText(QString::number(p[1] * R2D, 'f', 9));
-        edit[2]->setText(QString::number(p[2], 'f', 4));
+        edit[0]->setText(QString("%1 °").arg(p[0] * R2D, 0, 'f', 9));
+        edit[1]->setText(QString("%1 °").arg(p[1] * R2D, 0, 'f', 9));
+        edit[2]->setText(QString("%1 m").arg(p[2], 0, 'f', 4));
     }
 }
 //---------------------------------------------------------------------------

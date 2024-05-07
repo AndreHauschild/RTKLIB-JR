@@ -741,7 +741,7 @@ void MainForm::getTime(gtime_t *ts, gtime_t *te, double *ti)
         *te = *ts;
     }
 
-    QStringList tokens = interval_str.split(" ");
+    QStringList tokens = interval_str.split(" ", Qt::SkipEmptyParts);
     if (tokens.size() == 0) return;
 
     val = tokens.at(0).toDouble();
