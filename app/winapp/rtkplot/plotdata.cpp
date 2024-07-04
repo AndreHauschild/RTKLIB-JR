@@ -62,7 +62,7 @@ void __fastcall TPlot::ReadSol(TStrings *files, int sel)
     ShowMsg(s.sprintf("reading %s...",paths[0]));
     ShowLegend(NULL);
     
-    if (!readsolt(paths,n,ts,te,tint,0,&sol)) {
+    if (!readsolt((const char **)paths,n,ts,te,tint,SOLQ_NONE,&sol)) {
         ShowMsg(s.sprintf("no solution data : %s...",paths[0]));
         ShowLegend(NULL);
         ReadWaitEnd();
@@ -137,7 +137,7 @@ void __fastcall TPlot::ReadSolStat(TStrings *files, int sel)
     ShowMsg(s.sprintf("reading %s...",paths[0]));
     ShowLegend(NULL);
     
-    readsolstatt(paths,n,ts,te,tint,SolStat+sel);
+    readsolstatt((const char **)paths,n,ts,te,tint,SolStat+sel);
     
     UpdateSatList();
 }
@@ -936,7 +936,7 @@ void __fastcall TPlot::ReadStaPos(const char *file, const char *sta,
             }
         }
         else {
-            if (sscanf(buff,"%lf %lf %lf %s",pos,pos+1,pos+2,code)<4) continue;
+            if (sscanf(buff,"%lf %lf %lf %255s",pos,pos+1,pos+2,code)<4) continue;
             if (strcmp(code,sta)) continue;
             pos[0]*=D2R;
             pos[1]*=D2R;
@@ -1097,7 +1097,7 @@ void __fastcall TPlot::Connect(void)
             Clear();
             initsolbuf(SolData+i,1,RtBuffSize+1);
         }
-        if (RtStream[i]==STR_SERIAL) mode|=STR_MODE_W;
+        if (RtStream[i]==STR_SERIAL) mode=STR_MODE_RW;
         
         strcpy(buff,path);
         if ((p=strstr(buff,"::"))) *p='\0';

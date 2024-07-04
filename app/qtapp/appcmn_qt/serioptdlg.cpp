@@ -18,7 +18,6 @@ SerialOptDialog::SerialOptDialog(QWidget *parent, int options)
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &SerialOptDialog::reject);
     connect(ui->cBOutputTcpPort, &QCheckBox::clicked, this, &SerialOptDialog::updateEnable);
 
-
     updateEnable();
     setOptions(options);
 }
@@ -31,8 +30,8 @@ void SerialOptDialog::showEvent(QShowEvent *event)
 //---------------------------------------------------------------------------
 void SerialOptDialog::setOptions(int options)
 {
-    ui->cBOutputTcpPort->setEnabled(options);
-    ui->cBTcpPort->setEnabled(options);
+    ui->cBOutputTcpPort->setVisible(options);
+    ui->cBTcpPort->setVisible(options);
 }
 //---------------------------------------------------------------------------
 void SerialOptDialog::setPath(const QString &path)

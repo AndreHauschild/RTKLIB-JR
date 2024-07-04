@@ -16,7 +16,7 @@ class SvrOptDialog : public QDialog
     Q_OBJECT
 
 public slots:
-    void btnOkClicked();
+    void accept();
     void positionSelect();
     void localDirectorySelect();
     void logFileSelect();

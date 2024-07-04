@@ -266,13 +266,13 @@ static char *obscodes[]={       /* observation code strings */
     "6E","7D","7P","7Z","8D", "8P","4A","4B","4X",""    /* 60-69 */
 };
 static char codepris[7][MAXFREQ][16]={  /* code priority for each freq-index */
-    /* L1/E1/B1I L2/E5b/B2I L5/E5a/B3I E6/LEX/B2A E5(a+b)         */
+    /* L1/E1/B1 L2/E5b/B2b L5/E5a/B2a E6/LEX/B3 E5(a+b)         */
     {"CPYWMNSLX","CPYWMNDLSX","IQX"     ,""       ,""       ,""}, /* GPS */
     {"CPABX"   ,"CPABX"     ,"IQX"     ,""       ,""       ,""}, /* GLO */
     {"CABXZ"   ,"XIQ"       ,"XIQ"     ,"ABCXZ"  ,"IQX"    ,""}, /* GAL */
     {"CLSXZ"   ,"LSX"       ,"IQXDPZ"  ,"LSXEZ"  ,""       ,""}, /* QZS */
     {"C"       ,"IQX"       ,""        ,""       ,""       ,""}, /* SBS */
-    {"IQXDPAN" ,"IQXDPZ"    ,"IQXA"    ,"DPX"   ,"DPX"    ,""}, /* BDS */
+    {"IQXDPAN" ,"IQXDPZ"    ,"DPX"    ,"IQXA"    ,"DPX"    ,""}, /* BDS */
     {"ABCX"    ,"ABCX"      ,""        ,""       ,""       ,""}  /* IRN */
 };
 static fatalfunc_t *fatalfunc=NULL; /* fatal callback function */
@@ -673,12 +673,12 @@ static int code2freq_BDS(uint8_t code, double *freq)
     char *obs=code2obs(code);
 
     switch (obs[0]) {
-        case '1': *freq=FREQL1;     return 0; /* B1C */
+        case '1': *freq=FREQL1;    return 0; /* B1C */
         case '2': *freq=FREQ1_CMP; return 0; /* B1I */
-        case '7': *freq=FREQ2_CMP; return 1; /* B2I/B2b */
-        case '6': *freq=FREQ3_CMP; return 2; /* B3 */
-        case '5': *freq=FREQL5;     return 3; /* B2a */
-        case '8': *freq=FREQE5ab;     return 4; /* B2ab */
+        case '7': *freq=FREQ2_CMP; return 1; /* B2b */
+        case '5': *freq=FREQL5;    return 2; /* B2a */
+        case '6': *freq=FREQ3_CMP; return 3; /* B3 */
+        case '8': *freq=FREQE5ab;  return 4; /* B2ab */
     }
     return -1;
 }
@@ -705,7 +705,7 @@ static int code2freq_IRN(uint8_t code, double *freq)
 *            Galileo   E1    E5b   E5a   E6   E5ab
 *            QZSS      L1    L2    L5    L6     -
 *            SBAS      L1     -    L5     -     -
-*            BDS       B1    B2    B3   B2a   B2ab (B1=B1I,B1C,B2=B2I,B2b)
+*            BDS       B1    B2b   B2a   B3   B2ab
 *            NavIC     L5     S     -     -     -
 *-----------------------------------------------------------------------------*/
 extern int code2idx(int sys, uint8_t code)
@@ -1141,7 +1141,7 @@ extern void matmulm(const char *tr, int n, int k, int m,
 {
     int lda=tr[0]=='T'?m:n,ldb=tr[1]=='T'?k:m;
     const double alpha=-1,beta=1;
-
+    
     dgemm_((char *)tr,(char *)tr+1,&n,&k,&m,&alpha,(double *)A,&lda,(double *)B,
            &ldb,&beta,C,&n);
 }
@@ -1840,7 +1840,7 @@ static int read_leaps_usno(FILE *fp)
     rewind(fp);
 
     while (fgets(buff,sizeof(buff),fp)&&n<MAXLEAPS) {
-        if (sscanf(buff,"%d %s %d =JD %lf TAI-UTC= %lf",&y,month,&d,&jd,
+        if (sscanf(buff,"%d %31s %d =JD %lf TAI-UTC= %lf",&y,month,&d,&jd,
                    &tai_utc)<5) continue;
         if (y<1980) continue;
         for (m=1;m<=12;m++) if (!strcmp(months[m-1],month)) break;
@@ -2418,13 +2418,13 @@ extern void eci2ecef(gtime_t tutc, const double *erpv, double *U, double *gmst)
     Rz(-z,R1); Ry(th,R2); Rz(-ze,R3);
     matmul("NN",3,3,3,R1,R2,R);
     matmul("NN",3,3,3,R, R3,P); /* P=Rz(-z)*Ry(th)*Rz(-ze) */
-
+    
     /* iau 1980 nutation */
     nut_iau1980(t,f,&dpsi,&deps);
     Rx(-eps-deps,R1); Rz(-dpsi,R2); Rx(eps,R3);
     matmul("NN",3,3,3,R1,R2,R);
     matmul("NN",3,3,3,R ,R3,N); /* N=Rx(-eps)*Rz(-dspi)*Rx(eps) */
-
+    
     /* greenwich aparent sidereal time (rad) */
     gmst_=utc2gmst(tutc_,erpv[2]);
     gast=gmst_+dpsi*cos(eps);
@@ -2436,7 +2436,7 @@ extern void eci2ecef(gtime_t tutc, const double *erpv, double *U, double *gmst)
     matmul("NN",3,3,3,W ,R3,R ); /* W=Ry(-xp)*Rx(-yp) */
     matmul("NN",3,3,3,N ,P ,NP);
     matmul("NN",3,3,3,R ,NP,U_); /* U=W*Rz(gast)*N*P */
-
+    
     for (i=0;i<9;i++) U[i]=U_[i];
     if (gmst) *gmst=gmst_;
 
@@ -2452,7 +2452,8 @@ static int decodef(char *p, int n, double *v)
     int i;
 
     for (i=0;i<n;i++) v[i]=0.0;
-    for (i=0,p=strtok(p," ");p&&i<n;p=strtok(NULL," ")) {
+    char *q;
+    for (i=0,p=strtok_r(p," ",&q);p&&i<n;p=strtok_r(NULL," ",&q)) {
         v[i++]=atof(p)*1E-3;
     }
     return i;
@@ -2505,7 +2506,7 @@ static int readngspcv(const char *file, pcvs_t *pcvs)
         else if (n==3) decodef(buff,10,pcv.var[0]);
         else if (n==4) decodef(buff,9,pcv.var[0]+10);
         else if (n==5) {
-            if (decodef(buff,3,neu)<3) continue;;
+            if (decodef(buff,3,neu)<3) continue;
             pcv.off[1][0]=neu[1];
             pcv.off[1][1]=neu[0];
             pcv.off[1][2]=neu[2];
@@ -2653,7 +2654,8 @@ extern pcv_t *searchpcv(int sat, const char *type, gtime_t time,
     }
     else {
         strcpy(buff,type);
-        for (p=strtok(buff," ");p&&n<2;p=strtok(NULL," ")) types[n++]=p;
+        char *q;
+        for (p=strtok_r(buff," ",&q);p&&n<2;p=strtok_r(NULL," ",&q)) types[n++]=p;
         if (n<=0) return NULL;
 
         /* search receiver antenna with radome at first */
@@ -2698,7 +2700,7 @@ extern void readpos(const char *file, const char *rcv, double *pos)
     }
     while (np<2048&&fgets(buff,sizeof(buff),fp)) {
         if (buff[0]=='%'||buff[0]=='#') continue;
-        if (sscanf(buff,"%lf %lf %lf %s",&poss[np][0],&poss[np][1],&poss[np][2],
+        if (sscanf(buff,"%lf %lf %lf %255s",&poss[np][0],&poss[np][1],&poss[np][2],
                    str)<4) continue;
         sprintf(stas[np++],"%.15s",str);
     }
@@ -2738,10 +2740,10 @@ static int readblqrecord(FILE *fp, double *odisp)
 extern int readblq(const char *file, const char *sta, double *odisp)
 {
     FILE *fp;
-    char buff[256],staname[32]="",name[32],*p;
-
+    char buff[256],staname[17]="",name[17],*p;
+    
     /* station name to upper case */
-    (void)sscanf(sta,"%16s",staname);
+    if (sscanf(sta,"%16s",staname)<1) return 0;
     for (p=staname;(*p=(char)toupper((int)(*p)));p++) ;
 
     if (!(fp=fopen(file,"r"))) {
@@ -2775,7 +2777,6 @@ extern int readerp(const char *file, erp_t *erp)
 {
     FILE *fp;
     erpd_t *erp_data;
-    double v[14]={0};
     char buff[256];
 
     trace(3,"readerp: file=%s\n",file);
@@ -2785,6 +2786,7 @@ extern int readerp(const char *file, erp_t *erp)
         return 0;
     }
     while (fgets(buff,sizeof(buff),fp)) {
+        double v[14]={0};
         if (sscanf(buff,"%lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf %lf",
                    v,v+1,v+2,v+3,v+4,v+5,v+6,v+7,v+8,v+9,v+10,v+11,v+12,v+13)<5) {
             continue;
@@ -3551,7 +3553,7 @@ extern void dops(int ns, const double *azel, double elmin, double *dop)
         H[3+4*n++]=1.0;
     }
     if (n<4) return;
-
+    
     matmul("NT",4,4,n,H,H,Q);
     if (!matinv(Q,4)) {
         dop[0]=SQRT(Q[0]+Q[5]+Q[10]+Q[15]); /* GDOP */
@@ -3637,7 +3639,7 @@ extern double ionppp(const double *pos, const double *azel, double re,
     double cosaz,r,rp,ap,sinap,tanap;
 
     /* The radius at the receiver station. */
-    r=re+pos[2];
+    r=re+pos[2]/1000.0;
     /* asin(rp) is the zenith angle at the IPP. */
     rp=r/(re+hion)*cos(azel[1]);
     /* The angle at the center of the earth. */
@@ -3971,7 +3973,7 @@ extern int rtk_uncompress(const char *file, char *uncfile)
                 dir,fname);
 #else
         if ((p=strrchr(buff,'/'))) {
-            *p='\0'; dir=fname; fname=p+1;
+            *p='\0'; dir=fname;
         }
         sprintf(cmd,"tar -C \"%s\" -xf \"%s\"",dir,tmpfile);
 #endif

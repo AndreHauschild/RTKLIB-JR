@@ -36,7 +36,7 @@ public:
     int enableGlonassFrequency, glonassFrequency[27];
 
 protected slots:
-    void saveClose();
+    void accept();
     void showMaskDialog();
     void showFrequencyDialog();
     void showFcnDialog();

@@ -482,7 +482,8 @@ void Plot::drawTrackPoint(QPainter &c, const TIMEPOS *pos, int level, int style)
             graphTrack->drawMarks(c, pos->x, pos->y, color, pos->n, Graph::MarkerTypes::Dot, plotOptDialog->getMarkSize() + 2, 0);
         }
 
-        for (i = 0; i < pos->n; i++) color[i] = plotOptDialog->getMarkerColor(style, pos->q[i]);
+        for (i = 0; i < pos->n; i++)
+            color[i] = plotOptDialog->getMarkerColor(style, pos->q[i]);
         graphTrack->drawMarks(c, pos->x, pos->y, color, pos->n, Graph::MarkerTypes::Dot, plotOptDialog->getMarkSize(), 0);
         delete[] color;
     }
@@ -840,7 +841,7 @@ void Plot::drawSolutionPoint(QPainter &c, const TIMEPOS *pos, int level, int sty
             QColor * color = new QColor[pos->n];
 
             for (j = 0; j < pos->n; j++)
-                color[panel] = plotOptDialog->getMarkerColor(style, pos->q[j]);
+                color[j] = plotOptDialog->getMarkerColor(style, pos->q[j]);
             graphTriple[panel]->drawMarks(c, x, y, color, pos->n, Graph::MarkerTypes::Dot, plotOptDialog->getMarkSize(), 0);
 
             delete[] color;
@@ -985,6 +986,7 @@ void Plot::drawNsat(QPainter &c, int level)
 void Plot::drawObservation(QPainter &c, int level)
 {
     QPoint p1, p2, p;
+    QVariant obstype = ui->cBObservationType->currentData();;
     gtime_t time;
     obsd_t *obs;
     double xs, ys, xt, xl[2], yl[2], tt[MAXSAT] = { 0 }, xp, xc, yc, yp[MAXSAT] = { 0 };
@@ -1057,7 +1059,7 @@ void Plot::drawObservation(QPainter &c, int level)
         for (i = 0; i < observation.n; i++) {
             obs = &observation.data[i];
 
-            QColor col = observationColor(obs, azimuth[i], elevation[i]);
+            QColor col = observationColor(obs, azimuth[i], elevation[i], obstype);
             if (col == Qt::black) continue;
 
             xt = timePosition(obs->time);
@@ -1086,7 +1088,7 @@ void Plot::drawObservation(QPainter &c, int level)
         for (; idx < observation.n && timediff(observation.data[idx].time, time) == 0.0; idx++) {
             obs = &observation.data[idx];
 
-            QColor col = observationColor(obs, azimuth[idx], elevation[idx]);
+            QColor col = observationColor(obs, azimuth[idx], elevation[idx], obstype);
             if (col == Qt::black) continue;
 
             graphSingle->drawMark(c, xl[0], yp[obs->sat - 1], Graph::MarkerTypes::Dot, col, plotOptDialog->getMarkSize() * 2 + 2, 0);
@@ -1130,7 +1132,7 @@ void Plot::generateObservationSlips(int *LLI)
                     prev_gf[obs->sat-1][j] = gf;
                 }
             } else {
-                if (obstype.canConvert<int>()) {  // frequency selected
+                if (strcmp(obstype.typeName(), "int") == 0) {  // frequency selected
                     k = obstype.toInt();
                     j = k > 2 ? k - 3 : k - 1;  /* L1,L2,L5,L6 ... */
                 } else {  // code selected
@@ -1157,7 +1159,7 @@ void Plot::generateObservationSlips(int *LLI)
                     LLI[i] |= obs->LLI[j];
 
             } else {
-                if (obstype.canConvert<int>()) {  // frequency selected
+                if (strcmp(obstype.typeName(), "int") == 0) {  // frequency selected
                     k = obstype.toInt();
                     j = k > 2 ? k - 3 : k - 1;  /* L1,L2,L5,L6 ... */
                 } else {  // code selected
@@ -1345,7 +1347,7 @@ void Plot::drawSky(QPainter &c, int level)
             obs = &observation.data[i];
             if (satelliteMask[obs->sat - 1] || !satelliteSelection[obs->sat - 1] || elevation[i] <= 0.0) continue;
 
-            QColor col = observationColor(obs, azimuth[i], elevation[i]);
+            QColor col = observationColor(obs, azimuth[i], elevation[i], obstype);
             if (col == Qt::black) continue;
 
             x = radius * sin(azimuth[i]) * (1.0 - 2.0 * elevation[i] / PI);
@@ -1431,7 +1433,7 @@ void Plot::drawSky(QPainter &c, int level)
 
             if (satelliteMask[obs->sat - 1] || !satelliteSelection[obs->sat - 1] || elevation[i] <= 0.0) continue;
 
-            QColor col = observationColor(obs, azimuth[i], elevation[i]);
+            QColor col = observationColor(obs, azimuth[i], elevation[i], obstype);
             if (col == Qt::black) continue;
 
             x = radius * sin(azimuth[i]) * (1.0 - 2.0 * elevation[i] / PI);
@@ -1504,7 +1506,7 @@ void Plot::drawSky(QPainter &c, int level)
                     if (obs->L[j] == 0.0) s += "-";
                     else s += QString::number(obs->LLI[j]);
                 }
-            } else if (obstype.canConvert<int>()) {  // frequency
+            } else if (strcmp(obstype.typeName(), "int") == 0) {  // frequency
                 freq = obstype.toInt();
                 freq -= freq > 2 ? 2 : 0;  /* L1,L2,L5,L6 ... */
 
@@ -1550,7 +1552,7 @@ void Plot::drawSky(QPainter &c, int level)
                     s += QString::number(obs->LLI[j]);
             }
 
-            QColor col = observationColor(obs, azimuth[i], elevation[i]);
+            QColor col = observationColor(obs, azimuth[i], elevation[i], obstype);
             p2.ry() += hh;
             graphSky->drawText(c, p2, s, col == Qt::black ? plotOptDialog->getMarkerColor(0, 0) : col, Graph::Alignment::Right, Graph::Alignment::Top, 0);
         }
@@ -1625,7 +1627,7 @@ void Plot::drawDop(QPainter &c, int level)
             if (plotOptDialog->getElevationMaskEnabled() && elevation[j] < elevationMaskData[static_cast<int>(azimuth[j] * R2D + 0.5)]) continue;
 
             azel[ns[n] * 2] = azimuth[j];
-            azel[ns[n] * 2 + 2] = elevation[j];
+            azel[ns[n] * 2 + 1] = elevation[j];
             ns[n]++;
         }
         dops(ns[n], azel, plotOptDialog->getElevationMask() * D2R, dop + n * 4);
@@ -1824,7 +1826,7 @@ void Plot::drawSnr(QPainter &c, int level)
 
             if (!btn[panel]->isChecked()) continue;
 
-            for (int sat = 1, n_selected = 0; sat <= MAXSAT; sat++) {
+            for (uint8_t sat = 1, n_selected = 0; sat <= MAXSAT; sat++) {
                 if (satelliteMask[sat - 1] || !satelliteSelection[sat - 1]) continue;
 
                 for (int j = n = 0; j < observation.n; j++) {
@@ -1833,7 +1835,7 @@ void Plot::drawSnr(QPainter &c, int level)
                     if (obs->sat != sat) continue;
 
                     // find array index corresponding to the selected data
-                    if (obstype.canConvert<int>()) {
+                    if (strcmp(obstype.typeName(), "int") == 0) {
                         int freq = obstype.toInt();
                         idx = freq > 2 ? freq - 3 : freq - 1;
                     } else {
@@ -1963,6 +1965,7 @@ void Plot::drawSnrE(QPainter &c, int level)
 {
     QPushButton *btn[] = {ui->btnOn1, ui->btnOn2, ui->btnOn3};
     QString s;
+    QVariant obstype = ui->cBObservationTypeSNR->currentData();
     const QString label[] = {tr("SNR (dBHz)"), tr("Multipath (m)")};
     gtime_t time_selected = {0, 0};
     double ave = 0.0, rms = 0.0;
@@ -2017,7 +2020,7 @@ void Plot::drawSnrE(QPainter &c, int level)
             col[panel] = new QColor[nObservation];
         }
 
-        for (int sat = 1; sat <= MAXSAT; sat++) {
+        for (uint8_t sat = 1; sat <= MAXSAT; sat++) {
             if (satelliteMask[sat - 1] || !satelliteSelection[sat - 1]) continue;
             n[0] = n[1] = 0;
 
@@ -2027,7 +2030,7 @@ void Plot::drawSnrE(QPainter &c, int level)
 
                 if (obs->sat != sat || elevation[j] <= 0.0) continue;
 
-                if (obstype.canConvert<int>()) {
+                if (strcmp(obstype.typeName(), "int") == 0) {
                     int freq = obstype.toInt();
                     idx = freq > 2 ? freq-3 : freq-1;  /* L1,L2,L5,L6 ... */
                 } else {
@@ -2050,7 +2053,7 @@ void Plot::drawSnrE(QPainter &c, int level)
                     if (timediff(time_selected, observation.data[j].time) == 0.0) {
                         x_selected[0][n_selected[0]] = x[0][n[0]];
                         y_selected[0][n_selected[0]] = y[0][n[0]];
-                        col_selected[0][n_selected[0]] = observationColor(observation.data + j, azimuth[j], elevation[j]);
+                        col_selected[0][n_selected[0]] = observationColor(observation.data + j, azimuth[j], elevation[j], obstype);
                         if (n_selected[0] < MAXSAT && col_selected[0][n_selected[0]] != Qt::black) n_selected[0]++;
                     }
                     if (n[0] < nObservation) n[0]++;
@@ -2067,7 +2070,7 @@ void Plot::drawSnrE(QPainter &c, int level)
                     if (timediff(time_selected, observation.data[j].time) == 0.0) {
                         x_selected[1][n_selected[1]] = x[1][n[1]];
                         y_selected[1][n_selected[1]] = y[1][n[1]];
-                        col_selected[1][n_selected[1]] = observationColor(observation.data + j, azimuth[j], elevation[j]);
+                        col_selected[1][n_selected[1]] = observationColor(observation.data + j, azimuth[j], elevation[j], obstype);
 
                         if (n_selected[1] < MAXSAT && col_selected[1][n_selected[1]] != Qt::black) n_selected[1]++;
                     }
@@ -2167,10 +2170,12 @@ void Plot::drawMpSky(QPainter &c, int level)
 
     graphSky->getScale(xs, ys);
 
-    for (int sat = 1; sat <= MAXSAT; sat++) {
+    for (uint8_t sat = 1; sat <= MAXSAT; sat++) {
         double previous[MAXSAT][2] = {{0}};
 
         if (satelliteMask[sat - 1] || !satelliteSelection[sat - 1]) continue;
+
+        int siz = plotOptDialog->getPlotStyle() < 2 ? plotOptDialog->getMarkSize() : 1;
 
         for (int i = 0; i < observation.n; i++) {
             obsd_t *obs = observation.data+i;
@@ -2178,7 +2183,7 @@ void Plot::drawMpSky(QPainter &c, int level)
 
             if (obs->sat != sat || elevation[i] <= 0.0) continue;
 
-            if (obstype.canConvert<int>()) {
+            if (strcmp(obstype.typeName(), "int") == 0) {
                 int freq = obstype.toInt();
                 idx = freq > 2 ? freq - 3 : freq - 1;  /* L1,L2,L5,L6 ... */
             } else {
@@ -2196,8 +2201,6 @@ void Plot::drawMpSky(QPainter &c, int level)
             QColor col = mpColor(!multipath[idx] ? 0.0 : multipath[idx][i]);
 
             if ((x - xp) * (x - xp) + (y - yp) * (y - yp) >= xs * xs) {
-                int siz = plotOptDialog->getPlotStyle() < 2 ? plotOptDialog->getMarkSize() : 1;
-
                 graphSky->drawMark(c, x, y, Graph::MarkerTypes::Dot, col, siz, 0);
                 graphSky->drawMark(c, x, y, Graph::MarkerTypes::Dot, plotOptDialog->getPlotStyle() < 2 ? col : plotOptDialog->getCColor(3), siz, 0);
                 previous[sat - 1][0] = x;
@@ -2208,11 +2211,13 @@ void Plot::drawMpSky(QPainter &c, int level)
 
     // highlight selected data
     if (ui->btnShowTrack->isChecked() && 0 <= observationIndex && observationIndex < nObservation) {
+        char id[32];
+        int fontsize = (int)(QFontMetrics(ui->lblDisplay->font()).height());
         for (int i = indexObservation[observationIndex]; i < observation.n && i < indexObservation[observationIndex + 1]; i++) {
             obsd_t *obs = observation.data+i;
             int idx;
 
-            if (obstype.canConvert<int>()) {
+            if (strcmp(obstype.typeName(), "int") == 0) {
                 int freq = obstype.toInt();
                 idx = freq > 2 ? freq - 3 : freq - 1;  /* L1,L2,L5,L6 ... */
             } else {
@@ -2225,8 +2230,6 @@ void Plot::drawMpSky(QPainter &c, int level)
             double x = radius * sin(azimuth[i]) * (1.0 - 2.0 * elevation[i] / PI);
             double y = radius * cos(azimuth[i]) * (1.0 - 2.0 * elevation[i] / PI);
 
-            int fontsize = (int)(QFontMetrics(ui->lblDisplay->font()).height());
-            char id[32];
             satno2id(obs->sat, id);
 
             graphSky->drawMark(c, x, y, Graph::MarkerTypes::Dot, col, fontsize * 2 + 5, 0);
@@ -2247,7 +2250,7 @@ void Plot::drawResidual(QPainter &c, int level)
     QPushButton *btn[] = {ui->btnOn1, ui->btnOn2, ui->btnOn3};
     int sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
     int ind = solutionIndex[sel];
-    int frq = ui->cBFrequencyType->currentIndex() + 1;
+    uint8_t frq = ui->cBFrequencyType->currentIndex() + 1;
     int n = solutionStat[sel].n;
 
     trace(3, "drawResidual: level=%d\n", level);
@@ -2296,7 +2299,7 @@ void Plot::drawResidual(QPainter &c, int level)
             col[i] = new QColor[n];
         }
 
-        for (int sat = 1; sat <= MAXSAT; sat++) {
+        for (uint8_t sat = 1; sat <= MAXSAT; sat++) {
             if (satelliteMask[sat - 1] || !satelliteSelection[sat - 1]) continue;
 
             int m[4] = {0};

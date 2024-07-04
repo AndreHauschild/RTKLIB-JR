@@ -235,6 +235,8 @@ void Graph::drawGrid(QPainter &c, double xt, double yt)
             c.drawLine(x, p.y(), x + width - 1, p.y());
 		}
 	}
+    pen.setStyle(Qt::SolidLine);
+    c.setPen(pen);
     drawMark(c, 0.0, 0.0, 0, color[1], SIZEORIGIN, 0);
 }
 //---------------------------------------------------------------------------
@@ -363,6 +365,7 @@ void Graph::drawMark(QPainter &c, const QPoint &p, int mark, const QColor &color
 
     QPen pen = c.pen();
     pen.setColor(color);
+    pen.setStyle(Qt::SolidLine);
     c.setPen(pen);
     QBrush brush(color);
 
@@ -504,12 +507,12 @@ void Graph::drawText(QPainter &c, const QPoint &p, const QString &str, const QCo
         case Graph::Alignment::Top: flags |= Qt::AlignTop; break;
     }
 
-    QRect off = c.boundingRect(QRect(), flags, str);
-
     QPen pen = c.pen();
     c.setBrush(Qt::NoBrush);
     pen.setColor(color);
     c.setPen(pen);
+
+    QRectF off = c.boundingRect(QRectF(), flags, str);
 
     c.translate(p);
     c.rotate(-rot);
@@ -538,14 +541,15 @@ void Graph::drawText(QPainter &c, const QPoint &p, const QString &str, const QCo
         case 2: flags |= Qt::AlignTop; break;
     }
 
-    QRectF off = c.boundingRect(QRectF(), flags, str);
-
     QFont old_font = c.font();
     c.setFont(font);
+
     QPen pen = c.pen();
     c.setBrush(Qt::NoBrush);
     pen.setColor(color);
     c.setPen(pen);
+
+    QRectF off = c.boundingRect(QRectF(), flags, str);
 
     c.translate(p);
     c.rotate(-rot);
@@ -605,6 +609,8 @@ void Graph::drawCircle(QPainter &c, const QPoint &p, const QColor &color, int rx
     c.setBrush(Qt::NoBrush);
 
     c.drawEllipse(x, y, w, h);
+    pen.setStyle(Qt::SolidLine);
+    c.setPen(pen);
 }
 //---------------------------------------------------------------------------
 void Graph::drawCircle(QPainter &c, double x, double y, const QColor &color, double rx,
@@ -756,6 +762,9 @@ void Graph::drawPoly(QPainter &c, QPoint *p, int n, const QColor &color, int sty
         drawPolyline(c, pc, 2);
 	}
     if (!area0) drawPolyline(c, p + i, j - i);
+
+    pen.setStyle(Qt::SolidLine);
+    c.setPen(pen);
 }
 //---------------------------------------------------------------------------
 void Graph::drawPoly(QPainter &c, double *x, double *y, int n, const QColor &color, int style)
@@ -797,6 +806,9 @@ void Graph::drawPatch(QPainter &c, QPoint *p, int n, const QColor &color1, const
     c.setBrush(color2);
 
     c.drawPolygon(p, n - 1);
+
+    pen.setStyle(Qt::SolidLine);
+    c.setPen(pen);
 }
 //---------------------------------------------------------------------------
 void Graph::drawPatch(QPainter &c, double *x, double *y, int n, const QColor &color1,
@@ -832,12 +844,12 @@ void Graph::drawSkyPlot(QPainter &c, const QPoint &p, const QColor &color1, cons
         ps.setY(p.y() - ys);
         drawText(c, ps, QString::number(el), color2, 1, 0, 0);
 	}
-    pen.setStyle(Qt::DotLine);
     pen.setColor(color2);
-    c.setPen(pen);
     for (int az = 0, i = 0; az < 360; az += 30) {
         ps.setX((int)(r * sin(az * D2R) + 0.5));
         ps.setY((int)(-r * cos(az * D2R) + 0.5));
+        pen.setStyle(Qt::DotLine);
+        c.setPen(pen);
         c.drawLine(p.x(), p.y(), ps.x(), ps.y());
         ps.rx() +=  3 * sin(az * D2R);
         ps.ry() += -3 * cos(az * D2R);
@@ -845,6 +857,8 @@ void Graph::drawSkyPlot(QPainter &c, const QPoint &p, const QColor &color1, cons
         if (!(az % 90)) s = dir[i++];
         drawText(c, ps, s, color2, 0, 1, -az);
 	}
+    pen.setStyle(Qt::SolidLine);
+    c.setPen(pen);
 }
 //---------------------------------------------------------------------------
 void Graph::drawSkyPlot(QPainter &c, double x, double y, const QColor &color1, const QColor &color2,
@@ -894,6 +908,7 @@ void Graph::drawSkyPlot(QPainter &c, const QPoint &p, const QColor &color1, cons
         if (!(az % 90)) s = dir[i++];
         drawText(c, ps, s, color2, bgcolor, 0, 1, -az);
 	}
+    pen.setStyle(Qt::SolidLine);
 }
 //---------------------------------------------------------------------------
 void Graph::drawSkyPlot(QPainter &c, double x, double y, const QColor &color1, const QColor &color2,

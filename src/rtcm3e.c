@@ -738,7 +738,7 @@ static int encode_type1012(rtcm_t *rtcm, int sync)
     for (j=0;j<rtcm->obs.n&&nsat<MAXOBS;j++) {
         sat=rtcm->obs.data[j].sat;
         if (satsys(sat,&prn)!=SYS_GLO) continue;
-        if ((fcn=fcn_glo(sat,rtcm))<0) continue;  /* fcn+7 */
+        if (fcn_glo(sat,rtcm)<0) continue;  /* fcn+7 */
         nsat++;
     }
     /* encode header */
@@ -1616,7 +1616,7 @@ static int encode_ssr3(rtcm_t *rtcm, int sys, int subtype, int sync)
     /* encode SSR header */
     i=encode_ssr_head(3,rtcm,sys,subtype,nsat,sync,iod,udint,0,0,0);
     
-    for (j=nsat=0;j<MAXSAT;j++) {
+    for (j=0;j<MAXSAT;j++) {
         if (satsys(j+1,&prn)!=sys||!rtcm->ssr[j].update) continue;
         
         for (k=nbias=0;k<32;k++) {
@@ -1823,7 +1823,7 @@ static int encode_ssr7(rtcm_t *rtcm, int sys, int subtype, int sync)
     /* encode SSR header */
     i=encode_ssr_head(7,rtcm,sys,subtype,nsat,sync,iod,udint,0,0,0);
     
-    for (j=nsat=0;j<MAXSAT;j++) {
+    for (j=0;j<MAXSAT;j++) {
         if (satsys(j+1,&prn)!=sys||!rtcm->ssr[j].update) continue;
         
         for (k=nbias=0;k<32;k++) {

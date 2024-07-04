@@ -33,7 +33,7 @@ public:
 
 protected slots:
     void updateUi();
-    void saveClose();
+    void accept();
     void selectUrlFile();
     void selectLogFilename();
 

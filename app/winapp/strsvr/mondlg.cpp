@@ -29,6 +29,8 @@ __fastcall TStrMonDialog::TStrMonDialog(TComponent* Owner)
 	for (int i=0;i<=MAXRCVFMT;i++) {
 		SelFmt->Items->Add(formatstrs[i]);
 	}
+	memset(&rtcm,0,sizeof(rtcm));
+	memset(&raw,0,sizeof(raw));
 	rtcm.outtype=raw.outtype=1;
 }
 //---------------------------------------------------------------------------

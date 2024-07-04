@@ -44,6 +44,7 @@
 *                           delete option -noscan
 *                           suppress warnings
 *-----------------------------------------------------------------------------*/
+#define _POSIX_C_SOURCE 199506
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -307,29 +308,31 @@ static int convbin(int format, rnxopt_t *opt, const char *ifile, char **file,
     
     if (!convrnx(format,opt,ifile,ofile)) {
         fprintf(stderr,"\n");
-        return -1;
+        return 0;
     }
     fprintf(stderr,"\n");
-    return 0;
+    return 1;
 }
 /* set signal mask -----------------------------------------------------------*/
 static void setmask(const char *argv, rnxopt_t *opt, int mask)
 {
     char buff[1024],*p;
-    int i,code;
+    int i;
     
     strcpy(buff,argv);
-    for (p=strtok(buff,",");p;p=strtok(NULL,",")) {
+    char *r;
+    for (p=strtok_r(buff,",",&r);p;p=strtok_r(NULL,",",&r)) {
         if (strlen(p)<4||p[1]!='L') continue;
-        if      (p[0]=='G') i=0;
-        else if (p[0]=='R') i=1;
-        else if (p[0]=='E') i=2;
-        else if (p[0]=='J') i=3;
-        else if (p[0]=='S') i=4;
-        else if (p[0]=='C') i=5;
-        else if (p[0]=='I') i=6;
+        if      (p[0]=='G') i=RNX_SYS_GPS;
+        else if (p[0]=='R') i=RNX_SYS_GLO;
+        else if (p[0]=='E') i=RNX_SYS_GAL;
+        else if (p[0]=='J') i=RNX_SYS_QZS;
+        else if (p[0]=='S') i=RNX_SYS_SBS;
+        else if (p[0]=='C') i=RNX_SYS_CMP;
+        else if (p[0]=='I') i=RNX_SYS_IRN;
         else continue;
-        if ((code=obs2code(p+2))) {
+        int code=obs2code(p+2);
+        if (code != CODE_NONE) {
             opt->mask[i][code-1]=mask?'1':'0';
         }
     }
@@ -388,7 +391,10 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
     opt->navsys=SYS_GPS|SYS_GLO|SYS_GAL|SYS_QZS|SYS_SBS|SYS_CMP|SYS_IRN;
     opt->ttol = 0.005;
     
-    for (i=0;i<6;i++) for (j=0;j<64;j++) opt->mask[i][j]='1';
+    for (i=0;i<RNX_NUMSYS;i++) {
+        for (j=0;j<MAXCODE;j++) opt->mask[i][j]='1';
+        opt->mask[i][MAXCODE]='\0';
+    }
     
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-ts")&&i+2<argc) {
@@ -438,31 +444,36 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         }
         else if (!strcmp(argv[i],"-ho")&&i+1<argc) {
             strcpy(buff,argv[++i]);
-            for (j=0,p=strtok(buff,"/");j<2&&p;j++,p=strtok(NULL,"/")) {
+            char *r;
+            for (j=0,p=strtok_r(buff,"/",&r);j<2&&p;j++,p=strtok_r(NULL,"/",&r)) {
                 strcpy(opt->name[j],p);
             }
         }
         else if (!strcmp(argv[i],"-hr")&&i+1<argc) {
             strcpy(buff,argv[++i]);
-            for (j=0,p=strtok(buff,"/");j<3&&p;j++,p=strtok(NULL,"/")) {
+            char *r;
+            for (j=0,p=strtok_r(buff,"/",&r);j<3&&p;j++,p=strtok_r(NULL,"/",&r)) {
                 strcpy(opt->rec[j],p);
             }
         }
         else if (!strcmp(argv[i],"-ha")&&i+1<argc) {
             strcpy(buff,argv[++i]);
-            for (j=0,p=strtok(buff,"/");j<3&&p;j++,p=strtok(NULL,"/")) {
+            char *r;
+            for (j=0,p=strtok_r(buff,"/",&r);j<3&&p;j++,p=strtok_r(NULL,"/",&r)) {
                 strcpy(opt->ant[j],p);
             }
         }
         else if (!strcmp(argv[i],"-hp")&&i+1<argc) {
             strcpy(buff,argv[++i]);
-            for (j=0,p=strtok(buff,"/");j<3&&p;j++,p=strtok(NULL,"/")) {
+            char *r;
+            for (j=0,p=strtok_r(buff,"/",&r);j<3&&p;j++,p=strtok_r(NULL,"/",&r)) {
                 opt->apppos[j]=atof(p);
             }
         }
         else if (!strcmp(argv[i],"-hd")&&i+1<argc) {
             strcpy(buff,argv[++i]);
-            for (j=0,p=strtok(buff,"/");j<3&&p;j++,p=strtok(NULL,"/")) {
+            char *r;
+            for (j=0,p=strtok_r(buff,"/",&r);j<3&&p;j++,p=strtok_r(NULL,"/",&r)) {
                 opt->antdel[j]=atof(p);
             }
         }
@@ -491,7 +502,10 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
             opt->halfcyc=1;
         }
         else if (!strcmp(argv[i],"-mask")&&i+1<argc) {
-            for (j=0;j<6;j++) for (k=0;k<64;k++) opt->mask[j][k]='0';
+            for (j=0;j<RNX_NUMSYS;j++) {
+              for (k=0;k<MAXCODE;k++) opt->mask[j][k]='0';
+              opt->mask[j][MAXCODE]='\0';
+            }
             setmask(argv[++i],opt,1);
         }
         else if (!strcmp(argv[i],"-nomask")&&i+1<argc) {
@@ -527,6 +541,10 @@ static int cmdopts(int argc, char **argv, rnxopt_t *opt, char **ifile,
         else if (!strcmp(argv[i],"-s" )&&i+1<argc) ofile[8]=argv[++i];
         else if (!strcmp(argv[i],"-trace" )&&i+1<argc) {
             *trace=atoi(argv[++i]);
+        }
+        else if (!strcmp(argv[i], "--version")) {
+            fprintf(stderr, "convbin RTKLIB %s %s\n", VER_RTKLIB, PATCH_LEVEL);
+            exit(0);
         }
         else if (!strncmp(argv[i],"-",1)) printhelp();
         
@@ -599,11 +617,11 @@ int main(int argc, char **argv)
     
     if (!*ifile) {
         fprintf(stderr,"no input file\n");
-        return -1;
+        return EXIT_FAILURE;
     }
     if (format<0) {
         fprintf(stderr,"input format can not be recognized\n");
-        return -1;
+        return EXIT_FAILURE;
     }
     sprintf(opt.prog,"%s %s %s",PRGNAME,VER_RTKLIB,PATCH_LEVEL);
     sprintf(opt.comment[0],"log: %-55.55s",ifile);
@@ -620,5 +638,5 @@ int main(int argc, char **argv)
     
     traceclose();
     
-    return stat;
+    return stat?0:EXIT_FAILURE;
 }

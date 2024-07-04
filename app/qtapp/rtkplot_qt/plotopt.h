@@ -65,6 +65,7 @@ public:
     QColor getMarkerColor(int i, int j);
 
 protected slots:
+    void accept();
     void color1Select();
     void color2Select();
     void color3Select();
@@ -81,6 +82,7 @@ protected slots:
 private:
     void updateFont();
     void updateEnable();
+    void updateConfig();
 
 protected:
     QColor markerColor[2][8]; // {{mark1 0-7},{mark2 0-7}}
@@ -88,6 +90,9 @@ protected:
 
     QFont fontOption;
     RefDialog *refDialog;
+
+    double elevation_mask;
+    int timeFormat, elevationMaskEnabled;
 
 private:
     Ui::PlotOptDialog *ui;

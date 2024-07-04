@@ -27,7 +27,7 @@ public:
     void setPath(const QString&);
 
 protected slots:
-    void saveClose();
+    void accept();
     void showKeyDialog();
 
 private:

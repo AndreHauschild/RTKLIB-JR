@@ -28,6 +28,7 @@
 *                             pos1-tropopt, pos1-sateph, pos1-navsys,
 *                             pos2-gloarmode,
 *-----------------------------------------------------------------------------*/
+#define _POSIX_C_SOURCE 199506
 #include "rtklib.h"
 
 /* system options buffer -----------------------------------------------------*/
@@ -223,21 +224,30 @@ static int enum2str(char *s, const char *comment, int val)
     strncpy(s,p+n,q-p-n); s[q-p-n]='\0';
     return (int)(q-p-n);
 }
-/* string to enum ------------------------------------------------------------*/
-static int str2enum(const char *str, const char *comment, int *val)
-{
-    const char *p;
-    char s[32];
-    
-    for (p=comment;;p++) {
-       if (!(p=strstr(p,str))) break;
-       if (*(p-1)!=':') continue;
-       for (p-=2;'0'<=*p&&*p<='9'&&p>comment;p--) ;
-       p = p == comment ? p : p + 1;
-       return sscanf(p,"%d",val)==1;
+/* String to enum ------------------------------------------------------------
+ * Note if str is empty then the first comment digit is returned.
+ */
+static int str2enum(const char *str, const char *comment, int *val) {
+    for (const char *p = comment;; p++) {
+        p=strstr(p, str);
+        if (!p) break;
+        size_t i=p-comment;
+        if (i<1) continue;
+        if (comment[--i]!=':') continue;
+        /* Search for preceding digits */
+        size_t j=i;
+        while (j>0) {
+            char c=comment[j-1];
+            if (c<'0' || c>'9') break;
+            j--;
+        }
+        if (j==i) continue; /* No digits found */
+        return sscanf(comment+j,"%d",val)==1;
     }
-    sprintf(s,"%.30s:",str);
-    if ((p=strstr(comment,s))) { /* number */
+    char s[32];
+    snprintf(s,sizeof(s),"%.30s:",str);
+    const char *p=strstr(comment,s);
+    if (p) { /* Number */
         return sscanf(p,"%d",val)==1;
     }
     return 0;
@@ -426,7 +436,8 @@ static void buff2sysopts(void)
     for (i=0;i<MAXSAT;i++) prcopt_.exsats[i]=0;
     if (exsats_[0]!='\0') {
         strcpy(buff,exsats_);
-        for (p=strtok(buff," ");p;p=strtok(NULL," ")) {
+        char *q;
+        for (p=strtok_r(buff," ",&q);p;p=strtok_r(NULL," ",&q)) {
             if (*p=='+') id=p+1; else id=p;
             if (!(sat=satid2no(id))) continue;
             prcopt_.exsats[sat-1]=*p=='+'?2:1;
@@ -436,9 +447,15 @@ static void buff2sysopts(void)
     for (i=0;i<NFREQ;i++) {
         for (j=0;j<9;j++) prcopt_.snrmask.mask[i][j]=0.0;
         strcpy(buff,snrmask_[i]);
-        for (p=strtok(buff,","),j=0;p&&j<9;p=strtok(NULL,",")) {
+        char *q;
+        for (p=strtok_r(buff,",",&q),j=0;p&&j<9;p=strtok_r(NULL,",",&q)) {
             prcopt_.snrmask.mask[i][j++]=atof(p);
         }
+    }
+    /* Guard number of frequencies */
+    if (prcopt_.nf>NFREQ) {
+       fprintf(stderr,"Number of frequencies %d limited to %d, rebuild with NFREQ=%d\n",prcopt_.nf, NFREQ, prcopt_.nf);
+        prcopt_.nf=NFREQ;
     }
     /* number of frequency (4:L1+L5) TODO ????*/
     /*if (prcopt_.nf==4) {

@@ -30,6 +30,8 @@ StrMonDialog::StrMonDialog(QWidget *parent)
     for (int i = 0; i <= MAXRCVFMT; i++) {
         ui->cBSelectFormat->addItem(formatstrs[i]);
     }
+    memset(&rtcm, 0, sizeof(rtcm));
+    memset(&raw, 0, sizeof(raw));
     rtcm.outtype = raw.outtype = 1;
 }
 //---------------------------------------------------------------------------

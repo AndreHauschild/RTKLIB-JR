@@ -304,20 +304,14 @@ QColor Plot::sysColor(int sat)
     }
 }
 // get observation data color -----------------------------------------------
-QColor Plot::observationColor(const obsd_t *obs, double az, double el)
+QColor Plot::observationColor(const obsd_t *obs, double az, double el, QVariant obstype)
 {
     QColor color;
-    QVariant obstype;
     int i, n, freq;
 
     trace(4, "observationColor\n");
 
     if (!satelliteSelection[obs->sat - 1]) return Qt::black;
-
-    if (plotType == PLOT_SNR || plotType == PLOT_SNRE) {
-        obstype = ui->cBObservationTypeSNR->currentData();
-    } else
-        obstype = ui->cBObservationType->currentData();
 
     if (simulatedObservation) {
         color = sysColor(obs->sat);
@@ -329,7 +323,7 @@ QColor Plot::observationColor(const obsd_t *obs, double az, double el)
             return Qt::black;
         }
         color = plotOptDialog->getMarkerColor(0, 3 - n + (n > 2 ? 5 : 0));
-    } else if (obstype.canConvert<int>()) {  // frequency
+    } else if (strcmp(obstype.typeName(), "int") == 0) {  // frequency
         freq = obstype.toInt();
         if (obs->L[freq-1] == 0.0 && obs->P[freq-1] == 0.0) {
             return Qt::black;

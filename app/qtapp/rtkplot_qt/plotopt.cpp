@@ -81,6 +81,20 @@ PlotOptDialog::PlotOptDialog(QWidget *parent)
     connect(ui->cBTimeSync, &QCheckBox::clicked, this, &PlotOptDialog::updateEnable);
 }
 //---------------------------------------------------------------------------
+void PlotOptDialog::updateConfig()
+{
+    elevation_mask = ui->cBElevationMask->currentText().toDouble();
+    timeFormat = ui->cBTimeFormat->currentIndex();
+    elevationMaskEnabled = ui->cBElevationMaskPattern->currentIndex();
+}
+
+//---------------------------------------------------------------------------
+void PlotOptDialog::accept()
+{
+    updateConfig();
+    QDialog::accept();
+}
+//---------------------------------------------------------------------------
 void PlotOptDialog::markerColorSelect()
 {
     QToolButton *button = dynamic_cast<QToolButton *>(QObject::sender());
@@ -241,7 +255,7 @@ void PlotOptDialog::tleSatelliteFileView()
 //---------------------------------------------------------------------------
 int PlotOptDialog::getTimeFormat()
 {
-    return ui->cBTimeFormat->currentIndex();
+    return timeFormat;
 }
 //---------------------------------------------------------------------------
 int PlotOptDialog::getLatLonFormat()
@@ -270,12 +284,12 @@ int PlotOptDialog::getShowEphemeris()
 //---------------------------------------------------------------------------
 double PlotOptDialog::getElevationMask()
 {
-    return ui->cBElevationMask->currentText().toDouble();
+    return elevation_mask;
 }
 //---------------------------------------------------------------------------
 int PlotOptDialog::getElevationMaskEnabled()
 {
-    return ui->cBElevationMaskPattern->currentIndex();
+    return elevationMaskEnabled;
 }
 //---------------------------------------------------------------------------
 int PlotOptDialog::getHideLowSatellites()
@@ -579,6 +593,7 @@ void PlotOptDialog::loadOptions(QSettings & settings)
     refDialog->stationPositionFile = settings.value("plot/staposfile", "").toString();
 
     updateEnable();
+    updateConfig();
 }
 //---------------------------------------------------------------------------
 void PlotOptDialog::saveOptions(QSettings & settings)

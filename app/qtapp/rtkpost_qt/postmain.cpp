@@ -51,6 +51,7 @@
 #include <QCompleter>
 #include <QRegularExpression>
 #include <QTime>
+#include <QMessageBox>
 
 #include "rtklib.h"
 #include "postmain.h"
@@ -60,6 +61,7 @@
 #include "keydlg.h"
 #include "aboutdlg.h"
 #include "viewer.h"
+#include "helper.h"
 
 #include "ui_postmain.h"
 
@@ -136,12 +138,18 @@ ProcessingThread::~ProcessingThread()
 }
 void ProcessingThread::addInput(const QString & file) {
     if (!file.isEmpty()) {
-        strncpy(infile[n++], qPrintable(file), 1023);
+        if (!QFile::exists(file)) {
+            QMessageBox::information(NULL, QObject::tr("File not found"),
+                                     QObject::tr("The specified input file \"%1\" was not found.").arg(file));
+            return;
+        };
+        if (check_compression(file))
+            strncpy(infile[n++], qPrintable(file), 1023);
     }
 }
 void ProcessingThread::run()
 {
-    if ((stat = postpos(ts, te, ti, tu, &prcopt, &solopt, &filopt, infile, n, outfile,
+    if ((stat = postpos(ts, te, ti, tu, &prcopt, &solopt, &filopt, (const char **)infile, n, outfile,
                         qPrintable(rov), qPrintable(base))) == 1) {
         showmsg("Aborted");
     };
@@ -238,7 +246,7 @@ MainForm::MainForm(QWidget *parent)
     connect(ui->cBTimeUnitF, &QCheckBox::clicked, this, &MainForm::updateEnable);
     connect(ui->cBInputFile1, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &MainForm::setOutputFile);
     connect(ui->cBOutputDirectoryEnable, &QCheckBox::clicked, this, &MainForm::outputDirectoryEnableClicked);
-    connect(ui->lEOutputDirectory, &QLineEdit::editingFinished, this, &MainForm::setOutputFile);
+    connect(ui->lEOutputDirectory, &QLineEdit::textChanged, this, &MainForm::setOutputFile);
     connect(ui->btnOutputDirectory, &QPushButton::clicked, this, &MainForm::selectOutputDirectory);
 
     ui->btnAbort->setVisible(false);
@@ -412,15 +420,19 @@ void  MainForm::dropEvent(QDropEvent *event)
 // callback on button-plot --------------------------------------------------
 void MainForm::callRtkPlot()
 {
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
     QString file = filePath(ui->cBOutputFile->currentText());
-    QString cmd[] = {"rtkplot_qt", "../rtkplot_qt/rtkplot_qt", "../../../bin/rtkplot_qt"};
+    QStringList cmds = {"rtkplot_qt", "../rtkplot_qt/rtkplot_qt", "../../../bin/rtkplot_qt"};
     QStringList opts;
 
     opts += file;
 
-    if (!execCommand(cmd[0], opts, 1) && !execCommand(cmd[1], opts, 1) && !execCommand(cmd[2], opts, 1)) {
-        showMessage("Error : rtkplot_qt execution failed");
-    }
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts, 1)) {
+            return;
+        }
+
+    showMessage("Error: rtkplot_qt execution failed");
 }
 // --------------------------------------------------------------------------
 void MainForm::setProgress(int value)
@@ -462,11 +474,11 @@ void MainForm::startPostProcessing()
         showMessage(tr("Error: No rinex observation file (rover)"));
         return;
     }
-    if (ui->cBInputFile2->currentText() == "" && PMODE_DGPS <=  optDialog->processingOptions.mode &&  optDialog->processingOptions.mode <= PMODE_FIXED) {
+    if (ui->cBInputFile2->currentText().isEmpty() && PMODE_DGPS <=  optDialog->processingOptions.mode &&  optDialog->processingOptions.mode <= PMODE_FIXED) {
         showMessage(tr("Error: No rinex observation file (base station)"));
         return;
     }
-    if (ui->cBOutputFile->currentText() == "") {
+    if (ui->cBOutputFile->currentText().isEmpty()) {
         showMessage(tr("Error: No output file"));
         return;
     }
@@ -651,50 +663,56 @@ void MainForm::viewOutputFileTrace()
 // callback on button-inputplot-1 -------------------------------------------
 void MainForm::plotInputFile1()
 {
-    QString files[6];
-    QString cmd[] = {"rtkplot_qt", "../rtkplot_qt/rtkplot_qt", "../../../bin/rtkplot_qt"};
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QString files[5];
+    QStringList cmds = {"rtkplot_qt", "../rtkplot_qt/rtkplot_qt", "../../../bin/rtkplot_qt"};
     QStringList opts;
     QString navfile;
 
     files[0] = filePath(ui->cBInputFile1->currentText()); /* obs rover */
-    files[1] = filePath(ui->cBInputFile2->currentText()); /* obs base */
-    files[2] = filePath(ui->cBInputFile3->currentText());
-    files[3] = filePath(ui->cBInputFile4->currentText());
-    files[4] = filePath(ui->cBInputFile5->currentText());
-    files[5] = filePath(ui->cBInputFile6->currentText());
+    files[1] = filePath(ui->cBInputFile3->currentText());
+    files[2] = filePath(ui->cBInputFile4->currentText());
+    files[3] = filePath(ui->cBInputFile5->currentText());
+    files[4] = filePath(ui->cBInputFile6->currentText());
 
-    if ((files[2].isEmpty()) && (obsToNav(files[0], navfile)))
-        files[2] = navfile;
+    if ((files[1].isEmpty()) && (obsToNav(files[0], navfile)))
+        files[1] = navfile;
 
-    opts << "-r" << files[0] << files[2] << files[3] << files[4] << files[5];
+    opts << "-r" << files[0] << files[1] << files[2] << files[3] << files[4];
 
-    if (!execCommand(cmd[0], opts, 1) && !execCommand(cmd[1], opts, 1) && !execCommand(cmd[2], opts, 1)) {
-        showMessage(tr("Error: rtkplot_qt execution failed"));
-    }
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts, 1)) {
+            return;
+        }
+
+    showMessage(tr("Error: rtkplot_qt execution failed"));
 }
 // callback on button-inputplot-2 -------------------------------------------
 void MainForm::plotInputFile2()
 {
-    QString files[6];
-    QString cmd[] = {"rtkplot_qt", "../rtkplot_qt/rtkplot_qt", "../../../bin/rtkplot_qt"};
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QString files[5];
+    QStringList cmds = {"rtkplot_qt", "../rtkplot_qt/rtkplot_qt", "../../../bin/rtkplot_qt"};
     QStringList opts;
     QString navfile;
 
-    files[0] = filePath(ui->cBInputFile1->currentText()); /* obs rover */
-    files[1] = filePath(ui->cBInputFile2->currentText()); /* obs base */
-    files[2] = filePath(ui->cBInputFile3->currentText());
-    files[3] = filePath(ui->cBInputFile4->currentText());
-    files[4] = filePath(ui->cBInputFile5->currentText());
-    files[5] = filePath(ui->cBInputFile6->currentText());
+    files[0] = filePath(ui->cBInputFile2->currentText()); /* obs base */
+    files[1] = filePath(ui->cBInputFile3->currentText());
+    files[2] = filePath(ui->cBInputFile4->currentText());
+    files[3] = filePath(ui->cBInputFile5->currentText());
+    files[4] = filePath(ui->cBInputFile6->currentText());
 
-    if ((files[2].isEmpty()) && (obsToNav(files[0], navfile)))
-        files[2]=navfile;
+    if ((files[1].isEmpty()) && (obsToNav(files[0], navfile)))
+        files[1] = navfile;
 
-    opts << "-r" << files[1] << files[2] << files[3] << files[4] << files[5];
+    opts << "-r" << files[0] << files[1] << files[2] << files[3] << files[4];
 
-    if (!execCommand(cmd[0], opts, 1) && !execCommand(cmd[1], opts, 1) && !execCommand(cmd[2], opts, 1)) {
-        showMessage(tr("Error: rtkplot_qt execution failed"));
-    }
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts, 1)) {
+            return;
+        }
+
+    showMessage(tr("Error: rtkplot_qt execution failed"));
 }
 // callback on button-output-directory --------------------------------------
 void MainForm::selectOutputDirectory()
@@ -722,22 +740,17 @@ void MainForm::setOutputFile()
 
     if (ui->cBInputFile1->currentText().isEmpty()) return;
 
-    if (ui->cBOutputFile->currentText().isEmpty()) { // generate output name from input file name
-      ifile = ui->cBInputFile1->currentText();
-      if (ui->cBOutputDirectoryEnable->isChecked()) {
-          QFileInfo f(ifile);
-          ofile = QDir(ui->lEOutputDirectory->text()).filePath(f.baseName());
-      } else {
-          QFileInfo f(ifile);
-          ofile = f.absoluteDir().filePath(f.baseName());
-      }
-      ofile += optDialog->solutionOptions.posf == SOLF_NMEA ? ".nmea" : ".pos";
-      ofile.replace('*', '0');
+    ifile = ui->cBInputFile1->currentText();
+    if (ui->cBOutputDirectoryEnable->isChecked()) {
+        QFileInfo f(ifile);
+        ofile = QDir(ui->lEOutputDirectory->text()).filePath(f.baseName());
     } else {
-      ofile = ui->cBOutputFile->currentText();
-    };
+        QFileInfo f(ifile);
+        ofile = f.absoluteDir().filePath(f.baseName());
+    }
+    ofile += optDialog->solutionOptions.posf == SOLF_NMEA ? ".nmea" : ".pos";
+    ofile.replace('*', '0');
     ui->cBOutputFile->setCurrentText(QDir::toNativeSeparators(ofile));
-
 }
 // execute post-processing --------------------------------------------------
 void MainForm::execProcessing()

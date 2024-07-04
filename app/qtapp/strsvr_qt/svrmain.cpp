@@ -1,10 +1,10 @@
 //---------------------------------------------------------------------------
-// strsvr : stream server
+// strsvr_qt : stream server
 //
 //          Copyright (C) 2007-2012 by T.TAKASU, All rights reserved.
 //          ported to Qt by Jens Reimann
 //
-// options : strsvr [-t title][-i file][-auto][-tray]
+// options : strsvr_qt [-t title][-i file][-auto][-tray]
 //
 //           -t title   window title
 //           -i file    ini file path
@@ -240,7 +240,7 @@ void MainForm::showInputOptions()
         case 1: tcpClientOptions(0, 1); break; // TCP Client
         case 2: tcpServerOptions(0, 2); break; // TCP Server
         case 3: ntripClientOptions(0, 3); break; // Ntrip Client
-        case 4: udpServerOptions(0, 6); break;  // UDP Server
+        case 4: udpServerOptions(0, 4); break;  // UDP Server
         case 5: fileOptions(0, 0); break;
     }
 }
@@ -489,12 +489,16 @@ void MainForm::startServer()
         cmds[i] = cmds_periodic[i] = NULL;
         if (streamTypes[i] == STR_SERIAL) {
             cmds[i] = new char[1024];
+            cmds[i][0] = '\0';
             cmds_periodic[i] = new char[1024];
+            cmds_periodic[i][0] = '\0';
             if (commandsEnabled[i][0]) strncpy(cmds[i], qPrintable(commands[i][0]), 1023);
             if (commandsEnabled[i][2]) strncpy(cmds_periodic[i], qPrintable(commands[i][2]), 1023);
         } else if (streamTypes[i] == STR_TCPCLI || streamTypes[i] == STR_NTRIPCLI || streamTypes[i] == STR_TCPSVR) {
             cmds[i] = new char[1024];
+            cmds[i][0] = '\0';
             cmds_periodic[i] = new char[1024];
+            cmds_periodic[i][0] = '\0';
             if (commandsEnabledTcp[i][0]) strncpy(cmds[i], qPrintable(commandsTcp[i][0]), 1023);
             if (commandsEnabledTcp[i][2]) strncpy(cmds_periodic[i], qPrintable(commandsTcp[i][2]), 1023);
         }
@@ -557,7 +561,7 @@ void MainForm::startServer()
     }
 
     // stream server start (if no error in preparation occured)
-    if (!error && strsvrstart(&strsvr, opt, streamTypes, pths, logs, conv, cmds, cmds_periodic, svrOptDialog->antennaPosition)) {
+    if (!error && strsvrstart(&strsvr, opt, streamTypes, (const char **)pths, (const char **)logs, conv, (const char **)cmds, (const char **)cmds_periodic, svrOptDialog->antennaPosition)) {
         startTime = utc2gpst(timeget());
         ui->panelStreams->setEnabled(false);
         ui->btnStart->setVisible(false);
@@ -587,7 +591,7 @@ void MainForm::stopServer()
                          STR_FTP, STR_HTTP};
     const int outputTypes[] = {
         STR_NONE, STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPSVR, STR_NTRIPCAS,
-        STR_FILE
+        STR_UDPCLI, STR_FILE
     };
     int streamTypes[MAXSTR];
 
@@ -607,7 +611,7 @@ void MainForm::stopServer()
             if (commandsEnabledTcp[i][1]) strncpy(cmds[i], qPrintable(commandsTcp[i][1]), 1023);
         }
     }
-    strsvrstop(&strsvr, cmds);
+    strsvrstop(&strsvr, (const char **)cmds);
 
     endTime = utc2gpst(timeget());
     ui->panelStreams->setEnabled(true);
@@ -621,19 +625,19 @@ void MainForm::stopServer()
 
     setTrayIcon(0);
 
-    for (int i = 0; i < MAXSTR; i++) {
+    for (int i = 0; i < MAXSTR; i++)
         if (cmds[i]) delete[] cmds[i];
+    for (int i = 0; i < MAXSTR - 1; i++)
         if (conversionEnabled[i]) strconvfree(strsvr.conv[i]);
-    }
     if (svrOptDialog->traceLevel > 0) traceclose();
 }
 // callback on interval timer for stream monitor ----------------------------
 void MainForm::updateStreamMonitor()
 {
     static const QString types[] = {
-        tr("None"), tr("Serial"), tr("File"), tr("TCP Server"), tr("TCP Client"), tr("UDP"), tr("Ntrip Sever"),
+        tr("None"), tr("Serial"), tr("File"), tr("TCP Server"), tr("TCP Client"), tr("Ntrip Sever"),
         tr("Ntrip Client"), tr("FTP"), tr("HTTP"), tr("Ntrip Caster"), tr("UDP Server"),
-        tr("UDP Client")
+        tr("UDP Client"), tr("Mem Buffer")
     };
     unsigned char *msg = 0;
     char *p;
@@ -697,9 +701,9 @@ void MainForm::tcpServerOptions(int index, int path)
 // set tcp client options ---------------------------------------------------
 void MainForm::tcpClientOptions(int index, int path)
 {
+    tcpOptDialog->setHistory(tcpHistory, MAXHIST);
     tcpOptDialog->setPath(paths[index][path]);
     tcpOptDialog->setOptions(1);  // 1: TCP Client
-    tcpOptDialog->setHistory(tcpHistory, MAXHIST);
 
     tcpOptDialog->exec();
     if (tcpOptDialog->result() != QDialog::Accepted) return;
@@ -711,9 +715,9 @@ void MainForm::tcpClientOptions(int index, int path)
 // set ntrip server options ---------------------------------------------------------
 void MainForm::ntripServerOptions(int index, int path)
 {
+    tcpOptDialog->setHistory(tcpHistory, MAXHIST);
     tcpOptDialog->setPath(paths[index][path]);
     tcpOptDialog->setOptions(2);  // 2: Ntrip Server
-    tcpOptDialog->setHistory(tcpHistory, MAXHIST);
 
     tcpOptDialog->exec();
     if (tcpOptDialog->result() != QDialog::Accepted) return;
@@ -725,10 +729,9 @@ void MainForm::ntripServerOptions(int index, int path)
 // set ntrip client options ---------------------------------------------------------
 void MainForm::ntripClientOptions(int index, int path)
 {
+    tcpOptDialog->setHistory(tcpHistory, MAXHIST);
     tcpOptDialog->setPath(paths[index][path]);
     tcpOptDialog->setOptions(3);  // Ntrip Client
-    for (int i = 0; i < MAXHIST; i++)
-        tcpOptDialog->setHistory(tcpHistory, MAXHIST);
 
     tcpOptDialog->exec();
     if (tcpOptDialog->result() != QDialog::Accepted) return;
@@ -860,7 +863,7 @@ void MainForm::loadOptions()
 
     // paths
     for (int i = 0; i < MAXSTR; i++)
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 7; j++)
             paths[i][j] = settings.value(QString("path/path_%1_%2").arg(i).arg(j), "").toString();
 
     for (int i=0;i<MAXSTR;i++) {
@@ -950,17 +953,17 @@ void MainForm::saveOptions()
             settings.setValue(QString("tcpip/cmdena_%1_%2").arg(i).arg(j), commandsEnabledTcp[i][j]);
         }
     for (int i = 0; i < MAXSTR; i++)
-        for (int j = 0; j < 4; j++)
+        for (int j = 0; j < 7; j++)
             settings.setValue(QString("path/path_%1_%2").arg(i).arg(j), paths[i][j]);
 
     for (int i = 0; i < MAXSTR; i++)
         for (int j = 0; j < 2; j++) {
-            commands[j][i] = commands[j][i].replace("\n", "@@");
+            commands[i][j] = commands[i][j].replace("\n", "@@");
             settings.setValue(QString("serial/cmd_%1_%2").arg(i).arg(j), commands[i][j]);
         }
     for (int i = 0; i < MAXSTR; i++)
         for (int j = 0; j < 2; j++) {
-            commandsTcp[j][i] = commandsTcp[j][i].replace("\n", "@@");
+            commandsTcp[i][j] = commandsTcp[i][j].replace("\n", "@@");
             settings.setValue(QString("tcpip/cmd_%1_%2").arg(i).arg(j), commandsTcp[i][j]);
         }
 

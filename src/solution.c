@@ -373,18 +373,18 @@ static int decode_nmea(char *buff, sol_t *sol)
 static char *decode_soltime(char *buff, const solopt_t *opt, gtime_t *time)
 {
     double v[MAXFIELD];
-    char *p,*q,s[64]=" ";
-    int n,len;
-    
+    char *p,*q;
+    int n;
+
     trace(4,"decode_soltime:\n");
-    
-    if (!strcmp(opt->sep,"\\t")) strcpy(s,"\t");
-    else if (*opt->sep) strcpy(s,opt->sep);
-    len=(int)strlen(s);
-    
+
     if (opt->posf==SOLF_STAT) {
         return buff;
     }
+
+    const char *sep = opt2sep(opt);
+    size_t sep_len = strlen(sep);
+
     if (opt->posf==SOLF_GSIF) {
         if (sscanf(buff,"%lf %lf %lf %lf:%lf:%lf",v,v+1,v+2,v+3,v+4,v+5)<6) {
             return NULL;
@@ -392,7 +392,9 @@ static char *decode_soltime(char *buff, const solopt_t *opt, gtime_t *time)
         *time=timeadd(epoch2time(v),-12.0*3600.0);
         if (!(p=strchr(buff,':'))||!(p=strchr(p+1,':'))) return NULL;
         for (p++;isdigit((int)*p)||*p=='.';) p++;
-        return p+len;
+        p=strstr(p,sep);
+        if (p) return p+sep_len;
+        else return NULL;
     }
     /* yyyy/mm/dd hh:mm:ss or yyyy mm dd hh:mm:ss */
     if (sscanf(buff,"%lf/%lf/%lf %lf:%lf:%lf",v,v+1,v+2,v+3,v+4,v+5)>=6) {
@@ -408,18 +410,21 @@ static char *decode_soltime(char *buff, const solopt_t *opt, gtime_t *time)
         }
         if (!(p=strchr(buff,':'))||!(p=strchr(p+1,':'))) return NULL;
         for (p++;isdigit((int)*p)||*p=='.';) p++;
-        return p+len;
+        p=strstr(p,sep);
+        if (p) return p+sep_len;
+        else return NULL;
     }
     else { /* wwww ssss */
-    for (p=buff,n=0;n<2;p=q+len) {
-        if ((q=strstr(p,s))) *q='\0'; 
+        for (p=buff,n=0;n<2;p=q+sep_len) {
+            q=strstr(p,sep);
+            if (!q) return NULL;
+            *q='\0';
             if (sscanf(p,"%lf",v+n)==1) n++;
-        if (!q) break;
-    }
-    if (n>=2&&0.0<=v[0]&&v[0]<=3000.0&&0.0<=v[1]&&v[1]<604800.0) {
-        *time=gpst2time((int)v[0],v[1]);
-        return p;
-    }
+        }
+        if (n>=2&&0.0<=v[0]&&v[0]<=3000.0&&0.0<=v[1]&&v[1]<604800.0) {
+            *time=gpst2time((int)v[0],v[1]);
+            return p;
+        }
     }
     return NULL;
 }
@@ -745,7 +750,7 @@ static void decode_solopt(char *buff, solopt_t *opt)
         strncpy(opt->sep,p+13,1);
         opt->sep[1]='\0';
     }
-    else if ((p=strstr(buff,"+SITE/INF"))) { /* gsi f2/f3 solution */
+    else if (strstr(buff,"+SITE/INF")) { /* gsi f2/f3 solution */
         opt->times=TIMES_GPST;
         opt->posf=SOLF_GSIF;
         opt->degf=0;
@@ -784,8 +789,6 @@ extern int inputsol(uint8_t data, gtime_t ts, gtime_t te, double tint,
     
     trace(4,"inputsol: data=0x%02x\n",data);
     
-    sol.time=solbuf->time;
-    
     if (data=='$'||(!isprint(data)&&data!='\r'&&data!='\n')) { /* sync header */
         solbuf->nb=0;
     }
@@ -805,7 +808,7 @@ extern int inputsol(uint8_t data, gtime_t ts, gtime_t te, double tint,
     /* decode solution */
     sol.time=solbuf->time;
     if ((stat=decode_sol((char *)solbuf->buff,opt,&sol,solbuf->rb))>0) {
-        if (stat) solbuf->time=sol.time; /* update current time */
+        solbuf->time=sol.time; /* update current time */
         if (stat!=1) return 0;
     }
     if (stat!=1||!screent(sol.time,ts,te,tint)||(qflag&&sol.stat!=qflag)) {
@@ -868,7 +871,7 @@ static int sort_solbuf(solbuf_t *solbuf)
 *          solbuf_t *solbuf O  solution buffer
 * return : status (1:ok,0:no data or error)
 *-----------------------------------------------------------------------------*/
-extern int readsolt(char *files[], int nfile, gtime_t ts, gtime_t te,
+extern int readsolt(const char *files[], int nfile, gtime_t ts, gtime_t te,
                     double tint, int qflag, solbuf_t *solbuf)
 {
     FILE *fp;
@@ -896,7 +899,7 @@ extern int readsolt(char *files[], int nfile, gtime_t ts, gtime_t te,
     }
     return sort_solbuf(solbuf);
 }
-extern int readsol(char *files[], int nfile, solbuf_t *sol)
+extern int readsol(const char *files[], int nfile, solbuf_t *sol)
 {
     gtime_t time={0};
     
@@ -1055,7 +1058,7 @@ static int decode_solstat(char *buff, solstat_t *stat)
     
     for (p=buff;*p;p++) if (*p==',') *p=' ';
     
-    n=sscanf(buff,"$SAT%d%lf%s%d%lf%lf%lf%lf%d%lf%d%d%d%d%d%d",
+    n=sscanf(buff,"$SAT%d%lf%31s%d%lf%lf%lf%lf%d%lf%d%d%d%d%d%d",
              &week,&tow,id,&frq,&az,&el,&resp,&resc,&vsat,&snr,&fix,&slip,
              &lock,&outc,&slipc,&rejc);
     
@@ -1133,7 +1136,7 @@ static int readsolstatdata(FILE *fp, gtime_t ts, gtime_t te, double tint,
 *          solstatbuf_t *statbuf O  solution status buffer
 * return : status (1:ok,0:no data or error)
 *-----------------------------------------------------------------------------*/
-extern int readsolstatt(char *files[], int nfile, gtime_t ts, gtime_t te,
+extern int readsolstatt(const char *files[], int nfile, gtime_t ts, gtime_t te,
                         double tint, solstatbuf_t *statbuf)
 {
     FILE *fp;
@@ -1164,7 +1167,7 @@ extern int readsolstatt(char *files[], int nfile, gtime_t ts, gtime_t te,
     }
     return sort_solstat(statbuf);
 }
-extern int readsolstat(char *files[], int nfile, solstatbuf_t *statbuf)
+extern int readsolstat(const char *files[], int nfile, solstatbuf_t *statbuf)
 {
     gtime_t time={0};
     
@@ -1351,7 +1354,7 @@ extern int outnmea_gsa(uint8_t *buff, const sol_t *sol, const ssat_t *ssat)
 {
     double azel[MAXSAT*2],dop[4];
     char *p=(char *)buff,*q,*s,sum;
-    int i,j,sys,prn,nsat,mask=0,nsys=0,sats[MAXSAT];
+    int i,j,sys,nsat,mask=0,nsys=0,sats[MAXSAT];
     
     trace(3,"outnmea_gsa:\n");
     
@@ -1370,21 +1373,25 @@ extern int outnmea_gsa(uint8_t *buff, const sol_t *sol, const ssat_t *ssat)
         for (j=nsat=0;j<MAXSAT&&nsat<12;j++) {
             if (!(satsys(j+1,NULL)&nmea_sys[i])) continue;
             if (ssat[j].vs) sats[nsat++]=j+1;
-    }
-    if (nsat>0) {
-        s=p;
+        }
+        if (nsat>0) {
+            s=p;
             p+=sprintf(p,"$%sGSA,A,%d",nsys>1?"GN":nmea_tid[i],sol->stat?3:1);
             for (j=0;j<12;j++) {
-                sys=satsys(sats[j],&prn);
-                if      (sys==SYS_SBS) prn-=87;  /* SBS: 33-64 */
-                else if (sys==SYS_GLO) prn+=64;  /* GLO: 65-99 */
-                else if (sys==SYS_QZS) prn-=192; /* QZS: 01-10 */
-                if (j<nsat) p+=sprintf(p,",%02d",prn);
-            else        p+=sprintf(p,",");
-        }
+                if (j<nsat) {
+                    int prn;
+                    sys=satsys(sats[j],&prn);
+                    if      (sys==SYS_SBS) prn-=87;  /* SBS: 33-64 */
+                    else if (sys==SYS_GLO) prn+=64;  /* GLO: 65-99 */
+                    else if (sys==SYS_QZS) prn-=192; /* QZS: 01-10 */
+                    p+=sprintf(p,",%02d",prn);
+                }
+                else
+                    p+=sprintf(p,",");
+            }
             p+=sprintf(p,",%3.1f,%3.1f,%3.1f,%d",dop[1],dop[2],dop[3],
                        nmea_sid[i]);
-        for (q=s+1,sum=0;*q;q++) sum^=*q; /* check-sum */
+            for (q=s+1,sum=0;*q;q++) sum^=*q; /* check-sum */
             p+=sprintf(p,"*%02X\r\n",sum);
         }
     }

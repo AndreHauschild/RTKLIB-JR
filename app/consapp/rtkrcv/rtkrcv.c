@@ -36,6 +36,7 @@
 *                           add option -w
 *           2017/09/01 1.21 add command ssr
 *-----------------------------------------------------------------------------*/
+#define _POSIX_C_SOURCE 199506
 #include <stdlib.h>
 #include <signal.h>
 #include <unistd.h>
@@ -63,6 +64,7 @@
 #define NAVIFILE    "rtkrcv.nav"        /* navigation save file */
 #define STATFILE    "rtkrcv_%Y%m%d%h%M.stat"  /* solution status file */
 #define TRACEFILE   "rtkrcv_%Y%m%d%h%M.trace" /* debug trace file */
+#define LOGFILE     "rtkrcv_%Y%m%d%h%M.log"   /* Deamon log file */
 #define INTKEEPALIVE 1000               /* keep alive interval (ms) */
 
 #define ESC_CLEAR   "\033[H\033[2J"     /* ansi/vt100 escape: erase screen */
@@ -78,10 +80,6 @@ typedef struct {                       /* console type */
     vt_t *vt;                          /* virtual terminal */
     pthread_t thread;                  /* console thread */
 } con_t;
-
-/* function prototypes -------------------------------------------------------*/
-extern FILE *popen(const char *, const char *);
-extern int pclose(FILE *);
 
 /* global variables ----------------------------------------------------------*/
 static rtksvr_t svr;                    /* rtk server struct */
@@ -110,8 +108,10 @@ static char proxyaddr[256]="";          /* http/ntrip proxy */
 static int nmeareq      =0;             /* nmea request type (0:off,1:lat/lon,2:single) */
 static double nmeapos[] ={0,0,0};       /* nmea position (lat/lon/height) (deg,m) */
 static char rcvcmds[3][MAXSTR]={""};    /* receiver commands files */
+#ifdef RTKSHELLCMDS
 static char startcmd[MAXSTR]="";        /* start command */
 static char stopcmd [MAXSTR]="";        /* stop command */
+#endif
 static int modflgr[256] ={0};           /* modified flags of receiver options */
 static int modflgs[256] ={0};           /* modified flags of system options */
 static int moniport     =0;             /* monitor port */
@@ -137,7 +137,9 @@ static const char *usage[]={
     "  -w pwd     login password for remote console (\"\": no password)",
     "  -r level   output solution status file (0:off,1:states,2:residuals)",
     "  -t level   debug trace level (0:off,1-5:on)",
-    "  -sta sta   station name for receiver dcb"
+    "  -sta sta   station name for receiver dcb",
+    "  --deamon   detach from the console",
+    "  --version  print the version and exit"
 };
 static const char *helptxt[]={
     "start                 : start rtk server",
@@ -159,7 +161,6 @@ static const char *helptxt[]={
     "help|? [path]         : print help",
     "exit|ctr-D            : logout console (only for telnet)",
     "shutdown              : shutdown rtk server",
-    "!command [arg...]     : execute command in shell",
     ""
 };
 static const char *pathopts[]={         /* path options help */
@@ -180,7 +181,7 @@ static const char *pathopts[]={         /* path options help */
 #define CONOPT  "0:dms,1:deg,2:xyz,3:enu,4:pyl"
 #define FLGOPT  "0:off,1:std+2:age/ratio/ns"
 #define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripcli,7:ftp,8:http"
-#define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,5:ntripsvr,9:ntripcas"
+#define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,5:ntripsvr,9:ntripcas,11:udpcli"
 #define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,4:ubx,5:swift,6:hemis,7:skytraq,8:javad,9:nvs,10:binex,11:rt17,12:sbf,14,15:sp3"
 #define NMEOPT  "0:off,1:latlon,2:single"
 #define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea,4:stat"
@@ -227,8 +228,10 @@ static opt_t rcvopts[]={
     {"misc-proxyaddr",  2,  (void *)proxyaddr,           ""     },
     {"misc-fswapmargin",0,  (void *)&fswapmargin,        "s"    },
     
+#ifdef RTKSHELLCMDS
     {"misc-startcmd",   2,  (void *)startcmd,            ""     },
     {"misc-stopcmd",    2,  (void *)stopcmd,             ""     },
+#endif
     
     {"file-cmdfile1",   2,  (void *)rcvcmds[0],          ""     },
     {"file-cmdfile2",   2,  (void *)rcvcmds[1],          ""     },
@@ -404,7 +407,7 @@ static int startsvr(vt_t *vt)
         strpath[6],strpath[7]
     };
     char errmsg[2048]="";
-    int i,ret,stropt[8]={0};
+    int i,stropt[8]={0};
     
     trace(3,"startsvr:\n");
     
@@ -464,17 +467,20 @@ static int startsvr(vt_t *vt)
     strsetdir(filopt.tempdir);
     strsetproxy(proxyaddr);
     
+#ifdef RTKSHELLCMDS
     /* execute start command */
+    int ret;
     if (*startcmd&&(ret=system(startcmd))) {
         trace(2,"command exec error: %s (%d)\n",startcmd,ret);
         vt_printf(vt,"command exec error: %s (%d)\n",startcmd,ret);
     }
+#endif
     solopt[0].posf=strfmt[3];
     solopt[1].posf=strfmt[4];
     
     /* start rtk server */
-    if (!rtksvrstart(&svr,svrcycle,buffsize,strtype,paths,strfmt,navmsgsel,
-                     cmds,cmds_periodic,ropts,nmeacycle,nmeareq,npos,&prcopt,
+    if (!rtksvrstart(&svr,svrcycle,buffsize,strtype,(const char **)paths,strfmt,navmsgsel,
+                     (const char **)cmds,(const char **)cmds_periodic,(const char **)ropts,nmeacycle,nmeareq,npos,&prcopt,
                      solopt,&moni,errmsg)) {
         trace(2,"rtk server start error (%s)\n",errmsg);
         vt_printf(vt,"rtk server start error (%s)\n",errmsg);
@@ -486,7 +492,7 @@ static int startsvr(vt_t *vt)
 static void stopsvr(vt_t *vt)
 {
     char s[3][MAXRCVCMD]={"","",""},*cmds[]={NULL,NULL,NULL};
-    int i,ret;
+    int i;
     
     trace(3,"stopsvr:\n");
     
@@ -501,13 +507,16 @@ static void stopsvr(vt_t *vt)
         else cmds[i]=s[i];
     }
     /* stop rtk server */
-    rtksvrstop(&svr,cmds);
+    rtksvrstop(&svr,(const char **)cmds);
     
+#ifdef RTKSHELLCMDS
     /* execute stop command */
+    int ret;
     if (*stopcmd&&(ret=system(stopcmd))) {
         trace(2,"command exec error: %s (%d)\n",stopcmd,ret);
         vt_printf(vt,"command exec error: %s (%d)\n",stopcmd,ret);
     }
+#endif
     if (solopt[0].geoid>0) closegeoid();
     
     vt_printf(vt,"stop rtk server\n");
@@ -909,7 +918,7 @@ static void prnavidata(vt_t *vt)
     }
     vt_printf(vt,"ION: %9.2E %9.2E %9.2E %9.2E %9.2E %9.2E %9.2E %9.2E\n",
             ion[0],ion[1],ion[2],ion[3],ion[4],ion[5],ion[6],ion[7]);
-    vt_printf(vt,"UTC: %9.2E %9.2E %9.2E %9.2E  LEAPS: %d\n",utc[0],utc[1],utc[2],
+    vt_printf(vt,"UTC: %9.2E %9.2E %9.2E %9.2E  LEAPS: %.0f\n",utc[0],utc[1],utc[2],
             utc[3],utc[4]);
 }
 /* print error/warning messages ----------------------------------------------*/
@@ -935,8 +944,8 @@ static void prstream(vt_t *vt)
         "log rover","log base","log corr","monitor"
     };
     const char *type[]={
-        "-","serial","file","tcpsvr","tcpcli","udp","ntrips","ntripc","ftp",
-        "http","ntripcas"
+        "-","serial","file","tcpsvr","tcpcli","ntrips","ntripc","ftp",
+        "http","ntripcas","udpsvr","udpcli","membuf"
     };
     const char *fmt[]={"rtcm2","rtcm3","oem4","","ubx","swift","hemis","skytreq",
                        "javad","nvs","binex","rt17","sbf","","","sp3",""};
@@ -1225,6 +1234,7 @@ static void cmd_set(char **args, int narg, vt_t *vt)
         return;
     }
     getsysopts(&prcopt,solopt,&filopt);
+    solopt[1]=solopt[0];
     
     vt_printf(vt,"option %s changed.",opt->name);
     if (strncmp(opt->name,"console",7)) {
@@ -1252,6 +1262,7 @@ static void cmd_load(char **args, int narg, vt_t *vt)
         return;
     }
     getsysopts(&prcopt,solopt,&filopt);
+    solopt[1]=solopt[0];
     
     if (!loadopts(file,rcvopts)) {
         vt_printf(vt,"no options file: %s\n",file);
@@ -1321,26 +1332,6 @@ static void cmd_help(char **args, int narg, vt_t *vt)
         vt_printf(vt,"unknown help: %s\n",args[1]);
     }
 }
-/* exec command --------------------------------------------------------------*/
-static int cmd_exec(const char *cmd, vt_t *vt)
-{
-    FILE *fp;
-    int ret;
-    char buff[MAXSTR];
-    
-    if (!(fp=popen(cmd,"r"))) {
-        vt_printf(vt,"command exec error\n");
-        return -1;
-    }
-    while (!vt_chkbrk(vt)) {
-        if (!fgets(buff,sizeof(buff),fp)) break;
-        vt_printf(vt,buff);
-    }
-    if ((ret=pclose(fp))) {
-        vt_printf(vt,"command exec error (%d)\n",ret);
-    }
-    return ret;
-}
 /* console thread ------------------------------------------------------------*/
 static void *con_thread(void *arg)
 {
@@ -1361,30 +1352,30 @@ static void *con_thread(void *arg)
     if (!login(con->vt)) {
         vt_close(con->vt);
         con->state=0;
-        return 0;
+        return NULL;
     }
  
     /* auto start if option set */
     if (start&1) { /* start with console */
-        cmd_start(args,narg,con->vt);
+        cmd_start(NULL,0,con->vt);
         start=0;
     }
     
     while (con->state) {
         
         /* output prompt */
-        if (!vt_puts(con->vt,CMDPROMPT)) break;
+        if (!vt_puts(con->vt,CMDPROMPT)) {
+            con->state = 0;
+            break;
+        }
         
         /* input command */
         if (!vt_gets(con->vt,buff,sizeof(buff))) break;
         
-        if (buff[0]=='!') { /* shell escape */
-            cmd_exec(buff+1,con->vt);
-            continue;
-        }
         /* parse command */
         narg=0;
-        for (p=strtok(buff," \t\n");p&&narg<MAXARG;p=strtok(NULL," \t\n")) {
+        char *r;
+        for (p=strtok_r(buff," \t\n",&r);p&&narg<MAXARG;p=strtok_r(NULL," \t\n",&r)) {
             args[narg++]=p;
         }
         if (narg==0) continue;
@@ -1428,7 +1419,8 @@ static void *con_thread(void *arg)
         }
     }
     vt_close(con->vt);
-    return 0;
+    con->vt = NULL;
+    return NULL;
 }
 /* open console --------------------------------------------------------------*/
 static con_t *con_open(int sock, const char *dev)
@@ -1525,9 +1517,42 @@ static void accept_sock(int ssock, con_t **con)
     trace(2,"remote console connection refused. addr=%s\n",
          inet_ntoa(addr.sin_addr));
 }
+
+static void deamonise(void)
+{
+#ifndef WIN32
+    /* In case we were not started in the background, fork and let the parent
+     * exit.  Guarantees that the child is not a process group leader. */
+    int childpid = fork();
+    if (childpid < 0) {
+        perror("fork\n");
+        _exit(1);
+    } else if (childpid > 0) {
+        /* parent */
+      _exit(0);
+    }
+
+    /* Make ourselves the leader of a new process group with no controlling
+     * terminal. */
+    if (setsid() < 0) {
+        perror("setsid\n");
+        _exit(1);
+    }
+
+    for (int fd = 0; fd < 10; fd++) close(fd);
+
+    open("/dev/null", O_RDWR);
+    gtime_t time = utc2gpst(timeget());
+    char path[1024];
+    reppath(LOGFILE, path, time, "", "");
+    open(path, O_WRONLY|O_CREAT|O_TRUNC, 0666);
+    dup(1);
+#endif
+}
+
 /* rtkrcv main -----------------------------------------------------------------
 * synopsis
-*     rtkrcv [-s][-p port][-d dev][-o file][-r level][-t level][-sta sta]
+*     rtkrcv [-s][-nc][-p port][-d dev][-o file][-r level][-t level][-sta sta]
 *
 * description
 *     A command line version of the real-time positioning AP by rtklib. To start
@@ -1541,8 +1566,13 @@ static void accept_sock(int ssock, con_t **con)
 *     set, load or save command on the console. To shutdown the program, use
 *     shutdown command on the console or send USR2 signal to the process.
 *
+*     The --deamon option implies no console. When used with -s or -nc the RTK
+*     server is started on program startup. A telnet console can be used with
+*     this option to start and control the RTK server.
+*
 * option
 *     -s         start RTK server on program startup
+*     -nc        start RTK server on program startup with no console
 *     -p port    port number for telnet console
 *     -m port    port number for monitor stream
 *     -d dev     terminal device for console
@@ -1551,6 +1581,8 @@ static void accept_sock(int ssock, con_t **con)
 *     -r level   output solution status file (0:off,1:states,2:residuals)
 *     -t level   debug trace level (0:off,1-5:on)
 *     -sta sta   station name for receiver dcb
+*     --deamon   detach from the console
+*     --version  prints the version and exits
 *
 * command
 *     start
@@ -1620,20 +1652,20 @@ static void accept_sock(int ssock, con_t **con)
 *     shutdown
 *       Shutdown RTK server and exit the program.
 *
-*     !command [arg...]
-*       Execute command by the operating system shell. Do not use the
-*       interactive command.
-*
 * notes
 *     Short form of a command is allowed. In case of the short form, the
 *     command is distinguished according to header characters.
 *     
+*     The -r argument only affects the status file. The status output streams
+*     take their level from the out-outstat option.
+*
 *-----------------------------------------------------------------------------*/
 int main(int argc, char **argv)
 {
     con_t *con[MAXCON]={0};
     int i,port=0,outstat=0,trace=0,sock=0;
     char *dev="",file[MAXSTR]="";
+    int deamon=0;
     
     for (i=1;i<argc;i++) {
         if      (!strcmp(argv[i],"-s")) start|=1; /* console */
@@ -1646,8 +1678,14 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-r")&&i+1<argc) outstat=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-t")&&i+1<argc) trace=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-sta")&&i+1<argc) strcpy(sta_name,argv[++i]);
+        else if (!strcmp(argv[i], "--deamon")) deamon=1;
+        else if (!strcmp(argv[i], "--version")) {
+            fprintf(stderr, "rtkrcv RTKLIB %s %s\n", VER_RTKLIB, PATCH_LEVEL);
+            exit(0);
+        }
         else printusage();
     }
+    if (deamon) deamonise();
     if (trace>0) {
         traceopen(TRACEFILE);
         tracelevel(trace);
@@ -1664,6 +1702,8 @@ int main(int argc, char **argv)
         fprintf(stderr,"no options file: %s. defaults used\n",file);
     }
     getsysopts(&prcopt,solopt,&filopt);
+    /* Copy the system options for the second output solution stream */
+    solopt[1]=solopt[0];
     
     /* read navigation data */
     if (!readnav(NAVIFILE,&svr.nav)) {
@@ -1683,18 +1723,19 @@ int main(int argc, char **argv)
             if (moniport>0) closemoni();
             if (outstat>0) rtkclosestat();
             traceclose();
-            return -1;
+            return EXIT_FAILURE;
         }
-    } else if (start&2) { /* start without console */
+    }
+    if (start&2) { /* Start without console */
         startsvr(NULL); 
-    } else  {  
+    } else if (!deamon) {
         /* open device for local console */
         if (!(con[0]=con_open(0,dev))) {
             fprintf(stderr,"console open error dev=%s\n",dev);
             if (moniport>0) closemoni();
             if (outstat>0) rtkclosestat();
             traceclose();
-            return -1;
+            return EXIT_FAILURE;
         }
     }
     signal(SIGINT, sigshut); /* keyboard interrupt */

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1156</width>
+    <width>1254</width>
     <height>502</height>
    </rect>
   </property>
@@ -412,9 +412,19 @@
        </widget>
       </item>
       <item>
+       <widget class="QLabel" name="lblInformation">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -427,17 +437,7 @@
       <item>
        <widget class="QDialogButtonBox" name="buttonBox">
         <property name="standardButtons">
-         <set>QDialogButtonBox::Close</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="lblInformation">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
+         <set>QDialogButtonBox::StandardButton::Close</set>
         </property>
        </widget>
       </item>
@@ -445,7 +445,14 @@
     </widget>
    </item>
    <item>
-    <widget class="QTableWidget" name="tWConsole"/>
+    <widget class="QTableWidget" name="tWConsole">
+     <property name="alternatingRowColors">
+      <bool>true</bool>
+     </property>
+     <property name="selectionBehavior">
+      <enum>QAbstractItemView::SelectionBehavior::SelectRows</enum>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

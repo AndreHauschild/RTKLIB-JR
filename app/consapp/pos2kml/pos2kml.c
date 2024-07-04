@@ -80,16 +80,20 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i],"-i")&&i+i<argc) tint=atof(argv[++i]);
         else if (!strcmp(argv[i],"-q")&&i+i<argc) qflg=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-gpx")) gpx=1;
+        else if (!strcmp(argv[i], "--version")) {
+            fprintf(stderr, "pos2kml RTKLIB %s %s\n", VER_RTKLIB, PATCH_LEVEL);
+            exit(0);
+        }
         else if (*argv[i]=='-') printhelp();
         else if (n<32) infile[n++]=argv[i];
     }
     if (tcolor<0||5<tcolor||pcolor<0||5<pcolor) {
         fprintf(stderr,"pos2kml : command option error\n");
-        return -1;
+        return EXIT_FAILURE;
     }
     if (n<=0) {
         fprintf(stderr,"pos2kml : no input file\n");
-        return -1;
+        return EXIT_FAILURE;
     }
     for (i=0;i<n;i++) {
         if (gpx) {

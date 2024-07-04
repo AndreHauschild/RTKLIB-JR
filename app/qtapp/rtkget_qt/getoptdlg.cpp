@@ -31,7 +31,7 @@ DownOptDialog::DownOptDialog(QWidget *parent)
     QAction *acUrlFilename = ui->lEUrlFilename->addAction(QIcon(":/icons/folder"), QLineEdit::TrailingPosition);
     acUrlFilename->setToolTip(tr("Select URL File Path"));
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &DownOptDialog::saveClose);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &DownOptDialog::accept);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &DownOptDialog::reject);
     connect(acLogFilename, &QAction::triggered, this, &DownOptDialog::selectLogFilename);
     connect(acUrlFilename, &QAction::triggered, this, &DownOptDialog::selectUrlFile);
@@ -66,7 +66,7 @@ void DownOptDialog::updateUi()
     ui->cBTraceLevel->setCurrentIndex(traceLevel);
 }
 //---------------------------------------------------------------------------
-void DownOptDialog::saveClose()
+void DownOptDialog::accept()
 {
     holdErr = ui->cBKeepErr->isChecked();
     holdList = ui->cBKeepList->isChecked();
@@ -78,7 +78,7 @@ void DownOptDialog::saveClose()
     dateFormat = ui->cBDateFormat->currentIndex();
     traceLevel = ui->cBTraceLevel->currentIndex();
 
-    accept();
+    QDialog::accept();
 }
 //---------------------------------------------------------------------------
 void DownOptDialog::loadOptions(QSettings &setting)

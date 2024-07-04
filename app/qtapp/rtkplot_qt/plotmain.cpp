@@ -52,6 +52,7 @@
 #include <QScreen>
 #include <QtGlobal>
 #include <QFileInfo>
+#include <QWidgetAction>
 
 #include <QFileInfo>
 #include <QCommandLineParser>
@@ -183,8 +184,6 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent), ui(new Ui::Plot)
     timeStart = timeEnd = epoch2time(ep);
     console1 = new Console(this);
     console2 = new Console(this);
-    ui->lWRangeList->setParent(0);
-    ui->lWRangeList->setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint | Qt::FramelessWindowHint);
 
     for (int i = 0; i < 361; i++) elevationMaskData[i] = 0.0;
 
@@ -239,6 +238,11 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent), ui(new Ui::Plot)
     ui->menuShowSkyplot->setChecked(true);
     ui->menuShowGrid->setChecked(true);
 
+    QWidgetAction* popupAction = new QWidgetAction(this);
+    popupAction->setDefaultWidget(ui->lWRangeList);
+    ui->btnRangeList->setPopupMode(QToolButton::InstantPopup);
+    ui->btnRangeList->addAction(popupAction);
+
     dirModel = new QFileSystemModel(this);
     dirModel->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
@@ -261,7 +265,6 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent), ui(new Ui::Plot)
     connect(ui->btnSolution2, &QPushButton::clicked, this, &Plot::activateSolution2);
     connect(ui->btnSolution12, &QPushButton::clicked, this, &Plot::activateSolution12);
     connect(ui->btnConnect, &QPushButton::clicked, this, &Plot::toggleConnectState);
-    connect(ui->btnRangeList, &QPushButton::clicked, this, &Plot::showRangeListWidget);
     connect(ui->btnAnimate, &QPushButton::clicked, this, &Plot::updateEnable);
     connect(ui->btnFrequency, &QPushButton::clicked, this, &Plot::showFrequencyDialog);
     connect(ui->menuAbout, &QAction::triggered, this, &Plot::showAboutDialog);
@@ -320,7 +323,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent), ui(new Ui::Plot)
     connect(&timer, &QTimer::timeout, this, &Plot::timerTimer);
     connect(ui->cBPlotTypeSelection, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updateSelectedPlotType);
     connect(ui->cBQFlag, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updatePlotAndEnable);
-    connect(ui->sBTime, &QScrollBar::valueChanged, this, &Plot::updateCurrentObsSol);
+    connect(ui->sBTime, &QScrollBar::sliderMoved, this, &Plot::updateCurrentObsSol);
     connect(ui->cBSatelliteList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::satelliteListChanged);
     connect(ui->cBDopType, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updatePlotAndEnable);
     connect(ui->cBObservationType, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updatePlotAndEnable);
@@ -1260,21 +1263,6 @@ void Plot::updatePlotSizeAndRefresh()
     updatePlotSizes();
     refresh();
 }
-// callback on button-range-list --------------------------------------------
-void Plot::showRangeListWidget()
-{
-    QToolButton *btn = (QToolButton *)sender();
-    trace(3, "showRangeListWidget\n");
-
-    QRect rect = btn->geometry();
-    QPoint pos = mapToGlobal(rect.bottomLeft());
-    //pos.rx() -= btn->width();
-    //pos.ry() += btn->height();
-
-    // pop-up list widget
-    ui->lWRangeList->move(pos);
-    ui->lWRangeList->setVisible(!ui->lWRangeList->isVisible());
-}
 // --------------------------------------------------------------------------
 double Plot::getYRange()
 {
@@ -1432,6 +1420,7 @@ void Plot::mouseReleaseEvent(QMouseEvent *event)
 #else
     trace(3, "mouseReleaseEvent: X=%d Y=%d\n", mapFromGlobal(event->globalPos()).x(), mapFromGlobal(event->globalPos()).y());
 #endif
+    if (dragState == 0) return;
     dragState = 0;
 
     setCursor(Qt::ArrowCursor);
@@ -1858,7 +1847,7 @@ void Plot::keyPressEvent(QKeyEvent *event)
         if ((event->key() == Qt::Key_Up) && (event->modifiers().testFlag(Qt::ControlModifier)))
             ys /= scaleFactor;
         if ((event->key() == Qt::Key_Down) && (event->modifiers().testFlag(Qt::ControlModifier)))
-            xs *= scaleFactor;
+            ys *= scaleFactor;
         if ((event->key() == Qt::Key_Left) && (event->modifiers().testFlag(Qt::ControlModifier)))
             xs *= scaleFactor;
         if ((event->key() == Qt::Key_Right) && (event->modifiers().testFlag(Qt::ControlModifier)))
@@ -1891,7 +1880,7 @@ void Plot::timerTimer()
     if (connectState) { // real-time input mode
         for (int streamNo = 0; streamNo < 2; streamNo++) {
             solopt.posf = rtFormat[streamNo];
-            solopt.times = (rtTimeFormat == 0) ? 0 : rtTimeFormat - 1;
+            solopt.times = (rtTimeFormat == 0) ? TIMES_GPST : (rtTimeFormat - 1);
             solopt.timef = rtTimeFormat >= 1;
             solopt.degf = rtDegFormat;
             strncpy(solopt.sep, qPrintable(rtFieldSeperator), 63);
@@ -1902,7 +1891,7 @@ void Plot::timerTimer()
                 connectmsg += QStringLiteral("(%1) %2 ").arg(streamNo + 1).arg(msg);
             while ((n = strread(stream + streamNo, buff, sizeof(buff))) > 0) {
                 for (j = 0; j < n; j++) {
-                    istat = inputsol(buff[j], ts, ts, tint, 0, &solopt, solutionData + streamNo);
+                    istat = inputsol(buff[j], ts, ts, tint, SOLQ_NONE, &solopt, solutionData + streamNo);
                     if (istat == 0) continue;
                     if (istat < 0) { // disconnect received
                         disconnectStream();
@@ -2118,6 +2107,8 @@ void Plot::updateTime()
     int i, sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
 
     trace(3, "updateTime\n");
+
+    if (observationIndex < 0) return;
 
     // time-cursor change on solution-plot
     if (plotType <= PLOT_NSAT || plotType <= PLOT_RES) {

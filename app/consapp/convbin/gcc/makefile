@@ -10,8 +10,7 @@ INCLUDE= -I$(SRC)
 OPTIONS= -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=3 -DNEXOBS=3
 
 CFLAGS = -std=c99 -O3 -pedantic -Wall -Wno-unused-but-set-variable $(INCLUDE) $(OPTIONS) -g
-
-LDLIBS = -lm -lrt
+LDLIBS = -lm
 
 all  : convbin
 
@@ -148,5 +147,3 @@ test18:
 test21:
 	stty raw < /dev/ttyACM0
 	./convbin -r ubx -o ubx.obs -n ubx.nav -s ubx.sbs -h ubx.hnav /dev/ttyACM0
-
-

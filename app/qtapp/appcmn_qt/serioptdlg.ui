@@ -65,7 +65,7 @@
    <item row="7" column="3">
     <widget class="QSpinBox" name="cBTcpPort">
      <property name="maximum">
-      <number>35536</number>
+      <number>65535</number>
      </property>
     </widget>
    </item>

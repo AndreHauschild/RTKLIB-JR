@@ -19,7 +19,7 @@ MapViewOptDialog::MapViewOptDialog(QWidget* parent)
     ui->lEApiKey->addAction(acNotes, QLineEdit::TrailingPosition);
 
     connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &MapViewOptDialog::accept);
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &MapViewOptDialog::close);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &MapViewOptDialog::reject);
     connect(acNotes, &QAction::triggered, this, &MapViewOptDialog::showNotes);
 }
 //---------------------------------------------------------------------------

@@ -20,7 +20,7 @@ RefDialog::RefDialog(QWidget *parent, int options)
     this->options = options;
     roverPosition[0] = roverPosition[1] = roverPosition[2] = 0.0;
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &RefDialog::saveClose);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &RefDialog::accept);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &RefDialog::reject);
     connect(ui->tWStationList, &QTableWidget::cellDoubleClicked, this, &RefDialog::stationSelected);
     connect(ui->btnFind, &QPushButton::clicked, this, &RefDialog::findList);
@@ -37,10 +37,10 @@ void RefDialog::showEvent(QShowEvent *event)
     ui->btnLoad->setVisible(options);
 
     QStringList columns;
-    columns << tr("No") << tr("Latitude(%1)").arg(degreeChar) << tr("Longitude(%1)").arg(degreeChar) << tr("Height(m)") << tr("Id") << tr("Name") << tr("Distance(km)");
-    ui->tWStationList->setHorizontalHeaderLabels(columns);
+    columns << tr("No") << tr("Latitude (%1)").arg(degreeChar) << tr("Longitude (%1)").arg(degreeChar) << tr("Height (m)") << tr("Id") << tr("Name") << tr("Distance (km)");
     ui->tWStationList->setColumnCount(columns.size());
     ui->tWStationList->setRowCount(1);
+    ui->tWStationList->setHorizontalHeaderLabels(columns);
 
     for (int i = 0; i < columns.size(); i++)
         for (int j = 0; j < 1; j++)
@@ -63,12 +63,12 @@ void RefDialog::stationSelected(int, int)
         reject();
 }
 //---------------------------------------------------------------------------
-void RefDialog::saveClose()
+void RefDialog::accept()
 {
     if (validReference())
-        accept();
+        QDialog::accept();
     else
-        reject();
+        QDialog::reject();
 }
 //---------------------------------------------------------------------------
 void RefDialog::loadStations()

@@ -13,6 +13,7 @@ SOURCES += \
     kmzconv.cpp \
     postmain.cpp \
     rtkpost.cpp \
+    ../widgets_qt/doubleunitvalidator.cpp \
     ../widgets_qt/scientificspinbox.cpp \
     ../appcmn_qt/navi_post_opt.cpp \
     ../appcmn_qt/aboutdlg.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
 HEADERS  += \
     kmzconv.h \
     postmain.h \
+    ../widgets_qt/doubleunitvalidator.h \
     ../widgets_qt/scientificspinbox.h \
     ../appcmn_qt/navi_post_opt.h \
     ../appcmn_qt/keydlg.h \

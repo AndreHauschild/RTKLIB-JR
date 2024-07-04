@@ -13,12 +13,26 @@
 
 #include "ui_outstrdlg.h"
 
+#include "rtklib.h"
+
 
 //---------------------------------------------------------------------------
 OutputStrDialog::OutputStrDialog(QWidget *parent)
     : QDialog(parent), ui(new Ui::OutputStrDialog)
 {
     ui->setupUi(this);
+
+    ui->cBFormat1->setItemData(0, "Latitude, longitude and height", Qt::ToolTipRole);
+    ui->cBFormat1->setItemData(1, "X/Y/Z components of ECEF coordinates", Qt::ToolTipRole);
+    ui->cBFormat1->setItemData(2, "E/N/U components of baseline vector", Qt::ToolTipRole);
+    ui->cBFormat1->setItemData(3, "NMEA GPRMC, GPGGA, GPGSA, GLGSA, GAGSA, GPGSV, GLGSV and GAGSV", Qt::ToolTipRole);
+    ui->cBFormat1->setItemData(4, "Solution status", Qt::ToolTipRole);
+
+    ui->cBFormat2->setItemData(0, "Latitude, longitude and height", Qt::ToolTipRole);
+    ui->cBFormat2->setItemData(1, "X/Y/Z components of ECEF coordinates", Qt::ToolTipRole);
+    ui->cBFormat2->setItemData(2, "E/N/U components of baseline vector", Qt::ToolTipRole);
+    ui->cBFormat2->setItemData(3, "NMEA GPRMC, GPGGA, GPGSA, GLGSA, GAGSA, GPGSV, GLGSV and GAGSV", Qt::ToolTipRole);
+    ui->cBFormat2->setItemData(4, "Solution status", Qt::ToolTipRole);
 
     keyDialog = new KeyDialog(this);
     serialOptDialog = new SerialOptDialog(this);
@@ -69,7 +83,7 @@ void OutputStrDialog::selectFile2()
 //---------------------------------------------------------------------------
 void OutputStrDialog::showKeyDialog()
 {
-    keyDialog->exec();
+    keyDialog->show();
 }
 //---------------------------------------------------------------------------
 void OutputStrDialog::showStream1Options()
@@ -115,8 +129,10 @@ QString OutputStrDialog::setFilePath(const QString &p)
 //---------------------------------------------------------------------------
 void OutputStrDialog::showSerialOptions(int index, int opt)
 {
-    serialOptDialog->setPath(paths[index][0]);
+    if ((index < 0) || (index > 1)) return;
+
     serialOptDialog->setOptions(opt);
+    serialOptDialog->setPath(paths[index][0]);
 
     serialOptDialog->exec();
     if (serialOptDialog->result() != QDialog::Accepted) return;
@@ -126,12 +142,14 @@ void OutputStrDialog::showSerialOptions(int index, int opt)
 //---------------------------------------------------------------------------
 void OutputStrDialog::showTcpOptions(int index, int opt)
 {
-    tcpOptDialog->setPath(paths[index][1]);
+    if ((index < 0) || (index > 1)) return;
+
     tcpOptDialog->setOptions(opt);
     tcpOptDialog->setHistory(history, 10);
+    tcpOptDialog->setPath(paths[index][1]);
 
     tcpOptDialog->exec();
-    if (tcpOptDialog->exec() != QDialog::Accepted) return;
+    if (tcpOptDialog->result() != QDialog::Accepted) return;
 
     paths[index][1] = tcpOptDialog->getPath();
     for (int i = 0; i < 10; i++) {
@@ -150,9 +168,10 @@ void OutputStrDialog::updateEnable()
     ui->btnStream2->setEnabled(ui->cBStream2C->isChecked() && ui->cBStream2->currentIndex() <= 4);
     ui->lEFilePath1->setEnabled(ui->cBStream1C->isChecked() && ui->cBStream1->currentIndex() == 5);
     ui->lEFilePath2->setEnabled(ui->cBStream2C->isChecked() && ui->cBStream2->currentIndex() == 5);
+    ui->cBFormat1->setEnabled(ui->cBStream1C->isChecked());
+    ui->cBFormat2->setEnabled(ui->cBStream2C->isChecked());
     ui->lblF1->setEnabled(ena);
     ui->lblSwapInterval->setEnabled(ena);
-    ui->lblH->setEnabled(ena);
     ui->cBTimeTag->setEnabled(ena);
     ui->cBSwapInterval->setEnabled(ena);
     ui->btnKey->setEnabled(ena);
@@ -161,7 +180,8 @@ void OutputStrDialog::updateEnable()
 void OutputStrDialog::setStreamEnabled(int stream, int enabled)
 {
     QCheckBox *cBStreamC[] = {ui->cBStream1C, ui->cBStream2C};
-    if (stream > 2) return;
+    if ((stream < 0 ) || (stream > 1)) return;
+
     cBStreamC[stream]->setChecked(enabled);
 
     updateEnable();
@@ -170,14 +190,16 @@ void OutputStrDialog::setStreamEnabled(int stream, int enabled)
 int OutputStrDialog::getStreamEnabled(int stream)
 {
     QCheckBox *cBStreamC[] = {ui->cBStream1C, ui->cBStream2C};
-    if (stream > 2) return -1;
+    if ((stream < 0 ) || (stream > 1)) return false;
+
     return cBStreamC[stream]->isChecked();
 }
 //---------------------------------------------------------------------------
 void OutputStrDialog::setStreamType(int stream, int type)
 {
     QComboBox *cBStream[] = {ui->cBStream1, ui->cBStream2};
-    if (stream > 2) return;
+    if ((stream < 0 ) || (stream > 1)) return;
+
     cBStream[stream]->setCurrentIndex(type);
 
     updateEnable();
@@ -186,7 +208,8 @@ void OutputStrDialog::setStreamType(int stream, int type)
 void OutputStrDialog::setStreamFormat(int stream, int format)
 {
     QComboBox *cBFormat[] = {ui->cBFormat1, ui->cBFormat2};
-    if (stream > 2) return;
+    if ((stream < 0 ) || (stream > 1)) return;
+
     cBFormat[stream]->setCurrentIndex(format);
     updateEnable();
 }
@@ -194,7 +217,8 @@ void OutputStrDialog::setStreamFormat(int stream, int format)
 int OutputStrDialog::getStreamFormat(int stream)
 {
     QComboBox *cBFormat[] = {ui->cBFormat1, ui->cBFormat2};
-    if (stream > 2) return -1;
+    if ((stream < 0 ) || (stream > 1)) return STRFMT_RTCM2;
+
     return cBFormat[stream]->currentIndex();
 }
 
@@ -202,25 +226,38 @@ int OutputStrDialog::getStreamFormat(int stream)
 int OutputStrDialog::getStreamType(int stream)
 {
     QComboBox *cBStream[] = {ui->cBStream1, ui->cBStream2};
-    if (stream > 2) return -1;
+    if ((stream < 0 ) || (stream > 1)) return STR_NONE;
+
     return cBStream[stream]->currentIndex();
 };
 //---------------------------------------------------------------------------
 void OutputStrDialog::setPath(int stream, int type, const QString &path)
 {
     QLineEdit *edits[] = {ui->lEFilePath1, ui->lEFilePath2};
-    if (stream > 2) return;
+    if ((stream < 0 ) || (stream > 1)) return;
+    if ((type < 0) || (type > 3)) return;
+
     paths[stream][type] = path;
+    ui->cBTimeTag->setChecked(path.contains("::T"));
+    if (path.contains("::S="))
+    {
+        int startPos = path.indexOf("::S=")+4;
+        QString startTime = path.mid(startPos, path.indexOf("::", startPos)-startPos);
+        ui->cBSwapInterval->setCurrentText(startTime + " h");
+    };
+
     if (type == 2)
     {
-        edits[stream]->setText(path);
+        edits[stream]->setText(path.mid(0, path.indexOf("::")));
     };
 }
 //---------------------------------------------------------------------------
 QString OutputStrDialog::getPath(int stream, int type)
 {
     QLineEdit *edits[] = {ui->lEFilePath1, ui->lEFilePath2};
-    if (stream > 2) return "";
+    if ((stream < 0 ) || (stream > 1)) return "";
+    if ((type < 0) || (type > 3)) return "";
+
     if (type == 2)
         return setFilePath(edits[stream]->text());
 
@@ -238,7 +275,8 @@ bool OutputStrDialog::getTimeTagEnabled(){
 //---------------------------------------------------------------------------
 void OutputStrDialog::setSwapInterval(const QString & swapInterval)
 {
-    QString interval_str = swapInterval + " h";
+    QString interval_str = swapInterval;
+    if (!interval_str.isEmpty()) interval_str += " h";
     if (ui->cBSwapInterval->findText(interval_str) == -1)
         ui->cBSwapInterval->insertItem(0, interval_str);
     ui->cBSwapInterval->setCurrentText(interval_str);
@@ -246,16 +284,23 @@ void OutputStrDialog::setSwapInterval(const QString & swapInterval)
 //---------------------------------------------------------------------------
 QString OutputStrDialog::getSwapInterval()
 {
-    return ui->cBSwapInterval->currentText().split(' ', Qt::SkipEmptyParts).first();
+    QStringList tokens = ui->cBSwapInterval->currentText().split(' ', Qt::SkipEmptyParts);
+    if (tokens.size() > 1)
+        return tokens.first();
+    else return "";
 };
 //---------------------------------------------------------------------------
 void OutputStrDialog::setHistory(int i, const QString &history)
 {
+    if ((i < 0) || (i > 9)) return;
+
     this->history[i] = history;
 }
 //---------------------------------------------------------------------------
-const QString &OutputStrDialog::getHistory(int i)
+const QString OutputStrDialog::getHistory(int i)
 {
+    if ((i < 0) || (i > 9)) return "";
+
     return history[i];
 }
 //---------------------------------------------------------------------------

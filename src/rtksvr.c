@@ -71,7 +71,7 @@ static void saveoutbuf(rtksvr_t *svr, uint8_t *buff, int n, int index)
 static void writesol(rtksvr_t *svr, int index)
 {
     solopt_t solopt=solopt_default;
-    uint8_t buff[MAXSOLMSG+1];
+    uint8_t buff[2*MAXSOLMSG+1];
     int i,n;
     
     tracet(4,"writesol: index=%d\n",index);
@@ -82,7 +82,7 @@ static void writesol(rtksvr_t *svr, int index)
             
             /* output solution status */
             rtksvrlock(svr);
-            n=rtkoutstat(&svr->rtk,(char *)buff);
+            n=rtkoutstat(&svr->rtk,svr->solopt[i].sstat,(char *)buff);
             rtksvrunlock(svr);
         }
         else {
@@ -573,7 +573,7 @@ static void *rtksvrthread(void *arg)
     uint32_t tick,ticknmea,tick1hz,tickreset;
     uint8_t *p,*q;
     char msg[128];
-    int i,j,n,fobs[3]={0},cycle,cputime;
+    int i,j,n,cycle,cputime;
     
     tracet(3,"rtksvrthread:\n");
     
@@ -602,6 +602,7 @@ static void *rtksvrthread(void *arg)
             svr->npb[i]+=n;
             rtksvrunlock(svr);
         }
+        int fobs[3]={0};
         for (i=0;i<3;i++) {
             if (svr->format[i]==STRFMT_SP3||svr->format[i]==STRFMT_RNXCLK) {
                 /* decode download file */
@@ -729,22 +730,25 @@ extern int rtksvrinit(rtksvr_t *svr)
     for (i=0;i<3;i++) svr->rb_ave[i]=0.0;
     
     memset(&svr->nav,0,sizeof(nav_t));
+    memset(&svr->obs,0,sizeof(svr->obs));
     if (!(svr->nav.eph =(eph_t  *)malloc(sizeof(eph_t )*MAXSAT*4 ))||
         !(svr->nav.geph=(geph_t *)malloc(sizeof(geph_t)*NSATGLO*2))||
         !(svr->nav.seph=(seph_t *)malloc(sizeof(seph_t)*NSATSBS*2))) {
         tracet(1,"rtksvrinit: malloc error\n");
+        rtksvrfree(svr);
         return 0;
     }
     for (i=0;i<MAXSAT*4 ;i++) svr->nav.eph [i]=eph0;
     for (i=0;i<NSATGLO*2;i++) svr->nav.geph[i]=geph0;
     for (i=0;i<NSATSBS*2;i++) svr->nav.seph[i]=seph0;
-    svr->nav.n =MAXSAT *2;
-    svr->nav.ng=NSATGLO*2;
-    svr->nav.ns=NSATSBS*2;
+    svr->nav.n =svr->nav.nmax =MAXSAT *2;
+    svr->nav.ng=svr->nav.ngmax=NSATGLO*2;
+    svr->nav.ns=svr->nav.nsmax=NSATSBS*2;
     
     for (i=0;i<3;i++) for (j=0;j<MAXOBSBUF;j++) {
         if (!(svr->obs[i][j].data=(obsd_t *)malloc(sizeof(obsd_t)*MAXOBS))) {
             tracet(1,"rtksvrinit: malloc error\n");
+            rtksvrfree(svr);
             return 0;
         }
     }
@@ -832,8 +836,8 @@ extern void rtksvrunlock(rtksvr_t *svr) {rtklib_unlock(&svr->lock);}
 * return : status (1:ok 0:error)
 *-----------------------------------------------------------------------------*/
 extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
-                       char **paths, int *formats, int navsel, char **cmds,
-                       char **cmds_periodic, char **rcvopts, int nmeacycle,
+                       const char **paths, int *formats, int navsel, const char **cmds,
+                       const char **cmds_periodic, const char **rcvopts, int nmeacycle,
                        int nmeareq, const double *nmeapos, prcopt_t *prcopt,
                        solopt_t *solopt, stream_t *moni, char *errmsg)
 {
@@ -965,7 +969,7 @@ extern int rtksvrstart(rtksvr_t *svr, int cycle, int buffsize, int *strs,
 *                              cmds[2]=input stream ephem (NULL: no command)
 * return : none
 *-----------------------------------------------------------------------------*/
-extern void rtksvrstop(rtksvr_t *svr, char **cmds)
+extern void rtksvrstop(rtksvr_t *svr, const char **cmds)
 {
     int i;
     

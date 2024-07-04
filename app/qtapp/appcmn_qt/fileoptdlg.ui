@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>448</width>
-    <height>175</height>
+    <width>483</width>
+    <height>184</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -233,7 +233,7 @@
      <item>
       <widget class="QDialogButtonBox" name="buttonBox">
        <property name="standardButtons">
-        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+        <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
        </property>
       </widget>
      </item>
@@ -241,6 +241,16 @@
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cBPathEnable</tabstop>
+  <tabstop>lEFilePath</tabstop>
+  <tabstop>cBTimeTag</tabstop>
+  <tabstop>cBTimeSpeed</tabstop>
+  <tabstop>sBTimeStart</tabstop>
+  <tabstop>cBSwapInterval</tabstop>
+  <tabstop>btnKey</tabstop>
+  <tabstop>cB64Bit</tabstop>
+ </tabstops>
  <resources>
   <include location="../icon/resources.qrc"/>
  </resources>

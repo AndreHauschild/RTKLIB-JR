@@ -70,7 +70,7 @@ extern "C" {
 
         va_start(arg, format); vsprintf(buff, format, arg); va_end(arg);
 
-        QMetaObject::invokeMethod(mainWindow, "showMessage", Qt::QueuedConnection, Q_ARG(QString, QString(buff)));
+        QMetaObject::invokeMethod(mainWindow, "showMessage", Qt::AutoConnection, Q_ARG(QString, QString(buff)));
 
         return abortf;
     }
@@ -186,7 +186,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(acOutputFileView[7], &QAction::triggered, this, &MainWindow::viewOutputFile8);
     connect(acOutputFileView[8], &QAction::triggered, this, &MainWindow::viewOutputFile9);
     connect(acOutputDirSelect, &QAction::triggered, this, &MainWindow::selectOutputDirectory);
-    connect(ui->lEOutputDirectory, &QLineEdit::editingFinished, this, &MainWindow::outputDirectoryChanged);
+    connect(ui->lEOutputDirectory, &QLineEdit::textChanged, this, &MainWindow::outputDirectoryChanged);
     connect(ui->cBTimeStart, &QCheckBox::clicked, this, &MainWindow::updateEnable);
     connect(ui->cBTimeEnd, &QCheckBox::clicked, this, &MainWindow::updateEnable);
     connect(ui->cBTimeInterval, &QCheckBox::clicked, this, &MainWindow::updateEnable);
@@ -360,42 +360,52 @@ void MainWindow::callRtkPlot()
         ui->cBOutputFileEnable1, ui->cBOutputFileEnable2, ui->cBOutputFileEnable3, ui->cBOutputFileEnable4,
         ui->cBOutputFileEnable5, ui->cBOutputFileEnable6, ui->cBOutputFileEnable7, ui->cBOutputFileEnable8
     };
-    QString cmd[] = {"rtkplot_qt", "..\\..\\..\\bin\\rtkplot_qt", "..\\rtkplot_qt\\rtkplot_qt"};
+    QStringList cmds = {"rtkplot_qt", "../../../bin/rtkplot_qt", "../rtkplot_qt/rtkplot_qt"};
     QStringList opts;
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
 
-    opts << " -r";
+    opts << "-r";
 
     for (i = 0; i < 8; i++) ena[i] = cb[i]->isEnabled() && cb[i]->isChecked();
 
     for (i = 0; i < 8; i++)
-        if (ena[i]) opts << " \"" + repPath(file[i]) + "\"";
+        if (ena[i]) opts << repPath(file[i]);
 
     if (opts.size() == 1) return;
 
-    if (!execCommand(cmd[0], opts) && !execCommand(cmd[1], opts) && !execCommand(cmd[2], opts))
-        showMessage(tr("error : rtkplot_qt execution"));
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts)) {
+            return;
+        }
+
+    showMessage(tr("Error: Could not execute rtkplot_qt"));
 }
 // callback on button-post-proc ---------------------------------------------
 void MainWindow::callRtkPost()
 {
-    QString cmd[] = {commandPostExe, QString("..\\..\\..\\bin\\") + commandPostExe, QString("..\\rtkpost_qt\\") + commandPostExe};
+    QStringList cmds = {commandPostExe, QString("../../../bin/") + commandPostExe, QString("../rtkpost_qt/") + commandPostExe};
     QStringList opts;
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
 
     if (!ui->cBOutputFileEnable1->isChecked()) return;
 
-    opts << " -r \"" + ui->lEOutputFile1->text() + "\"";
-    opts << " -n \"\" -n \"\"";
+    opts << "-r" << ui->lEOutputFile1->text();
+    opts << "-n" << "" << "-n" << "";
 
     if (ui->cBOutputFileEnable9->isChecked())
-        opts << " -n \"" + ui->lEOutputFile9->text() + "\"";
+        opts << "-n" << ui->lEOutputFile9->text();
 
-    if (ui->cBTimeStart->isChecked()) opts << + " -ts " + ui->dateTimeStart->dateTime().toString("yyyy/MM/dd hh:mm:ss");
-    if (ui->cBTimeEnd->isChecked()) opts << " -te " + ui->dateTimeStop->dateTime().toString("yyyy/MM/dd hh:mm:ss");
-    if (ui->cBTimeInterval->isChecked()) opts << " -ti " + ui->comboTimeInterval->currentText();
-    if (ui->cBTimeUnit->isChecked()) opts << " -tu " + ui->cBTimeUnit->text();
+    if (ui->cBTimeStart->isChecked()) opts << + "-ts" << ui->dateTimeStart->dateTime().toString("yyyy/MM/dd hh:mm:ss");
+    if (ui->cBTimeEnd->isChecked()) opts << "-te" << ui->dateTimeStop->dateTime().toString("yyyy/MM/dd hh:mm:ss");
+    if (ui->cBTimeInterval->isChecked()) opts << "-ti" << ui->comboTimeInterval->currentText();
+    if (ui->cBTimeUnit->isChecked()) opts << "-tu" << ui->cBTimeUnit->text();
 
-    if (!execCommand(cmd[0], opts) && !execCommand(cmd[1], opts) && !execCommand(cmd[2], opts))
-        showMessage(tr("error : rtkpost_qt execution"));
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts)) {
+            return;
+        }
+
+    showMessage(tr("Error: Could not execute rtkpost_qt"));
 }
 // callback on button-options -----------------------------------------------
 void MainWindow::showOptions()
@@ -712,9 +722,9 @@ QString MainWindow::repPath(const QString &File)
     return QString(path);
 }
 // execute command ----------------------------------------------------------
-int MainWindow::execCommand(const QString &cmd, QStringList &opt)
+int MainWindow::execCommand(const QString &cmd, QStringList &opts)
 {
-    return QProcess::startDetached(cmd, opt);
+    return QProcess::startDetached(cmd, opts);
 }
 // update enable/disable of widgets -----------------------------------------
 void MainWindow::updateEnable()
@@ -731,19 +741,12 @@ void MainWindow::updateEnable()
     ui->cBTimeUnit->setEnabled(ui->cBTimeStart->isChecked() && ui->cBTimeEnd->isChecked());
     ui->sBTimeUnit->setEnabled(ui->cBTimeStart->isChecked() && ui->cBTimeEnd->isChecked() && ui->cBTimeUnit->isChecked());
     ui->cBOutputFileEnable3->setEnabled(sep_nav && (convOptDialog->navSys & SYS_GLO));
-    ui->cBOutputFileEnable3->setChecked(ui->cBOutputFileEnable3->isEnabled());
     ui->cBOutputFileEnable4->setEnabled(sep_nav && (convOptDialog->navSys & SYS_SBS));
-    ui->cBOutputFileEnable4->setChecked(ui->cBOutputFileEnable4->isEnabled());
     ui->cBOutputFileEnable5->setEnabled(sep_nav && (convOptDialog->navSys & SYS_QZS) && convOptDialog->rinexVersion >= 5);
-    ui->cBOutputFileEnable5->setChecked(ui->cBOutputFileEnable5->isEnabled());
     ui->cBOutputFileEnable6->setEnabled(sep_nav && (convOptDialog->navSys & SYS_GAL) && convOptDialog->rinexVersion >= 2);
-    ui->cBOutputFileEnable6->setChecked(ui->cBOutputFileEnable6->isEnabled());
     ui->cBOutputFileEnable7->setEnabled(sep_nav && (convOptDialog->navSys & SYS_CMP) && convOptDialog->rinexVersion >= 4);
-    ui->cBOutputFileEnable7->setChecked(ui->cBOutputFileEnable7->isEnabled());
     ui->cBOutputFileEnable8->setEnabled(sep_nav && (convOptDialog->navSys & SYS_IRN) && convOptDialog->rinexVersion >= 6);
-    ui->cBOutputFileEnable8->setChecked(ui->cBOutputFileEnable8->isEnabled());
     ui->cBOutputFileEnable9->setEnabled(!rnx);
-    ui->cBOutputFileEnable9->setChecked(ui->cBOutputFileEnable9->isEnabled());
     ui->lEOutputDirectory->setEnabled(ui->cBOutputDirectoryEnable->isChecked());
     ui->lEOutputFile1->setEnabled(ui->cBOutputFileEnable1->isChecked());
     ui->lEOutputFile2->setEnabled(ui->cBOutputFileEnable2->isChecked());

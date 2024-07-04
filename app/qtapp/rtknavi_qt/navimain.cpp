@@ -91,15 +91,14 @@ static int strfmt[] = {                         /* stream formats */
     STRFMT_RTCM3, STRFMT_RTCM3, STRFMT_SP3, SOLF_LLH, SOLF_NMEA, 0, 0, 0
 };
 
-
 #define TIMOPT  "0:gpst,1:utc,2:jst,3:tow"
 #define CONOPT  "0:dms,1:deg,2:xyz,3:enu,4:pyl"
 #define FLGOPT  "0:off,1:std+2:age/ratio/ns"
-#define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,7:ntripcli,8:ftp,9:http"
-#define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripsvr"
-#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:gw10,9:javad,10:nvs,11:binex,12:rt17,13:sbf,14:cmr,17:sp3"
+#define ISTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,6:ntripcli,7:ftp,8:http"
+#define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,5:ntripsvr,9:ntripcas"
+#define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,3:oem3,4:ubx,5:ss2,6:hemis,7:skytraq,8:javad,9:nvs,10:binex,11:rt17,12:sbf,13:tersus,14:rinex,15:sp3,16:clk,17:sbas,18:nmea"
 #define NMEOPT  "0:off,1:latlon,2:single"
-#define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea"
+#define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea,4:stat"
 
 // show message in message area ---------------------------------------------
 extern "C" {
@@ -178,7 +177,7 @@ MainWindow::MainWindow(QWidget *parent)
     rtksvrinit(&rtksvr);
     strinit(&monistr);
 
-    setWindowTitle(QString(tr("%1 ver. %2 %3")).arg(PRGNAME).arg(VER_RTKLIB, PATCH_LEVEL));
+    setWindowTitle(tr("%1 ver. %2 %3").arg(PRGNAME).arg(VER_RTKLIB, PATCH_LEVEL));
     setWindowIcon(QIcon(":/icons/rtknavi_Icon.ico"));
 
     panelMode = 0;
@@ -443,7 +442,8 @@ void MainWindow::stopServer()
 // callback on button-plot --------------------------------------------------
 void MainWindow::showRtkPlot()
 {
-    QString cmd[] = {"rtkplot_qt", "..\\..\\..\\bin\\rtkplot_qt", "..\\rtkplot_qt\\rtkplot_qt"};
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QStringList cmds = {"rtkplot_qt", "../../../bin/rtkplot_qt", "../rtkplot_qt/rtkplot_qt"};
     QStringList opts;
 
     trace(3, "showRtkPlot\n");
@@ -453,11 +453,15 @@ void MainWindow::showRtkPlot()
         return;
     }
 
-    opts << QString(" -p tcpcli://localhost:%1 -t \"%2 %3\"").arg(monitorPortOpen)
-                .arg(windowTitle(), QString(": %1").arg(PRGNAME));
+    opts << "-p" << QString("tcpcli://localhost:%1").arg(monitorPortOpen) << "-t" << QString("%1:  %2")
+                .arg(windowTitle(), PRGNAME);
 
-    if (!execCommand(cmd[0], opts, 1) && !execCommand(cmd[1], opts, 1) && !execCommand(cmd[2], opts, 1))
-        QMessageBox::critical(this, tr("Error"), tr("Error: rtkplot could not be executed"));
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts, 1)) {
+            return;
+        }
+
+    QMessageBox::critical(this, tr("Error"), tr("Error: rtkplot_qt could not be executed"));
 }
 // callback on button-options -----------------------------------------------
 void MainWindow::showOptionsDialog()
@@ -469,7 +473,19 @@ void MainWindow::showOptionsDialog()
     trace(3, "showOptionsDialog\n");
 
     for (int i = 0; i < 8; i++) {
-        strtype[i] = i < 3 ? itype[streamType[i]] : otype[streamType[i]];
+        int stype = streamType[i];
+        if (i < 3) {
+            if (stype >= 0 && stype < (int)(sizeof(itype) / sizeof(int)))
+                strtype[i] = itype[stype];
+            else
+                strtype[i] = STR_NONE;
+        } else {
+            if (stype >= 0 && stype < (int)(sizeof(otype) / sizeof(int)))
+                strtype[i] = otype[stype];
+            else
+                strtype[i] = STR_NONE;
+        }
+
         strfmt[i] = inputFormat[i];
 
         if (!streamEnabled[i]) {
@@ -540,13 +556,27 @@ void MainWindow::showOptionsDialog()
     if (optDialog->result() != QDialog::Accepted) return;
 
     for (int i = 0; i < 8; i++) {
-        streamEnabled[i] = strtype[i] != STR_NONE;
-        streamType[i] = STR_NONE;
-        for (int j = 0; j < (i < 3 ? 7 : 5); j++) {
-            if (strtype[i] != (i < 3 ? itype[j] : otype[j])) continue;
-            streamType[i] = j;
-            break;
+        streamType[i] = 0; // Default to serial
+        bool found = false;
+        if (i < 3) {
+            // Input
+            for (int j = 0; j < (int)(sizeof(itype) / sizeof(int)); j++) {
+                if (strtype[i] != itype[j]) continue;
+                streamType[i] = j;
+                found = true;
+                break;
+            }
+        } else {
+            // Output or log
+            for (int j = 0; j < (int)(sizeof(otype) / sizeof(int)); j++) {
+                if (strtype[i] != otype[j]) continue;
+                streamType[i] = j;
+                found = true;
+                break;
+            }
         }
+        // Disable if the stream type is not found.
+        if (found == false) streamEnabled[i] = false;
         if (i < 5) inputFormat[i] = strfmt[i];
 
         if (strtype[i] == STR_SERIAL)
@@ -558,7 +588,6 @@ void MainWindow::showOptionsDialog()
         else if (strtype[i] <= STR_HTTP)
             paths[i][3] = strpath[i];
     }
-
 
     if (solutionBufferSize_old != optDialog->solutionBufferSize) {
         initSolutionBuffer();
@@ -578,7 +607,7 @@ void MainWindow::showOptionsDialog()
             strclose(&monistr);
         }
         // reopen monitor stream
-        openMonitorPort(monitorPort_old);
+        openMonitorPort(optDialog->monitorPort);
     }
 }
 // callback on button-input-streams -----------------------------------------
@@ -673,7 +702,7 @@ int MainWindow::confirmOverwrite(const QString &path)
         streamFilename = streamFilename.mid(streamFilename.indexOf("::"));
 
         if (filename == streamFilename) {
-            ui->lblMessage->setText(QString(tr("Invalid output %1")).arg(filename));
+            ui->lblMessage->setText(tr("Invalid output %1").arg(filename));
             return 0;
         }
     }
@@ -1088,7 +1117,7 @@ void MainWindow::serverStart()
 
     if (optDialog->processingOptions.sateph == EPHOPT_PREC || optDialog->processingOptions.sateph == EPHOPT_SSRCOM) {
         if (!readpcv(optDialog->fileOptions.satantp, &pcvs)) {
-            ui->lblMessage->setText(QString(tr("Satellite antenna file read error: %1")).arg(optDialog->fileOptions.satantp));
+            ui->lblMessage->setText(tr("Satellite antenna file read error: %1").arg(optDialog->fileOptions.satantp));
             return;
         }
         for (i = 0; i < MAXSAT; i++) {
@@ -1118,12 +1147,16 @@ void MainWindow::serverStart()
 
         if (streamTypes[i] == STR_SERIAL) {
             cmds[i] = new char[1024];
+            cmds[i][0] = '\0';
             cmds_periodic[i] = new char[1024];
+            cmds_periodic[i][0] = '\0';
             if (commandEnabled[i][0]) strncpy(cmds[i], qPrintable(commands[i][0]), 1023);
             if (commandEnabled[i][2]) strncpy(cmds_periodic[i], qPrintable(commands[i][2]), 1023);
         } else if (streamTypes[i] == STR_TCPCLI || streamTypes[i] == STR_TCPSVR || streamTypes[i] == STR_NTRIPCLI) {
             cmds[i] = new char[1024];
+            cmds[i][0] = '\0';
             cmds_periodic[i] = new char[1024];
+            cmds_periodic[i][0] = '\0';
             if (commandEnableTcp[i][0]) strncpy(cmds[i], qPrintable(commandsTcp[i][0]), 1023);
             if (commandEnabled[i][2]) strncpy(cmds_periodic[i], qPrintable(commandsTcp[i][2]), 1023);
         };
@@ -1169,8 +1202,8 @@ void MainWindow::serverStart()
     rtksvr.bl_reset = maxBaseLine;
 
     // start rtk server
-    if (!rtksvrstart(&rtksvr, optDialog->serverCycle, optDialog->serverBufferSize, streamTypes, serverPaths, inputFormat, optDialog->navSelect,
-                     cmds, cmds_periodic, rcvopts, optDialog->nmeaCycle, nmeaRequestType, nmeapos,
+    if (!rtksvrstart(&rtksvr, optDialog->serverCycle, optDialog->serverBufferSize, streamTypes, (const char **)serverPaths, inputFormat, optDialog->navSelect,
+                      (const char **)cmds, (const char **)cmds_periodic, (const char **)rcvopts, optDialog->nmeaCycle, nmeaRequestType, nmeapos,
                      &optDialog->processingOptions, solopt, &monistr, errmsg)) {
 
         trace(2, "rtksvrstart error %s\n", errmsg);
@@ -1207,6 +1240,7 @@ void MainWindow::serverStart()
     ui->btnOptions->setEnabled(false);
     ui->btnExit->setEnabled(false);
     ui->btnInputStream->setEnabled(false);
+    ui->btnSave->setEnabled(false);
     menuStartAction->setEnabled(false);
     menuExitAction->setEnabled(false);
     ui->sBSolution->setEnabled(false);
@@ -1230,13 +1264,15 @@ void MainWindow::serverStop()
 
         if (streamTypes == STR_SERIAL) {
             cmds[i] = new char[1024];
+            cmds[i][0] = '\0';
             if (commandEnabled[i][1]) strncpy(cmds[i], qPrintable(commands[i][1]), 1023);
         } else if (streamTypes == STR_TCPCLI || streamTypes == STR_TCPSVR || streamTypes == STR_NTRIPCLI) {
             cmds[i] = new char[1024];
+            cmds[i][0] = '\0';
             if (commandEnableTcp[i][1]) strncpy(cmds[i], qPrintable(commandsTcp[i][1]), 1023);
         }
     }
-    rtksvrstop(&rtksvr, cmds);
+    rtksvrstop(&rtksvr, (const char **)cmds);
 
     for (i = 0; i < 3; i++) delete[] cmds[i];
 
@@ -1244,6 +1280,7 @@ void MainWindow::serverStop()
     ui->btnOptions->setEnabled(true);
     ui->btnExit->setEnabled(true);
     ui->btnInputStream->setEnabled(true);
+    ui->btnSave->setEnabled(true);
     menuStartAction->setEnabled(true);
     menuExitAction->setEnabled(true);
     ui->sBSolution->setEnabled(true);
@@ -1322,7 +1359,7 @@ void MainWindow::updateServer()
 // update time-system -------------------------------------------------------
 void MainWindow::updateTimeSystem()
 {
-    static QString label[] = {tr("GPST"), tr("UTC"), tr("LT"), tr("GPST")};
+    static const QString label[] = {tr("GPST"), tr("UTC"), tr("LT"), tr("GPST")};
 
     trace(3, "updateTimeSystem\n");
 
@@ -1333,7 +1370,7 @@ void MainWindow::updateTimeSystem()
 // update solution type -----------------------------------------------------
 void MainWindow::updateSolutionType()
 {
-    static QString label[] = {
+    static const QString label[] = {
         tr("Lat/Lon/Height"), tr("Lat/Lon/Height"), tr("X/Y/Z-ECEF"), tr("E/N/U-Baseline"),
         tr("Pitch/Yaw/Length-Baseline"), ""
     };
@@ -1413,8 +1450,10 @@ void MainWindow::updateTime()
 
     if (timeSystem == 0) {  // GPST
         time2str(time, tstr, 1);
+        str = tstr;
     } else if (timeSystem == 1) {  // UTC
         time2str(gpst2utc(time), tstr, 1);
+        str = tstr;
     } else if (timeSystem == 2) {  // local time
         time = gpst2utc(time);
         if (!(t = localtime(&time.time))) str = "2000/01/01 00:00:00.0";
@@ -1432,9 +1471,9 @@ void MainWindow::updatePosition()
 {
     QLabel *label[] = {ui->lblPositionText1, ui->lblPositionText2, ui->lblPositionText3,
                        ui->lblPosition1, ui->lblPosition2, ui->lblPosition3, ui->lblStd, ui->lblNSatellites};
-    static QString sol[] = {tr("----"), tr("FIX"), tr("FLOAT"), tr("SBAS"), tr("DGPS"), tr("SINGLE"), tr("PPP")};
+    static const QString sol[] = {tr("----"), tr("FIX"), tr("FLOAT"), tr("SBAS"), tr("DGPS"), tr("SINGLE"), tr("PPP")};
     QString s[9], ext;
-    static QColor color[] = {QColor(QColorConstants::Svg::silver), QColor(Qt::green), Color::Orange, Color::Fuchsia, QColor(Qt::blue), QColor(Qt::red), Color::Teal};
+    static const QColor color[] = {QColor(QColorConstants::Svg::silver), QColor(Qt::green), Color::Orange, Color::Fuchsia, QColor(Qt::blue), QColor(Qt::red), Color::Teal};
     double *rrover = solutionRover + solutionsCurrent * 3;
     double *rbase = solutionReference + solutionsCurrent * 3;
     double *qrover = solutionQr + solutionsCurrent * 9;
@@ -1471,10 +1510,10 @@ void MainWindow::updatePosition()
         s[0] = pos[0] < 0 ? tr("S:") : tr("N:");
         s[1] = pos[1] < 0 ? tr("W:") : tr("E:");
         s[2] = optDialog->solutionOptions.height == 1 ? tr("H:") : tr("He:");
-        s[3] = QString("%1%2 %3' %4\"").arg(fabs(dms1[0]), 0, 'f', 0).arg(degreeChar).arg(dms1[1], 2, 'f', 0, '0').arg(dms1[2], 7, 'f', 4, '0');
-        s[4] = QString("%1%2 %3' %4\"").arg(fabs(dms2[0]), 0, 'f', 0).arg(degreeChar).arg(dms2[1], 2, 'f', 0, '0').arg(dms2[2], 7, 'f', 4, '0');
-        s[5] = QString("%1 m").arg(pos[2], 0, 'f', 3);
-        s[6] = QString(tr("N:%1 E:%2 U:%3 m")).arg(SQRT(Qe[4]), 6, 'f', 3).arg(SQRT(Qe[0]), 6, 'f', 3).arg(SQRT(Qe[8]), 6, 'f', 3);
+        s[3] = tr("%1%2 %3' %4\"").arg(fabs(dms1[0]), 0, 'f', 0).arg(degreeChar).arg(dms1[1], 2, 'f', 0, '0').arg(dms1[2], 7, 'f', 4, '0');
+        s[4] = tr("%1%2 %3' %4\"").arg(fabs(dms2[0]), 0, 'f', 0).arg(degreeChar).arg(dms2[1], 2, 'f', 0, '0').arg(dms2[2], 7, 'f', 4, '0');
+        s[5] = tr("%1 m").arg(pos[2], 0, 'f', 3);
+        s[6] = tr("N: %1, E: %2, U: %3 m").arg(SQRT(Qe[4]), 6, 'f', 3).arg(SQRT(Qe[0]), 6, 'f', 3).arg(SQRT(Qe[8]), 6, 'f', 3);
     } else if (solutionType == 1) {  // deg
         if (norm(rrover, 3) > 0.0) {
             ecef2pos(rrover, pos); covenu(pos, qrover, Qe);
@@ -1483,18 +1522,18 @@ void MainWindow::updatePosition()
         s[0] = pos[0] < 0 ? tr("S:") : tr("N:");
         s[1] = pos[1] < 0 ? tr("W:") : tr("E:");
         s[2] = optDialog->solutionOptions.height == 1 ? tr("H:") : tr("He:");
-        s[3] = QString("%1 %2").arg(fabs(pos[0]) * R2D, 0, 'f', 8).arg(degreeChar);
-        s[4] = QString("%1 %2").arg(fabs(pos[1]) * R2D, 0, 'f', 8).arg(degreeChar);
-        s[5] = QString("%1").arg(pos[2], 0, 'f', 3);
-        s[6] = QString(tr("N:%1 E:%2 U:%3 m")).arg(SQRT(Qe[4]), 6, 'f', 3).arg(SQRT(Qe[0]), 6, 'f', 3).arg(SQRT(Qe[8]), 6, 'f', 3);
+        s[3] = QStringLiteral("%1 %2").arg(fabs(pos[0]) * R2D, 0, 'f', 8).arg(degreeChar);
+        s[4] = QStringLiteral("%1 %2").arg(fabs(pos[1]) * R2D, 0, 'f', 8).arg(degreeChar);
+        s[5] = QStringLiteral("%1").arg(pos[2], 0, 'f', 3);
+        s[6] = tr("N: %1, E: %2, U: %3, m").arg(SQRT(Qe[4]), 6, 'f', 3).arg(SQRT(Qe[0]), 6, 'f', 3).arg(SQRT(Qe[8]), 6, 'f', 3);
     } else if (solutionType == 2) {  // XYZ
         s[0] = "X:";
         s[1] = "Y:";
         s[2] = "Z:";
-        s[3] = QString("%1 m").arg(rrover[0], 0, 'f', 3);
-        s[4] = QString("%1 m").arg(rrover[1], 0, 'f', 3);
-        s[5] = QString("%1 m").arg(rrover[2], 0, 'f', 3);
-        s[6] = QString("X:%1 Y:%2 Z:%3 m").arg(SQRT(qrover[0]), 6, 'f', 3).arg(SQRT(qrover[4]), 6, 'f', 3).arg(SQRT(qrover[8]), 6, 'f', 3);
+        s[3] = tr("%1 m").arg(rrover[0], 0, 'f', 3);
+        s[4] = tr("%1 m").arg(rrover[1], 0, 'f', 3);
+        s[5] = tr("%1 m").arg(rrover[2], 0, 'f', 3);
+        s[6] = tr("X: %1, Y: %2, Z: %3 m").arg(SQRT(qrover[0]), 6, 'f', 3).arg(SQRT(qrover[4]), 6, 'f', 3).arg(SQRT(qrover[8]), 6, 'f', 3);
     } else if (solutionType == 3) {  // ENU
         if (len > 0.0) {
             ecef2pos(rbase, pos);
@@ -1502,10 +1541,10 @@ void MainWindow::updatePosition()
             covenu(pos, qrover, Qe);
         }
         s[0] = "E:"; s[1] = "N:"; s[2] = "U:";
-        s[3] = QString("%1 m").arg(enu[0], 0, 'f', 3);
-        s[4] = QString("%1 m").arg(enu[1], 0, 'f', 3);
-        s[5] = QString("%1 m").arg(enu[2], 0, 'f', 3);
-        s[6] = QString(tr("N:%1 E:%2 U:%3 m")).arg(SQRT(Qe[4]), 6, 'f', 3).arg(SQRT(Qe[0]), 6, 'f', 3).arg(SQRT(Qe[8]), 6, 'f', 3);
+        s[3] = tr("%1 m").arg(enu[0], 0, 'f', 3);
+        s[4] = tr("%1 m").arg(enu[1], 0, 'f', 3);
+        s[5] = tr("%1 m").arg(enu[2], 0, 'f', 3);
+        s[6] = tr("N: %1, E: %2, U: %3 m").arg(SQRT(Qe[4]), 6, 'f', 3).arg(SQRT(Qe[0]), 6, 'f', 3).arg(SQRT(Qe[8]), 6, 'f', 3);
     } else {  // pitch/yaw/len
         if (len > 0.0) {
             ecef2pos(rbase, pos);
@@ -1517,15 +1556,15 @@ void MainWindow::updatePosition()
         s[0] = tr("P:");
         s[1] = tr("Y:");
         s[2] = tr("L:");
-        s[3] = QString("%1 %2").arg(pitch * R2D, 0, 'f', 3).arg(degreeChar);
-        s[4] = QString("%1 %2").arg(yaw * R2D, 0, 'f', 3).arg(degreeChar);
-        s[5] = QString("%1 m").arg(len, 0, 'f', 3);
-        s[6] = QString(tr("N:%1 E:%2 U:%3 m")).arg(SQRT(Qe[4]), 6, 'f', 3).arg(SQRT(Qe[0]), 6, 'f', 3).arg(SQRT(Qe[8]), 6, 'f', 3);
+        s[3] = QStringLiteral("%1 %2").arg(pitch * R2D, 0, 'f', 3).arg(degreeChar);
+        s[4] = QStringLiteral("%1 %2").arg(yaw * R2D, 0, 'f', 3).arg(degreeChar);
+        s[5] = tr("%1 m").arg(len, 0, 'f', 3);
+        s[6] = tr("N: %1, E: %2, U: %3 m").arg(SQRT(Qe[4]), 6, 'f', 3).arg(SQRT(Qe[0]), 6, 'f', 3).arg(SQRT(Qe[8]), 6, 'f', 3);
     }
-    s[7] = QString(tr("Age:%1 s Ratio:%2 #Sat:%3")).arg(ages[solutionsCurrent], 4, 'f', 1).arg(ratioAR[solutionsCurrent], 4, 'f', 1).arg(numValidSatellites[solutionsCurrent], 2);
+    s[7] = tr("Age: %1 s, Ratio: %2, #Sat: %3").arg(ages[solutionsCurrent], 4, 'f', 1).arg(ratioAR[solutionsCurrent], 4, 'f', 1).arg(numValidSatellites[solutionsCurrent], 2);
 
     if (ratioAR[solutionsCurrent] > 0.0)
-        s[8] = QString(" R:%1").arg(ratioAR[solutionsCurrent], 4, 'f', 1);
+        s[8] = tr(" R: %1").arg(ratioAR[solutionsCurrent], 4, 'f', 1);
 
     for (i = 0; i < 8; i++)
         label[i]->setText(s[i]);
@@ -1536,7 +1575,7 @@ void MainWindow::updatePosition()
     ui->lblIndicatorQ->setToolTip(ui->lblIndicatorSolution->toolTip());
     ui->lblSolutionS->setText(ui->lblSolution->text());
     setWidgetTextColor(ui->lblSolutionS, ui->lblSolution->palette().color(ui->lblSolution->foregroundRole()));
-    ui->lblSolutionQ->setText(QString("%1 %2 %3 %4 %5 %6 %7%8").arg(
+    ui->lblSolutionQ->setText(QStringLiteral("%1 %2 %3 %4 %5 %6 %7%8").arg(
                                                                 ext,
                                                                 label[0]->text(),
                                                                 label[3]->text(),
@@ -1549,7 +1588,7 @@ void MainWindow::updatePosition()
 // update stream status indicators ------------------------------------------
 void MainWindow::updateStream()
 {
-    static QColor color[] = {QColor(Qt::red), QColor(Qt::white), Color::Orange, Color::Green, Color::Lime};
+    static const QColor color[] = {QColor(Qt::red), QColor(Qt::white), Color::Orange, Color::Green, Color::Lime};
     QLabel *ind[MAXSTRRTK] = {ui->lblStream1, ui->lblStream2, ui->lblStream3, ui->lblStream4, ui->lblStream5, ui->lblStream6, ui->lblStream7, ui->lblStream8};
     int i, sstat[MAXSTRRTK] = {0};
     char msg[MAXSTRMSG] = "";
@@ -1596,7 +1635,7 @@ void MainWindow::drawSolutionPlot(QLabel *plot, int type, int freq)
     trace(4, "drawSolutionPlot\n");
 
     for (i = 0; i < NFREQ; i++)
-        fstr[i + 1] = QString("L%1").arg(i + 1);
+        fstr[i + 1] = QStringLiteral("L%1").arg(i + 1);
     fstr[i + 1] = " SYS";
 
     for (i = 0; i < MAXSAT; i++) {
@@ -1664,7 +1703,7 @@ void MainWindow::drawSolutionPlot(QLabel *plot, int type, int freq)
             drawText(c, x + h, 1, s2, Qt::gray, 1, 2);
         } else { // vertical
             drawSatellites(c, w, h / 2, 0, 0, 0, freq);
-            drawSnr(c, w, (h - topMargin) / 2, 0, topMargin + (h - topMargin) / 2, 1, freq);
+            drawSnr(c, w, (h - topMargin) / 2, 0, topMargin + (h - topMargin) / 2, 0, freq);
             drawText(c, x, 1, s1, Qt::gray, 1, 2);
         }
     } else if (type == 4) { // skyplot rover+base
@@ -1806,7 +1845,7 @@ void MainWindow::drawSnr(QPainter &c, int w, int h, int x0, int y0,
     for (i = j = 0; i < 7; i++) {
         if (!sysMask[i]) continue;
         sprintf(id, "%c", sys[i]);
-        drawText(c, x0 + w - topMargin*3/2 + fm.averageCharWidth()*9/8 * (j++ - numSystems), y0 + topMargin, id, color[i], 0, 2);
+        drawText(c, x0 + w - topMargin*3/2 + fm.averageCharWidth()*9/8 * (j++ - numSystems), y0, id, color[i], 0, 2);
     }
 }
 // draw satellites in skyplot -----------------------------------------------
@@ -1835,7 +1874,7 @@ void MainWindow::drawSatellites(QPainter &c, int w, int h, int x0, int y0,
                 snr[0] = snr[j + 1]; // max snr
             }
         }
-        if (validSatellites[index][k] && (snr[freq] > 0 || freq > NFREQ)) {
+        if (validSatellites[index][k] && (freq > NFREQ || snr[freq] > 0)) {
             azel[nsats * 2] = satellitesAzimuth[index][k];
             azel[nsats * 2 + 1] = satellitesElevation[index][k];
             nsats++;
@@ -1861,14 +1900,14 @@ void MainWindow::drawSatellites(QPainter &c, int w, int h, int x0, int y0,
 
     // draw annotations
     dops(nsats, azel, 0.0, dop);
-    drawText(c, x0 + 3, y0 + h, QString(tr("# Sat: %1/%2")).arg(nsats,2).arg(numSatellites[index], 2), Qt::gray, 1, 1);
-    drawText(c, x0 + w - 3, y0 + h, QString(tr("GDOP: %1")).arg(dop[0], 0, 'f', 1), Qt::gray, 2, 1);
+    drawText(c, x0 + 3, y0 + h, tr("# Sat: %1/%2").arg(nsats,2).arg(numSatellites[index], 2), Qt::gray, 1, 1);
+    drawText(c, x0 + w - 3, y0 + h, tr("GDOP: %1").arg(dop[0], 0, 'f', 1), Qt::gray, 2, 1);
 }
 // draw baseline plot -------------------------------------------------------
 void MainWindow::drawBaseline(QPainter &c, int id, int w, int h)
 {
-    static QColor colors[] = {Color::Silver, Qt::green, Color::Orange, Color::Fuchsia, Qt::blue, Qt::red, Color::Teal};
-    static QString directions[] = {tr("N"), tr("E"), tr("S"), tr("W")};
+    static const QColor colors[] = {Color::Silver, Qt::green, Color::Orange, Color::Fuchsia, Qt::blue, Qt::red, Color::Teal};
+    static const QString directions[] = {tr("N"), tr("E"), tr("S"), tr("W")};
     QPoint center(w / 2, h / 2), p1, p2, pp;
     double radius = qMin(w * 0.95, h * 0.95) / 2;
     double *rrover = solutionRover + solutionsCurrent * 3;
@@ -1954,19 +1993,19 @@ void MainWindow::drawBaseline(QPainter &c, int id, int w, int h)
     // draw annotations
     c.setBrush(Qt::white);
     digit = len < 1000.0 ? 3 : (len < 10000.0 ? 2 : (len < 100000.0 ? 1 : 0));
-    drawText(c, center.x(), center.y(), QString("%1 m").arg(len, 0, 'f', digit), Qt::gray, 0, 0);
+    drawText(c, center.x(), center.y(), tr("%1 m").arg(len, 0, 'f', digit), Qt::gray, 0, 0);
     drawText(c, 3, h, tr("Y: %1%2").arg(yaw * R2D, 0, 'f', 1).arg(degreeChar), Qt::gray, 1, 1);
     drawText(c, w - 3, h, tr("P: %1%2").arg(pitch * R2D, 0, 'f', 1).arg(degreeChar), Qt::gray, 2, 1);
 }
 // draw track plot ----------------------------------------------------------
 void MainWindow::drawTrack(QPainter &c, int id, QPaintDevice *plot)
 {
-    static QColor mcolor[] = {Color::Silver, Qt::green, Color::Orange, Color::Fuchsia, Qt::blue, Qt::red, Color::Teal};
+    static const QColor mcolor[] = {Color::Silver, Qt::green, Color::Orange, Color::Fuchsia, Qt::blue, Qt::red, Color::Teal};
     QColor *color;
     Graph *graph = new Graph(plot);
     QPoint p1, p2;
     QString label;
-    static double scale[] = {
+    static const double scale[] = {
         0.00021, 0.00047, 0.001, 0.0021, 0.0047, 0.01, 0.021, 0.047, 0.1,   0.21,   0.47,
         1.0,	 2.1,	  4.7,	 10.0,	 21.0,	 47.0, 100.0, 210.0, 470.0, 1000.0, 2100.0,4700.0,
         10000.0
@@ -2046,20 +2085,20 @@ void MainWindow::drawTrack(QPainter &c, int id, QPaintDevice *plot)
     // scale text
     p2.ry() -= 2;
     if (xt < 0.01)
-        label = QString("%1 mm").arg(xt * 1000.0, 0, 'f', 0);
+        label = tr("%1 mm").arg(xt * 1000.0, 0, 'f', 0);
     else if (xt < 1.0)
-        label = QString("%1 cm").arg(xt * 100.0, 0, 'f', 0);
+        label = tr("%1 cm").arg(xt * 100.0, 0, 'f', 0);
     else if (xt < 1000.0)
-        label = QString("%1 m").arg(xt, 0, 'f', 0);
+        label = tr("%1 m").arg(xt, 0, 'f', 0);
     else
-        label = QString("%1 km").arg(xt / 1000.0, 0, 'f', 0);
+        label = tr("%1 km").arg(xt / 1000.0, 0, 'f', 0);
     graph->drawText(c, p2, label, Qt::gray, Qt::white, 0, 1, 0);
 
     // reference position
     if (norm(ref, 3) > 1E-6) {
         p1.rx() += 2;
         p1.ry() = p2.y() + 11;
-        label = QString("%1° %2°").arg(pos[0] * R2D, 0, 'f', 9).arg(pos[1] * R2D, 0, 'f', 9);
+        label = tr("%1° %2°").arg(pos[0] * R2D, 0, 'f', 9).arg(pos[1] * R2D, 0, 'f', 9);
         graph->drawText(c, p1, label, Qt::gray, Qt::white, 1, 1, 0);
     }
 
@@ -2071,7 +2110,7 @@ void MainWindow::drawTrack(QPainter &c, int id, QPaintDevice *plot)
 // draw skyplot -------------------------------------------------------------
 void MainWindow::drawSky(QPainter &c, int w, int h, int x0, int y0)
 {
-    static QString label[] = {tr("N"), tr("E"), tr("S"), tr("W")};
+    static const QString label[] = {tr("N"), tr("E"), tr("S"), tr("W")};
     QPoint p(x0 + w / 2, y0 + h / 2);
     double radius = qMin(w * 0.95, h * 0.95) / 2;
     int a, e, d, x, y;
@@ -2161,12 +2200,12 @@ void MainWindow::openMonitorPort(int port)
         if (stropen(&monistr, STR_TCPSVR, STR_MODE_RW, qPrintable(QString(":%1").arg(port + i)))) {
             strsettimeout(&monistr, optDialog->timeoutTime, optDialog->reconnectTime);
             if (i > 0)
-                setWindowTitle(QString(tr("%1 ver.%2 (%3)")).arg(PRGNAME, VER_RTKLIB).arg(i + 1));
+                setWindowTitle(tr("%1 ver. %2 (%3)").arg(PRGNAME, VER_RTKLIB).arg(i + 1));
             monitorPortOpen = port + i;
             return;
         }
     }
-    QMessageBox::critical(this, tr("Error"), QString(tr("Could not open any monitor port betwenn %1-%2")).arg(port).arg(port + MAX_PORT_OFFSET));
+    QMessageBox::critical(this, tr("Error"), tr("Could not open any monitor port betwenn %1-%2").arg(port).arg(port + MAX_PORT_OFFSET));
     monitorPortOpen = 0;
 }
 // initialize solution buffer -----------------------------------------------
@@ -2245,7 +2284,7 @@ void MainWindow::saveLogs()
     if (optDialog->solutionOptions.outhead) {
         QString data;
 
-        data = QString(tr("%% program : %1 ver.%2 %3\n")).arg(PRGNAME, VER_RTKLIB, PATCH_LEVEL);
+        data = QString(tr("%% program : %1 ver. %2 %3\n")).arg(PRGNAME, VER_RTKLIB, PATCH_LEVEL);
         str << data;
         if (optDialog->processingOptions.mode == PMODE_DGPS || optDialog->processingOptions.mode == PMODE_KINEMA ||
             optDialog->processingOptions.mode == PMODE_STATIC) {
@@ -2351,7 +2390,7 @@ void MainWindow::saveNavigation(nav_t *nav)
 
     if (nav == NULL) return;
 
-    for (i = 0; i < MAXSAT*2; i++) {
+    for (i = 0; i < nav->n; i++) {
         if (nav->eph[i].ttr.time == 0) continue;
         str = "";
         satno2id(nav->eph[i].sat, id);

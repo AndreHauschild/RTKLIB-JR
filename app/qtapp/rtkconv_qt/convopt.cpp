@@ -29,7 +29,7 @@ ConvOptDialog::ConvOptDialog(QWidget *parent)
     if (cmp <= 0) ui->cBNavSys6->setEnabled(false);
     if (irn <= 0) ui->cBNavSys7->setEnabled(false);
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &ConvOptDialog::saveClose);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &ConvOptDialog::accept);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ConvOptDialog::reject);
     connect(ui->btnMask, &QPushButton::clicked, this, &ConvOptDialog::showMaskDialog);
     connect(ui->cBAutoPosition, &QCheckBox::clicked, this, &ConvOptDialog::updateEnable);
@@ -103,7 +103,7 @@ void ConvOptDialog::updateUi()
     updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConvOptDialog::saveClose()
+void ConvOptDialog::accept()
 {
     rinexVersion = ui->cBRinexVersion->currentIndex();
     rinexFile = ui->cBRinexFilename->isChecked();
@@ -170,7 +170,7 @@ void ConvOptDialog::saveClose()
     separateNavigation = ui->cBSeperateNavigation->isChecked();
     timeTolerance = ui->sBTimeTolerance->value();
 
-    accept();
+    QDialog::accept();
 }
 //---------------------------------------------------------------------------
 void ConvOptDialog::showFrequencyDialog()

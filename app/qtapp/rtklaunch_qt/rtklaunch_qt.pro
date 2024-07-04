@@ -2,6 +2,9 @@ QT += widgets core gui
 
 CONFIG += c++11
 
+# save root directory
+ROOT_DIRECTORY = $${PWD}/../../..
+
 include(../../../RTKLib.pri)
 
 TEMPLATE = app

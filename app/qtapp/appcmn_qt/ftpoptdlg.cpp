@@ -19,7 +19,7 @@ FtpOptDialog::FtpOptDialog(QWidget *parent, int options)
 
     keyDlg = new KeyDialog(this);
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &FtpOptDialog::saveClose);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &FtpOptDialog::accept);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &FtpOptDialog::reject);
     connect(ui->btnKey, &QPushButton::clicked, this, &FtpOptDialog::showKeyDialog);
 
@@ -96,11 +96,11 @@ QString FtpOptDialog::getPath()
         .arg(topts[3]);
 }
 //---------------------------------------------------------------------------
-void FtpOptDialog::saveClose()
+void FtpOptDialog::accept()
 {
     addHistory(ui->cBAddress, history);
 
-    accept();
+    QDialog::accept();
 }
 //---------------------------------------------------------------------------
 void FtpOptDialog::showKeyDialog()

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>385</width>
-    <height>362</height>
+    <height>411</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -88,28 +88,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btnOk">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
-        <string>&amp;OK</string>
-       </property>
-       <property name="autoDefault">
-        <bool>true</bool>
-       </property>
-       <property name="default">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnCancel">
-       <property name="toolTip">
-        <string/>
-       </property>
-       <property name="text">
-        <string>&amp;Cancel</string>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
        </property>
       </widget>
      </item>

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>740</width>
+    <width>961</width>
     <height>438</height>
    </rect>
   </property>
@@ -81,7 +81,7 @@
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -149,7 +149,7 @@
                <string>Rover input stream</string>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
              </widget>
             </item>
@@ -159,7 +159,7 @@
                <string>Base station input stream</string>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
              </widget>
             </item>
@@ -169,7 +169,7 @@
                <string>Correction data input stream</string>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
              </widget>
             </item>
@@ -192,7 +192,7 @@
                <string>RTK Server</string>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
              </widget>
             </item>
@@ -215,7 +215,7 @@
                <string>Solution stream 1</string>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
              </widget>
             </item>
@@ -225,7 +225,7 @@
                <string>Solution stream 2</string>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
              </widget>
             </item>
@@ -235,7 +235,7 @@
                <string>Log stream rover</string>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
              </widget>
             </item>
@@ -248,7 +248,7 @@
                <string>Log stream base station</string>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
              </widget>
             </item>
@@ -258,7 +258,7 @@
                <string>Log stream corrections</string>
               </property>
               <property name="frameShape">
-               <enum>QFrame::Box</enum>
+               <enum>QFrame::Shape::Box</enum>
               </property>
              </widget>
             </item>
@@ -345,10 +345,10 @@
          <string>Solution state</string>
         </property>
         <property name="frameShape">
-         <enum>QFrame::Box</enum>
+         <enum>QFrame::Shape::Box</enum>
         </property>
         <property name="frameShadow">
-         <enum>QFrame::Sunken</enum>
+         <enum>QFrame::Shadow::Sunken</enum>
         </property>
        </widget>
       </item>
@@ -398,7 +398,7 @@
       <item row="0" column="0">
        <widget class="QSplitter" name="splitter">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <widget class="QWidget" name="panelSolution" native="true">
          <property name="toolTip">
@@ -544,7 +544,7 @@
                 <number>1</number>
                </property>
                <property name="orientation">
-                <enum>Qt::Horizontal</enum>
+                <enum>Qt::Orientation::Horizontal</enum>
                </property>
               </widget>
              </item>
@@ -587,7 +587,7 @@
              <string>Solution state</string>
             </property>
             <property name="frameShape">
-             <enum>QFrame::Box</enum>
+             <enum>QFrame::Shape::Box</enum>
             </property>
            </widget>
           </item>
@@ -673,7 +673,7 @@
             </property>
             <property name="icon">
              <iconset resource="../icon/resources.qrc">
-              <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
+              <normaloff>:/buttons/frequencies</normaloff>:/buttons/frequencies</iconset>
             </property>
            </widget>
           </item>
@@ -764,7 +764,7 @@
             </property>
             <property name="icon">
              <iconset resource="../icon/resources.qrc">
-              <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
+              <normaloff>:/buttons/frequencies</normaloff>:/buttons/frequencies</iconset>
             </property>
            </widget>
           </item>
@@ -858,7 +858,7 @@
             </property>
             <property name="icon">
              <iconset resource="../icon/resources.qrc">
-              <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
+              <normaloff>:/buttons/frequencies</normaloff>:/buttons/frequencies</iconset>
             </property>
            </widget>
           </item>
@@ -941,9 +941,6 @@
           </item>
           <item row="0" column="3">
            <widget class="QPushButton" name="btnFrequencyType4">
-            <property name="enabled">
-             <bool>false</bool>
-            </property>
             <property name="sizePolicy">
              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
               <horstretch>0</horstretch>
@@ -955,7 +952,7 @@
             </property>
             <property name="icon">
              <iconset resource="../icon/resources.qrc">
-              <normaloff>:/buttons/down</normaloff>:/buttons/down</iconset>
+              <normaloff>:/buttons/frequencies</normaloff>:/buttons/frequencies</iconset>
             </property>
            </widget>
           </item>

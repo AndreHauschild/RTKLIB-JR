@@ -37,7 +37,7 @@ public:
     QString getSwapInterval();
 
     void setHistory(int i, const QString &history);
-    const QString &getHistory(int i);
+    const QString getHistory(int i);
 
 protected:
     KeyDialog *keyDialog;

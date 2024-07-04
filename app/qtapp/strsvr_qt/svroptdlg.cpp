@@ -40,7 +40,7 @@ SvrOptDialog::SvrOptDialog(QWidget *parent)
     QAction *acLocalDir = ui->lELocalDir->addAction(QIcon(":/buttons/folder"), QLineEdit::TrailingPosition);
     acLocalDir->setToolTip(tr("Select local directory"));
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &SvrOptDialog::btnOkClicked);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &SvrOptDialog::accept);
     connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &SvrOptDialog::reject);
     connect(ui->btnPosition, &QPushButton::clicked, this, &SvrOptDialog::positionSelect);
     connect(acLogFile, &QAction::triggered, this, &SvrOptDialog::logFileSelect);
@@ -92,7 +92,7 @@ void SvrOptDialog::showEvent(QShowEvent *event)
 	updateEnable();
 }
 //---------------------------------------------------------------------------
-void SvrOptDialog::btnOkClicked()
+void SvrOptDialog::accept()
 {
 	double pos[3];
 
@@ -128,7 +128,7 @@ void SvrOptDialog::btnOkClicked()
     antennaOffsets[1] = ui->sBAntennaOffset2->value();
     antennaOffsets[2] = ui->sBAntennaOffset3->value();
 
-    accept();
+    QDialog::accept();
 }
 //---------------------------------------------------------------------------
 void SvrOptDialog::positionSelect()

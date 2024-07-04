@@ -14,7 +14,7 @@ KeyDialog::KeyDialog(QWidget *parent, int flag)
 
     setFlag(flag);
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &KeyDialog::close);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &KeyDialog::accept);
 }
 //---------------------------------------------------------------------------
 void KeyDialog::setFlag(int flag)

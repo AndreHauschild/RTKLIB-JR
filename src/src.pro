@@ -31,7 +31,9 @@ macx {
     QMAKE_CFLAGS += -D_CRT_SECURE_NO_WARNINGS
 }
 
-DESTDIR = ../lib
+ROOT_DIRECTORY = $${PWD}/..
+
+DESTDIR = $${ROOT_DIRECTORY}/lib
 
 SOURCES += rtkcmn.c \
     trace.c \

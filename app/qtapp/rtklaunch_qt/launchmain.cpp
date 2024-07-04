@@ -173,58 +173,86 @@ void MainForm::closeEvent(QCloseEvent *event)
 //---------------------------------------------------------------------------
 void MainForm::launchRTKPlot()
 {
-    QString cmd1 = "./rtkplot_qt", cmd2 = "../rtkplot_qt/rtkplot_qt";
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QStringList cmds = {"rtkplot_qt", "../../../bin/rtkplot_qt", "../rtkplot_qt/rtkplot_qt"};
     QStringList opts;
 
-    if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts)) {
+            return;
+        }
 }
 //---------------------------------------------------------------------------
 void MainForm::launchRTKConv()
 {
-    QString cmd1 = "./rtkconv_qt", cmd2 = "../rtkconv_qt/rtkconv_qt";
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QStringList cmds = {"rtkconv_qt", "../../../bin/rtkconv_qt", "../rtkconv_qt/rtkconv_qt"};
     QStringList opts;
 
-    if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts)) {
+            return;
+        }
 }
 //---------------------------------------------------------------------------
 void MainForm::launchStrSvr()
 {
-    QString cmd1 = "./strsvr_qt", cmd2 = "../strsvr_qt/strsvr_qt";
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QStringList cmds = {"strsvr_qt", "../../../bin/strsvr_qt", "../strsvr_qt/strsvr_qt"};
     QStringList opts;
 
-    if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts)) {
+            return;
+        }
 }
 //---------------------------------------------------------------------------
 void MainForm::launchRTKPost()
 {
-    QString cmd1 = "./rtkpost_qt", cmd2 = "../rtkpost_qt/rtkpost_qt";
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QStringList cmds = {"rtkpost_qt", "../../../bin/rtkpost_qt", "../rtkpost_qt/rtkpost_qt"};
     QStringList opts;
 
-    if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts)) {
+            return;
+        }
 }
 //---------------------------------------------------------------------------
 void MainForm::launchSrcTblBrows()
 {
-    QString cmd1 = "./srctblbrows_qt", cmd2 = "../srctblbrows_qt/srctblbrows_qt";
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QStringList cmds = {"srctblbrows_qt", "../../../bin/srctblbrows_qt", "../srctblbrows_qt/srctblbrows_qt"};
     QStringList opts;
 
-    if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts)) {
+            return;
+        }
 }
 //---------------------------------------------------------------------------
 void MainForm::launchRTKNavi()
 {
-    QString cmd1 = "./rtknavi_qt", cmd2 = "../rtknavi_qt/rtknavi_qt";
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QStringList cmds = {"rtknavi_qt", "../../../bin/rtknavi_qt", "../rtknavi_qt/rtknavi_qt"};
     QStringList opts;
 
-    if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts)) {
+            return;
+        }
 }
 //---------------------------------------------------------------------------
 void MainForm::launchRTKGet()
 {
-    QString cmd1 = "./rtkget_qt", cmd2 = "../rtkget_qt/rtkget_qt";
+    QDir appDir = QDir(QCoreApplication::applicationDirPath());
+    QStringList cmds = {"rtkget_qt", "../../../bin/rtkget_qt", "../rtkget_qt/rtkget_qt"};
     QStringList opts;
 
-    if (!execCommand(cmd1, opts)) execCommand(cmd2, opts);
+    for (const auto& path: cmds)
+        if (execCommand(appDir.filePath(path), opts)) {
+            return;
+        }
 }
 //---------------------------------------------------------------------------
 int MainForm::execCommand(const QString &cmd, const QStringList &opt)

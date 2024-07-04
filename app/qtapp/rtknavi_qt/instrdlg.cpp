@@ -89,7 +89,7 @@ InputStrDialog::InputStrDialog(QWidget *parent)
 void InputStrDialog::setStreamEnabled(int stream, int enabled)
 {
     QCheckBox *cBStreamC[] = {ui->cBStreamC1, ui->cBStreamC2, ui->cBStreamC3};
-    if (stream > 3) return;
+    if ((stream < 0 ) || (stream > 2)) return;
     cBStreamC[stream]->setChecked(enabled);
     updateEnable();
 }
@@ -97,14 +97,14 @@ void InputStrDialog::setStreamEnabled(int stream, int enabled)
 int InputStrDialog::getStreamEnabled(int stream)
 {
     QCheckBox *cBStreamC[] = {ui->cBStreamC1, ui->cBStreamC2, ui->cBStreamC3};
-    if (stream > 3) return -1;
+    if ((stream < 0 ) || (stream > 2)) return false;
     return cBStreamC[stream]->isChecked();
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::setStreamType(int stream, int type)
 {
     QComboBox *cBStream[] = {ui->cBStream1, ui->cBStream2, ui->cBStream3};
-    if (stream > 3) return;
+    if ((stream < 0 ) || (stream > 2)) return;
     cBStream[stream]->setCurrentIndex(type);
     updateEnable();
 }
@@ -112,14 +112,14 @@ void InputStrDialog::setStreamType(int stream, int type)
 int InputStrDialog::getStreamType(int stream)
 {
     QComboBox *cBStream[] = {ui->cBStream1, ui->cBStream2, ui->cBStream3};
-    if (stream > 3) return -1;
+    if ((stream < 0 ) || (stream > 2)) return STR_NONE;
     return cBStream[stream]->currentIndex();
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::setStreamFormat(int stream, int format)
 {
     QComboBox *cBFormat[] = {ui->cBFormat1, ui->cBFormat2, ui->cBFormat3};
-    if (stream > 3) return;
+    if ((stream < 0 ) || (stream > 2)) return;
     if (stream == 0)
         cBFormat[stream]->setCurrentIndex(format);
     else
@@ -131,7 +131,7 @@ void InputStrDialog::setStreamFormat(int stream, int format)
 int InputStrDialog::getStreamFormat(int stream)
 {
     QComboBox *cBFormat[] = {ui->cBFormat1, ui->cBFormat2, ui->cBFormat3};
-    if (stream > 3) return -1;
+    if ((stream < 0 ) || (stream > 2)) return STRFMT_RTCM2;  // should never happen
     if (stream == 0)
         return cBFormat[stream]->currentIndex();
     else
@@ -140,13 +140,13 @@ int InputStrDialog::getStreamFormat(int stream)
 //---------------------------------------------------------------------------
 void InputStrDialog::setReceiverOptions(int stream, const QString & options)
 {
-    if (stream > 3) return;
+    if ((stream < 0 ) || (stream > 2)) return;
     receiverOptions[stream] = options;
 }
 //---------------------------------------------------------------------------
 QString InputStrDialog::getReceiverOptions(int stream)
 {
-    if (stream > 3) return "";
+    if ((stream < 0 ) || (stream > 2)) return "";
     return receiverOptions[stream];
 }
 //---------------------------------------------------------------------------
@@ -163,14 +163,14 @@ QString InputStrDialog::getResetCommand()
 void InputStrDialog::setNMeaPosition(int i, double value)
 {
     QDoubleSpinBox *widget[] = {ui->sBNmeaPosition1, ui->sBNmeaPosition2, ui->sBNmeaPosition3};
-    if (i > 3) return;
+    if ((i < 0 ) || (i > 2)) return;
     widget[i]->setValue(value);
 }
 //---------------------------------------------------------------------------
 double InputStrDialog::getNMeaPosition(int i)
 {
     QDoubleSpinBox *widget[] = {ui->sBNmeaPosition1, ui->sBNmeaPosition2, ui->sBNmeaPosition3};
-    if (i > 3) return NAN;
+    if ((i < 0 ) || (i > 2)) return NAN;
     return widget[i]->value();
 }
 //---------------------------------------------------------------------------
@@ -197,11 +197,13 @@ double InputStrDialog::getMaxBaseLine()
 //---------------------------------------------------------------------------
 void InputStrDialog::setHistory(int i, const QString &history)
 {
+    if ((i < 0) || (i > 9)) return;
     this->history[i] = history;
 }
 //---------------------------------------------------------------------------
 const QString &InputStrDialog::getHistory(int i)
 {
+    if ((i < 0) || (i > 9)) QString();
     return history[i];
 }
 //---------------------------------------------------------------------------
@@ -259,69 +261,114 @@ QString InputStrDialog::getStationPositionFile()
 //---------------------------------------------------------------------------
 void InputStrDialog::setCommands(int stream, int type, const QString &cmd)
 {
+    if ((stream < 0) || (stream > 2)) return;
+    if ((type < 0) || (type > 2)) return;
+
     commands[stream][type]= cmd;
 }
 //---------------------------------------------------------------------------
 QString InputStrDialog::getCommands(int stream, int type)
 {
+    if ((stream < 0) || (stream > 2)) return QString();
+    if ((type < 0) || (type > 2)) return QString();
+
     return commands[stream][type];
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::setCommandsEnabled(int stream, int type, bool ena)
 {
+    if ((stream < 0) || (stream > 2)) return;
+    if ((type < 0) || (type > 2)) return;
+
     commandEnable[stream][type] = ena;
 };
 //---------------------------------------------------------------------------
 bool InputStrDialog::getCommandsEnabled(int stream, int type)
 {
+    if ((stream < 0) || (stream > 2)) return false;
+    if ((type < 0) || (type > 2)) return false;
+
     return commandEnable[stream][type];
 };
 //---------------------------------------------------------------------------
 void InputStrDialog::setCommandsTcp(int stream, int type, const QString &cmd)
 {
+    if ((stream < 0) || (stream > 2)) return;
+    if ((type < 0) || (type > 2)) return;
+
     commandsTcp[stream][type] = cmd;
 }
 //---------------------------------------------------------------------------
 QString InputStrDialog::getCommandsTcp(int stream, int type)
 {
+    if ((stream < 0) || (stream > 2)) return QString();
+    if ((type < 0) || (type > 2)) return QString();
+
     return commandsTcp[stream][type];
 }
 //---------------------------------------------------------------------------
 void InputStrDialog::setCommandsTcpEnabled(int stream, int type, bool ena)
 {
+    if ((stream < 0) || (stream > 2)) return;
+    if ((type < 0) || (type > 2)) return;
+
     commandEnableTcp[stream][type] = ena;
 };
 //---------------------------------------------------------------------------
 bool InputStrDialog::getCommandsTcpEnabled(int stream, int type)
 {
+    if ((stream < 0) || (stream > 2)) return false;
+    if ((type < 0) || (type > 2)) return false;
+
     return commandEnableTcp[stream][type];
 };
 //---------------------------------------------------------------------------
 void InputStrDialog::setPath(int stream, int type, const QString & path)
 {
     QLineEdit *edits[] = {ui->lEFilePath1, ui->lEFilePath2, ui->lEFilePath3};
+
+    if ((stream < 0) || (stream > 2)) return;
+    if ((type < 0) || (type > 2)) return;
+
     paths[stream][type] = path;
+    ui->cBTimeTag->setChecked(path.contains("::T"));
+    ui->cB64Bit->setChecked(path.contains("::P=8"));
+    if (path.contains("::+"))
+    {
+        int startPos = path.indexOf("::+")+3;
+        QString startTime = path.mid(startPos, path.indexOf("::", startPos)-startPos);
+        ui->sBTimeStart->setValue(startTime.toInt());
+    };
+    if (path.contains("::x"))
+    {
+        int startPos = path.indexOf("::x")+3;
+        QString speed = path.mid(startPos, path.indexOf("::", startPos)-startPos);
+        ui->cBTimeSpeed->setCurrentText(speed);
+    }
     if (type == 2)
     {
-        edits[stream]->setText(path);
+        edits[stream]->setText(path.mid(0, path.indexOf("::")));
     };
 }
 //---------------------------------------------------------------------------
 QString InputStrDialog::getPath(int stream, int type)
 {
     QLineEdit *edits[] = {ui->lEFilePath1, ui->lEFilePath2, ui->lEFilePath3};
+    if ((stream < 0) || (stream > 2)) return QString();
+    if ((type < 0) || (type > 2)) return QString();
+
     if (type == 2)
-        return setFilePath(edits[stream]->text());
+        return makePath(edits[stream]->text());
 
     return paths[stream][type];
 }
 //---------------------------------------------------------------------------
-QString InputStrDialog::getFilePath(const QString &path)
+QString InputStrDialog::extractFilePath(const QString &path)
 {
     return path.mid(0, path.indexOf("::"));
 }
 //---------------------------------------------------------------------------
-QString InputStrDialog::setFilePath(const QString &p)
+QString InputStrDialog::makePath(const QString &p)
 {
     QString path = p;
 
@@ -368,6 +415,8 @@ void InputStrDialog::showStreamOptions3()
 //---------------------------------------------------------------------------
 void InputStrDialog::showCommandDialog(int streamNo)
 {
+    if ((streamNo < 0) || (streamNo > 2)) return;
+
     for (int i = 0; i < 3; i++) {
         if (ui->cBStream1->currentIndex() == 0) {
             cmdOptDialog->setCommands(i, commands[streamNo][i]);
@@ -411,6 +460,8 @@ void InputStrDialog::showCommandDialog3()
 //---------------------------------------------------------------------------
 void InputStrDialog::showReceiverOptionDialog(int streamNo)
 {
+    if ((streamNo < 0) || (streamNo > 2)) return;
+
     rcvOptDialog->setOptions(receiverOptions[streamNo]);
 
     rcvOptDialog->exec();
@@ -469,8 +520,8 @@ void InputStrDialog::selectFile3()
 //---------------------------------------------------------------------------
 void InputStrDialog::showSerialOptionsDialog(int index, int opt)
 {
-    serialOptDialog->setPath(getPath(index, 0));
     serialOptDialog->setOptions(opt);
+    serialOptDialog->setPath(getPath(index, 0));
 
     serialOptDialog->exec();
     if (serialOptDialog->result() != QDialog::Accepted) return;
@@ -480,9 +531,9 @@ void InputStrDialog::showSerialOptionsDialog(int index, int opt)
 //---------------------------------------------------------------------------
 void InputStrDialog::showTcpOptionsDialog(int index, int opt)
 {
-    tcpOptDialog->setPath(getPath(index,1));
     tcpOptDialog->setOptions(opt);
     tcpOptDialog->setHistory(history, 10);
+    tcpOptDialog->setPath(getPath(index, 1));
 
     tcpOptDialog->exec();
     if (tcpOptDialog->result() != QDialog::Accepted) return;
@@ -495,8 +546,8 @@ void InputStrDialog::showTcpOptionsDialog(int index, int opt)
 //---------------------------------------------------------------------------
 void InputStrDialog::showFtpOptionsDialog(int index, int opt)
 {
-    ftpOptDialog->setPath(getPath(index, 3));
     ftpOptDialog->setOptions(opt);
+    ftpOptDialog->setPath(getPath(index, 3));
 
     ftpOptDialog->exec();
     if (ftpOptDialog->result() != QDialog::Accepted) return;

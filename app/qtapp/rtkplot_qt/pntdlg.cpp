@@ -29,7 +29,7 @@ PntDialog::PntDialog(Plot *_plot, QWidget *parent)
 
     noUpdate = false;
 
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &PntDialog::close);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &PntDialog::reject);
     connect(ui->btnUpdate, &QPushButton::clicked, this, &PntDialog::updatePoints);
     connect(ui->btnAdd, &QPushButton::clicked, this, &PntDialog::addPoint);
     connect(ui->btnDelete, &QPushButton::clicked, this, &PntDialog::deletePoint);

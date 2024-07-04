@@ -11,7 +11,7 @@ TimeDialog::TimeDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &TimeDialog::close);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &TimeDialog::accept);
 }
 //---------------------------------------------------------------------------
 void TimeDialog::setTime(const gtime_t &time)

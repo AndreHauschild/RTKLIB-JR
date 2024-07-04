@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>819</width>
-    <height>591</height>
+    <height>636</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -536,7 +536,7 @@
             <string>Glonass</string>
            </property>
            <property name="text">
-            <string>GLO</string>
+            <string>GLONASS</string>
            </property>
           </widget>
          </item>
@@ -546,7 +546,7 @@
             <string>Galileo</string>
            </property>
            <property name="text">
-            <string>GAL</string>
+            <string>Galileo</string>
            </property>
           </widget>
          </item>
@@ -556,7 +556,7 @@
             <string>QZSS</string>
            </property>
            <property name="text">
-            <string>QZS</string>
+            <string>QZSS</string>
            </property>
           </widget>
          </item>
@@ -586,7 +586,7 @@
             <string>SBAS</string>
            </property>
            <property name="text">
-            <string>SBS</string>
+            <string>SBAS</string>
            </property>
           </widget>
          </item>
@@ -871,7 +871,7 @@
       <item>
        <widget class="QDialogButtonBox" name="buttonBox">
         <property name="standardButtons">
-         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+         <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
         </property>
        </widget>
       </item>

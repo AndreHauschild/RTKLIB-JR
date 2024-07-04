@@ -44,7 +44,7 @@ MapView::MapView(QWidget *parent)
     }
     mapViewOptDialog = new MapViewOptDialog(this);
 
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &MapView::close);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &MapView::reject);
     connect(ui->btnOptions, &QPushButton::clicked, this, &MapView::showOptionsDialog);
     connect(ui->btnShrink, &QPushButton::clicked, this, &MapView::zoomOut);
     connect(ui->btnExpand, &QPushButton::clicked, this, &MapView::zoomIn);

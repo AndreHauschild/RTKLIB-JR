@@ -1,3 +1,4 @@
+# RPM spec file optimized for Open SuSE Build Service
 %define version %(echo $RTKLIB_VERSION)
 %define release %(echo $RTKLIB_RELEASE)
 
@@ -22,10 +23,10 @@ BuildRequires:  pkgconfig(Qt5Widgets)
 BuildRequires:  pkgconfig(Qt5Xml)
 BuildRequires:  pkgconfig(Qt5Concurrent)
 BuildRequires:  pkgconfig(Qt5SerialPort)
-%define qt_version 5
+%define qt_version 5 
 %endif
 
-%if 0%{?centos_version} || (0%{?rhel_version} <= 700 && 0%{?rhel_version} != 0 )
+%if (0%{?centos_version} <= 700 && 0%{?centos_version} != 0 ) || (0%{?rhel_version} <= 700 && 0%{?rhel_version} != 0 )
 BuildRequires:  qt5-qtbase
 BuildRequires:  qt5-qtwebengine
 BuildRequires:  qt5-qtbase-gui
@@ -35,7 +36,7 @@ BuildRequires:  qt5-linguist
 %define qt_version 5
 %endif 
 
-%if 0%{?fedora_version} || 0%{?fedora} || ( 0%{?sle_version} > 150500 && 0%{?is_opensuse} )
+%if 0%{?fedora_version} || 0%{?fedora} || ( 0%{?sle_version} > 150500 && 0%{?is_opensuse} ) || 0%{?centos_version} >= 800 || 0%{?suse_version} >= 1600
 BuildRequires:  pkgconfig(Qt6WebEngineWidgets)
 BuildRequires:  pkgconfig(Qt6Widgets)
 BuildRequires:  pkgconfig(Qt6Xml)
@@ -48,6 +49,10 @@ BuildRequires:  pkgconfig(Qt6SerialPort)
 BuildRequires:  qt6-linguist
 BuildRequires:  gcc-gfortran
 BuildRequires:  desktop-file-utils
+%endif
+
+%if 0%{?fedora_version} == 40 || 0%{?fedora}
+BuildRequires:  oneVPL
 %endif
 
 %if 0%{?suse_version}
@@ -70,13 +75,13 @@ analysis. It support both, real-time kinematik (RTK) and precise point positioni
 %build
 cd bin
 
-%if 0%{?sle_version} == 150600 
-%qmake6 -r ../app/qtapp CONFIG+=debug QMAKE_CFLAGS+="%optflags" QMAKE_CXXFLAGS+="%optflags" QMAKE_STRIP="/bin/true"
+%if 0%{?sle_version} >= 150600 
+%qmake6 -r ../app/qtapp CONFIG+=packaging QMAKE_CFLAGS+="%optflags" QMAKE_CXXFLAGS+="%optflags" QMAKE_STRIP="/bin/true"
 %else
 %if 0%{qt_version} == 6
-qmake -r ../app/qtapp CONFIG+=debug QMAKE_CFLAGS+="%optflags" QMAKE_CXXFLAGS+="%optflags" QMAKE_STRIP="/bin/true"
+qmake -r ../app/qtapp CONFIG+=packaging QMAKE_CFLAGS+="%optflags" QMAKE_CXXFLAGS+="%optflags" QMAKE_STRIP="/bin/true"
 %else
-%{qmake5} -r ../app/qtapp CONFIG+=debug QMAKE_CFLAGS+="%optflags" QMAKE_CXXFLAGS+="%optflags" QMAKE_STRIP="/bin/true"
+%{qmake5} -r ../app/qtapp CONFIG+=packaging QMAKE_CFLAGS+="%optflags" QMAKE_CXXFLAGS+="%optflags" QMAKE_STRIP="/bin/true"
 %endif
 %endif
 make %{?_smp_mflags}

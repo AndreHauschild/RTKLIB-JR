@@ -14,8 +14,8 @@ CmdOptDialog::CmdOptDialog(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(ui->btnOk, &QPushButton::clicked, this, &CmdOptDialog::accept);
-    connect(ui->btnCancel, &QPushButton::clicked, this, &CmdOptDialog::reject);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &CmdOptDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &CmdOptDialog::reject);
     connect(ui->btnLoad, &QPushButton::clicked, this, &CmdOptDialog::load);
     connect(ui->btnSave, &QPushButton::clicked, this, &CmdOptDialog::save);
     connect(ui->cBCloseCommands, &QPushButton::clicked, this, &CmdOptDialog::updateEnable);

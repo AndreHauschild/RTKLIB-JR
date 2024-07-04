@@ -182,7 +182,6 @@ protected slots:
     void activateSolution2();
     void activateSolution12();
     void updatePlotSizeAndRefresh();
-    void showRangeListWidget();
     void showFrequencyDialog();
     
     void updateSelectedPlotType();
@@ -261,7 +260,8 @@ private:
     int nObservation, *indexObservation, observationIndex;
     int week;
     int flush, plotType;
-    int satelliteMask[MAXSAT], satelliteSelection[MAXSAT];
+    int satelliteMask[MAXSAT];
+    bool satelliteSelection[MAXSAT];
     int simulatedObservation;
     
     int dragState, dragCurrentX, dragCurrentY;
@@ -359,7 +359,7 @@ private:
     int fitPositions(gtime_t *time, double *opos, double *ovel);
     
     QString latLonString(const double *pos, int ndec);
-    QColor observationColor(const obsd_t *obs, double az, double el);
+    QColor observationColor(const obsd_t *obs, double az, double el, QVariant obstype);
     QColor sysColor(int sat);
     QColor snrColor(double snr);
     QColor mpColor(double mp);

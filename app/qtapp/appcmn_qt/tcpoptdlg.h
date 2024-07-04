@@ -44,7 +44,7 @@ protected:
     int showOptions;
 
 protected slots:
-    void btnOkClicked();
+    void accept();
     void btnNtripClicked();
     void btnMountpointClicked();
     void btnBrowseClicked();

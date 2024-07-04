@@ -22,7 +22,7 @@ MapOptDialog::MapOptDialog( Plot *plt, QWidget* parent)
 {
     ui->setupUi(this);
 
-    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &MapOptDialog::close);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &MapOptDialog::reject);
     connect(ui->btnSaveTag, &QPushButton::clicked, this, &MapOptDialog::saveTag);
     connect(ui->btnUpdate, &QPushButton::clicked, this, &MapOptDialog::updateMap);
     connect(ui->cBScaleEqual, &QCheckBox::clicked, this, &MapOptDialog::scaleEqualChanged);

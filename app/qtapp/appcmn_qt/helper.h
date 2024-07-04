@@ -3,11 +3,14 @@
 
 #include <QColor>
 class QWidget;
+class QComboBox;
 
 QString color2String(const QColor &c);
 void setWidgetBackgroundColor(QWidget *, const QColor &color);
 void setWidgetTextColor(QWidget *, const QColor &color);
 void degtodms(double deg, double *dms);
+void setComboBoxItemEnabled(QComboBox * comboBox, int index, bool enabled);
+bool check_compression(const QString &filename);
 
 namespace Color {
 static const QColor Orange(0xff, 0xaa, 0x00);

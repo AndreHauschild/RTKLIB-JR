@@ -69,7 +69,7 @@ void Plot::readSolution(const QStringList &files, int sel)
     showMessage(tr("Reading %1...").arg(files.first()));
     showLegend(QStringList());
 
-    if (!readsolt(paths, n, ts, te, tint, 0, &sol)) {
+    if (!readsolt((const char **)paths, n, ts, te, tint, SOLQ_NONE, &sol)) {
         showMessage(tr("No solution data: %1...").arg(files.first()));
         showLegend(QStringList());
         readWaitEnd();
@@ -145,7 +145,7 @@ void Plot::readSolutionStat(const QStringList &files, int sel)
     showMessage(tr("Reading %1...").arg(files.first()));
     showLegend(QStringList());
 
-    readsolstatt(paths, n, ts, te, tint, solutionStat + sel);
+    readsolstatt((const char **)paths, n, ts, te, tint, solutionStat + sel);
 
     updateSatelliteList();
 }
@@ -224,6 +224,8 @@ int Plot::readObservationRinex(const QStringList &files, obs_t *obs, nav_t *nav,
     for (i = 0; i < files.count(); i++) {
         showMessage(tr("Reading observation data... %1").arg(QDir::toNativeSeparators(files.at(i))));
         qApp->processEvents();
+        if (files.at(i).isEmpty())
+            continue;
 
         if (readrnxt(qPrintable(QDir::toNativeSeparators(files.at(i))), 1, ts, te, tint, opt, obs, nav, sta) < 0) {
             showMessage(tr("Error: insufficient memory"));
@@ -1283,7 +1285,7 @@ void Plot::updateMp()
         }
 
     }
-    for (int sat = 1; sat <= MAXSAT; sat++) {
+    for (uint8_t sat = 1; sat <= MAXSAT; sat++) {
         for (j = 0; j < NFREQ + NEXOBS; j++) {
             for (i = n = m = 0, B = 0.0; i < observation.n; i++) {
                 data = observation.data + i;

@@ -101,12 +101,12 @@ int main(int argc, char **argv)
     gtime_t ts={0},te={0};
     double tint=0.0,es[]={2000,1,1,0,0,0},ee[]={2000,12,31,23,59,59},pos[3];
     int i,j,n,ret;
-    char *infile[MAXFILE],*outfile="",*p;
+    const char *infile[MAXFILE],*outfile="",*p;
 
     prcopt.mode  =PMODE_KINEMA;
     prcopt.navsys=0;
-    prcopt.refpos=1;
-    prcopt.glomodear=1;
+    prcopt.refpos=POSOPT_SINGLE;
+    prcopt.glomodear=GLO_ARMODE_ON;
     solopt.timef=0;
     sprintf(solopt.prog ,"%s ver.%s %s",PROGNAME,VER_RTKLIB,PATCH_LEVEL);
     sprintf(filopt.trace,"%s.trace",PROGNAME);
@@ -115,7 +115,7 @@ int main(int argc, char **argv)
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-k")&&i+1<argc) {
             resetsysopts();
-            if (!loadopts(argv[++i],sysopts)) return -1;
+            if (!loadopts(argv[++i],sysopts)) return EXIT_FAILURE;
             getsysopts(&prcopt,&solopt,&filopt);
         }
     }
@@ -180,6 +180,10 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i],"-y")&&i+1<argc) solopt.sstat=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-x")&&i+1<argc) solopt.trace=atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--version")) {
+            fprintf(stderr, "rnx2rtkp RTKLIB %s %s\n", VER_RTKLIB, PATCH_LEVEL);
+            exit(0);
+        }
         else if (*argv[i]=='-') printhelp();
         else if (n<MAXFILE) infile[n++]=argv[i];
     }
@@ -188,10 +192,10 @@ int main(int argc, char **argv)
     }
     if (n<=0) {
         showmsg("error : no input file");
-        return -2;
+        return EXIT_FAILURE;
     }
     ret=postpos(ts,te,tint,0.0,&prcopt,&solopt,&filopt,infile,n,outfile,"","");
 
     if (!ret) fprintf(stderr,"%40s\r","");
-    return ret;
+    return ret?EXIT_FAILURE:0;
 }

@@ -154,7 +154,7 @@ void ConvDialog::convert()
 #endif
         opt << kmlfile;
         if (!execCommand(cmd, opt)) {
-            showMessage(tr("Error : zip execution"));
+            showMessage(tr("Error: zip execution"));
 			return;
 		}
 	}
@@ -228,7 +228,7 @@ void ConvDialog::callGoogleEarth()
     opt << ui->lEOutputFile->text();
     
     if (!execCommand(cmd, opt))
-        showMessage(tr("Error : Google Earth execution"));
+        showMessage(tr("Error: Google Earth execution"));
 
     return;
 }

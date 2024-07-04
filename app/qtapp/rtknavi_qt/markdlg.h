@@ -32,7 +32,7 @@ public:
     QString getStationPositionFile();
 
 public slots:
-    void saveClose();
+    void accept();
     void showKeyDialog();
     void btnPositionClicked();
 

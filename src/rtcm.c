@@ -104,6 +104,7 @@ extern int init_rtcm(rtcm_t *rtcm)
     rtcm->obs.data=NULL;
     rtcm->nav.eph =NULL;
     rtcm->nav.geph=NULL;
+    rtcm->nav.seph=NULL;
     
     /* reallocate memory for observation and ephemeris buffer */
     if (!(rtcm->obs.data=(obsd_t *)malloc(sizeof(obsd_t)*MAXOBS))||
@@ -113,8 +114,9 @@ extern int init_rtcm(rtcm_t *rtcm)
         return 0;
     }
     rtcm->obs.n=0;
-    rtcm->nav.n=MAXSAT*2;
-    rtcm->nav.ng=MAXPRNGLO;
+    rtcm->nav.n=rtcm->nav.nmax=MAXSAT*2;
+    rtcm->nav.ng=rtcm->nav.ngmax=MAXPRNGLO;
+    rtcm->nav.ns=rtcm->nav.nsmax=0;
     for (i=0;i<MAXOBS   ;i++) rtcm->obs.data[i]=data0;
     for (i=0;i<MAXSAT*2 ;i++) rtcm->nav.eph [i]=eph0;
     for (i=0;i<MAXPRNGLO;i++) rtcm->nav.geph[i]=geph0;
@@ -131,8 +133,8 @@ extern void free_rtcm(rtcm_t *rtcm)
     
     /* free memory for observation and ephemeris buffer */
     free(rtcm->obs.data); rtcm->obs.data=NULL; rtcm->obs.n=0;
-    free(rtcm->nav.eph ); rtcm->nav.eph =NULL; rtcm->nav.n=0;
-    free(rtcm->nav.geph); rtcm->nav.geph=NULL; rtcm->nav.ng=0;
+    free(rtcm->nav.eph ); rtcm->nav.eph =NULL; rtcm->nav.n=rtcm->nav.nmax=0;
+    free(rtcm->nav.geph); rtcm->nav.geph=NULL; rtcm->nav.ng=rtcm->nav.ngmax=0;
 }
 /* input RTCM 2 message from stream --------------------------------------------
 * fetch next RTCM 2 message and input a message from byte stream

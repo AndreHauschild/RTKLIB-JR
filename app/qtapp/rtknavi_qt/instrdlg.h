@@ -101,8 +101,8 @@ public slots:
     void  updateEnable();
 
 private:
-    QString getFilePath(const QString &path);
-    QString setFilePath(const QString &path);
+    QString extractFilePath(const QString &path);
+    QString makePath(const QString &path);
     void showSerialOptionsDialog(int index, int opt);
     void showTcpOptionsDialog(int index, int opt);
     void showFtpOptionsDialog(int index, int opt);

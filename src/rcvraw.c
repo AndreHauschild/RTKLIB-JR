@@ -392,7 +392,7 @@ static int decode_gal_inav_utc(const uint8_t *buff, double *utc)
 extern int decode_gal_inav(const uint8_t *buff, eph_t *eph, double *ion,
                            double *utc)
 {
-    trace(4,"decode_gal_fnav:\n");
+    trace(4,"decode_gal_inav:\n");
     
     if (eph&&!decode_gal_inav_eph(buff,eph)) return 0;
     if (ion&&!decode_gal_inav_ion(buff,ion)) return 0;
@@ -947,8 +947,7 @@ static int decode_glostr_eph(const uint8_t *buff, geph_t *geph)
     M           =getbitu(buff,i, 2);
     
     if (frn1!=1||frn2!=2||frn3!=3||frn4!=4) {
-        trace(3,"decode_glostr error: frn=%d %d %d %d %d\n",frn1,frn2,frn3,
-              frn4);
+        trace(3,"decode_glostr error: frn=%d %d %d %d\n",frn1,frn2,frn3,frn4);
         return 0;
     }
     if (!(geph_glo.sat=satno(SYS_GLO,slot))) {
@@ -1189,7 +1188,8 @@ static int decode_alm_qzs(const uint8_t *buff, alm_t *alm)
 /* decode GPS/QZSS almanac/health --------------------------------------------*/
 static int decode_frame_alm(const uint8_t *buff, alm_t *alm)
 {
-    int frm,dataid,ret=0;
+    uint32_t frm,dataid;
+    int ret=0;
     
     trace(4,"decode_frame_alm:\n");
     
@@ -1348,10 +1348,10 @@ extern int init_raw(raw_t *raw, int format)
     }
     raw->obs.n =0;
     raw->obuf.n=0;
-    raw->nav.n =MAXSAT*2;
-    raw->nav.na=MAXSAT;
-    raw->nav.ng=NSATGLO;
-    raw->nav.ns=NSATSBS*2;
+    raw->nav.n =raw->nav.nmax =MAXSAT*2;
+    raw->nav.na=raw->nav.namax=MAXSAT;
+    raw->nav.ng=raw->nav.ngmax=NSATGLO;
+    raw->nav.ns=raw->nav.nsmax=NSATSBS*2;
     for (i=0;i<MAXOBS   ;i++) raw->obs.data [i]=data0;
     for (i=0;i<MAXOBS   ;i++) raw->obuf.data[i]=data0;
     for (i=0;i<MAXSAT*2 ;i++) raw->nav.eph  [i]=eph0;
@@ -1389,10 +1389,10 @@ extern void free_raw(raw_t *raw)
     
     free(raw->obs.data ); raw->obs.data =NULL; raw->obs.n =0;
     free(raw->obuf.data); raw->obuf.data=NULL; raw->obuf.n=0;
-    free(raw->nav.eph  ); raw->nav.eph  =NULL; raw->nav.n =0;
-    free(raw->nav.alm  ); raw->nav.alm  =NULL; raw->nav.na=0;
-    free(raw->nav.geph ); raw->nav.geph =NULL; raw->nav.ng=0;
-    free(raw->nav.seph ); raw->nav.seph =NULL; raw->nav.ns=0;
+    free(raw->nav.eph  ); raw->nav.eph  =NULL; raw->nav.n =raw->nav.nmax =0;
+    free(raw->nav.alm  ); raw->nav.alm  =NULL; raw->nav.na=raw->nav.namax=0;
+    free(raw->nav.geph ); raw->nav.geph =NULL; raw->nav.ng=raw->nav.ngmax=0;
+    free(raw->nav.seph ); raw->nav.seph =NULL; raw->nav.ns=raw->nav.nsmax=0;
     
     /* free receiver dependent data */
     switch (raw->format) {

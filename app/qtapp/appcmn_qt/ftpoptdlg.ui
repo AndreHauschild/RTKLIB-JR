@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>535</width>
-    <height>237</height>
+    <height>274</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -377,7 +377,7 @@
          <string/>
         </property>
         <property name="echoMode">
-         <enum>QLineEdit::Password</enum>
+         <enum>QLineEdit::EchoMode::Password</enum>
         </property>
        </widget>
       </item>
@@ -387,12 +387,22 @@
    <item row="9" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
+ <tabstops>
+  <tabstop>cBAddress</tabstop>
+  <tabstop>btnKey</tabstop>
+  <tabstop>cBInterval</tabstop>
+  <tabstop>lEUser</tabstop>
+  <tabstop>cBOffset</tabstop>
+  <tabstop>lEPassword</tabstop>
+  <tabstop>cBPathOffset</tabstop>
+  <tabstop>sBRetryInterval</tabstop>
+ </tabstops>
  <resources>
   <include location="../icon/resources.qrc"/>
  </resources>

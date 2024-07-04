@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>466</width>
-    <height>294</height>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -45,6 +45,9 @@
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <widget class="QDoubleSpinBox" name="sBLatitude">
+       <property name="toolTip">
+        <string>Latitude of marker</string>
+       </property>
        <property name="suffix">
         <string>°</string>
        </property>
@@ -61,6 +64,9 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="sBLongitude">
+       <property name="toolTip">
+        <string>Longitude of marker</string>
+       </property>
        <property name="suffix">
         <string>°</string>
        </property>
@@ -77,6 +83,9 @@
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="sBHeight">
+       <property name="toolTip">
+        <string>Height of marker</string>
+       </property>
        <property name="suffix">
         <string> m</string>
        </property>
@@ -98,6 +107,9 @@
          <width>30</width>
          <height>16777215</height>
         </size>
+       </property>
+       <property name="toolTip">
+        <string>Load position from station file</string>
        </property>
        <property name="text">
         <string>...</string>
@@ -155,7 +167,7 @@
    <item row="10" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>

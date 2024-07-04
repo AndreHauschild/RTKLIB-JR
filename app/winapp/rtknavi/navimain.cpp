@@ -1282,9 +1282,10 @@ void __fastcall TMainForm::SvrStart(void)
     rtksvr.bl_reset=MaxBL;
     
     // start rtk server
-    if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,paths,Format,NavSelect,
-                     cmds,cmds_periodic,rcvopts,NmeaCycle,NmeaReq,nmeapos,
-                     &PrcOpt,solopt,&monistr,errmsg)) {
+    if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,(const char **)paths,Format,
+                     NavSelect,(const char **)cmds,(const char **)cmds_periodic,
+                     (const char **)rcvopts,NmeaCycle,NmeaReq,nmeapos,&PrcOpt,
+                     solopt,&monistr,errmsg)) {
         trace(2,"rtksvrstart error %s\n",errmsg);
         traceclose();
         return;
@@ -1327,7 +1328,7 @@ void __fastcall TMainForm::SvrStop(void)
             if (CmdEnaTcp[i][1]) cmds[i]=CmdsTcp[i][1].c_str();
         }
     }
-    rtksvrstop(&rtksvr,cmds);
+    rtksvrstop(&rtksvr,(const char **)cmds);
     
     BtnStart    ->Visible=true;
     BtnOpt      ->Enabled=true;
@@ -1882,7 +1883,7 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
                 snr[0]=snr[j+1]; // max snr
             }
         }
-        if (Vsat[index][k]&&(snr[freq]>0||freq>NFREQ)) {
+        if (Vsat[index][k]&&(freq>NFREQ||snr[freq]>0)) {
             azel[ns*2]=Az[index][k]; azel[1+ns*2]=El[index][k];
             ns++;
         }

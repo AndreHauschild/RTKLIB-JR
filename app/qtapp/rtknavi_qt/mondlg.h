@@ -55,7 +55,7 @@ private:
     void setEstimates();
     void setCovariance();
     void setObservations();
-    void setNavigation();
+    void setNavigationGPS();
     void setGlonassNavigations();
     void setStream();
     void setSbsMessages();
@@ -73,7 +73,7 @@ private:
     void showEstimates();
     void showCovariance();
     void showObservations();
-    void showNavigations();
+    void showNavigationsGPS();
     void showGlonassNavigations();
     void showSbsMessages();
     void showIonUtc();

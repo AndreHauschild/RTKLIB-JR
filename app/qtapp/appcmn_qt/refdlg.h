@@ -18,7 +18,7 @@ protected:
     void  showEvent(QShowEvent *);
 
 protected slots:
-    void  saveClose();
+    void  accept();
     void  stationSelected(int, int);
     void  loadStations();
     void  findList();
