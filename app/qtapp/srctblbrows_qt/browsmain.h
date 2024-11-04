@@ -3,67 +3,70 @@
 #define browsmainH
 //---------------------------------------------------------------------------
 #include <QMainWindow>
-#include<QFutureWatcher>
+#include <QFutureWatcher>
 
 #include "ui_browsmain.h"
 
+namespace Ui {
+class MainForm;
+}
 
 class QShowEvent;
 class QCloseEvent;
 class StaListDialog;
-class GoogleMapView;
+class MapView;
 class QTimer;
+class MntpOptDialog;
 
 //---------------------------------------------------------------------------
-class MainForm : public QMainWindow, private Ui::MainForm
+class MainForm : public QMainWindow
 {
     Q_OBJECT
+
+public:
+    QStringList stationList;
+
+    explicit MainForm(QWidget *parent = NULL);
 
 protected:
     void showEvent(QShowEvent*);
     void closeEvent(QCloseEvent*);
 
 public slots:
-    void BtnUpdateClick();
-    void BtnListClick();
-    void AddressChange();
-    void MenuOpenClick();
-    void MenuSaveClick();
-    void MenuQuitClick();
-    void MenuUpdateCasterClick();
-    void MenuUpdateTableClick();
-    void MenuViewStrClick();
-    void MenuViewCasClick();
-    void MenuViewNetClick();
-    void MenuViewSrcClick();
-    void MenuAboutClick();
-    void BtnMapClick();
-    void TimerTimer();
-    void Table0SelectCell(int ARow, int ACol);
-    void BtnStaClick();
-    void StaMaskClick();
-    void UpdateCaster();
-    void UpdateTable();
-    void ShowMsg(const QString &);
+    void openSourceTable();
+    void saveSourceTable();
+    void viewStreamTable();
+    void viewCasterTable();
+    void viewNetTable();
+    void viewSourceTable();
+    void showAboutDialog();
+    void showMap();
+    void loadTimerExpired();
+    void streamTableSelectItem(int ARow, int ACol);
+    void streamTableShowMountpoint(int ARow, int ACol);
+    void casterTableSelectItem(int ARow, int ACol);
+    void showStationDialog();
+    void updateCaster();
+    void updateTable();
+    void showMsg(const QString &);
 
 private:
-    QString AddrList, AddrCaster, SrcTable, IniFile;
-	int FontScale;
-    GoogleMapView *googleMapView;
+    void getCaster();
+    void getTable();
+    void updateMap();
+    void updateEnable();
+    void showTable();
+
+    QString addressList, addressCaster, sourceTable, iniFile;
+    float fontScale;
+    MapView *mapView;
     StaListDialog *staListDialog;
-    QTimer *Timer;
-    QFutureWatcher<char*> TableWatcher;
-    QFutureWatcher<char*> CasterWatcher;
+    MntpOptDialog *mountPointDialog;
+    QTimer *loadTimer;
+    QFutureWatcher<char*> tableWatcher;
+    QFutureWatcher<char*> casterWatcher;
 
-    void GetCaster(void);
-    void GetTable(void);
-    void UpdateMap(void);
-    void UpdateEnable(void);
-    void ShowTable(void);
-public:
-    QStringList StaList;
-
-    explicit MainForm(QWidget *parent = NULL);
+    Ui::MainForm * ui;
 };
 //---------------------------------------------------------------------------
 #endif

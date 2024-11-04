@@ -4,28 +4,29 @@
 //---------------------------------------------------------------------------
 #include <QDialog>
 
-#include "ui_cmdoptdlg.h"
+namespace Ui {
+class CmdOptDialog;
+}
 
 //---------------------------------------------------------------------------
-class CmdOptDialog : public QDialog, private Ui_CmdOptDialog
+class CmdOptDialog : public QDialog
 {
     Q_OBJECT
 
-protected:
-    void showEvent(QShowEvent *);
-    void UpdateEnable();
-
-public slots:
-    void BtnOkClick();
-    void ChkCloseCmdClick();
-    void ChkOpenCmdClick();
-    void ChkPeriodicCmdClick();
-    void BtnLoadClick();
-    void BtnSaveClick();
-
 public:
-    QString Cmds[3];
-    bool CmdEna[3];
     explicit CmdOptDialog(QWidget* parent);
+
+    void setCommands(int i, const QString &);
+    QString getCommands(int i);
+    void setCommandsEnabled(int i, bool);
+    bool getCommandsEnabled(int i);
+
+protected slots:
+    void load();
+    void save();
+    void updateEnable();
+
+private:
+    Ui::CmdOptDialog * ui;
 };
 #endif

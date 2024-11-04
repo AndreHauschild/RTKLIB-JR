@@ -76,6 +76,7 @@
 *                           CODE_L1I -> CODE_L2I for BDS B1I (RINEX 3.04)
 *                           use integer types in stdint.h
 *-----------------------------------------------------------------------------*/
+#define _POSIX_C_SOURCE 199506
 #include "rtklib.h"
 
 #define UBXSYNC1    0xB5        /* ubx message sync code 1 */
@@ -357,7 +358,7 @@ static int decode_rxmrawx(raw_t *raw)
     gtime_t time;
     char *q,tstr[64];
     double tow,P,L,D,tn,tadj=0.0,toff=0.0;
-    int i,j,k,idx,sys,prn,sat,code,slip,halfv,halfc,LLI,n=0,cpstd_valid,cpstd_slip;
+    int i,j,k,idx,sys,prn,sat,code,slip,halfv,halfc,LLI,n=0;
     int week,nmeas,ver,gnss,svid,sigid,frqid,lockt,cn0,cpstd=0,prstd=0,tstat;
     int multicode=0, rcvstds=0;
 
@@ -392,20 +393,23 @@ static int decode_rxmrawx(raw_t *raw)
         sscanf(q,"-TADJ=%lf",&tadj);
     }
     /* max valid std-dev of carrier-phase (-MAX_STD_CP) */
-    if ((q=strstr(raw->opt,"-MAX_STD_CP="))) {
-        sscanf(q,"-MAX_STD_CP=%d",&cpstd_valid);
-    }
-    else if (raw->rcvtype==1) cpstd_valid=MAX_CPSTD_VALID_GEN9;  /* F9P */
-    else cpstd_valid=MAX_CPSTD_VALID_GEN8;  /* M8T, M8P */
+    int cpstd_valid;
+    if (raw->rcvtype == 1)
+        cpstd_valid = MAX_CPSTD_VALID_GEN9; /* F9P */
+    else
+        cpstd_valid = MAX_CPSTD_VALID_GEN8; /* M8T, M8P */
+    q = strstr(raw->opt, "-MAX_STD_CP=");
+    if (q) sscanf(q, "-MAX_STD_CP=%d", &cpstd_valid);
 
     /* slip threshold of std-dev of carrier-phase (-STD_SLIP) */
-    if ((q=strstr(raw->opt,"-STD_SLIP="))) {
-        sscanf(q,"-STD_SLIP=%d",&cpstd_slip);
-    } else cpstd_slip=CPSTD_SLIP;
+    int cpstd_slip = CPSTD_SLIP;
+    q = strstr(raw->opt, "-STD_SLIP=");
+    if (q) sscanf(q, "-STD_SLIP=%d", &cpstd_slip);
+
     /* use multiple codes for each freq (-MULTICODE) */
-    if ((q=strstr(raw->opt,"-MULTICODE"))) multicode=1;
+    if (strstr(raw->opt,"-MULTICODE")) multicode=1;
     /* write rcvr stdevs to unused rinex fields */
-    if ((q=strstr(raw->opt,"-RCVSTDS"))) rcvstds=1;
+    if (strstr(raw->opt,"-RCVSTDS")) rcvstds=1;
 
     /* time tag adjustment */
     if (tadj>0.0) {
@@ -507,8 +511,6 @@ static int decode_rxmrawx(raw_t *raw)
             }
             n++;
         }
-        prstd=prstd<=9?prstd:9;  /* limit to 9 to fit RINEX format */
-        cpstd=cpstd<=9?cpstd:9;  /* limit to 9 to fit RINEX format */
         raw->obs.data[j].L[idx]=L;
         raw->obs.data[j].P[idx]=P;
         raw->obs.data[j].Lstd[idx]=rcvstds?cpstd:0;
@@ -829,8 +831,8 @@ static void adj_utcweek(gtime_t time, double *utc)
 static int decode_eph(raw_t *raw, int sat)
 {
     eph_t eph={0};
-    
-    if (!decode_frame(raw->subfrm[sat-1],&eph,NULL,NULL,NULL)) return 0;
+    int sys = satsys(sat, NULL);
+    if (!decode_frame(raw->subfrm[sat-1],sys,&eph,NULL,NULL,NULL)) return 0;
     
     if (!strstr(raw->opt,"-EPHALL")) {
         if (eph.iode==raw->nav.eph[sat-1].iode&&
@@ -849,8 +851,7 @@ static int decode_ionutc(raw_t *raw, int sat)
 {
     double ion[8],utc[8];
     int sys=satsys(sat,NULL);
-    
-    if (!decode_frame(raw->subfrm[sat-1],NULL,NULL,ion,utc)) return 0;
+    if (!decode_frame(raw->subfrm[sat-1],sys,NULL,NULL,ion,utc)) return 0;
     
     adj_utcweek(raw->time,utc);
     if (sys==SYS_QZS) {
@@ -1314,7 +1315,7 @@ static int sync_ubx(uint8_t *buff, uint8_t data)
 *          -INVCP     : invert polarity of carrier-phase
 *          -TADJ=tint : adjust time tags to multiples of tint (sec)
 *          -STD_SLIP=std: slip by std-dev of carrier phase under std
-*          -MAX_CP_STD=std: max std-dev of carrier phase
+*          -MAX_STD_CP=std: max std-dev of carrier phase
 *          -MULTICODE :  preserve multiple signal codes for single freq
 *          -RCVSTDS :  save receiver stdevs to unused rinex fields
 
@@ -1509,7 +1510,8 @@ extern int gen_ubx(const char *msg, uint8_t *buff)
     trace(4,"gen_ubxf: msg=%s\n",msg);
     
     strcpy(mbuff,msg);
-    for (p=strtok(mbuff," ");p&&narg<32;p=strtok(NULL," ")) {
+    char *r;
+    for (p=strtok_r(mbuff," ",&r);p&&narg<32;p=strtok_r(NULL," ",&r)) {
         args[narg++]=p;
     }
     if (narg<1||strncmp(args[0],"CFG-",4)) return 0;

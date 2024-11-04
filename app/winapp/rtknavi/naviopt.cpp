@@ -49,7 +49,7 @@ static char proxyaddr[MAXSTR]="";       /* proxy address */
 #define OSTOPT  "0:off,1:serial,2:file,3:tcpsvr,4:tcpcli,5:ntripsvr,9:ntripcas"
 #define FMTOPT  "0:rtcm2,1:rtcm3,2:oem4,4:ubx,5:swift,6:hemis,7:skytraq,8:javad,9:nvs,10:binex,11:rt17,12:sbf,15:sp3"
 #define NMEOPT  "0:off,1:latlon,2:single"
-#define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea"
+#define SOLOPT  "0:llh,1:xyz,2:enu,3:nmea:4:stat"
 #define MSGOPT  "0:all,1:rover,2:base,3:corr"
 
 static opt_t rcvopts[]={
@@ -589,7 +589,7 @@ void __fastcall TOptDialog::SetOpt(void)
 	
 	SolOpt.posf      =SolFormat   ->ItemIndex;
 	SolOpt.timef     =TimeFormat->ItemIndex==0?0:1;
-	SolOpt.times     =TimeFormat->ItemIndex==0?0:TimeFormat->ItemIndex-1;
+	SolOpt.times     =TimeFormat->ItemIndex==0?TIMES_GPST:(TimeFormat->ItemIndex-1);
 	SolOpt.timeu     =(int)str2dbl(TimeDecimal->Text);
 	SolOpt.degf      =LatLonFormat->ItemIndex;
 	strcpy(SolOpt.sep,FieldSep_Text.c_str());
@@ -830,8 +830,13 @@ void __fastcall TOptDialog::LoadOpt(AnsiString file)
 	ChkInitRestart->Checked		=prcopt.initrst;
 	
 	RovPosTypeP	 ->ItemIndex	=0;
+        if (prcopt.rovpos == POSOPT_POS_LLH) RovPosTypeP->ItemIndex = 0;
+        else if (prcopt.rovpos == POSOPT_POS_XYZ) RovPosTypeP->ItemIndex = 2;
+
 	RefPosTypeP	 ->ItemIndex	=0;
-	if      (prcopt.refpos==POSOPT_RTCM  ) RefPosTypeP->ItemIndex=3;
+        if (prcopt.refpos == POSOPT_POS_LLH) RefPosTypeP->ItemIndex = 0;
+        else if (prcopt.refpos == POSOPT_POS_XYZ) RefPosTypeP->ItemIndex = 2;
+	else if (prcopt.refpos==POSOPT_RTCM  ) RefPosTypeP->ItemIndex=3;
 	else if (prcopt.refpos==POSOPT_SINGLE) RefPosTypeP->ItemIndex=4;
 	
 	RovPosTypeF					=RovPosTypeP->ItemIndex;
@@ -1059,13 +1064,20 @@ void __fastcall TOptDialog::SaveOpt(AnsiString file)
 	prcopt.maxaveep=MaxAveEp->Text.ToInt();
 	prcopt.initrst=ChkInitRestart->Checked;
 	
-	prcopt.rovpos=POSOPT_POS;
-	prcopt.refpos=POSOPT_POS;
-	if      (RefPosTypeP->ItemIndex==3) prcopt.refpos=POSOPT_RTCM;
+        prcopt.rovpos = POSOPT_POS_LLH;
+        if (RovPosTypeP->ItemIndex < 2) prcopt.rovpos = POSOPT_POS_LLH;
+        else if (RovPosTypeP->ItemIndex == 2) prcopt.rovpos = POSOPT_POS_XYZ;
+
+        prcopt.refpos = POSOPT_POS_LLH;
+        if (RefPosTypeP->ItemIndex < 2) prcopt.refpos = POSOPT_POS_LLH;
+        else if (RefPosTypeP->ItemIndex == 2) prcopt.refpos = POSOPT_POS_XYZ;
+        else if (RefPosTypeP->ItemIndex == 3) prcopt.refpos=POSOPT_RTCM;
 	else if (RefPosTypeP->ItemIndex==4) prcopt.refpos=POSOPT_SINGLE;
 	
-	if (prcopt.rovpos==POSOPT_POS) GetPos(RovPosTypeP->ItemIndex,editu,prcopt.ru);
-	if (prcopt.refpos==POSOPT_POS) GetPos(RefPosTypeP->ItemIndex,editr,prcopt.rb);
+        if (prcopt.rovpos == POSOPT_POS_LLH || prcopt.rovpos == POSOPT_POS_XYZ)
+          GetPos(RovPosTypeP->ItemIndex, editu, prcopt.ru);
+        if (prcopt.refpos == POSOPT_POS_LLH || prcopt.refpos == POSOPT_POS_XYZ)
+          GetPos(RefPosTypeP->ItemIndex, editr, prcopt.rb);
 	
 	strcpy(filopt.satantp,SatPcvFile_Text.c_str());
 	strcpy(filopt.rcvantp,AntPcvFile_Text.c_str());

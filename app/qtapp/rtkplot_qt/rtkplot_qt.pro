@@ -1,10 +1,4 @@
-#-------------------------------------------------
-#
-# Project created by QtCreator 2016-01-30T18:29:59
-#
-#-------------------------------------------------
-
-QT       += widgets core gui xml serialport
+QT += widgets core gui xml serialport
 
 qtHaveModule(webenginewidgets) {
     QT += webenginewidgets
@@ -17,13 +11,14 @@ qtHaveModule(webenginewidgets) {
 }
 include(../qtapp.pri)
 
-TARGET = rtkplot_qt
 TEMPLATE = app
+TARGET = rtkplot_qt
+target.path = $$INSTALLROOT/bin
+INSTALLS += target
 
 INCLUDEPATH += ../../../src/ ../appcmn_qt
 
 SOURCES += \
-    ../appcmn_qt/aboutdlg.cpp \
     conndlg.cpp \
     mapoptdlg.cpp \
     plotcmn.cpp \
@@ -35,6 +30,9 @@ SOURCES += \
     pntdlg.cpp \
     rtkplot.cpp \
     skydlg.cpp \
+    fileseldlg.cpp \
+    vmapdlg.cpp \
+    ../appcmn_qt/aboutdlg.cpp \
     ../appcmn_qt/refdlg.cpp \
     ../appcmn_qt/freqdlg.cpp \
     ../appcmn_qt/viewer.cpp \
@@ -48,19 +46,21 @@ SOURCES += \
     ../appcmn_qt/graph.cpp \
     ../appcmn_qt/console.cpp \
     ../appcmn_qt/tspandlg.cpp \
-    fileseldlg.cpp \
-    mapview.cpp \
-    mapviewopt.cpp \
-    vmapdlg.cpp
+    ../appcmn_qt/timedlg.cpp \
+    ../appcmn_qt/helper.cpp \
+    ../appcmn_qt/mapview.cpp \
+    ../appcmn_qt/mapviewopt.cpp
 
 HEADERS  += \
-    ../appcmn_qt/aboutdlg.h \
     conndlg.h \
     mapoptdlg.h \
     plotmain.h \
     plotopt.h \
     pntdlg.h \
     skydlg.h \
+    fileseldlg.h \
+    vmapdlg.h \
+    ../appcmn_qt/aboutdlg.h \
     ../appcmn_qt/refdlg.h \
     ../appcmn_qt/freqdlg.h \
     ../appcmn_qt/viewer.h \
@@ -74,19 +74,21 @@ HEADERS  += \
     ../appcmn_qt/graph.h \
     ../appcmn_qt/console.h \
     ../appcmn_qt/tspandlg.h \
-    fileseldlg.h \
-    mapview.h \
-    mapviewopt.h \
-    vmapdlg.h
+    ../appcmn_qt/timedlg.h \
+    ../appcmn_qt/helper.h \
+    ../appcmn_qt/mapview.h \
+    ../appcmn_qt/mapviewopt.h
 
 FORMS    += \
-    ../appcmn_qt/aboutdlg.ui \
     conndlg.ui \
     mapoptdlg.ui \
     plotmain.ui \
     plotopt.ui \
     pntdlg.ui \
     skydlg.ui \
+    fileseldlg.ui \
+    vmapdlg.ui \
+    ../appcmn_qt/aboutdlg.ui \
     ../appcmn_qt/refdlg.ui \
     ../appcmn_qt/freqdlg.ui \
     ../appcmn_qt/viewer.ui \
@@ -99,12 +101,26 @@ FORMS    += \
     ../appcmn_qt/keydlg.ui \
     ../appcmn_qt/console.ui \
     ../appcmn_qt/tspandlg.ui \
-    fileseldlg.ui \
-    mapview.ui \
-    mapviewopt.ui \
-    vmapdlg.ui
+    ../appcmn_qt/timedlg.ui \
+    ../appcmn_qt/mapview.ui \
+    ../appcmn_qt/mapviewopt.ui
 
 RESOURCES += \
-    rtkplot_qt.qrc
+    ../appcmn_qt/appcmn_qt.qrc \
+    ../icon/resources.qrc
 
 RC_FILE = rtkplot_qt.rc
+
+desktop.path   = $$INSTALLROOT/share/applications/
+desktop.files += rtkplot_qt.desktop
+INSTALLS      += desktop
+
+icons.path   = $$INSTALLROOT/share/pixmaps/
+icons.files += ../icon/rtkplot.png
+INSTALLS    += icons
+
+win32 {
+CONFIG(release,debug|release) {
+QMAKE_POST_LINK += $$QMAKE_COPY $$shell_path($$OUT_PWD/release/$${TARGET}.exe) $$shell_path($$PKGDIR/packages/com.rtklib.$${TARGET}/data)
+}
+}

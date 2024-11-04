@@ -6,21 +6,21 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QShowEvent>
+#include <QPixmap>
 
-#include "ui_aboutdlg.h"
+namespace Ui {
+    class AboutDlg;
+}
 
 //---------------------------------------------------------------------------
-class AboutDialog : public QDialog, private Ui::AboutDlg
+class AboutDialog : public QDialog
 {
     Q_OBJECT
 
-protected:
-    void showEvent(QShowEvent *);
-
 public:
-	int IconIndex;
-    QString About;
+    explicit AboutDialog(QWidget*, QPixmap icon, QString labelText);
 
-    explicit AboutDialog(QWidget*);
+private:
+    Ui::AboutDlg *ui;
 };
 #endif

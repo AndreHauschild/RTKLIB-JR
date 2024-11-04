@@ -23,7 +23,7 @@
 #define RTKPLOT_GE_FILE "rtklib_ge.htm"
 
 #define TIMEOUT_GE  5000   // timeout of GE load (ms)
-#define MAXTRACKS   4096   // max number of track poitnts
+#define MAXTRACKS   4096   // max number of track points
 
 #define INIT_RANGE  4.322  // initial range (km)
 #define MIN_RANGE   0.01   // min range (km)
@@ -101,7 +101,7 @@ extern Plot *plot;
 void  GoogleEarthView::FormCreate()
 {
     QString dir;
-    
+
     dir=qApp->applicationDirPath(); // exe directory
     dir=dir+"/"+RTKPLOT_GE_FILE;
 #ifdef QWEBKIT
@@ -330,15 +330,15 @@ int  GoogleEarthView::UpdateTrack(int index, solbuf_t *sol)
     sol_t *data;
     double prev[3]={0},pos[3];
     int i,intv;
-    
+
     if (index<1||2<index||!State||sol->n<=0) return 0;
-    
+
     setCursor(Qt::WaitCursor);
-    
+
     ClearTrack(index);
-    
+
     intv=sol->n/MAXTRACKS+1; // interval to reduce points
-    
+
     for (i=0;(data=getsol(sol,i))!=NULL;i++) {
         if (i%intv!=0) continue;
         ecef2pos(data->rr,pos);
@@ -373,9 +373,9 @@ void  GoogleEarthView::UpdatePoint(void)
 {
     double pos[3];
     int i;
-    
+
     ExecFunc("ClearPoint()");
-    
+
     for (i=0;i<plot->NWayPnt;i++) {
         ecef2pos(plot->PntPos[i],pos);
         ExecFunc(QString("AddPoint('%1',%2,%3,%4)").arg(plot->PntName[i])
@@ -419,7 +419,7 @@ void  GoogleEarthView::UpdateOpts(void)
 {
     QString f;
     int opts[12];
-    
+
     GetOpts(opts);
     ExecFunc(QString("SetOpts(%1,%2,%3,%4,%5,%6,%7,%8,%9,%10)").arg(opts[0])
              .arg(opts[1]).arg(opts[2]).arg(opts[3]).arg(opts[4]).arg(opts[5]).arg(opts[6]).arg(opts[7]).arg(opts[8])
@@ -459,7 +459,7 @@ int  GoogleEarthView::GetState(void)
     state=ele1.attribute("value").toInt();
 
 
-    return state;    
+    return state;
 #else
  #ifdef QWEBENGINE
     QStringList tokens=pageState->getView().split(',');

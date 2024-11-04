@@ -7,32 +7,35 @@
 
 #include "rtklib.h"
 
-#include "ui_mondlg.h"
+namespace Ui {
+class StrMonDialog;
+}
 
 #define MAX_MSG_BUFF	4096
 
 //---------------------------------------------------------------------------
-class StrMonDialog : public QDialog, private Ui::StrMonDialog
+class StrMonDialog : public QDialog
 {
     Q_OBJECT
+
 public slots:
-    void BtnCloseClick();
-    void BtnClearClick();
-    void BtnDownClick();
-    void SelFmtChange();
+    void clearConsole();
+    void scrollDown();
+    void changeFormat();
 
 private:
-    QStringList ConBuff;
-    int Stop;
+    QStringList consoleBuffer;
     rtcm_t rtcm;
     raw_t raw;
 
-    void AddConsole(unsigned char *msg, int len, int mode);
+    void addConsole(unsigned char *msg, int len, int mode, bool newline);
+    Ui::StrMonDialog *ui;
 
 public:
-    int StrFmt;
     explicit StrMonDialog(QWidget *parent);
-    void AddMsg(unsigned char *buff, int n);
+    void addMessage(unsigned char *buff, int n);
+
+    int getStreamFormat();
 };
 //---------------------------------------------------------------------------
 #endif

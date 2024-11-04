@@ -4,28 +4,37 @@
 #define vieweroptH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_vieweropt.h"
+
+namespace Ui {
+class ViewerOptDialog;
+}
 
 //---------------------------------------------------------------------------
-class ViewerOptDialog : public QDialog, private Ui::ViewerOptDialog
+class ViewerOptDialog : public QDialog
 {
     Q_OBJECT
-
-public slots:
-    void BtnColor1Click();
-    void BtnColor2Click();
-    void BtnFontClick();
-    void BtnOkClick();
-
-protected:
-    void showEvent(QShowEvent*);
-    QString color2String(const QColor &c);
 
 public:
     explicit ViewerOptDialog(QWidget* parent);
 
-    QFont Font;
-    QColor Color1,Color2;
+    QFont getFont() {return font;}
+    void setFont(const QFont &font);
+    const QColor& getTextColor() {return colorText;}
+    void setTextColor(const QColor &);
+    const QColor& getBackgroundColor() {return colorBackground;}
+    void setBackgroundColor(const QColor &);
+
+public slots:
+    void selectTextColor();
+    void selectBackgroundColor();
+    void selectFont();
+
+protected:
+    QFont font;
+    QColor colorText, colorBackground;
+
+private:
+    Ui::ViewerOptDialog *ui;
 };
 //---------------------------------------------------------------------------
 #endif

@@ -4,44 +4,45 @@
 #define kmzconvH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_kmzconv.h"
+#include <QSettings>
+
+namespace Ui {
+class ConvDialog;
+}
 
 class TextViewer;
 //---------------------------------------------------------------------------
-class ConvDialog : public QDialog, public Ui::ConvDialog
+class ConvDialog : public QDialog
 {
     Q_OBJECT
-
-public slots:
-    void BtnCloseClick();
-    void AddOffsetClick();
-    void BtnConvertClick();
-    void BtnViewClick();
-    void TimeSpanClick();
-    void TimeIntFClick();
-    void BtnInputFileClick();
-    void InputFileChange();
-    void CompressClick();
-    void GoogleEarthFileChange();
-    void BtnGoogleEarthFileClick();
-    void FormatKMLClick();
-    void FormatGPXClick();
-
-private:
-    int ExecCmd(const QString &cmd, const QStringList &opt);
-    void UpdateEnable(void);
-    void ShowMsg(const QString &msg);
-    void UpdateOutFile(void);
-
-protected:
-    void showEvent(QShowEvent*);
-
-    TextViewer *viewer;
 
 public:
     explicit ConvDialog(QWidget *parent);
 
-    void SetInput(const QString &File);
+    void setInput(const QString &File);
+
+    void loadOptions(QSettings&);
+    void saveOptions(QSettings&);
+
+protected slots:
+    void convert();
+    void viewOutputFile();
+    void selectInputFile();
+    void selectGoogleEarthFile();
+    void callGoogleEarth();
+    void formatChanged();
+    void updateEnable();
+
+private:
+    int execCommand(const QString &cmd, const QStringList &opt);
+    void showMessage(const QString &msg);
+    void updateOutputFile();
+
+    Ui::ConvDialog *ui;
+
+protected:
+    TextViewer *viewer;
+
 };
 //---------------------------------------------------------------------------
 #endif

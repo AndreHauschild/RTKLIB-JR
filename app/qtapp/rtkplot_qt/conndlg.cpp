@@ -1,252 +1,285 @@
 //---------------------------------------------------------------------------
 #include <QShowEvent>
 
-#include "rtklib.h"
 #include "serioptdlg.h"
 #include "fileoptdlg.h"
 #include "tcpoptdlg.h"
 #include "cmdoptdlg.h"
 #include "conndlg.h"
 
+#include "ui_conndlg.h"
+
+#include "rtklib.h"
+
+
 //---------------------------------------------------------------------------
 
 ConnectDialog::ConnectDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::ConnectDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
-    Stream1 = Stream2 = Format1 = Format2 = 0;
-    CmdEna1[0] = CmdEna1[1] = CmdEna2[0] = CmdEna2[1] = 0;
+    for (int i = 0; i < 2; i++)
+        for (int j  = 0; j < 2; j++)
+            commandEnable[i][j] = 0;
 
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnCmd1, SIGNAL(clicked(bool)), this, SLOT(BtnCmd1Click()));
-    connect(BtnCmd2, SIGNAL(clicked(bool)), this, SLOT(BtnCmd2Click()));
-    connect(BtnOpt1, SIGNAL(clicked(bool)), this, SLOT(BtnOpt1Click()));
-    connect(BtnOpt2, SIGNAL(clicked(bool)), this, SLOT(BtnOpt2Click()));
-    connect(SolFormat1, SIGNAL(currentIndexChanged(int)), this, SLOT(SolFormat1Change()));
-    connect(SolFormat2, SIGNAL(currentIndexChanged(int)), this, SLOT(SolFormat2Change()));
-    connect(SelStream1, SIGNAL(currentIndexChanged(int)), this, SLOT(SelStream1Change()));
-    connect(SelStream2, SIGNAL(currentIndexChanged(int)), this, SLOT(SelStream2Change()));
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &ConnectDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &ConnectDialog::reject);
+    connect(ui->btnCommand1, &QPushButton::clicked, this, &ConnectDialog::selectCommandsStream1);
+    connect(ui->btnCommand2, &QPushButton::clicked, this, &ConnectDialog::selectCommandsStream2);
+    connect(ui->btnOption1, &QPushButton::clicked, this, &ConnectDialog::selectOptionsStream1);
+    connect(ui->btnOption2, &QPushButton::clicked, this, &ConnectDialog::selectOptionsStream2);
+    connect(ui->cBSolutionFormat1, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ConnectDialog::updateEnable);
+    connect(ui->cBSolutionFormat2, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ConnectDialog::updateEnable);
+    connect(ui->cBSelectStream1, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ConnectDialog::updateEnable);
+    connect(ui->cBSelectStream2, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &ConnectDialog::updateEnable);
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::showEvent(QShowEvent *event)
+void ConnectDialog::selectOptionsStream1()
 {
-    int str[] = { STR_NONE, STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE };
+    switch (ui->cBSelectStream1->currentIndex()) {
+        case 1: serialOptionsStream(0, 0); break;
+        case 2: tcpOption(0, TcpOptDialog::OPT_TCP_CLIENT);   break;
+        case 3: tcpOption(0, TcpOptDialog::OPT_TCP_SERVER);   break;
+        case 4: tcpOption(0, TcpOptDialog::OPT_NTRIP_CLIENT);   break;
+        case 5: fileOption(0, 0);   break;
+	}
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::selectOptionsStream2()
+{
+    switch (ui->cBSelectStream2->currentIndex()) {
+        case 1: serialOptionsStream(1, 0); break;
+        case 2: tcpOption(1, TcpOptDialog::OPT_TCP_CLIENT);   break;
+        case 3: tcpOption(1, TcpOptDialog::OPT_TCP_SERVER);   break;
+        case 4: tcpOption(1, TcpOptDialog::OPT_NTRIP_CLIENT);   break;
+        case 5: fileOption(1, 0);   break;
+	}
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::selectCommandsStream1()
+{
+    CmdOptDialog dialog(this);
 
-    if (event->spontaneous()) return;
+    for (int i = 0; i < 2; i++) {
+        dialog.setCommands(i, commands[0][i]);
+        dialog.setCommandsEnabled(i, commandEnable[0][i]);
+    }
+    dialog.exec();
+
+    if (dialog.result() != QDialog::Accepted) return;
+
+    for (int i = 0; i < 2; i++) {
+        commands[0][i] = dialog.getCommands(i);
+        commandEnable[0][i] = dialog.getCommandsEnabled(i);
+    }
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::selectCommandsStream2()
+{
+    CmdOptDialog dialog(this);
+
+    for (int i = 0; i < 2; i++) {
+        dialog.setCommands(i, commands[1][i]);
+        dialog.setCommandsEnabled(i, commandEnable[1][i]);
+    }
+    dialog.exec();
+
+    if (dialog.result() != QDialog::Accepted) return;
+
+    for (int i = 0; i < 2; i++) {
+        commands[1][i] = dialog.getCommands(i);
+        commandEnable[1][i] = dialog.getCommandsEnabled(i);
+    }
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::serialOptionsStream(int stream,int opt)
+{
+    SerialOptDialog dialog(this);
+
+    dialog.setPath(paths[stream][0]);
+    dialog.setOptions(opt);
+    dialog.exec();
+
+    if (dialog.result() != QDialog::Accepted) return;
+
+    paths[stream][0] = dialog.getPath();
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::tcpOption(int stream, int opt)
+{
+    TcpOptDialog dialog(this);
+
+    dialog.setOptions(opt);
+    dialog.setHistory(history, MAXHIST);
+    dialog.setPath(paths[stream][1]);
+
+    dialog.exec();
+    if (dialog.result() != QDialog::Accepted) return;
+
+    paths[stream][1] = dialog.getPath();
+    for (int i = 0; i < MAXHIST; i++)
+        history[i] = dialog.getHistory()[i];
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::fileOption(int stream, int opt)
+{
+    FileOptDialog dialog(this);
+
+    dialog.setPath(paths[stream][2]);
+    dialog.setOptions(opt);
+
+    dialog.exec();
+    if (dialog.result() != QDialog::Accepted) return;
+
+    paths[stream][2] = dialog.getPath();
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::updateEnable()
+{
+    ui->btnOption1->setEnabled(ui->cBSelectStream1->currentIndex() > 0);
+    ui->btnOption2->setEnabled(ui->cBSelectStream2->currentIndex() > 0);
+    ui->btnCommand1->setEnabled(ui->cBSelectStream1->currentIndex() == 1);
+    ui->btnCommand2->setEnabled(ui->cBSelectStream2->currentIndex() == 1);
+    ui->cBSolutionFormat1->setEnabled(ui->cBSelectStream1->currentIndex() > 0);
+    ui->cBSolutionFormat2->setEnabled(ui->cBSelectStream2->currentIndex() > 0);
+    ui->cBTimeFormat->setEnabled(ui->cBSolutionFormat1->currentIndex() != 3 || ui->cBSolutionFormat2->currentIndex() != 3);
+    ui->cBDegFormat->setEnabled(ui->cBSolutionFormat1->currentIndex() == 0 || ui->cBSolutionFormat2->currentIndex() == 0);
+    ui->lEFieldSeperator->setEnabled(ui->cBSolutionFormat1->currentIndex() != 3 || ui->cBSolutionFormat2->currentIndex() != 3);
+    ui->lblTimeFormat->setEnabled(ui->cBSolutionFormat1->currentIndex() != 3 || ui->cBSolutionFormat2->currentIndex() != 3);
+    ui->lblLatLonFormat->setEnabled(ui->cBSolutionFormat1->currentIndex() == 0 || ui->cBSolutionFormat2->currentIndex() == 0);
+    ui->lblFieldSeparator->setEnabled(ui->cBSolutionFormat1->currentIndex() != 3 || ui->cBSolutionFormat2->currentIndex() != 3);
+    ui->lblTimeout->setEnabled((2 <= ui->cBSelectStream1->currentIndex() && ui->cBSelectStream1->currentIndex() <= 4) ||
+                               (2 <= ui->cBSelectStream2->currentIndex() && ui->cBSelectStream2->currentIndex() <= 4));
+    ui->lblReconnect->setEnabled((2 <= ui->cBSelectStream1->currentIndex() && ui->cBSelectStream1->currentIndex() <= 4) ||
+                                 (2 <= ui->cBSelectStream2->currentIndex() && ui->cBSelectStream2->currentIndex() <= 4));
+    ui->sBTimeoutTime->setEnabled((2 <= ui->cBSelectStream1->currentIndex() && ui->cBSelectStream1->currentIndex() <= 4) ||
+                                  (2 <= ui->cBSelectStream2->currentIndex() && ui->cBSelectStream2->currentIndex() <= 4));
+    ui->sBReconnectTime->setEnabled((2 <= ui->cBSelectStream1->currentIndex() && ui->cBSelectStream1->currentIndex() <= 4) ||
+                                    (2 <= ui->cBSelectStream2->currentIndex() && ui->cBSelectStream2->currentIndex() <= 4));
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::setStreamType(int stream, int type)
+{
+    int str[] = {STR_NONE, STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE};
+    QComboBox *cBType[] = {ui->cBSelectStream1, ui->cBSelectStream2};
 
     for (int i = 0; i < 6; i++) {
-        if (str[i] == Stream1) SelStream1->setCurrentIndex(i);
-        if (str[i] == Stream2) SelStream2->setCurrentIndex(i);
-	}
-    SolFormat1->setCurrentIndex(Format1);
-    SolFormat2->setCurrentIndex(Format2);
-    TimeFormS->setCurrentIndex(TimeForm);
-    DegFormS->setCurrentIndex(DegForm);
-    FieldSepS->setText(FieldSep);
-    TimeOutTimeE->setValue(TimeOutTime);
-    ReConnTimeE->setValue(ReConnTime);
-
-	UpdateEnable();
+        if (str[i] == type) cBType[stream]->setCurrentIndex(i);
+    }
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::BtnOkClick()
+int ConnectDialog::getStreamType(int stream)
 {
-    int str[] = { STR_NONE, STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE };
+    int str[] = {STR_NONE, STR_SERIAL, STR_TCPCLI, STR_TCPSVR, STR_NTRIPCLI, STR_FILE};
+    QComboBox *cBType[] = {ui->cBSelectStream1, ui->cBSelectStream2};
 
-    Stream1 = str[SelStream1->currentIndex()];
-    Stream2 = str[SelStream2->currentIndex()];
-    Format1 = SolFormat1->currentIndex();
-    Format2 = SolFormat2->currentIndex();
-    TimeForm = TimeFormS->currentIndex();
-    DegForm = DegFormS->currentIndex();
-    FieldSep = FieldSepS->text();
-    TimeOutTime = TimeOutTimeE->value();
-    ReConnTime = ReConnTimeE->value();
-
-    accept();
+    return str[cBType[stream]->currentIndex()];
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::BtnOpt1Click()
+void ConnectDialog::setStreamFormat(int stream, int format)
 {
-    switch (SelStream1->currentIndex()) {
-        case 1: SerialOpt1(0); break;
-        case 2: TcpOpt1(1);   break;
-        case 3: TcpOpt1(0);   break;
-        case 4: TcpOpt1(3);   break;
-        case 5: FileOpt1(0);   break;
-	}
+    QComboBox *cBFormat[] = {ui->cBSolutionFormat1, ui->cBSolutionFormat2};
+    cBFormat[stream]->setCurrentIndex(format);
+
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::BtnOpt2Click()
+int ConnectDialog::getStreamFormat(int stream)
 {
-    switch (SelStream2->currentIndex()) {
-        case 1: SerialOpt2(0); break;
-        case 2: TcpOpt2(1);   break;
-        case 3: TcpOpt2(0);   break;
-        case 4: TcpOpt2(3);   break;
-        case 5: FileOpt2(0);   break;
-	}
+    QComboBox *cBFormat[] = {ui->cBSolutionFormat1, ui->cBSolutionFormat2};
+    return cBFormat[stream]->currentIndex();
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::BtnCmd1Click()
+void ConnectDialog::setCommands(int stream, int type, const QString & cmd)
 {
-    CmdOptDialog dialog(this);
-
-    dialog.Cmds  [0] = Cmds1  [0];
-    dialog.Cmds  [1] = Cmds1  [1];
-    dialog.CmdEna[0] = CmdEna1[0];
-    dialog.CmdEna[1] = CmdEna1[1];
-    dialog.exec();
-
-    if (dialog.result() != QDialog::Accepted) return;
-
-    Cmds1  [0] = dialog.Cmds  [0];
-    Cmds1  [1] = dialog.Cmds  [1];
-    CmdEna1[0] = dialog.CmdEna[0];
-    CmdEna1[1] = dialog.CmdEna[1];
+    commands[stream][type]= cmd;
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::BtnCmd2Click()
+QString ConnectDialog::getCommands(int stream, int type)
 {
-    CmdOptDialog dialog(this);
-
-    dialog.Cmds  [0] = Cmds2  [0];
-    dialog.Cmds  [1] = Cmds2  [1];
-    dialog.CmdEna[0] = CmdEna2[0];
-    dialog.CmdEna[1] = CmdEna2[1];
-    dialog.exec();
-
-    if (dialog.result() != QDialog::Accepted) return;
-
-    Cmds2  [0] = dialog.Cmds  [0];
-    Cmds2  [1] = dialog.Cmds  [1];
-    CmdEna2[0] = dialog.CmdEna[0];
-    CmdEna2[1] = dialog.CmdEna[1];
+    return commands[stream][type];
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::SelStream1Change()
+void ConnectDialog::setCommandsEnabled(int stream, int type, bool ena)
 {
-	UpdateEnable();
+    commandEnable[stream][type] = ena;
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::SelStream2Change()
+bool ConnectDialog::getCommandsEnabled(int stream, int type)
 {
-	UpdateEnable();
+    return commandEnable[stream][type];
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::SolFormat1Change()
+void ConnectDialog::setTimeFormat(int timeFormat)
 {
-	UpdateEnable();
+    ui->cBTimeFormat->setCurrentIndex(timeFormat);
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::SolFormat2Change()
+int ConnectDialog::getTimeFormat()
 {
-	UpdateEnable();
+    return ui->cBTimeFormat->currentIndex();
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::SerialOpt1(int opt)
+void ConnectDialog::setDegFormat(int degFormat)
 {
-    SerialOptDialog dialog(this);
-
-    dialog.Path = Paths1[0];
-    dialog.Opt = opt;
-    dialog.exec();
-
-    if (dialog.result() != QDialog::Accepted) return;
-
-    Paths1[0] = dialog.Path;
+    ui->cBDegFormat->setCurrentIndex(degFormat);
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::SerialOpt2(int opt)
+int ConnectDialog::getDegFormat()
 {
-    SerialOptDialog dialog(this);
-
-    dialog.Path = Paths2[0];
-    dialog.Opt = opt;
-    dialog.exec();
-
-    if (dialog.result() != QDialog::Accepted) return;
-
-    Paths2[0] = dialog.Path;
+    return ui->cBDegFormat->currentIndex();
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::TcpOpt1(int opt)
+void ConnectDialog::setTimeoutTime(int timeoutTime)
 {
-    TcpOptDialog dialog(this);
-
-    dialog.Path = Paths1[1];
-    dialog.Opt = opt;
-    for (int i = 0; i < MAXHIST; i++) dialog.History [i] = TcpHistory [i];
-    dialog.exec();
-
-    if (dialog.result() != QDialog::Accepted) return;
-
-    Paths1[1] = dialog.Path;
-    for (int i = 0; i < MAXHIST; i++) TcpHistory [i] = dialog.History [i];
+    ui->sBTimeoutTime->setValue(timeoutTime);
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::TcpOpt2(int opt)
+int ConnectDialog::getTimeoutTime()
 {
-    TcpOptDialog dialog(this);
-
-    dialog.Path = Paths2[1];
-    dialog.Opt = opt;
-    for (int i = 0; i < MAXHIST; i++) dialog.History [i] = TcpHistory [i];
-    dialog.exec();
-
-    if (dialog.result() != QDialog::Accepted) return;
-
-    Paths2[1] = dialog.Path;
-    for (int i = 0; i < MAXHIST; i++) TcpHistory [i] = dialog.History [i];
+    return ui->sBTimeoutTime->value();
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::FileOpt1(int opt)
+void ConnectDialog::setReconnectTime(int reconnectTime)
 {
-    FileOptDialog dialog(this);
-
-    dialog.Path = Paths1[2];
-    dialog.Opt = opt;
-    dialog.exec();
-
-    if (dialog.result() != QDialog::Accepted) return;
-
-    Paths1[2] = dialog.Path;
+    ui->sBReconnectTime->setValue(reconnectTime);
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::FileOpt2(int opt)
+int ConnectDialog::getReconnectTime()
 {
-    FileOptDialog dialog(this);
-
-    dialog.Path = Paths2[2];
-    dialog.Opt = opt;
-    dialog.exec();
-
-    if (dialog.result() != QDialog::Accepted) return;
-
-    Paths2[2] = dialog.Path;
+    return ui->sBReconnectTime->value();
 }
 //---------------------------------------------------------------------------
-void ConnectDialog::UpdateEnable(void)
+void ConnectDialog::setFieldSeparator(const QString &fieldSeparator)
 {
-    BtnOpt1->setEnabled(SelStream1->currentIndex() > 0);
-    BtnOpt2->setEnabled(SelStream2->currentIndex() > 0);
-    BtnCmd1->setEnabled(SelStream1->currentIndex() == 1);
-    BtnCmd2->setEnabled(SelStream2->currentIndex() == 1);
-    SolFormat1->setEnabled(SelStream1->currentIndex() > 0);
-    SolFormat2->setEnabled(SelStream2->currentIndex() > 0);
-    TimeFormS->setEnabled(SolFormat1->currentIndex() != 3 || SolFormat2->currentIndex() != 3);
-    DegFormS->setEnabled(SolFormat1->currentIndex() == 0 || SolFormat2->currentIndex() == 0);
-    FieldSepS->setEnabled(SolFormat1->currentIndex() != 3 || SolFormat2->currentIndex() != 3);
-    Label5->setEnabled(SolFormat1->currentIndex() != 3 || SolFormat2->currentIndex() != 3);
-    Label6->setEnabled(SolFormat1->currentIndex() == 0 || SolFormat2->currentIndex() == 0);
-    Label7->setEnabled(SolFormat1->currentIndex() != 3 || SolFormat2->currentIndex() != 3);
-    Label8->setEnabled((2 <= SelStream1->currentIndex() && SelStream1->currentIndex() <= 4) ||
-               (2 <= SelStream2->currentIndex() && SelStream2->currentIndex() <= 4));
-    TimeOutTimeE->setEnabled((2 <= SelStream1->currentIndex() && SelStream1->currentIndex() <= 4) ||
-                 (2 <= SelStream2->currentIndex() && SelStream2->currentIndex() <= 4));
-    ReConnTimeE->setEnabled((2 <= SelStream1->currentIndex() && SelStream1->currentIndex() <= 4) ||
-                (2 <= SelStream2->currentIndex() && SelStream2->currentIndex() <= 4));
+    ui->lEFieldSeperator->setText(fieldSeparator);
+}
+//---------------------------------------------------------------------------
+QString ConnectDialog::getFieldSeparator()
+{
+    return ui->lEFieldSeperator->text();
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::setPath(int stream, int type, const QString &path)
+{
+    paths[stream][type] = path;
+}
+//---------------------------------------------------------------------------
+QString ConnectDialog::getPath(int stream, int type)
+{
+    return paths[stream][type];
+}
+//---------------------------------------------------------------------------
+void ConnectDialog::setHistory(int i, const QString &history)
+{
+    if (i < MAXHIST)
+        this->history[i] = history;
+}
+//---------------------------------------------------------------------------
+const QString &ConnectDialog::getHistory(int i)
+{
+    return history[i];
 }
 //---------------------------------------------------------------------------

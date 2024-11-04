@@ -3,48 +3,68 @@
 #define outstrdlgH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_outstrdlg.h"
+
+namespace Ui {
+class OutputStrDialog;
+}
 
 class KeyDialog;
 class SerialOptDialog;
 class TcpOptDialog;
 
 //---------------------------------------------------------------------------
-class OutputStrDialog : public QDialog, private Ui::OutputStrDialog
+class OutputStrDialog : public QDialog
 {
     Q_OBJECT
-protected:
-    void showEvent(QShowEvent *);
 
+public:
+    explicit OutputStrDialog(QWidget* parent);
+
+    void setStreamEnabled(int stream, int enabled);
+    int getStreamEnabled(int stream);
+
+    void setStreamType(int stream, int type);
+    int getStreamType(int stream);
+
+    void setStreamFormat(int stream, int format);
+    int getStreamFormat(int stream);
+
+    void setPath(int stream, int type, const QString &);
+    QString getPath(int stream, int type);
+
+    void setTimeTagEnabled(bool);
+    bool getTimeTagEnabled();
+
+    void setSwapInterval(const QString &);
+    QString getSwapInterval();
+
+    void setHistory(int i, const QString &history);
+    const QString getHistory(int i);
+
+protected:
     KeyDialog *keyDialog;
     SerialOptDialog *serialOptDialog;
     TcpOptDialog *tcpOptDialog;
 
 public slots:
-    void BtnOkClick();
-    void BtnStr1Click();
-    void BtnStr2Click();
-    void Stream1Change(int);
-    void Stream2Change(int);
-    void BtnFile1Click();
-    void BtnFile2Click();
-    void Stream1CClick();
-    void Stream2CClick();
-    void BtnKeyClick();
+    void showStream1Options();
+    void showStream2Options();
+    void selectFile1();
+    void selectFile2();
+    void showKeyDialog();
+    void updateEnable();
 
 private:
-    QString GetFilePath(const QString path);
-    QString SetFilePath(const QString path);
-    void SerialOpt(int index, int opt);
-    void TcpOpt(int index, int opt);
-    void UpdateEnable(void);
+    QString getFilePath(const QString &path);
+    QString setFilePath(const QString &path);
+    void showSerialOptions(int index, int opt);
+    void showTcpOptions(int index, int opt);
 
-public:
-    int StreamC[2], Stream[2], Format[2], OutTimeTag, OutAppend;
-    QString Paths[2][4], SwapInterval;
-    QString History[10];
+    Ui::OutputStrDialog *ui;
 
-    explicit OutputStrDialog(QWidget* parent);
+    QString paths[2][4];
+    QString history[10];
+
 };
 //---------------------------------------------------------------------------
 #endif

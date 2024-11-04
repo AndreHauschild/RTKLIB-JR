@@ -8,80 +8,89 @@
 
 #include "rtklib.h"
 
-#include "ui_mondlg.h"
+namespace Ui {
+class MonitorDialog;
+}
 
 //---------------------------------------------------------------------------
-class MonitorDialog : public QDialog, private Ui::MonitorDialog
+class MonitorDialog : public QDialog
 {
     Q_OBJECT
+
+public:
+    explicit MonitorDialog(QWidget* parent, rtksvr_t *server, stream_t* stream);
+    ~MonitorDialog();
+
+    int getDisplayType();
+
 protected:
     void showEvent(QShowEvent*);
     void closeEvent(QCloseEvent*);
 
+    rtksvr_t *rtksvr;		// rtk server struct
+    stream_t *monistr;	// monitor stream
+
 public slots:
-    void BtnCloseClick();
-    void BtnClearClick();
-    void BtnDownClick();
-    void TypeChange(int);
-    void Timer1Timer();
-    void Timer2Timer();
-    void SelObsChange(int);
-    void SelFmtChange(int);
-    void SelStrChange();
-    void SelStr2Change();
+    void clearOutput();
+    void scrollDown();
+    void displayTypeChanged();
+    void updateDisplays();
+    void showBuffers();
+    void observationModeChanged();
+    void consoleFormatChanged();
+    void inputStreamChanged();
+    void solutionStreamChanged();
+    void ephemerisSetChanged();
 
 private:
-    int TypeF, ConFmt, Str1, Str2, FontScale, ObsMode;
-    QStringList ConBuff;
+    int consoleFormat, inputStream, solutionStream, fontScale;
+    QStringList consoleBuffer;
     QStringList header;
 	rtcm_t rtcm;
 	raw_t raw;
-    QTimer timer1,timer2;
+    QTimer updateTimer;
 	
-    void ClearTable(void);
-    void SetRtk(void);
-    void SetSat(void);
-    void SetEst(void);
-    void SetCov(void);
-    void SetObs(void);
-    void SetNav(void);
-    void SetGnav(void);
-    void SetStr(void);
-    void SetSbsMsg(void);
-    void SetSbsLong(void);
-    void SetSbsIono(void);
-    void SetSbsFast(void);
-    void SetSbsNav(void);
-    void SetIonUtc(void);
-    void SetRtcm(void);
-    void SetRtcmDgps(void);
-    void SetRtcmSsr(void);
-    void SetRefSta(void);
-    void ShowRtk(void);
-    void ShowSat(void);
-    void ShowEst(void);
-    void ShowCov(void);
-    void ShowObs(void);
-    void ShowNav(void);
-    void ShowGnav(void);
-    void ShowSbsMsg(void);
-    void ShowIonUtc(void);
-    void ShowStr(void);
-    void ShowSbsLong(void);
-    void ShowSbsIono(void);
-    void ShowSbsFast(void);
-    void ShowSbsNav(void);
-    void ShowRtcm(void);
-    void ShowRtcmDgps(void);
-    void ShowRtcmSsr(void);
-    void ShowRefSta(void);
+    void clearTable();
+    void setRtk();
+    void setSat();
+    void setEstimates();
+    void setCovariance();
+    void setObservations();
+    void setNavigationGPS();
+    void setGlonassNavigations();
+    void setStream();
+    void setSbsMessages();
+    void setSbsLong();
+    void setSbsIono();
+    void setSbsFast();
+    void setSbsNavigations();
+    void setIonUtc();
+    void setRtcm();
+    void setRtcmDgps();
+    void setRtcmSsr();
+    void setReferenceStation();
+    void showRtk();
+    void showSat();
+    void showEstimates();
+    void showCovariance();
+    void showObservations();
+    void showNavigationsGPS();
+    void showGlonassNavigations();
+    void showSbsMessages();
+    void showIonUtc();
+    void showStream();
+    void showSbsLong();
+    void showSbsIono();
+    void showSbsFast();
+    void showSbsNavigations();
+    void showRtcm();
+    void showRtcmDgps();
+    void showRtcmSsr();
+    void showReferenceStation();
 
-    void AddConsole(const unsigned char *msg, int n, int mode);
-    void ViewConsole(void);
+    void addConsole(const unsigned char *msg, int n, int mode, bool newline);
 
-public:
-    explicit MonitorDialog(QWidget* parent);
-    ~MonitorDialog();
+    Ui::MonitorDialog *ui;
 };
 //---------------------------------------------------------------------------
 #endif

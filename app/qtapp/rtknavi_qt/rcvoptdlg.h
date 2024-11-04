@@ -4,22 +4,24 @@
 //---------------------------------------------------------------------------
 
 #include <QDialog>
-#include <ui_rcvoptdlg.h>
+
+namespace Ui {
+class RcvOptDialog;
+}
+
 //---------------------------------------------------------------------------
-class RcvOptDialog : public QDialog, private Ui::RcvOptDialog
+class RcvOptDialog : public QDialog
 {
     Q_OBJECT
 
-protected:
-    void showEvent(QShowEvent *);
-
-public slots:
-    void BtnOkClick();
-
 public:
-    QString Option;
-
     explicit RcvOptDialog(QWidget* parent);
+
+    QString getOptions();
+    void setOptions(const QString &);
+
+private:
+    Ui::RcvOptDialog *ui;
 };
 //---------------------------------------------------------------------------
 #endif

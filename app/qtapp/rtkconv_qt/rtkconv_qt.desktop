@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=RtkConvert
+GenericName=RtkLib Data Converter
+Keywords=rtklib;GNSS
+Exec=rtkconv_qt
+Icon=rtkconv
+Categories=Science;Geoscience;

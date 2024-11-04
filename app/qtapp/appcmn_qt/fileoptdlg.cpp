@@ -1,8 +1,6 @@
 //---------------------------------------------------------------------------
 // ported to Qt by Jens Reimann
 
-#include <stdio.h>
-
 #include "keydlg.h"
 #include "fileoptdlg.h"
 
@@ -11,14 +9,16 @@
 #include <QIntValidator>
 #include <QFileSystemModel>
 #include <QCompleter>
+#include <QAction>
+
+#include "ui_fileoptdlg.h"
+
 
 //---------------------------------------------------------------------------
-FileOptDialog::FileOptDialog(QWidget *parent)
-    : QDialog(parent)
+FileOptDialog::FileOptDialog(QWidget *parent, int options, int pathEnabled)
+    : QDialog(parent), ui(new Ui::FileOptDialog)
 {
-    setupUi(this);
-    Opt = 0;
-    PathEna = 0;
+    ui->setupUi(this);
 
     keyDialog = new KeyDialog(this);
 
@@ -26,140 +26,158 @@ FileOptDialog::FileOptDialog(QWidget *parent)
     QFileSystemModel *fileModel = new QFileSystemModel(fileCompleter);
     fileModel->setRootPath("");
     fileCompleter->setModel(fileModel);
-    FilePath->setCompleter(fileCompleter);
+    ui->lEFilePath->setCompleter(fileCompleter);
 
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnKey, SIGNAL(clicked(bool)), this, SLOT(BtnKeyClick()));
-    connect(BtnFilePath, SIGNAL(clicked(bool)), this, SLOT(BtnFilePathClick()));
-    connect(ChkTimeTag, SIGNAL(clicked(bool)), this, SLOT(ChkTimeTagClick()));
+    QAction *acFilePath = ui->lEFilePath->addAction(QIcon(":/buttons/folder"), QLineEdit::TrailingPosition);
+    acFilePath->setToolTip(tr("Select file path"));
 
-    SwapIntv->setValidator(new QIntValidator());
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &FileOptDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &FileOptDialog::reject);
+    connect(ui->btnKey, &QPushButton::clicked, this, &FileOptDialog::keyDialogShow);
+    connect(ui->cBTimeTag, &QCheckBox::clicked, this, &FileOptDialog::updateEnable);
+    connect(ui->cBPathEnable, &QCheckBox::clicked, this, &FileOptDialog::updateEnable);
+    connect(acFilePath, &QAction::triggered, this, &FileOptDialog::filePathSelect);
+
+    ui->cBSwapInterval->setValidator(new QIntValidator());
+
+    setOptions(options);
+    setPathEnabled(pathEnabled);
+    updateEnable();
+}
+
+//---------------------------------------------------------------------------
+void FileOptDialog::setOptions(int options)
+{
+    this->options = options;
+
+    ui->cBTimeTag->setText(options ? tr("TimeTag") : tr("Time"));
+    ui->lbFilePath->setVisible(options != 2);
+    ui->cBPathEnable->setVisible(options == 2);
+    ui->cBPathEnable->setChecked(options != 2 || pathEnabled);
+    ui->cBTimeSpeed->setVisible(!options);
+    ui->sBTimeStart->setVisible(!options);
+    ui->lbFilePath->setText(options ? tr("Output File Path") : tr("Input File Path"));
+    ui->lbPlus->setVisible(!options);
+    ui->lbSwapInterval->setVisible(options);
+    ui->cBSwapInterval->setVisible(options);
+    ui->btnKey->setVisible(options);
 }
 //---------------------------------------------------------------------------
-void FileOptDialog::showEvent(QShowEvent *event)
+void FileOptDialog::setPathEnabled(int pathEnabled)
 {
-    int size_fpos=4;
+    this->pathEnabled = pathEnabled;
 
-    if (event->spontaneous()) return;
-
-    ChkTimeTag->setText(Opt ? tr("TimeTag") : tr("Time"));
-    Label1->setVisible(Opt!=2);
-    PathEnable->setVisible(Opt==2);
-    PathEnable->setChecked(Opt!=2||PathEna);
-    TimeSpeed->setVisible(!Opt);
-    TimeStart->setVisible(!Opt);
-    Label1->setText(Opt ? tr("Output File Path") : tr("Input File Path"));
-    Label2->setVisible(!Opt);
-    Label4->setVisible(Opt);
-    Label5->setVisible(Opt);
-    SwapIntv->setVisible(Opt);
-    BtnKey->setVisible(Opt);
-    ChkTimeTag->setChecked(false);
-
-    if (!Opt) { // input
+    ui->cBPathEnable->setChecked(options != 2 || pathEnabled);
+}
+//---------------------------------------------------------------------------
+void FileOptDialog::setPath(const QString &path)
+{
+    ui->cBTimeTag->setChecked(false);
+    if (!options) { // input
         double speed = 1.0, start = 0.0;
+        int size_fpos = 4;
 
-        QStringList tokens = Path.split("::");
+        QStringList tokens = path.split("::");
 
         QString token;
         foreach(token, tokens){
-            if (token == "T") ChkTimeTag->setChecked(true);
-            if (token.contains("+")) start = token.toDouble();
-            if (token.contains("x")) speed = token.mid(1).toDouble();
-            if (token.contains('P')) size_fpos=token.mid(2).toInt();
+            if (token == 'T') ui->cBTimeTag->setChecked(true);
+            if (token.contains('+')) start = token.toDouble();
+            if (token.contains('x')) speed = QStringView{token}.mid(1).toDouble();
+            if (token.contains('P')) size_fpos = QStringView{token}.mid(2).toInt();
         }
 
         if (start <= 0.0) start = 0.0;
         if (speed <= 0.0) speed = 1.0;
 
-        int index = TimeSpeed->findText(QString("x%1").arg(speed));
+        int index = ui->cBTimeSpeed->findText(QStringLiteral("x%1").arg(speed));
         if (index != -1) {
-            TimeSpeed->setCurrentIndex(index);
+            ui->cBTimeSpeed->setCurrentIndex(index);
         } else {
-            TimeSpeed->addItem(QString("x%1").arg(speed), speed);
-            TimeSpeed->setCurrentIndex(TimeSpeed->count());
+            ui->cBTimeSpeed->addItem(QStringLiteral("x%1").arg(speed), speed);
+            ui->cBTimeSpeed->setCurrentIndex(ui->cBTimeSpeed->count());
         }
-        TimeStart->setValue(start);
-        Chk64Bit->setChecked(size_fpos==8);
+        ui->sBTimeStart->setValue(start);
+        ui->cB64Bit->setChecked(size_fpos == 8);
 
-        FilePath->setText(tokens.at(0));
+        ui->lEFilePath->setText(tokens.at(0));
     } else { // output
         double intv = 0.0;
 
-        QStringList tokens = Path.split("::");
+        QStringList tokens = path.split("::");
 
         QString token;
         foreach(token, tokens){
-            if (token == "T") ChkTimeTag->setChecked(true);
-            if (token.contains("S=")) intv = token.mid(2).toDouble();
+            if (token == "T") ui->cBTimeTag->setChecked(true);
+            if (token.contains("S=")) intv = QStringView{token}.mid(2).toDouble();
         };
-        int index = SwapIntv->findText(QString::number(intv, 'g', 3));
+        int index = ui->cBSwapInterval->findText(QStringLiteral("%1 h").arg(intv, 0, 'g', 3));
         if (index != -1) {
-            SwapIntv->setCurrentIndex(index);
+            ui->cBSwapInterval->setCurrentIndex(index);
         } else {
-            SwapIntv->addItem(QString::number(intv, 'g', 3), intv);
-            SwapIntv->setCurrentIndex(TimeSpeed->count());
+            if (intv == 0) {
+                ui->cBSwapInterval->setCurrentIndex(0);
+            } else {
+                ui->cBSwapInterval->addItem(QStringLiteral("%1 h").arg(intv, 0, 'g', 3), intv);
+                ui->cBSwapInterval->setCurrentIndex(ui->cBTimeSpeed->count());
+            }
         }
 
-        FilePath->setText(tokens.at(0));
-        PathEna=PathEnable->isChecked();
+        ui->lEFilePath->setText(tokens.at(0));
+        setPathEnabled(ui->cBPathEnable->isChecked());
 	}
-	UpdateEnable();
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void FileOptDialog::BtnOkClick()
+QString FileOptDialog::getPath()
 {
-    QString str;
+    QString str, path;
     bool okay;
 
-    if (!Opt) {  // input
-        Path = FilePath->text();
-        if (ChkTimeTag->isChecked())
-            Path = Path + "::T" + "::" + TimeSpeed->currentText() + "::+" + TimeStart->text();
-        if (Chk64Bit->isChecked()) {
-            Path=Path+"::P=8";
+    if (!options) {  // input
+        path = ui->lEFilePath->text();
+        if (ui->cBTimeTag->isChecked())
+            path = path + "::T" + "::" + ui->cBTimeSpeed->currentText() + "::+" + QString::number(ui->sBTimeStart->value());
+        if (ui->cB64Bit->isChecked()) {
+            path = path + "::P=8";
         }
     } else { // output
-        Path = FilePath->text();
-        if (ChkTimeTag->isChecked()) Path += "::T";
-        str = SwapIntv->currentText();
+        path = ui->lEFilePath->text();
+        if (ui->cBTimeTag->isChecked()) path += "::T";
+        str = ui->cBSwapInterval->currentText();
+        str = str.split(" ").first();
         str.toDouble(&okay);
         if (okay)
-            Path += "::S=" + str;
-	}
-    accept();
+            path += "::S=" + str;
+    }
+    return path;
 }
 //---------------------------------------------------------------------------
-void FileOptDialog::BtnFilePathClick()
+void FileOptDialog::filePathSelect()
 {
-    if (!Opt)
-        FilePath->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, QString(), FilePath->text())));
+    if (!options)
+        ui->lEFilePath->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, QString(), ui->lEFilePath->text())));
     else
-        FilePath->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, QString(), FilePath->text())));
+        ui->lEFilePath->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, QString(), ui->lEFilePath->text())));
 }
 //---------------------------------------------------------------------------
-void FileOptDialog::ChkTimeTagClick()
-{
-	UpdateEnable();
-}
-//---------------------------------------------------------------------------
-void FileOptDialog::BtnKeyClick()
+void FileOptDialog::keyDialogShow()
 {
     keyDialog->exec();
 }
 //---------------------------------------------------------------------------
-void FileOptDialog::UpdateEnable(void)
+void FileOptDialog::updateEnable()
 {
-    FilePath->setEnabled(PathEnable->isChecked());
-    BtnFilePath->setEnabled(PathEnable->isChecked());
-    TimeSpeed->setEnabled(ChkTimeTag->isChecked());
-    TimeStart->setEnabled(ChkTimeTag->isChecked());
-    Chk64Bit ->setEnabled(ChkTimeTag->isChecked());
-    Label2->setEnabled(ChkTimeTag->isChecked());
-    SwapIntv->setEnabled(PathEnable->isChecked());
-    Label4->setEnabled(PathEnable->isChecked());
-    Label5->setEnabled(PathEnable->isChecked());
-    ChkTimeTag->setEnabled(PathEnable->isChecked());
-    //BtnKey->setEnabled(PathEnabled->isChecked());
+
+    ui->cBTimeSpeed->setEnabled(ui->cBTimeTag->isChecked());
+    ui->sBTimeStart->setEnabled(ui->cBTimeTag->isChecked());
+    ui->lbPlus->setEnabled(ui->cBTimeTag->isChecked());
+    ui->cB64Bit->setEnabled(ui->cBTimeTag->isChecked());
+
+    ui->lEFilePath->setEnabled(ui->cBPathEnable->isChecked());
+    ui->lbSwapInterval->setEnabled(ui->cBPathEnable->isChecked());
+    ui->cBSwapInterval->setEnabled(ui->cBPathEnable->isChecked());
+    ui->lbFilePath->setEnabled(ui->cBPathEnable->isChecked());
+    ui->cBTimeTag->setEnabled(ui->cBPathEnable->isChecked());
+    ui->btnKey->setEnabled(ui->cBPathEnable->isChecked());
 }

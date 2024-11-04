@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=RtkNavi
+GenericName=RtkLib Real-time Navigation
+Keywords=rtklib;GNSS
+Exec=rtknavi_qt
+Icon=rtknavi
+Categories=Science;Geoscience;

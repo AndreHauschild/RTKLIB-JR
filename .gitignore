@@ -52,3 +52,9 @@ util/simobs/gcc/simobs
 *.qmake.stash
 /app/qtapp/Makefile
 /src/Makefile
+
+# deployment files
+app/qtapp/packaging/packages/**.exe
+app/qtapp/packaging/packages/*/data
+app/qtapp/packaging/packages/com.rtklib/meta/license.txt
+app/qtapp/packaging/packages/RtkLibInstaller.exe

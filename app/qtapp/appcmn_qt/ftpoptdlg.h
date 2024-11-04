@@ -2,35 +2,46 @@
 #ifndef ftpoptdlgH
 #define ftpoptdlgH
 //---------------------------------------------------------------------------
-#include "ui_ftpoptdlg.h"
-
 #include <QDialog>
 
 #define MAXHIST		10
 
+namespace Ui {
+class FtpOptDialog;
+}
+
 class KeyDialog;
+class QComboBox;
 
 //---------------------------------------------------------------------------
-class FtpOptDialog : public QDialog, private Ui::FtpOptDialog
+class FtpOptDialog : public QDialog
 {
     Q_OBJECT
-protected:
-    void  showEvent(QShowEvent *);
-
-public slots:
-    void  BtnOkClick();
-    void  BtnKeyClick();
-
-private:
-    void  AddHist(QComboBox *list, QString *hist);
-    void  UpdateEnable(void);
-
-    KeyDialog *keyDlg;
 
 public:
-	int Opt;
-    QString Path, History[MAXHIST], MntpHist[MAXHIST];
-    explicit FtpOptDialog(QWidget *parent);
+    explicit FtpOptDialog(QWidget *parent, int options = 0);
+
+    int getOptions() {return options;}
+    void setOptions(int option); // 0(default): FTP options; 1: HTTP options
+    QString getPath();
+    void setPath(const QString&);
+    void setHistory(QString tcpHistory[], int size);
+    QString* getHistory();
+
+protected slots:
+    void accept();
+    void showKeyDialog();
+
+private:
+    void addHistory(QComboBox *list, QString *hist);
+    void updateEnable();
+
+    KeyDialog *keyDlg;
+    int options;
+    QString history[MAXHIST];
+
+    Ui::FtpOptDialog *ui;
+
 };
 //---------------------------------------------------------------------------
 #endif

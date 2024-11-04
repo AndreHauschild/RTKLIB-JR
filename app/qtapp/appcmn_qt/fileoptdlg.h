@@ -3,33 +3,40 @@
 #define fileoptdlgH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_fileoptdlg.h"
+
+namespace Ui {
+class FileOptDialog;
+}
 
 class KeyDialog;
 
 //---------------------------------------------------------------------------
-class FileOptDialog : public QDialog, private Ui::FileOptDialog
+class FileOptDialog : public QDialog
 {
     Q_OBJECT
 
-protected:
-    void showEvent(QShowEvent*);
+public:
+    explicit FileOptDialog(QWidget* parent, int options = 0, int pathEnabled = 0);
 
-    KeyDialog *keyDialog;
-
-public slots:
-    void BtnFilePathClick();
-    void BtnOkClick();
-    void ChkTimeTagClick();
-    void BtnKeyClick();
+    void setPath(const QString &path);
+    QString getPath();
+    void setOptions(int options);  // 0: input file; 1: output file
+    int getOptions() {return options;}
+    void setPathEnabled(int);
+    int getPathEnabled() {return pathEnabled;}
 
 private:
-    void UpdateEnable(void);
+    Ui::FileOptDialog *ui;
 
-public:
-	int Opt, PathEna;
-    QString Path;
-    explicit FileOptDialog(QWidget* parent);
+protected:
+    KeyDialog *keyDialog;
+
+    int options, pathEnabled;
+
+protected slots:
+    void filePathSelect();
+    void keyDialogShow();
+    void updateEnable();
 };
 //---------------------------------------------------------------------------
 #endif

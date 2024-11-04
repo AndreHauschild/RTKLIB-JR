@@ -5,48 +5,75 @@
 
 #define MAXHIST		10
 
-#include "ui_conndlg.h"
-
 #include <QDialog>
+
+namespace Ui {
+class ConnectDialog;
+}
 
 class QShowEvent;
 
 //---------------------------------------------------------------------------
-class ConnectDialog : public QDialog, private Ui::ConnectDialog
+class ConnectDialog : public QDialog
 {
     Q_OBJECT
 
-protected:
-    void showEvent(QShowEvent*);
+public:
+    explicit ConnectDialog(QWidget *parent=NULL);
 
-public slots:
-    void BtnOpt1Click();
-    void BtnOkClick();
-    void BtnCmd1Click();
-    void BtnOpt2Click();
-    void BtnCmd2Click();
-    void SelStream1Change();
-    void SolFormat1Change();
-    void SolFormat2Change();
-    void SelStream2Change();
+    void setStreamType(int stream, int type);
+    int getStreamType(int stream);
+
+    void setStreamFormat(int stream, int format);
+    int getStreamFormat(int stream);
+
+    void setCommands(int stream, int type, const QString &);
+    QString getCommands(int stream, int type);
+
+    void setCommandsEnabled(int stream, int type, bool ena);
+    bool getCommandsEnabled(int stream, int type);
+
+    void setTimeFormat(int);
+    int getTimeFormat();
+
+    void setDegFormat(int);
+    int getDegFormat();
+
+    void setTimeoutTime(int);
+    int getTimeoutTime();
+
+    void setReconnectTime(int);
+    int getReconnectTime();
+
+    void setFieldSeparator(const QString &);
+    QString getFieldSeparator();
+
+    void setPath(int stream, int type, const QString &);
+    QString getPath(int stream, int type);
+
+    void setHistory(int i, const QString &history);
+    const QString &getHistory(int i);
+
+protected slots:
+    void selectOptionsStream1();
+    void selectOptionsStream2();
+    void selectCommandsStream1();
+    void selectCommandsStream2();
+    void updateEnable();
+
+protected:
+    int commandEnable[2][2];
+    QString commands[2][2];
+    QString paths[2][4];
+    QString history[MAXHIST];
 
 private:
-    void SerialOpt1(int opt);
-    void SerialOpt2(int opt);
-    void TcpOpt1(int opt);
-    void TcpOpt2(int opt);
-    void FileOpt1(int opt);
-    void FileOpt2(int opt);
-    void UpdateEnable(void);
+    void serialOptionsStream(int stream, int opt);
+    void tcpOption(int stream,int opt);
+    void fileOption(int stream,int opt);
 
-public:
-    int Stream1, Stream2, Format1, Format2, CmdEna1[2], CmdEna2[2];
-    int TimeForm, DegForm, TimeOutTime, ReConnTime;
-    QString Path, Paths1[4], Paths2[4];
-    QString TcpHistory[MAXHIST];
-    QString Cmds1[2], Cmds2[2], FieldSep;
+    Ui::ConnectDialog *ui;
 
-    explicit ConnectDialog(QWidget *parent=NULL);
 };
 //---------------------------------------------------------------------------
 #endif

@@ -3,22 +3,29 @@
 #define mntpoptdlgH
 //---------------------------------------------------------------------------
 
-#define MAXHIST		10
-#include "ui_mntpoptdlg.h"
+#include <QDialog>
 
+namespace Ui {
+class MntpOptDialog;
+}
 
 //---------------------------------------------------------------------------
-class MntpOptDialog : public QDialog, private Ui::MntpOptDialog
+class MntpOptDialog : public QDialog
 {
     Q_OBJECT
-protected:
-    void  showEvent(QShowEvent*);
-public slots:
-    void BtnOkClick();
 
 public:
-    QString MntPnt,MntpStr;
-    MntpOptDialog(QWidget* parent);
+    MntpOptDialog(QWidget* parent = nullptr, int option = 0);
+    void setOption(int option);
+
+    QString getMountPoint();
+    void setMountPoint(QString mountPoint);
+    QString getMountPointString();
+    void setMountPointString(QString mountPointString);
+
+
+private:
+    Ui::MntpOptDialog *ui;
 };
 
 //---------------------------------------------------------------------------

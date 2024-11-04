@@ -4,29 +4,21 @@
 #include "aboutdlg.h"
 #include "rtklib.h"
 
+#include "ui_aboutdlg.h"
+
+
 //---------------------------------------------------------------------------
-AboutDialog::AboutDialog(QWidget *parent)
-    : QDialog(parent)
+AboutDialog::AboutDialog(QWidget *parent, QPixmap icon, QString aboutString)
+    : QDialog(parent), ui(new Ui::AboutDlg)
 {
-    setupUi(this);
-}
+    ui->setupUi(this);
 
-void AboutDialog::showEvent(QShowEvent *event)
-{
-    if (event->spontaneous()) return;
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &AboutDialog::accept);
 
-    QPixmap icon[] = { QPixmap(":/icons/rtk1.bmp"),
-                       QPixmap(":/icons/rtk2.bmp"),
-                       QPixmap(":/icons/rtk3.bmp"),
-                       QPixmap(":/icons/rtk4.bmp"),
-                       QPixmap(":/icons/rtk5.bmp"),
-                       QPixmap(":/icons/rtk6.bmp"),
-                       QPixmap(":/icons/rtk7.bmp") };
-
-    if ((IconIndex > 0) && (IconIndex < 7)) wgIcon->setPixmap(icon[IconIndex - 1]);
-    lbAbout->setText(About);
-    lbVersion->setText(QString(tr("with RTKLIB ver.%1 %2")).arg(VER_RTKLIB).arg(PATCH_LEVEL));
-    lbCopyright->setText(COPYRIGHT_RTKLIB);
-
-    connect(pbOkay, SIGNAL(clicked(bool)), this, SLOT(accept()));
+    ui->lbIcon->setPixmap(icon.scaled(128, 128));
+    ui->lbAbout->setText(QStringLiteral("<b>%1</b>").arg(aboutString));
+    ui->lbVersion->setText(tr("with RTKLIB Version %1 %2").arg(VER_RTKLIB, PATCH_LEVEL));
+    ui->lbCopyright->setText(COPYRIGHT_RTKLIB);
+    ui->lbCopyrightQt->setText(tr("Qt Version\nCopyright (C) 2016-2024 Jens Reimann"));
+    ui->lbWebsite->setText(tr("Support: <a href=\"https://github.com/rtklibexplorer\">https://github.com/rtklibexplorer</a>"));
 }

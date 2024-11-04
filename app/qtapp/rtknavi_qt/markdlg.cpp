@@ -6,134 +6,153 @@
 #include "keydlg.h"
 #include "markdlg.h"
 #include "refdlg.h"
-#include "naviopt.h"
-#include "navimain.h"
 
-extern rtksvr_t rtksvr;
+#include "ui_markdlg.h"
 
 //---------------------------------------------------------------------------
-QMarkDialog::QMarkDialog(QWidget *parent)
-    : QDialog(parent)
+MarkDialog::MarkDialog(QWidget *parent)
+    : QDialog(parent), ui(new Ui::MarkDialog)
 {
-    setupUi(this);
-    NMark = 1;
-    FixPos[0]=FixPos[1]=FixPos[2]=0.0;
-    Label1->setText(QString("%%r=%1").arg(NMark, 3, 10, QLatin1Char('0')));
+    ui->setupUi(this);
 
-    connect(BtnRepDlg, SIGNAL(clicked(bool)), this, SLOT(BtnRepDlgClick()));
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(BtnCancelClick()));
-    connect(ChkMarkerName, SIGNAL(clicked(bool)), this, SLOT(ChkMarkerNameClick()));
-    connect(RadioGo,SIGNAL(toggled(bool)),this,SLOT(RadioClick()));
-    connect(RadioStop,SIGNAL(toggled(bool)),this,SLOT(RadioClick()));
-    connect(RadioFix,SIGNAL(toggled(bool)),this,SLOT(RadioClick()));
-    connect(BtnPos,SIGNAL(clicked(bool)),this,SLOT(BtnPosClick()));
+    nMark = 1;
+    ui->lblMarker->setText(QStringLiteral("%r=%1").arg(nMark, 3, 10, QLatin1Char('0')));
+
+    connect(ui->btnKeyDlg, &QPushButton::clicked, this, &MarkDialog::showKeyDialog);
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &MarkDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &MarkDialog::reject);
+    connect(ui->btnPosition, &QPushButton::clicked, this, &MarkDialog::btnPositionClicked);
+    connect(ui->cBMarkerNameC, &QCheckBox::clicked, this, &MarkDialog::updateEnable);
+    connect(ui->rBGo, &QRadioButton::toggled, this, &MarkDialog::updateEnable);
+    connect(ui->rBStop, &QRadioButton::toggled, this, &MarkDialog::updateEnable);
+    connect(ui->rBFix, &QRadioButton::toggled, this, &MarkDialog::updateEnable);
 
     keyDialog = new KeyDialog(this);
 }
 //---------------------------------------------------------------------------
-void QMarkDialog::BtnCancelClick()
+void MarkDialog::accept()
 {
-    close();
-}
-//---------------------------------------------------------------------------
-void QMarkDialog::BtnOkClick()
-{
-    QString marker = MarkerName->currentText();
-    QString comment = MarkerComment->text();
-    char str2[1024];
-
-    if (RadioGo->isChecked()) {
-        if (PosMode == PMODE_STATIC || PosMode == PMODE_FIXED)
-            PosMode = PMODE_KINEMA;
-        else if (PosMode == PMODE_PPP_STATIC || PosMode == PMODE_PPP_FIXED)
-            PosMode = PMODE_PPP_KINEMA;
-    } else if (RadioStop->isChecked()) {
-        if (PosMode == PMODE_KINEMA || PosMode == PMODE_FIXED)
-            PosMode = PMODE_STATIC;
-        else if (PosMode == PMODE_PPP_KINEMA || PosMode == PMODE_PPP_FIXED)
-            PosMode = PMODE_PPP_STATIC;
-    } else if (RadioFix->isChecked()) {
-        if (PosMode == PMODE_KINEMA || PosMode == PMODE_STATIC) {
-            PosMode = PMODE_FIXED;
-        }
-        else if (PosMode == PMODE_PPP_KINEMA || PosMode == PMODE_PPP_STATIC) {
-            PosMode = PMODE_PPP_FIXED;
-        }
+    if (ui->cBMarkerNameC->isChecked()) {
+        nMark++;
+        ui->lblMarker->setText(QStringLiteral("%r=%1").arg(nMark, 3, 10, QLatin1Char('0')));
     }
-    if (ChkMarkerName->isChecked()) {
-        reppath(qPrintable(marker), str2, utc2gpst(timeget()), qPrintable(QString("%1").arg(NMark, 3, 10, QChar('0'))), "");
-        rtksvrmark(&rtksvr, str2, qPrintable(comment));
-        NMark++;
-        Label1->setText(QString("%%r=%1").arg(NMark, 3, 10, QLatin1Char('0')));
-	}
-    Marker = marker;
-    Comment = comment;
-}
-//---------------------------------------------------------------------------
 
-void QMarkDialog::ChkMarkerNameClick()
-{
-	UpdateEnable();
+    QDialog::accept();
 }
 //---------------------------------------------------------------------------
-void QMarkDialog::showEvent(QShowEvent *event)
+void MarkDialog::updateEnable()
 {
-    if (event->spontaneous()) return;
+    int positionMode = getPositionMode();
+    bool ena = positionMode == PMODE_STATIC || positionMode == PMODE_PPP_STATIC ||
+               positionMode == PMODE_KINEMA || positionMode == PMODE_PPP_KINEMA ||
+               positionMode == PMODE_FIXED || positionMode == PMODE_PPP_FIXED;
 
-    if (PosMode == PMODE_STATIC || PosMode == PMODE_PPP_STATIC) {
-        RadioStop->setChecked(true);
-    } else if (PosMode == PMODE_KINEMA || PosMode == PMODE_PPP_KINEMA) {
-        RadioGo->setChecked(true);
-    } else {
-        RadioStop->setChecked(false);
-        RadioGo->setChecked(false);
-	}
-	UpdateEnable();
+    ui->rBStop->setEnabled(ena);
+    ui->rBGo->setEnabled(ena);
+    ui->rBFix->setEnabled(ena);
+    ui->gBPositionMode->setEnabled(ena);
+    ui->sBLatitude->setEnabled(ui->rBFix->isChecked());
+    ui->sBLongitude->setEnabled(ui->rBFix->isChecked());
+    ui->sBHeight->setEnabled(ui->rBFix->isChecked());
+    ui->btnPosition->setEnabled(ui->rBFix->isChecked());
+    ui->lblPosition->setEnabled(ui->rBFix->isChecked());
+    ui->cBMarkerName->setEnabled(ui->cBMarkerNameC->isChecked());
 }
 //---------------------------------------------------------------------------
-void QMarkDialog::UpdateEnable(void)
-{
-    bool ena = PosMode == PMODE_STATIC || PosMode == PMODE_PPP_STATIC ||
-           PosMode == PMODE_KINEMA || PosMode == PMODE_PPP_KINEMA ||
-           PosMode == PMODE_FIXED || PosMode == PMODE_PPP_FIXED;
-
-    RadioStop->setEnabled(ena);
-    RadioGo->setEnabled(ena);
-    RadioFix->setEnabled(ena);
-    LabelPosMode->setEnabled(ena);
-    EditLat->setEnabled(RadioFix->isChecked());
-    EditLon->setEnabled(RadioFix->isChecked());
-    EditHgt->setEnabled(RadioFix->isChecked());
-    BtnPos->setEnabled(RadioFix->isChecked());
-    LabelPos->setEnabled(RadioFix->isChecked());
-    MarkerName->setEnabled(ChkMarkerName->isChecked());
-}
-//---------------------------------------------------------------------------
-void QMarkDialog::BtnRepDlgClick()
+void MarkDialog::showKeyDialog()
 {
     keyDialog->setWindowTitle(tr("Key Replacement in Marker Name"));
     keyDialog->show();
 }
 //---------------------------------------------------------------------------
-void QMarkDialog::RadioClick()
-{
-    UpdateEnable();
-}
-//---------------------------------------------------------------------------
-void QMarkDialog::BtnPosClick()
+void MarkDialog::btnPositionClicked()
 {
     RefDialog *refDialog =  new RefDialog(this);
 
-    refDialog->Pos[0]=EditLat->value();
-    refDialog->Pos[1]=EditLon->value();
-    refDialog->Pos[2]=EditHgt->value();
-    refDialog->StaPosFile=mainForm->optDialog->StaPosFileF;
+    refDialog->setRoverPosition(ui->sBLatitude->value(), ui->sBLongitude->value(), ui->sBHeight->value());
+    refDialog->stationPositionFile = stationPositionFileF;
 
+    refDialog->exec();
     if (refDialog->result() != QDialog::Accepted) return;
 
-    EditLat->setValue(refDialog->Pos[0]);
-    EditLon->setValue(refDialog->Pos[1]);
-    EditHgt->setValue(refDialog->Pos[2]);
+    ui->sBLatitude->setValue(refDialog->getPosition()[0]);
+    ui->sBLongitude->setValue(refDialog->getPosition()[1]);
+    ui->sBHeight->setValue(refDialog->getPosition()[2]);
+}
+//---------------------------------------------------------------------------
+void MarkDialog::setPositionMode(int mode)
+{
+    positionMode = mode;
+
+    if (positionMode == PMODE_STATIC || positionMode == PMODE_PPP_STATIC) {
+        ui->rBStop->setChecked(true);
+    } else if (positionMode == PMODE_KINEMA || positionMode == PMODE_PPP_KINEMA) {
+        ui->rBGo->setChecked(true);
+    } else {
+        ui->rBStop->setChecked(false);
+        ui->rBGo->setChecked(false);
+    }
+
+    updateEnable();
+}
+//---------------------------------------------------------------------------
+int MarkDialog::getPositionMode()
+{
+    if (ui->rBGo->isChecked()) {
+        if (positionMode == PMODE_STATIC || positionMode == PMODE_FIXED)
+            positionMode = PMODE_KINEMA;
+        else if (positionMode == PMODE_PPP_STATIC || positionMode == PMODE_PPP_FIXED)
+            positionMode = PMODE_PPP_KINEMA;
+    } else if (ui->rBStop->isChecked()) {
+        if (positionMode == PMODE_KINEMA || positionMode == PMODE_FIXED)
+            positionMode = PMODE_STATIC;
+        else if (positionMode == PMODE_PPP_KINEMA || positionMode == PMODE_PPP_FIXED)
+            positionMode = PMODE_PPP_STATIC;
+    } else if (ui->rBFix->isChecked()) {
+        if (positionMode == PMODE_KINEMA || positionMode == PMODE_STATIC) {
+            positionMode = PMODE_FIXED;
+        }
+        else if (positionMode == PMODE_PPP_KINEMA || positionMode == PMODE_PPP_STATIC) {
+            positionMode = PMODE_PPP_FIXED;
+        }
+    }
+    return positionMode;
+}
+//---------------------------------------------------------------------------
+void MarkDialog::setName(const QString &name)
+{
+    ui->cBMarkerName->setCurrentText(name);
+}
+//---------------------------------------------------------------------------
+QString MarkDialog::getName()
+{
+    QString mrkr = ui->cBMarkerName->currentText();
+    char str2[1024];
+
+    if (!ui->cBMarkerNameC->isChecked())
+        return "";
+
+    reppath(qPrintable(mrkr), str2, utc2gpst(timeget()), qPrintable(QString("%1").arg(nMark, 3, 10, QChar('0'))), "");
+    return mrkr;
+}
+//---------------------------------------------------------------------------
+void MarkDialog::setComment(const QString &comment)
+{
+    ui->lEMarkerComment->setText(comment);
+}
+//---------------------------------------------------------------------------
+QString MarkDialog::getComment()
+{
+    return ui->lEMarkerComment->text();
+}
+//---------------------------------------------------------------------------
+void MarkDialog::setStationPositionFile(const QString &file)
+{
+    stationPositionFileF = file;
+}
+//---------------------------------------------------------------------------
+QString MarkDialog::getStationPositionFile()
+{
+    return stationPositionFileF;
 }
 //---------------------------------------------------------------------------

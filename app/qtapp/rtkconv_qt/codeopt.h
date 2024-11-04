@@ -4,30 +4,35 @@
 //---------------------------------------------------------------------------
 #include <QDialog>
 
-#include "ui_codeopt.h"
-
-class QShowEvent;
-class ConvOptDialog;
+namespace Ui {
+class CodeOptDialog;
+}
 
 //---------------------------------------------------------------------------
-class CodeOptDialog : public QDialog, private Ui::CodeOptDialog
+class CodeOptDialog : public QDialog
 {
     Q_OBJECT
-public slots:
-    void BtnOkClick();
-    void BtnSetAllClick();
-
-protected:
-    void showEvent(QShowEvent*);
-
-private:
-    void UpdateEnable(void);
-
-    ConvOptDialog* convOptDialog;
 
 public:
-	int NavSys,FreqType;
-    CodeOptDialog(QWidget *parent, ConvOptDialog *);
+    CodeOptDialog(QWidget *parent);
+
+    void setNavSystem(int navSystem);
+    int getNavSystem() {return navSystem;}
+    void setFrequencyType(int frequencyType);
+    int getFrequencyType() {return frequencyType;}
+    void setCodeMask(int i, const QString& mask);
+    QString getCodeMask(int i);
+
+protected slots:
+    void setUnsetAll();
+
+protected:
+    int navSystem, frequencyType;
+    void updateEnable();
+
+private:
+    Ui::CodeOptDialog *ui;
+
 };
 //----------------------------------------------------------------------
 #endif

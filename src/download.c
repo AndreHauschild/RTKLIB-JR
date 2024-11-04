@@ -14,6 +14,7 @@
 *                            limit max number of download paths
 *                            use integer types in stdint.h
 *-----------------------------------------------------------------------------*/
+#define _POSIX_C_SOURCE 199506
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -95,7 +96,7 @@ static char *parse_str(char *buff, char *str, int nmax)
 {
     char *p,*q,sep[]=" \r\n";
     
-    for (p=buff;*p&&*p==' ';p++) ;
+    for (p=buff;*p==' ';p++) ;
     
     if (*p=='"') sep[0]=*p++; /* enclosed within quotation marks */
     
@@ -112,8 +113,9 @@ static int cmp_str(const char *str1, const char *str2)
     
     sprintf(s1,"^%s$",str1);
     sprintf(s2,"^%s$",str2);
-    
-    for (p=s1,q=strtok(s2,"*");q;q=strtok(NULL,"*")) {
+
+    char *r;
+    for (p=s1,q=strtok_r(s2,"*",&r);q;q=strtok_r(NULL,"*",&r)) {
         if ((p=strstr(p,q))) p+=strlen(q); else break;
     }
     return p!=NULL;
@@ -246,7 +248,7 @@ static int gen_path(gtime_t time, gtime_t time_p, int seqnos, int seqnoe,
 }
 /* generate download paths ---------------------------------------------------*/
 static int gen_paths(gtime_t time, gtime_t time_p, int seqnos, int seqnoe,
-                     const url_t *url, char **stas, int nsta, const char *dir,
+                     const url_t *url, const char **stas, int nsta, const char *dir,
                      paths_t *paths)
 {
     int i;
@@ -330,7 +332,6 @@ static int get_list(const path_t *path, const char *usr, const char *pwd,
 {
     FILE *fp;
     char cmd[4096],env[1024]="",remot[1024],*opt="",*opt2="",*p;
-    int stat;
     
 #ifndef WIN32
     opt2=" -o /dev/null";
@@ -590,7 +591,7 @@ static int test_local(gtime_t ts, gtime_t te, double ti, const char *path,
 }
 /* test local files ----------------------------------------------------------*/
 static int test_locals(gtime_t ts, gtime_t te, double ti, const url_t *url,
-                       char **stas, int nsta, const char *dir, int *nc, int *nt,
+                       const char **stas, int nsta, const char *dir, int *nc, int *nt,
                        FILE *fp)
 {
     int i;
@@ -614,7 +615,7 @@ static int test_locals(gtime_t ts, gtime_t te, double ti, const url_t *url,
     return 0;
 }
 /* print total count of local files ------------------------------------------*/
-static int print_total(const url_t *url, char **stas, int nsta, int *nc,
+static int print_total(const url_t *url, const char **stas, int nsta, int *nc,
                        int *nt, FILE *fp)
 {
     int i;
@@ -671,7 +672,7 @@ static int print_total(const url_t *url, char **stas, int nsta, int *nc,
 *        %r -> rrrr    : station name
 *        %{env} -> env : environment variable
 *-----------------------------------------------------------------------------*/
-extern int dl_readurls(const char *file, char **types, int ntype, url_t *urls,
+extern int dl_readurls(const char *file, const char **types, int ntype, url_t *urls,
                        int nmax)
 {
     FILE *fp;
@@ -727,7 +728,8 @@ extern int dl_readstas(const char *file, char **stas, int nmax)
     }
     while (fgets(buff,sizeof(buff),fp)&&n<nmax) {
         if ((p=strchr(buff,'#'))) *p='\0';
-        for (p=strtok(buff," \r\n");p&&n<nmax;p=strtok(NULL," \r\n")) {
+        char *r;
+        for (p=strtok_r(buff," \r\n",&r);p&&n<nmax;p=strtok_r(NULL," \r\n",&r)) {
             strcpy(stas[n++],p);
         }
     }
@@ -771,7 +773,7 @@ extern int dl_readstas(const char *file, char **stas, int nmax)
 *          not downloaded.
 *-----------------------------------------------------------------------------*/
 extern int dl_exec(gtime_t ts, gtime_t te, double ti, int seqnos, int seqnoe,
-                   const url_t *urls, int nurl, char **stas, int nsta,
+                   const url_t *urls, int nurl, const char **stas, int nsta,
                    const char *dir, const char *usr, const char *pwd,
                    const char *proxy, int opts, char *msg, FILE *fp)
 {
@@ -838,7 +840,7 @@ extern int dl_exec(gtime_t ts, gtime_t te, double ti, int seqnos, int seqnoe,
 * return : status (1:ok,0:error,-1:aborted)
 *-----------------------------------------------------------------------------*/
 extern void dl_test(gtime_t ts, gtime_t te, double ti, const url_t *urls,
-                    int nurl, char **stas, int nsta, const char *dir,
+                    int nurl, const char **stas, int nsta, const char *dir,
                     int ncol, int datefmt, FILE *fp)
 {
     gtime_t time;

@@ -1,15 +1,15 @@
 //---------------------------------------------------------------------------
 
-
 #include "freqdlg.h"
-//---------------------------------------------------------------------------
+
+#include "ui_freqdlg.h"
+
 //---------------------------------------------------------------------------
 FreqDialog::FreqDialog(QWidget* parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::FreqDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(accept()));
-
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &FreqDialog::accept);
 }
 //---------------------------------------------------------------------------

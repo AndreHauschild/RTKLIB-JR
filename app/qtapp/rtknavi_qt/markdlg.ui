@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>471</width>
-    <height>276</height>
+    <width>466</width>
+    <height>322</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,72 +17,8 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="4">
-    <widget class="QLabel" name="Label1">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="text">
-      <string>%r=001</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QRadioButton" name="RadioGo">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="text">
-      <string>&amp;GO (Kinematic)</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="BtnRepDlg">
-     <property name="text">
-      <string>?</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="QRadioButton" name="RadioStop">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="text">
-      <string>STOP (Stati&amp;c)</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="5">
-    <widget class="QComboBox" name="MarkerName">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+   <item row="2" column="0">
+    <widget class="QComboBox" name="cBMarkerName">
      <property name="toolTip">
       <string/>
      </property>
@@ -91,153 +27,208 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="Label2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
+   <item row="4" column="0">
+    <widget class="QLineEdit" name="lEMarkerComment">
      <property name="toolTip">
       <string/>
      </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="2">
+    <widget class="QLabel" name="lblPosition">
+     <property name="text">
+      <string>Latitutde / Longitude / Height</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QDoubleSpinBox" name="sBLatitude">
+       <property name="toolTip">
+        <string>Latitude of marker</string>
+       </property>
+       <property name="suffix">
+        <string>°</string>
+       </property>
+       <property name="decimals">
+        <number>9</number>
+       </property>
+       <property name="minimum">
+        <double>-180.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>180.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="sBLongitude">
+       <property name="toolTip">
+        <string>Longitude of marker</string>
+       </property>
+       <property name="suffix">
+        <string>°</string>
+       </property>
+       <property name="decimals">
+        <number>9</number>
+       </property>
+       <property name="minimum">
+        <double>-90.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>90.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="sBHeight">
+       <property name="toolTip">
+        <string>Height of marker</string>
+       </property>
+       <property name="suffix">
+        <string> m</string>
+       </property>
+       <property name="decimals">
+        <number>3</number>
+       </property>
+       <property name="minimum">
+        <double>-500.000000000000000</double>
+       </property>
+       <property name="maximum">
+        <double>9000.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnPosition">
+       <property name="maximumSize">
+        <size>
+         <width>30</width>
+         <height>16777215</height>
+        </size>
+       </property>
+       <property name="toolTip">
+        <string>Load position from station file</string>
+       </property>
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="lblComment">
      <property name="text">
       <string>Comment</string>
      </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="5">
-    <widget class="QLineEdit" name="MarkerComment">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
+     <property name="buddy">
+      <cstring>lEMarkerComment</cstring>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="2">
-    <widget class="QLabel" name="LabelPosMode">
-     <property name="enabled">
-      <bool>true</bool>
+   <item row="5" column="0">
+    <widget class="QGroupBox" name="gBPositionMode">
+     <property name="title">
+      <string>Position Mode</string>
      </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Switch Positioning Mode</string>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QRadioButton" name="rBGo">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>&amp;GO (Kinematic)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rBStop">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>STOP (Stati&amp;c)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="rBFix">
+        <property name="text">
+         <string>FIX (Fixed)</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
-   <item row="8" column="1" colspan="2">
-    <widget class="QPushButton" name="BtnOk">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;OK</string>
-     </property>
-     <property name="autoDefault">
-      <bool>true</bool>
-     </property>
-     <property name="default">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="3" colspan="2">
-    <widget class="QPushButton" name="BtnCancel">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;Cancel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QCheckBox" name="ChkMarkerName">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Marker Name</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0" colspan="2">
-    <widget class="QLabel" name="LabelPos">
-     <property name="text">
-      <string>Lat/Lon/Height (deg/m)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="3">
-    <widget class="QRadioButton" name="RadioFix">
-     <property name="text">
-      <string>FIX (Fixed)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="QDoubleSpinBox" name="EditLon">
-     <property name="decimals">
-      <number>8</number>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QDoubleSpinBox" name="EditLat">
-     <property name="decimals">
-      <number>8</number>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="3">
-    <widget class="QDoubleSpinBox" name="EditHgt">
-     <property name="decimals">
-      <number>4</number>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="4">
-    <widget class="QPushButton" name="BtnPos">
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
+   <item row="1" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <item>
+      <widget class="QCheckBox" name="cBMarkerNameC">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>Marker Name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnKeyDlg">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="icon">
+        <iconset resource="../icon/resources.qrc">
+         <normaloff>:/buttons/key</normaloff>:/buttons/key</iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLabel" name="lblMarker">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="text">
+        <string>%r=001</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>ChkMarkerName</tabstop>
-  <tabstop>MarkerName</tabstop>
-  <tabstop>MarkerComment</tabstop>
-  <tabstop>BtnOk</tabstop>
-  <tabstop>BtnCancel</tabstop>
+  <tabstop>cBMarkerNameC</tabstop>
+  <tabstop>btnKeyDlg</tabstop>
+  <tabstop>cBMarkerName</tabstop>
+  <tabstop>lEMarkerComment</tabstop>
+  <tabstop>rBGo</tabstop>
+  <tabstop>rBStop</tabstop>
+  <tabstop>rBFix</tabstop>
+  <tabstop>sBLatitude</tabstop>
+  <tabstop>sBLongitude</tabstop>
+  <tabstop>sBHeight</tabstop>
+  <tabstop>btnPosition</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../icon/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

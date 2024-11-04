@@ -6,151 +6,102 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>385</width>
-    <height>361</height>
+    <width>388</width>
+    <height>435</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Serial/TCP Commands</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QCheckBox" name="ChkOpenCmd">
+    <widget class="QCheckBox" name="cBOpenCommands">
      <property name="toolTip">
-      <string/>
+      <string>Send commands at startup</string>
      </property>
      <property name="text">
-      <string>Commands at startup</string>
-     </property>
-     <property name="checked">
-      <bool>false</bool>
+      <string>Commands at start&amp;up</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="OpenCmd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPlainTextEdit" name="tEOpenCommands">
      <property name="toolTip">
-      <string/>
-     </property>
-     <property name="plainText">
-      <string/>
+      <string>Commands to be executed at startup</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="ChkCloseCmd">
+    <widget class="QCheckBox" name="cBCloseCommands">
      <property name="toolTip">
-      <string/>
+      <string>Send commands at shutdown</string>
      </property>
      <property name="text">
-      <string>Commands at shutdown</string>
+      <string>Commands at shut&amp;down</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="CloseCmd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QPlainTextEdit" name="tECloseCommands">
      <property name="toolTip">
-      <string/>
-     </property>
-     <property name="plainText">
-      <string/>
+      <string>Commands to be executed at shutdown</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QCheckBox" name="ChkPeriodicCmd">
+    <widget class="QCheckBox" name="cBPeriodicCommands">
+     <property name="toolTip">
+      <string>Send commands periodically</string>
+     </property>
      <property name="text">
-      <string>Periodic Commands : &lt;command&gt; # cycle (ms)</string>
+      <string>&amp;Periodic Commands</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="PeriodicCmd"/>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Syntax: &lt;span style=&quot; font-style:italic;&quot;&gt;&amp;lt;command&amp;gt; # cycle (ms)&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
    </item>
    <item>
-    <widget class="QWidget" name="widget" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="BtnLoad">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Load...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="BtnSave">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Save...</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="BtnOk">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;OK</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QPushButton" name="BtnCancel">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Cancel</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
+    <widget class="QPlainTextEdit" name="tEPeriodicCommands">
+     <property name="toolTip">
+      <string>Commands to be executed periodically</string>
+     </property>
     </widget>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QPushButton" name="btnLoad">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>&amp;Load...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnSave">
+       <property name="toolTip">
+        <string/>
+       </property>
+       <property name="text">
+        <string>&amp;Save...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="standardButtons">
+        <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

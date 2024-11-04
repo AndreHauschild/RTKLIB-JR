@@ -8,7 +8,9 @@
 
 #include "rtklib.h"
 
-#include "ui_postmain.h"
+namespace Ui {
+class MainForm;
+}
 
 class QShowEvent;
 class QCloseEvent;
@@ -16,6 +18,7 @@ class QSettings;
 class OptDialog;
 class TextViewer;
 class ConvDialog;
+class QComboBox;
 
 
 //Helper Class ------------------------------------------------------------------
@@ -32,13 +35,13 @@ public:
     double ti, tu;
     int n, stat;
     char *infile[6], outfile[1024];
-    char *rov, *base;
+    QString rov, base;
 
     explicit ProcessingThread(QObject *parent);
     ~ProcessingThread();
 
-    void addInput(const QString &);
-    void addList(char * &sta, const QString & list);
+    bool addInput(const QString &);
+    static QString toList(const QString & list);
 
 protected:
     void run();
@@ -48,54 +51,48 @@ signals:
 };
 //---------------------------------------------------------------------------
 
-class MainForm : public QDialog, public Ui::MainForm
+class MainForm : public QDialog
 {
     Q_OBJECT
 
-public slots:
-    void BtnPlotClick();
-    void BtnViewClick();
-    void BtnToKMLClick();
-    void BtnOptionClick();
-    void BtnExecClick();
-    void BtnAbortClick();
-    void BtnExitClick();
-    void BtnAboutClick();
+protected slots:
+    void callRtkPlot();
+    void viewOutputFile();
+    void convertToKML();
+    void showOptionsDialog();
+    void startPostProcessing();
+    void abortProcessing();
+    void showAboutDialog();
 	
-    void BtnTime1Click();
-    void BtnTime2Click();
-    void BtnInputFile1Click();
-    void BtnInputFile3Click();
-    void BtnInputFile2Click();
-    void BtnInputFile4Click();
-    void BtnInputFile5Click();
-    void BtnOutputFileClick();
-    void BtnInputView1Click();
-    void BtnInputView3Click();
-    void BtnInputView2Click();
-    void BtnInputView4Click();
-    void BtnInputView5Click();
-    void BtnOutputView1Click();
-    void BtnOutputView2Click();
-    void BtnInputPlot1Click();
-    void BtnInputPlot2Click();
-    void BtnKeywordClick();
-	
-    void TimeStartClick();
-    void TimeEndClick();
-    void TimeIntFClick();
-    void TimeUnitFClick();
-	
-    void InputFile1Change();
-    void OutDirEnaClick();
-    void BtnOutDirClick();
-    void OutDirChange();
-    void BtnInputFile6Click();
-    void BtnInputView6Click();
+    void showStartTimeDialog();
+    void showStopTimeDialog();
+    void selectInputFile1();
+    void selectInputFile3();
+    void selectInputFile2();
+    void selectInputFile4();
+    void selectInputFile5();
+    void selectOutputFile();
+    void viewInputFile1();
+    void viewInputFile3();
+    void viewInputFile2();
+    void viewInputFile4();
+    void viewInputFile5();
+    void viewOutputFileStat();
+    void viewOutputFileTrace();
+    void plotInputFile1();
+    void plotInputFile2();
+    void showKeyDialog();
+		
+    void outputDirectoryEnableClicked();
+    void selectOutputDirectory();
+    void selectInputFile6();
+    void viewInputFile6();
 
-    void FormCreate();
-    void ProcessingFinished(int);
-    void ShowMsg(const QString  &msg);
+    void processingFinished(int);
+
+public slots:
+    void showMessage(const QString  &msg);
+    void setProgress(int);
 
 protected:
     void showEvent(QShowEvent*);
@@ -108,61 +105,36 @@ private:
     ConvDialog *convDialog;
     TextViewer *textViewer;
 
-    void ExecProc (void);
-    int  GetOption(prcopt_t &prcopt, solopt_t &solopt, filopt_t &filopt);
-    int  ObsToNav (const QString &obsfile, QString &navfile);
-	
-    QString FilePath(const QString &file);
-    void ReadList(QComboBox *, QSettings *ini,  const QString &key);
-    void WriteList(QSettings *ini, const QString &key, const QComboBox *combo);
-    void AddHist(QComboBox *combo);
-    int ExecCmd(const QString &cmd, const QStringList &opt, int show);
-	
-    gtime_t GetTime1(void);
-    gtime_t GetTime2(void);
-    void SetOutFile(void);
-    void SetTime1(gtime_t time);
-    void SetTime2(gtime_t time);
-    void UpdateEnable(void);
-    void LoadOpt(void);
-    void SaveOpt(void);
-	
-public:
-    QString IniFile;
-    bool AbortFlag;
-	
-	// options
-    int PosMode, Freq, Solution, DynamicModel, IonoOpt, TropOpt, RcvBiasEst;
-    int ARIter, NumIter, CodeSmooth, TideCorr;
-    int OutCntResetAmb, FixCntHoldAmb, LockCntFixAmb, RovPosType, RefPosType;
-    int SatEphem, NavSys;
-    int RovAntPcv, RefAntPcv, AmbRes, GloAmbRes, BdsAmbRes;
-    int OutputHead, OutputOpt, OutputVel, OutputSingle, OutputDatum;
-    int OutputHeight, OutputGeoid, DebugTrace, DebugStatus, BaseLineConst;
-    int SolFormat, TimeFormat, LatLonFormat, IntpRefObs, NetRSCorr, SatClkCorr;
-    int SbasCorr, SbasCorr1, SbasCorr2, SbasCorr3, SbasCorr4, TimeDecimal;
-    int SolStatic, SbasSat, MapFunc;
-	int PosOpt[6];
-    double ElMask, MaxAgeDiff, RejectPhase, RejectCode;
-    double MeasErrR1, MeasErrR2, MeasErr2, MeasErr3, MeasErr4, MeasErr5;
-    double SatClkStab, RovAntE, RovAntN, RovAntU, RefAntE, RefAntN, RefAntU;
-    double PrNoise1, PrNoise2, PrNoise3, PrNoise4, PrNoise5;
-    double ValidThresAR, ElMaskAR, ElMaskHold, SlipThres;
-    double ThresAR2, ThresAR3;
-    double RovPos[3], RefPos[3], BaseLine[2];
-    double MaxSolStd;
-	snrmask_t SnrMask;
-	
-    QString RnxOpts1, RnxOpts2, PPPOpts;
-    QString FieldSep, RovAnt, RefAnt, AntPcvFile, StaPosFile, PrecEphFile;
-    QString NetRSCorrFile1, NetRSCorrFile2, SatClkCorrFile, GoogleEarthFile;
-    QString GeoidDataFile, IonoFile, DCBFile, EOPFile, BLQFile;
-    QString SbasCorrFile, SatPcvFile, ExSats;
-    QString RovList, BaseList;
-	
-    void ViewFile(const QString &file);
+    ProcessingThread *processingThread;
 
+    void execProcessing();
+    bool getOption(prcopt_t &prcopt, solopt_t &solopt, filopt_t &filopt);
+    bool obsToNav (const QString &obsfile, QString &navfile);
+	
+    QString filePath(const QString &file);
+    void readList(QComboBox *, QSettings *ini,  const QString &key);
+    void writeList(QSettings *ini, const QString &key, const QComboBox *combo);
+    void addHistory(QComboBox *combo);
+    bool execCommand(const QString &cmd, const QStringList &opt);
+	
+    gtime_t getTimeStart();
+    gtime_t getTimeStop();
+    void setOutputFile();
+    void setTimeStart(gtime_t time);
+    void setTimeStop(gtime_t time);
+    void updateEnable();
+    void loadOptions();
+    void saveOptions();
+
+    Ui::MainForm *ui;
+
+public:
     explicit MainForm(QWidget *parent = 0);
+
+    QString iniFile;
+    bool abortFlag;
+	
+    void viewFile(const QString &file);
 };
 
 //---------------------------------------------------------------------------

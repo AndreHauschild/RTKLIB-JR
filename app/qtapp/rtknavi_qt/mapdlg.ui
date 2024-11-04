@@ -27,26 +27,18 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="BtnPnt">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnPnt">
         <property name="toolTip">
          <string>Show Points</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/pnt2</normaloff>:/buttons/pnt2</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QComboBox" name="PntList">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QComboBox" name="cBPntList">
         <property name="toolTip">
          <string>Points</string>
         </property>
@@ -58,10 +50,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnPntDlg">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnPntDlg">
         <property name="palette">
          <palette>
           <active>
@@ -105,99 +94,65 @@
         <property name="text">
          <string>...</string>
         </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnTrack">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnTrack">
         <property name="toolTip">
          <string>Show Track</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/track</normaloff>:/buttons/track</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCenter">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCenter">
         <property name="toolTip">
          <string>Center Solution</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/trackc</normaloff>:/buttons/trackc</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnGraph">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnGraph">
         <property name="toolTip">
          <string>Vert Solution</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/graph</normaloff>:/buttons/graph</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnExpand">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnExpand">
         <property name="toolTip">
          <string>Expand</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/expand</normaloff>:/buttons/expand</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnShrink">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnShrink">
         <property name="toolTip">
          <string>Shrink</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/shrink</normaloff>:/buttons/shrink</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClose">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
+       <widget class="QPushButton" name="btnClose">
         <property name="text">
          <string>&amp;Close</string>
         </property>
@@ -213,7 +168,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="Disp">
+    <widget class="QLabel" name="display">
      <property name="frameShape">
       <enum>QFrame::StyledPanel</enum>
      </property>
@@ -221,6 +176,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../icon/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -1139,7 +1139,7 @@ void __fastcall TMainForm::SvrStart(void)
         tracelevel(DebugTraceF);
     }
     if (RovPosTypeF<=2) { // LLH,XYZ
-        PrcOpt.rovpos=POSOPT_POS;
+        PrcOpt.rovpos = RovPosTypeF < 2 ? POSOPT_POS_LLH : POSOPT_POS_XYZ;
         PrcOpt.ru[0]=RovPos[0];
         PrcOpt.ru[1]=RovPos[1];
         PrcOpt.ru[2]=RovPos[2];
@@ -1149,7 +1149,7 @@ void __fastcall TMainForm::SvrStart(void)
         for (i=0;i<3;i++) PrcOpt.ru[i]=0.0;
     }
     if (RefPosTypeF<=2) { // LLH,XYZ
-        PrcOpt.refpos=POSOPT_POS;
+        PrcOpt.refpos = RefPosTypeF < 2 ? POSOPT_POS_LLH : POSOPT_POS_XYZ;
         PrcOpt.rb[0]=RefPos[0];
         PrcOpt.rb[1]=RefPos[1];
         PrcOpt.rb[2]=RefPos[2];
@@ -1282,9 +1282,10 @@ void __fastcall TMainForm::SvrStart(void)
     rtksvr.bl_reset=MaxBL;
     
     // start rtk server
-    if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,paths,Format,NavSelect,
-                     cmds,cmds_periodic,rcvopts,NmeaCycle,NmeaReq,nmeapos,
-                     &PrcOpt,solopt,&monistr,errmsg)) {
+    if (!rtksvrstart(&rtksvr,SvrCycle,SvrBuffSize,strs,(const char **)paths,Format,
+                     NavSelect,(const char **)cmds,(const char **)cmds_periodic,
+                     (const char **)rcvopts,NmeaCycle,NmeaReq,nmeapos,&PrcOpt,
+                     solopt,&monistr,errmsg)) {
         trace(2,"rtksvrstart error %s\n",errmsg);
         traceclose();
         return;
@@ -1327,7 +1328,7 @@ void __fastcall TMainForm::SvrStop(void)
             if (CmdEnaTcp[i][1]) cmds[i]=CmdsTcp[i][1].c_str();
         }
     }
-    rtksvrstop(&rtksvr,cmds);
+    rtksvrstop(&rtksvr,(const char **)cmds);
     
     BtnStart    ->Visible=true;
     BtnOpt      ->Enabled=true;
@@ -1882,7 +1883,7 @@ void __fastcall TMainForm::DrawSat(TCanvas *c, int w, int h, int x0, int y0,
                 snr[0]=snr[j+1]; // max snr
             }
         }
-        if (Vsat[index][k]&&(snr[freq]>0||freq>NFREQ)) {
+        if (Vsat[index][k]&&(freq>NFREQ||snr[freq]>0)) {
             azel[ns*2]=Az[index][k]; azel[1+ns*2]=El[index][k];
             ns++;
         }

@@ -1,32 +1,31 @@
 //---------------------------------------------------------------------------
 // ported to Qt by Jens Reimann
-#include <stdio.h>
-
 #include <QShowEvent>
 #include <QScreen>
 #include <QLabel>
 #include <QFileDialog>
-#include <QDebug>
 
 #include "refdlg.h"
 #include "rtklib.h"
+#include "ui_refdlg.h"
 
 static const QChar degreeChar(0260);           // character code of degree (UTF-8)
 
-//---------------------------------------------------------------------------
-RefDialog::RefDialog(QWidget *parent)
-    : QDialog(parent)
-{
-    setupUi(this);
-    Opt=0;
-    Pos[0] = Pos[1] = Pos[2] = RovPos[0] = RovPos[1] = RovPos[2] = 0.0;
 
-    connect(StaList, SIGNAL(cellDoubleClicked(int,int)), this, SLOT(StaListDblClick(int,int)));
-    connect(BtnOK, SIGNAL(clicked(bool)), this, SLOT(BtnOKClick()));
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(BtnFind, SIGNAL(clicked(bool)), this, SLOT(BtnFindClick()));
-    connect(BtnLoad, SIGNAL(clicked(bool)), this, SLOT(BtnLoadClick()));
-    connect(FindStr, SIGNAL(returnPressed()), this, SLOT(FindList()));
+//---------------------------------------------------------------------------
+RefDialog::RefDialog(QWidget *parent, int options)
+    : QDialog(parent), ui(new Ui::RefDialog)
+{
+    ui->setupUi(this);
+    this->options = options;
+    roverPosition[0] = roverPosition[1] = roverPosition[2] = 0.0;
+
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &RefDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &RefDialog::reject);
+    connect(ui->tWStationList, &QTableWidget::cellDoubleClicked, this, &RefDialog::stationSelected);
+    connect(ui->btnFind, &QPushButton::clicked, this, &RefDialog::findList);
+    connect(ui->btnLoad, &QPushButton::clicked, this, &RefDialog::loadStations);
+    connect(ui->lEFind, &QLineEdit::returnPressed, this, &RefDialog::findList);
 }
 //---------------------------------------------------------------------------
 void RefDialog::showEvent(QShowEvent *event)
@@ -35,87 +34,78 @@ void RefDialog::showEvent(QShowEvent *event)
 
     if (event->spontaneous()) return;
 
-    BtnLoad->setVisible(Opt);
+    ui->btnLoad->setVisible(options);
 
     QStringList columns;
-    columns << tr("No") << tr("Latitude(%1)").arg(degreeChar) << tr("Longitude(%1)").arg(degreeChar) << tr("Height(m)") << tr("Id") << tr("Name") << tr("Dist(km)");
-    StaList->setColumnCount(columns.size());
-    StaList->setRowCount(2);
+    columns << tr("No") << tr("Latitude (%1)").arg(degreeChar) << tr("Longitude (%1)").arg(degreeChar) << tr("Height (m)") << tr("Id") << tr("Name") << tr("Distance (km)");
+    ui->tWStationList->setColumnCount(columns.size());
+    ui->tWStationList->setRowCount(1);
+    ui->tWStationList->setHorizontalHeaderLabels(columns);
 
     for (int i = 0; i < columns.size(); i++)
-        for (int j = 0; j < 2; j++)
-            StaList->setItem(i, j, new QTableWidgetItem(""));
+        for (int j = 0; j < 1; j++)
+            ui->tWStationList->setItem(i, j, new QTableWidgetItem(""));
 
-    FontScale = 2 * physicalDpiX();
+    fontScale = 2 * physicalDpiX();
     for (int i = 0; i < columns.size(); i++)
-        StaList->setColumnWidth(i, width[i] * FontScale / 96);
+        ui->tWStationList->setColumnWidth(i, width[i] * fontScale / 96);
 
-    StaList->setHorizontalHeaderLabels(columns);
+    loadList(stationPositionFile);
 
-    LoadList();
-
-    StaList->sortItems(6);
+    ui->tWStationList->sortItems(6);  // sort by distance
 }
 //---------------------------------------------------------------------------
-void RefDialog::StaListDblClick(int, int row)
+void RefDialog::stationSelected(int, int)
 {
-    Pos[0] = StaList->item(row, 1)->text().toDouble();
-    Pos[1] = StaList->item(row, 2)->text().toDouble();
-    Pos[2] = StaList->item(row, 3)->text().toDouble();
-
-    accept();
+    if (validReference())
+        accept();
+    else
+        reject();
 }
 //---------------------------------------------------------------------------
-void RefDialog::BtnOKClick()
+void RefDialog::accept()
 {
-    int row = StaList->currentRow();
-
-    Pos[0] = StaList->item(row, 1)->text().toDouble();
-    Pos[1] = StaList->item(row, 2)->text().toDouble();
-    Pos[2] = StaList->item(row, 3)->text().toDouble();
-
-    accept();
+    if (validReference())
+        QDialog::accept();
+    else
+        QDialog::reject();
 }
 //---------------------------------------------------------------------------
-void RefDialog::BtnLoadClick()
+void RefDialog::loadStations()
 {
-    StaPosFile = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Load Station List..."), StaPosFile, tr("Position File (*.pos *.snx);;All (*.*)")));
+    stationPositionFile = QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Load Station List..."), stationPositionFile, tr("Position File (*.pos *.snx);;All (*.*)")));
 
-	LoadList();
+    loadList(stationPositionFile);
 }
 //---------------------------------------------------------------------------
-void RefDialog::BtnFindClick()
+void RefDialog::findList()
 {
-	FindList();
-}
-//---------------------------------------------------------------------------
-void RefDialog::FindList(void)
-{
-    QString str = FindStr->text();
+    QString str = ui->lEFind->text();
 
-    QList<QTableWidgetItem *> f = StaList->findItems(str, Qt::MatchContains);
+    QList<QTableWidgetItem *> f = ui->tWStationList->findItems(str, Qt::MatchContains);
 
     if (f.empty()) return;
 
-    StaList->setCurrentItem(f.first());
+    ui->tWStationList->setCurrentItem(f.first());
 }
 //---------------------------------------------------------------------------
-void RefDialog::LoadList(void)
+void RefDialog::loadList(QString filename)
 {
     QByteArray buff;
 
     double pos[3];
     int n = 0;
 
-    StaList->setRowCount(0);
+    ui->tWStationList->setRowCount(0);
 
 	// check format
-    QFile fp(StaPosFile);
+    QFile fp(filename);
     if (!fp.open(QIODevice::ReadOnly)) return;
 
     buff = fp.readAll();
     if (buff.contains("%=SNX")) {
-		LoadSinex();
+        fp.close();
+        loadSinex(filename);
 		return;
 	}
 
@@ -124,29 +114,29 @@ void RefDialog::LoadList(void)
         buff = fp.readLine();
         buff = buff.mid(0, buff.indexOf('%')); /* remove comments */
 
-        QList<QByteArray> tokens = buff.simplified().split(' ');
+        QList<QByteArray> tokens = buff.trimmed().split(' ');
 
         if (tokens.size() != 5) continue;
 
-        StaList->setRowCount(++n);
+        ui->tWStationList->setRowCount(++n);
 
         for (int i = 0; i < 3; i++)
             pos[i] = tokens.at(i).toDouble();
 
-        AddRef(n, pos, tokens.at(3), tokens.at(4));
+        addReference(n, pos, tokens.at(3), tokens.at(4));
 	}
-    if (n == 0) StaList->setRowCount(0);
+    if (n == 0) ui->tWStationList->setRowCount(0);
 
-	UpdateDist();
-    setWindowTitle(StaPosFile);
+    updateDistances();
+    setWindowTitle(filename);
 }
 //---------------------------------------------------------------------------
-void RefDialog::LoadSinex(void)
+void RefDialog::loadSinex(QString filename)
 {
     int n = 0, sol = 0;
     double rr[3], pos[3];
     bool okay;
-    QFile file(StaPosFile);
+    QFile file(filename);
     QByteArray buff, code;
 
     if (!file.open(QIODevice::ReadOnly)) return;
@@ -176,55 +166,45 @@ void RefDialog::LoadSinex(void)
             ecef2pos(rr, pos);
             pos[0] *= R2D;
             pos[1] *= R2D;
-            StaList->setRowCount(++n);
-            AddRef(n, pos, code, "");
+            ui->tWStationList->setRowCount(++n);
+            addReference(n, pos, code, "");
         }
     }
     ;
     if (n == 0)
-        StaList->setRowCount(0);
+        ui->tWStationList->setRowCount(0);
 
-    UpdateDist();
-    setWindowTitle(StaPosFile);
+    updateDistances();
+    setWindowTitle(stationPositionFile);
 }
 //---------------------------------------------------------------------------
-void RefDialog::AddRef(int n, double *pos, const QString code,
+void RefDialog::addReference(int n, double *pos, const QString code,
                const QString name)
 {
-    int row = StaList->rowCount();
+    int row = ui->tWStationList->rowCount() - 1;
 
-    for (int i = 0; i < 7; i++)
-        StaList->setItem(row - 1, i, new QTableWidgetItem());
-
-    StaList->setItem(row - 1, 0, new QTableWidgetItem(QString::number(n)));
-    StaList->setItem(row - 1, 1, new QTableWidgetItem(QString::number(pos[0], 'f', 9)));
-    StaList->setItem(row - 1, 2, new QTableWidgetItem(QString::number(pos[1], 'f', 9)));
-    StaList->setItem(row - 1, 3, new QTableWidgetItem(QString::number(pos[2], 'f', 4)));
-    StaList->setItem(row - 1, 4, new QTableWidgetItem(code));
-    StaList->setItem(row - 1, 5, new QTableWidgetItem(name));
-    StaList->setItem(row - 1, 6, new QTableWidgetItem(""));
+    ui->tWStationList->setItem(row, 0, new QTableWidgetItem(QString::number(n)));
+    ui->tWStationList->setItem(row, 1, new QTableWidgetItem(QString::number(pos[0], 'f', 9)));
+    ui->tWStationList->setItem(row, 2, new QTableWidgetItem(QString::number(pos[1], 'f', 9)));
+    ui->tWStationList->setItem(row, 3, new QTableWidgetItem(QString::number(pos[2], 'f', 4)));
+    ui->tWStationList->setItem(row, 4, new QTableWidgetItem(code));
+    ui->tWStationList->setItem(row, 5, new QTableWidgetItem(name));
+    ui->tWStationList->setItem(row, 6, new QTableWidgetItem(""));
 }
 //---------------------------------------------------------------------------
-int RefDialog::InputRef(void)
+int RefDialog::validReference()
 {
-    bool ok;
-
-    QList<QTableWidgetItem *> sel = StaList->selectedItems();
-    int row = StaList->row(sel.first());
-    Pos[0] = StaList->item(row, 1)->text().toDouble(&ok);
-    Pos[1] = StaList->item(row, 2)->text().toDouble(&ok);
-    Pos[2] = StaList->item(row, 3)->text().toDouble(&ok);
-    StaId = StaList->item(row, 4)->text();
-    StaName = StaList->item(row, 5)->text();
-	return 1;
+    QList<QTableWidgetItem *> sel = ui->tWStationList->selectedItems();
+    if (sel.isEmpty()) return 0;
+    else return 1;
 }
 //---------------------------------------------------------------------------
-void RefDialog::UpdateDist(void)
+void RefDialog::updateDistances()
 {
     double pos[3], ru[3], rr[3];
     bool ok;
 
-    matcpy(pos,RovPos,3,1);
+    matcpy(pos, roverPosition, 3, 1);
 
     if (norm(pos, 3) <= 0.0) return;
 
@@ -232,16 +212,72 @@ void RefDialog::UpdateDist(void)
     pos[1] *= D2R;
     pos2ecef(pos, ru);
 
-    for (int i = 1; i < StaList->rowCount(); i++) {
-        if (StaList->item(i, 1)->text() == "") continue;
+    for (int i = 1; i < ui->tWStationList->rowCount(); i++) {
+        if (ui->tWStationList->item(i, 1)->text() == "") continue;
 
-        pos[0] = StaList->item(i, 1)->text().toDouble(&ok) * D2R;
-        pos[1] = StaList->item(i, 2)->text().toDouble(&ok) * D2R;
-        pos[2] = StaList->item(i, 3)->text().toDouble(&ok);
+        pos[0] = ui->tWStationList->item(i, 1)->text().toDouble(&ok) * D2R;
+        pos[1] = ui->tWStationList->item(i, 2)->text().toDouble(&ok) * D2R;
+        pos[2] = ui->tWStationList->item(i, 3)->text().toDouble(&ok);
         pos2ecef(pos, rr);
         for (int j = 0; j < 3; j++) rr[j] -= ru[j];
 
-        StaList->setItem(i, 6, new QTableWidgetItem(QString::number(norm(rr, 3) / 1E3, 'f', 1)));
+        ui->tWStationList->item(i, 6)->setText(QString::number(norm(rr, 3) / 1E3, 'f', 1));
 	}
+}
+//---------------------------------------------------------------------------
+void RefDialog::setRoverPosition(double lat, double lon, double height)
+{
+    roverPosition[0] = lat;
+    roverPosition[1] = lon;
+    roverPosition[2] = height;
+
+    updateDistances();
+}
+//---------------------------------------------------------------------------
+double* RefDialog::getPosition()
+{
+    static double position[3] = {0, 0, 0};
+    bool ok;
+
+    QList<QTableWidgetItem *> sel = ui->tWStationList->selectedItems();
+    if (sel.isEmpty()) return position;
+
+    int row = ui->tWStationList->row(sel.first());
+    position[0] = ui->tWStationList->item(row, 1)->text().toDouble(&ok); if (!ok) return 0;
+    position[1] = ui->tWStationList->item(row, 2)->text().toDouble(&ok); if (!ok) return 0;
+    position[2] = ui->tWStationList->item(row, 3)->text().toDouble(&ok); if (!ok) return 0;
+
+    return position;
+}
+
+//---------------------------------------------------------------------------
+QString RefDialog::getStationId()
+{
+    QList<QTableWidgetItem *> sel = ui->tWStationList->selectedItems();
+    if (sel.isEmpty()) return "";
+
+    int row = ui->tWStationList->row(sel.first());
+
+    return ui->tWStationList->item(row, 4)->text();
+}
+//---------------------------------------------------------------------------
+QString RefDialog::getStationName()
+{
+    QList<QTableWidgetItem *> sel = ui->tWStationList->selectedItems();
+    if (sel.isEmpty()) return "";
+
+    int row = ui->tWStationList->row(sel.first());
+
+    return ui->tWStationList->item(row, 5)->text();
+}
+//---------------------------------------------------------------------------
+void RefDialog::setLoadEnabled(bool enabled)
+{
+    ui->btnLoad->setEnabled(enabled);
+}
+//---------------------------------------------------------------------------
+bool RefDialog::getLoadEnabled()
+{
+    return ui->btnLoad->isEnabled();
 }
 //---------------------------------------------------------------------------

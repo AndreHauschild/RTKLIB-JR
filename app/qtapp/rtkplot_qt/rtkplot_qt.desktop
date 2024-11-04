@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=RtkPlot
+GenericName=RtkLib Data Plotter
+Keywords=rtklib;GNSS
+Exec=rtkplot_qt
+Icon=rtkplot
+Categories=Science;Geoscience;

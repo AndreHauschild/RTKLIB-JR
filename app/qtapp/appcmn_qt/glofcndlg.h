@@ -5,30 +5,35 @@
 //---------------------------------------------------------------------------
 
 #include <QDialog>
-#include <QLineEdit>
-#include "ui_glofcndlg.h"
+
+namespace Ui {
+class GloFcnDialog;
+}
+
+class QSpinBox;
 
 //---------------------------------------------------------------------------
-class GloFcnDialog : public QDialog, private Ui::GloFcnDialog
+class GloFcnDialog : public QDialog
 {
-        Q_OBJECT
-
-public slots:
-        void BtnOkClick();
-        void BtnReadClick();
-        void BtnClearClick();
-        void EnaFcnClick();
-        void UpdateEnable(void);
-private:
-        QLineEdit * GetFcn(int prn);
-
-protected:
-    void showEvent(QShowEvent*);
+    Q_OBJECT
 
 public:
-        GloFcnDialog(QWidget *parent);
+    GloFcnDialog(QWidget *parent);
 
-	int EnaGloFcn,GloFcn[27];
+    int getGloFcnEnable();
+    void setGloFcnEnable(int enable);
+    int getGloFcn(int i);
+    void setGloFcn(int i, int fcn);
+
+protected slots:
+    void readRinex();
+    void clearFrequencies();
+    void updateEnable();
+
+private:
+    QSpinBox * getFcn(int prn);
+
+    Ui::GloFcnDialog *ui;
 };
 
 //---------------------------------------------------------------------------

@@ -5,9 +5,11 @@
 #include <QMainWindow>
 #include <QThread>
 
-#include "ui_convmain.h"
-
 #include "rtklib.h"
+
+namespace Ui {
+class MainWindow;
+}
 
 class QShowEvent;
 class QCloseEvent;
@@ -21,7 +23,7 @@ class StartDialog;
 class TextViewer;
 
 // Conversion Thread Class ------------------------------------------------------------------
-
+// to allow conversion in background without blocking the GUI
 class ConversionThread : public QThread
 {
     Q_OBJECT
@@ -53,76 +55,76 @@ protected:
 };
 
 //---------------------------------------------------------------------------
-class MainWindow : public QMainWindow, public Ui::MainWindow
+class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
-protected:
-    void showEvent           (QShowEvent*);
-    void closeEvent          (QCloseEvent*);
-    void dragEnterEvent      (QDragEnterEvent *);
-    void dropEvent           (QDropEvent *);
+public:
+    explicit MainWindow(QWidget *parent = 0);
 
 public slots:
-    void BtnPlotClick();
-    void BtnConvertClick();
-    void BtnOptionsClick();
-    void BtnExitClick();
-    void BtnAboutClick();
-    void BtnTime1Click();
-    void BtnTime2Click();
-    void BtnInFileClick();
-    void BtnOutFile1Click();
-    void BtnOutFile2Click();
-    void BtnOutFile3Click();
-    void BtnOutFile4Click();
-    void BtnOutFile5Click();
-    void BtnOutFile6Click();
-    void BtnOutFile7Click();
-    void BtnOutFile8Click();
-    void BtnOutFile9Click();
-    void BtnOutFileView1Click();
-    void BtnOutFileView2Click();
-    void BtnOutFileView3Click();
-    void BtnOutFileView4Click();
-    void BtnOutFileView5Click();
-    void BtnOutFileView6Click();
-    void BtnOutFileView7Click();
-    void BtnOutFileView8Click();
-    void BtnOutFileView9Click();
-    void BtnAbortClick();
+    void showMessage(const QString &);
+
+protected:
+    void showEvent(QShowEvent*);
+    void closeEvent(QCloseEvent*);
+    void dragEnterEvent(QDragEnterEvent *);
+    void dropEvent(QDropEvent *);
+
+protected slots:
+    void callRtkPlot();
+    void showOptions();
+    void showAboutDialog();
+    void showStartTimeDialog();
+    void showStopTimeDialog();
+    void selectInputFile();
+    void selectOutputFile1();
+    void selectOutputFile2();
+    void selectOutputFile3();
+    void selectOutputFile4();
+    void selectOutputFile5();
+    void selectOutputFile6();
+    void selectOutputFile7();
+    void selectOutputFile8();
+    void selectOutputFile9();
+    void viewOutputFile1();
+    void viewOutputFile2();
+    void viewOutputFile3();
+    void viewOutputFile4();
+    void viewOutputFile5();
+    void viewOutputFile6();
+    void viewOutputFile7();
+    void viewOutputFile8();
+    void viewOutputFile9();
+    void abort();
+    void outputDirectoryEnableClicked();
 	
-    void TimeStartFClick();
-    void TimeEndFClick();
-    void TimeIntFClick();
-    void OutDirEnaClick();
-	
-    void InFileChange();
-    void FormatChange();
-    void OutDirChange();
-    void BtnOutDirClick();
-    void BtnKeyClick();
-    void BtnPostClick();
-    void BtnInFileViewClick();
-    void ConversionFinished();
-    void UpdateEnable();
+    void inputFileChanged();
+    void outputDirectoryChanged();
+    void selectOutputDirectory();
+    void showKeyDialog();
+    void callRtkPost();
+    void viewInputFile();
+    void conversionFinished();
+    void updateEnable();
+
+    void convertFile();
 
 private:
-    QString IniFile, CmdPostExe;
+    QString iniFile, commandPostExe;
     ConversionThread *conversionThread;
 
-    void ReadList(QComboBox* combo, QSettings *ini, const QString &key);
-    void WriteList(QSettings *ini, const QString &key, const QComboBox *combo);
-    void AddHist(QComboBox *combo);
+    void readHistory(QComboBox* combo, QSettings *ini, const QString &key);
+    void writeHistory(QSettings *ini, const QString &key, const QComboBox *combo);
+    void addHistory(QComboBox *combo);
 	
-    int  AutoFormat(const QString &File);
-    void ConvertFile(void);
-    void SetOutFiles(const QString &infile);
-    void GetTime(gtime_t *ts, gtime_t *te, double *tint, double *tunit);
-    int  ExecCmd(const QString &cmd, QStringList &opt);
-    QString RepPath(const QString &File);
-    void LoadOpt(void);
-    void SaveOpt(void);
+    int autoFormat(const QString &file);
+    void setOutputFiles(const QString &infile);
+    void getTime(gtime_t *ts, gtime_t *te, double *tint, double *tunit);
+    int  execCommand(const QString &cmd, QStringList &opt);
+    QString repPath(const QString &File);
+    void loadOptions();
+    void saveOptions();
 		
     ConvOptDialog *convOptDialog;
     TimeDialog *timeDialog;
@@ -130,17 +132,8 @@ private:
     AboutDialog* aboutDialog;
     StartDialog* startDialog;
     TextViewer *viewer;
-public:
-	gtime_t RnxTime;
-    QString RunBy, Marker, MarkerNo, MarkerType, Name[2], Rec[3], Ant[3];
-    QString RnxCode, Comment[2], RcvOption, ExSats;
-    QString CodeMask[7];
-    double AppPos[3], AntDel[3], TimeTol;
-    int RnxVer, RnxFile, NavSys, ObsType, FreqType, TraceLevel;
-    int AutoPos, PhaseShift, HalfCyc, OutIono, OutTime, OutLeaps, SepNav;
-    int EnaGloFcn,GloFcn[27];
-	
-    explicit MainWindow(QWidget *parent=0);
+
+    Ui::MainWindow *ui;
 };
 //---------------------------------------------------------------------------
 #endif

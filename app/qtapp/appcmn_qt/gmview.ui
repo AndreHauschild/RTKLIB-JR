@@ -17,26 +17,8 @@
    <string/>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
-    <widget class="QWidget" name="Panel1" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="beaderPanel" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -66,19 +48,13 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnFixCent">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnFixCenter">
         <property name="toolTip">
          <string>Fix Plot Center</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/trackc.bmp</normaloff>:/buttons/trackc.bmp</iconset>
+         <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
+          <normaloff>:/buttons/trackc</normaloff>:/buttons/trackc</iconset>
         </property>
         <property name="checkable">
          <bool>true</bool>
@@ -89,19 +65,13 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnShrink">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnShrink">
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text">
-         <string/>
-        </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/shrink.bmp</normaloff>:/buttons/shrink.bmp</iconset>
+         <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
+          <normaloff>:/buttons/shrink</normaloff>:/buttons/shrink</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -109,19 +79,13 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnExpand">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnExpand">
         <property name="toolTip">
          <string/>
         </property>
-        <property name="text">
-         <string/>
-        </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/expand.bmp</normaloff>:/buttons/expand.bmp</iconset>
+         <iconset resource="../srctblbrows_qt/srctblbrows_qt.qrc">
+          <normaloff>:/buttons/expand</normaloff>:/buttons/expand</iconset>
         </property>
         <property name="flat">
          <bool>true</bool>
@@ -142,10 +106,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClose">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnClose">
         <property name="toolTip">
          <string/>
         </property>
@@ -164,25 +125,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Panel2" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
-     <property name="text" stdset="0">
-      <string/>
-     </property>
-    </widget>
+    <widget class="QWidget" name="mapPanel" native="true"/>
    </item>
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../srctblbrows_qt/srctblbrows_qt.qrc"/>
  </resources>
  <connections/>
 </ui>

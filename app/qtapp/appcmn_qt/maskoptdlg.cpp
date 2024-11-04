@@ -4,77 +4,71 @@
 #include <QShowEvent>
 
 #include "maskoptdlg.h"
+
+#include "ui_maskoptdlg.h"
+
 //---------------------------------------------------------------------------
 MaskOptDialog::MaskOptDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::MaskOptDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
-    Mask.ena[0] = 0;
-    Mask.ena[1] = 0;
-    for (int i = 0; i < 3; i++) for (int j = 0; j < 9; j++)
-            Mask.mask[i][j] = 0.0;
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &MaskOptDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &MaskOptDialog::reject);
+    connect(ui->cBMaskEnabled1, &QCheckBox::clicked, this, &MaskOptDialog::updateEnable);
+    connect(ui->cBMaskEnabled2, &QCheckBox::clicked, this, &MaskOptDialog::updateEnable);
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(MaskEna1, SIGNAL(clicked(bool)), this, SLOT(MaskEnaClick()));
-    connect(MaskEna2, SIGNAL(clicked(bool)), this, SLOT(MaskEnaClick()));
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void MaskOptDialog::showEvent(QShowEvent *event)
+void MaskOptDialog::setSnrMask(snrmask_t mask)
 {
-    if (event->spontaneous()) return;
-
-    QDoubleSpinBox *mask[][9] = {
-        { Mask_1_1, Mask_1_2, Mask_1_3, Mask_1_4, Mask_1_5, Mask_1_6, Mask_1_7, Mask_1_8, Mask_1_9 },
-        { Mask_2_1, Mask_2_2, Mask_2_3, Mask_2_4, Mask_2_5, Mask_2_6, Mask_2_7, Mask_2_8, Mask_2_9 },
-        { Mask_3_1, Mask_3_2, Mask_3_3, Mask_3_4, Mask_3_5, Mask_3_6, Mask_3_7, Mask_3_8, Mask_3_9 }
+    QDoubleSpinBox *widgets[][9] = {
+        { ui->sBMask_1_1, ui->sBMask_1_2, ui->sBMask_1_3, ui->sBMask_1_4, ui->sBMask_1_5, ui->sBMask_1_6, ui->sBMask_1_7, ui->sBMask_1_8, ui->sBMask_1_9 },
+        { ui->sBMask_2_1, ui->sBMask_2_2, ui->sBMask_2_3, ui->sBMask_2_4, ui->sBMask_2_5, ui->sBMask_2_6, ui->sBMask_2_7, ui->sBMask_2_8, ui->sBMask_2_9 },
+        { ui->sBMask_3_1, ui->sBMask_3_2, ui->sBMask_3_3, ui->sBMask_3_4, ui->sBMask_3_5, ui->sBMask_3_6, ui->sBMask_3_7, ui->sBMask_3_8, ui->sBMask_3_9 }
     };
-
-    MaskEna1->setChecked(Mask.ena[0]);
-    MaskEna2->setChecked(Mask.ena[1]);
+    
+    ui->cBMaskEnabled1->setChecked(mask.ena[0]);
+    ui->cBMaskEnabled2->setChecked(mask.ena[1]);
 
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 9; j++) {
-            mask[i][j]->setValue(Mask.mask[i][j]);
+            widgets[i][j]->setValue(mask.mask[i][j]);
         }
 	}
-
-	UpdateEnable();
+    updateEnable();
 }
 //---------------------------------------------------------------------------
-void MaskOptDialog::BtnOkClick()
+snrmask_t MaskOptDialog::getSnrMask()
 {
-    QDoubleSpinBox *mask[][9] = {
-        { Mask_1_1, Mask_1_2, Mask_1_3, Mask_1_4, Mask_1_5, Mask_1_6, Mask_1_7, Mask_1_8, Mask_1_9 },
-        { Mask_2_1, Mask_2_2, Mask_2_3, Mask_2_4, Mask_2_5, Mask_2_6, Mask_2_7, Mask_2_8, Mask_2_9 },
-        { Mask_3_1, Mask_3_2, Mask_3_3, Mask_3_4, Mask_3_5, Mask_3_6, Mask_3_7, Mask_3_8, Mask_3_9 }
+    snrmask_t mask;
+    QDoubleSpinBox *widgets[][9] = {
+        { ui->sBMask_1_1, ui->sBMask_1_2, ui->sBMask_1_3, ui->sBMask_1_4, ui->sBMask_1_5, ui->sBMask_1_6, ui->sBMask_1_7, ui->sBMask_1_8, ui->sBMask_1_9 },
+        { ui->sBMask_2_1, ui->sBMask_2_2, ui->sBMask_2_3, ui->sBMask_2_4, ui->sBMask_2_5, ui->sBMask_2_6, ui->sBMask_2_7, ui->sBMask_2_8, ui->sBMask_2_9 },
+        { ui->sBMask_3_1, ui->sBMask_3_2, ui->sBMask_3_3, ui->sBMask_3_4, ui->sBMask_3_5, ui->sBMask_3_6, ui->sBMask_3_7, ui->sBMask_3_8, ui->sBMask_3_9 }
+    };
+    
+    mask.ena[0] = ui->cBMaskEnabled1->isChecked();
+    mask.ena[1] = ui->cBMaskEnabled2->isChecked();
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 9; j++)
+            mask.mask[i][j] = widgets[i][j]->value();
+
+    return mask;
+}
+//---------------------------------------------------------------------------
+void MaskOptDialog::updateEnable()
+{
+    QDoubleSpinBox *widgets[][9] = {
+        { ui->sBMask_1_1, ui->sBMask_1_2, ui->sBMask_1_3, ui->sBMask_1_4, ui->sBMask_1_5, ui->sBMask_1_6, ui->sBMask_1_7, ui->sBMask_1_8, ui->sBMask_1_9 },
+        { ui->sBMask_2_1, ui->sBMask_2_2, ui->sBMask_2_3, ui->sBMask_2_4, ui->sBMask_2_5, ui->sBMask_2_6, ui->sBMask_2_7, ui->sBMask_2_8, ui->sBMask_2_9 },
+        { ui->sBMask_3_1, ui->sBMask_3_2, ui->sBMask_3_3, ui->sBMask_3_4, ui->sBMask_3_5, ui->sBMask_3_6, ui->sBMask_3_7, ui->sBMask_3_8, ui->sBMask_3_9 }
 	};
 
-    Mask.ena[0] = MaskEna1->isChecked();
-    Mask.ena[1] = MaskEna2->isChecked();
-    for (int i = 0; i < 3; i++) for (int j = 0; j < 9; j++)
-            Mask.mask[i][j] = mask[i][j]->value();
-
-
-    accept();
-}
-//---------------------------------------------------------------------------
-void MaskOptDialog::MaskEnaClick()
-{
-	UpdateEnable();
-}
-//---------------------------------------------------------------------------
-void MaskOptDialog::UpdateEnable(void)
-{
-    QDoubleSpinBox *mask[][9] = {
-        { Mask_1_1, Mask_1_2, Mask_1_3, Mask_1_4, Mask_1_5, Mask_1_6, Mask_1_7, Mask_1_8, Mask_1_9 },
-        { Mask_2_1, Mask_2_2, Mask_2_3, Mask_2_4, Mask_2_5, Mask_2_6, Mask_2_7, Mask_2_8, Mask_2_9 },
-        { Mask_3_1, Mask_3_2, Mask_3_3, Mask_3_4, Mask_3_5, Mask_3_6, Mask_3_7, Mask_3_8, Mask_3_9 }
-	};
-
-    for (int i = 0; i < 3; i++) for (int j = 0; j < 9; j++)
-            mask[i][j]->setEnabled(MaskEna1->isChecked() || MaskEna2->isChecked());
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 9; j++)
+            widgets[i][j]->setEnabled(ui->cBMaskEnabled1->isChecked() || ui->cBMaskEnabled2->isChecked());
 
 }
 //---------------------------------------------------------------------------

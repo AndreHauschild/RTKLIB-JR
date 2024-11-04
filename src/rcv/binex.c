@@ -154,7 +154,7 @@ static int sisaindex(double value)
 /* decode BINEX mesaage 0x00: site metadata ----------------------------------*/
 static int decode_bnx_00(raw_t *raw, uint8_t *buff, int len)
 {
-    const static double gpst0[]={1980,1,6,0,0,0};
+    static const double gpst0[]={1980,1,6,0,0,0};
     double x[3];
     char *msg,str[MAXANT];
     uint8_t *p=buff;
@@ -168,7 +168,7 @@ static int decode_bnx_00(raw_t *raw, uint8_t *buff, int len)
     
     msg=raw->msgtype+strlen(raw->msgtype);
     if (raw->outtype) {
-        msg+=sprintf(msg," time=%s src=%d",time_str(raw->time,0),src);
+        msg+=sprintf(msg," time=%s src=%u",time_str(raw->time,0),src);
     }
     while (p-buff<len) {
         p+=getbnxi(p,&fid);
@@ -183,7 +183,7 @@ static int decode_bnx_00(raw_t *raw, uint8_t *buff, int len)
                 msg+=sprintf(msg," [%02x]%s",fid,str);
             }
             if      (fid==0x08) strcpy(raw->sta.name   ,str);
-            else if (fid==0x09) strcpy(raw->sta.marker ,str);
+            else if (fid==0x09) strcpy(raw->sta.markerno, str);
             else if (fid==0x17) strcpy(raw->sta.antdes ,str);
             else if (fid==0x18) strcpy(raw->sta.antsno ,str);
             else if (fid==0x19) strcpy(raw->sta.rectype,str);
@@ -528,7 +528,7 @@ static int decode_bnx_01_05(raw_t *raw, uint8_t *buff, int len)
     }
     if (!(sat=satno(SYS_CMP,prn))) {
         trace(2,"BINEX 0x01-05: satellite error prn=%d\n",prn);
-        return 0;
+        return -1;
     }
     eph.sat=sat;
     eph.A=SQR(sqrtA);
@@ -599,7 +599,7 @@ static int decode_bnx_01_06(raw_t *raw, uint8_t *buff, int len)
     }
     if (!(sat=satno(SYS_QZS,prn))) {
         trace(2,"BINEX 0x01-06: satellite error prn=%d\n",prn);
-        return 0;
+        return -1;
     }
     eph.sat=sat;
     eph.A=SQR(sqrtA);
@@ -662,7 +662,7 @@ static int decode_bnx_01_07(raw_t *raw, uint8_t *buff, int len)
     }
     if (!(sat=satno(SYS_IRN,prn))) {
         trace(2,"BINEX 0x01-07: satellite error prn=%d\n",prn);
-        return 0;
+        return -1;
     }
     eph.sat=sat;
     eph.A=SQR(sqrtA);
@@ -1080,7 +1080,7 @@ static int decode_bnx_7f_05(raw_t *raw, uint8_t *buff, int len)
 /* decode BINEX mesaage 0x7f: GNSS data prototyping --------------------------*/
 static int decode_bnx_7f(raw_t *raw, uint8_t *buff, int len)
 {
-    const static double gpst0[]={1980,1,6,0,0,0};
+    static const double gpst0[]={1980,1,6,0,0,0};
     char *msg;
     uint8_t *p=buff;
     uint32_t srec,min,msec;

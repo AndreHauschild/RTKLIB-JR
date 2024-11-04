@@ -47,7 +47,6 @@
 #include "rtklib.h"
 
 #define NOUTFILE        9       /* number of output files */
-#define NSATSYS         7       /* number of satellite systems */
 #define TSTARTMARGIN    60.0    /* time margin for file name replacement */
 
 #define EVENT_STARTMOVE 2       /* rinex event start moving antenna */
@@ -89,8 +88,8 @@ typedef struct {                /* stream file type */
 } strfile_t;
 
 /* global variables ----------------------------------------------------------*/
-static const int navsys[]={     /* system codes */
-    SYS_GPS,SYS_GLO,SYS_GAL,SYS_QZS,SYS_SBS,SYS_CMP,SYS_IRN,0
+static const int navsys[RNX_NUMSYS]={     /* system codes */
+    SYS_GPS,SYS_GLO,SYS_GAL,SYS_QZS,SYS_SBS,SYS_CMP,SYS_IRN
 };
 static const char vercode[][MAXCODE]={ /* supported obs-type by RINEX version */
   /* 0........1.........2.........3.........4.........5.........6........          */
@@ -336,28 +335,20 @@ static void close_strfile(strfile_t *str)
 static void setopt_file(int format, char **paths, int n, const int *mask,
                         rnxopt_t *opt)
 {
-    int i,j;
-
-    for (i=0;i<MAXCOMMENT;i++) {
-        if (!*opt->comment[i]) break;
-    }
-    if (i<MAXCOMMENT) {
-        sprintf(opt->comment[i++],"format: %.55s",formatstrs[format]);
-    }
-    for (j=0;j<n&&i<MAXCOMMENT;j++) {
+    rnxcomment(opt,"format: %s",formatstrs[format]);
+    if (*opt->rcvopt)
+        rnxcomment(opt, "options: %s", opt->rcvopt);
+    for (int j=0; j<n; j++) {
         if (!mask[j]) continue;
-        sprintf(opt->comment[i++],"log: %.58s",paths[j]);
-    }
-    if (*opt->rcvopt) {
-        sprintf(opt->comment[i++], "options: %.54s", opt->rcvopt);
+        rnxcomment(opt,"log: %s",paths[j]);
     }
 }
 /* unset RINEX options comments ----------------------------------------------*/
 static void unsetopt_file(rnxopt_t *opt)
 {
-    int i,brk=0;
+    int brk=0;
 
-    for (i=MAXCOMMENT-1;i>=0&&!brk;i--) {
+    for (int i=MAXCOMMENT-1;i>=0&&!brk;i--) {
         if (!*opt->comment[i]) continue;
         if (!strncmp(opt->comment[i],"format: ",8)) brk=1;
         *opt->comment[i]='\0';
@@ -441,7 +432,7 @@ static void setopt_phshift(rnxopt_t *opt)
     uint8_t code;
     int i,j;
     
-    for (i=0;i<NSATSYS;i++) for (j=0;j<opt->nobs[i];j++) {
+    for (i=0;i<RNX_NUMSYS;i++) for (j=0;j<opt->nobs[i];j++) {
         if (opt->tobs[i][j][0]!='L') continue;
         code=obs2code(opt->tobs[i][j]+1);
 
@@ -494,24 +485,19 @@ static void setopt_sta_list(const strfile_t *str, rnxopt_t *opt)
 {
     const stas_t *p;
     char s1[32],s2[32];
-    int i,n=0;
+    int n=0;
 
     for (p=str->stas;p;p=p->next) {
         n++;
     }
     if (n<=1) return;
 
-    for (i=0;i<MAXCOMMENT;i++) {
-        if (!*opt->comment[i]) break;
-    }
-    sprintf(opt->comment[i++],"%5s  %22s  %22s","STAID","TIME OF FIRST OBS",
-            "TIME OF LAST OBS");
+    rnxcomment(opt,"%5s  %22s  %22s", "STAID", "TIME OF FIRST OBS", "TIME OF LAST OBS");
     
     for (p=str->stas,n--;p&&n>=0;p=p->next,n--) {
-        if (i+n>=MAXCOMMENT) continue;
         time2str(p->ts,s1,2);
         time2str(p->te,s2,2);
-        sprintf(opt->comment[i+n]," %04d  %s  %s",p->staid,s1,s2);
+        rnxcomment(opt," %04d  %s  %s",p->staid,s1,s2);
     }
 }
 /* set station info in RINEX options -----------------------------------------*/
@@ -535,12 +521,18 @@ static void setopt_sta(const strfile_t *str, rnxopt_t *opt)
     else {
         sta=str->sta;
     }
-    /* marker name and number */
-    if (!*opt->marker&&!*opt->markerno) {
-        strcpy(opt->marker  ,sta->name  );
-        strcpy(opt->markerno,sta->marker);
+    /* Marker name, number and type */
+    if (!*opt->marker && !*opt->markerno && !*opt->markertype) {
+        strcpy(opt->marker, sta->name);
+        strcpy(opt->markerno, sta->markerno);
+        strcpy(opt->markertype, sta->markertype);
     }
-    /* receiver and antenna info */
+    /* Observer / agency */
+    if (!*opt->name[0] && !*opt->name[1]) {
+        strcpy(opt->name[0], sta->observer);
+        strcpy(opt->name[1], sta->agency);
+    }
+    /* Receiver and antenna info */
     if (!*opt->rec[0]&&!*opt->rec[1]&&!*opt->rec[2]) {
         strcpy(opt->rec[0],sta->recsno);
         strcpy(opt->rec[1],sta->rectype);
@@ -617,7 +609,7 @@ static void dump_stas(const strfile_t *str)
 
     trace(2,"# STATION LIST\n");
     trace(2,"# %17s %19s %5s %6s %16s %16s %12s %13s %9s %2s %6s %6s %6s\n",
-          "TIME","STAID","MARKER","ANTENNA","RECEIVER","LATITUDE","LONGITUDE",
+          "START","END","STAID","MARKER","ANTENNA","RECEIVER","LATITUDE","LONGITUDE",
           "HIGHT","DT","DEL1","DEL2","DEL3");
     
     for (p=str->stas;p;p=p->next) {
@@ -737,10 +729,10 @@ static int scan_file(char **files, int nf, rnxopt_t *opt, strfile_t *str,
     eph_t  eph0 ={0,-1,-1};
     geph_t geph0={0,-1};
     seph_t seph0={0};
-    uint8_t codes[NSATSYS][33]={{0}};
-    uint8_t types[NSATSYS][33]={{0}};
+    uint8_t codes[RNX_NUMSYS][33]={{0}};
+    uint8_t types[RNX_NUMSYS][33]={{0}};
     char msg[128];
-    int i,j,k,l,m,c=0,type,sys,prn,abort=0,n[NSATSYS]={0};
+    int i,j,k,l,m,c=0,type,sys,prn,abort=0,n[RNX_NUMSYS]={0};
     
     trace(3,"scan_file: nf=%d\n",nf);
     
@@ -758,18 +750,20 @@ static int scan_file(char **files, int nf, rnxopt_t *opt, strfile_t *str,
                 for (i=0;i<str->obs->n;i++) {
                     sys=satsys(str->obs->data[i].sat,NULL);
                     if (!(sys&opt->navsys)) continue;
-                    for (l=0;navsys[l];l++) if (navsys[l]==sys) break;
-                    if (!navsys[l]) continue;
+                    /* Mapping from SYS_ to RNX_SYS_ */
+                    for (l=0;l<RNX_NUMSYS;l++) if (navsys[l]==sys) break;
+                    if (l>=RNX_NUMSYS) continue;
                     
                     /* update obs-types */
                     for (j=0;j<NFREQ+NEXOBS;j++) {
-                        if (!str->obs->data[i].code[j]) continue;
+                        int c=str->obs->data[i].code[j];
+                        if (c==CODE_NONE) continue;
                         
                         for (k=0;k<n[l];k++) {
-                            if (codes[l][k]==str->obs->data[i].code[j]) break;
+                            if (codes[l][k]==c) break;
                         }
                         if (k>=n[l]&&n[l]<32) {
-                            codes[l][n[l]++]=str->obs->data[i].code[j];
+                            codes[l][n[l]++]=c;
                         }
                         if (k<n[l]) {
                             if (str->obs->data[i].P[j]!=0.0) types[l][k]|=1;
@@ -805,12 +799,12 @@ static int scan_file(char **files, int nf, rnxopt_t *opt, strfile_t *str,
         trace(2,"aborted in scan\n");
         return 0;
     }
-    for (i=0;i<NSATSYS;i++) for (j=0;j<n[i];j++) {
+    for (i=0;i<RNX_NUMSYS;i++) for (j=0;j<n[i];j++) {
         trace(2,"scan_file: sys=%d code=%s type=%d\n",i,code2obs(codes[i][j]),
               types[i][j]);
     }
     /* sort and set obs-types in RINEX options */
-    for (i=0;i<NSATSYS;i++) {
+    for (i=0;i<RNX_NUMSYS;i++) {
         sort_obstype(codes[i],types[i],n[i],i);
         setopt_obstype(codes[i],types[i],i,opt);
         
@@ -1002,6 +996,12 @@ static int screent_ttol(gtime_t time, gtime_t ts, gtime_t te, double tint,
            (ts.time==0||timediff(time,ts)>=-ttol)&&
            (te.time==0||timediff(time,te)<  ttol);
 }
+/* Order observation data by the RTKLib satellite index */
+static int cmpobs(const void *p1, const void *p2)
+{
+    obsd_t *obs1 = (obsd_t *)p1, *obs2 = (obsd_t *)p2;
+    return obs1->sat > obs2->sat;
+}
 /* convert observation data --------------------------------------------------*/
 static void convobs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
                     gtime_t *tend, int *staid)
@@ -1015,8 +1015,8 @@ static void convobs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
     
     time=str->obs->data[0].time;
     
-    /* avoid duplicated data by multiple files handover */
-    if (tend->time&&timediff(time,*tend)<opt->ttol) return;
+    /* Avoid duplicated data by multiple files handover */
+    if (tend->time&&timediff(time,*tend)<-opt->ttol) return;
     *tend=time;
 
     /* save cycle slips */
@@ -1044,6 +1044,10 @@ static void convobs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
     /* resolve half-cycle ambiguity */
     if (opt->halfcyc) {
         resolve_halfc(str,str->obs->data,str->obs->n);
+    }
+    /* Sort observation data by the RTKLib satellite index */
+    if (opt->sortsats) {
+        qsort(str->obs->data, str->obs->n, sizeof(obsd_t), cmpobs);
     }
     /* output RINEX observation data */
     outrnxobsb(ofp[0],opt,str->obs->data,str->obs->n,str->obs->flag);
@@ -1165,8 +1169,8 @@ static void convsbs(FILE **ofp, rnxopt_t *opt, strfile_t *str, int *n,
 
     if (!screent(time,opt->ts,opt->te,0.0)) return;
     
-    /* avoid duplicated data by multiple files handover */
-    if (tend->time&&timediff(time,*tend)<opt->ttol) return;
+    /* Avoid duplicated data by multiple files handover */
+    if (tend->time&&timediff(time,*tend)<-opt->ttol) return;
     *tend=time;
 
     prn=str->raw.sbsmsg.prn;

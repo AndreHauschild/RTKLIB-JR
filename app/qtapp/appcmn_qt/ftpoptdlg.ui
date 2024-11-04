@@ -6,456 +6,408 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>484</width>
-    <height>245</height>
+    <width>535</width>
+    <height>276</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>FTP Options</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="6" column="5">
-    <widget class="QPushButton" name="BtnCancel">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;Cancel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="4" colspan="2">
-    <widget class="QLineEdit" name="User">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>anonymous</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="Label3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Download Offset</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="1">
-    <widget class="QComboBox" name="Offset">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-     <item>
-      <property name="text">
-       <string>0</string>
+   <item row="0" column="0">
+    <widget class="QWidget" name="wgAddress" native="true">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>1</string>
+      <property name="topMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2</string>
+      <property name="rightMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>3</string>
+      <property name="bottomMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>6</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>9</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>12</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>15</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>18</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>21</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string/>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string/>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="3" column="2">
-    <widget class="QLabel" name="Label7">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>H</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="3">
-    <widget class="QLabel" name="LabelPasswd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Password</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="4" colspan="2">
-    <widget class="QLineEdit" name="Passwd">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="Label8">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Time Offset in Path</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QComboBox" name="PathOffset">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-     <item>
-      <property name="text">
-       <string>0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>-1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>-2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>-3</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>-6</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>-9</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>-12</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>-15</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>-18</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>-21</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string/>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="4" column="2">
-    <widget class="QLabel" name="Label9">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>H</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QLabel" name="Label4">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Retry Interval</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="3" colspan="2">
-    <widget class="QPushButton" name="BtnOk">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;OK</string>
-     </property>
-     <property name="autoDefault">
-      <bool>true</bool>
-     </property>
-     <property name="default">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="3">
-    <widget class="QLabel" name="LabelUser">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>User</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0" colspan="3">
-    <widget class="QLabel" name="Label2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Download Address (address/file-path)</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="BtnKey">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>?</string>
-     </property>
-     <property name="flat">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="6">
-    <widget class="QComboBox" name="Addr">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
-     </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="Label2">
+        <property name="text">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Download &amp;amp;Address (&lt;span style=&quot; font-style:italic;&quot;&gt;address/file-path&lt;/span&gt;)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="buddy">
+         <cstring>cBAddress</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QPushButton" name="btnKey">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="toolTip">
+         <string>Show placeholder keys.</string>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/key</normaloff>:/buttons/key</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="2">
+       <widget class="QComboBox" name="cBAddress">
+        <property name="toolTip">
+         <string>Download address. For placeholder tokens see info botton above.</string>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <property name="placeholderText">
+         <string>user:password@host:port</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item row="2" column="0">
-    <widget class="QLabel" name="Label1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Download Interval</string>
-     </property>
+    <widget class="QWidget" name="wgParameter" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="Label1">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Download &amp;Interval</string>
+        </property>
+        <property name="buddy">
+         <cstring>cBInterval</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="lbUser">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>&amp;User</string>
+        </property>
+        <property name="buddy">
+         <cstring>lEUser</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="cBPathOffset">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Optionally specifying an time offset for the keys used in the path above.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <item>
+         <property name="text">
+          <string>0 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-1 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-2 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-3 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-6 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-9 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-12 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-15 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-18 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>-21 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string/>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="Label8">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Time Offset in &amp;Path</string>
+        </property>
+        <property name="buddy">
+         <cstring>cBPathOffset</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="Label3">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Download &amp;Offset</string>
+        </property>
+        <property name="buddy">
+         <cstring>cBOffset</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="cBOffset">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time offset for data download to be used in combination with the download interval.&lt;/p&gt;&lt;p&gt;If the download interval is e.g. 6 h and the offset 2 h, the download will start at 2:00, 8:00,14:00, and 20:00 UTC.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <item>
+         <property name="text">
+          <string>0 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>6 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>9 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>12 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>15 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>18 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>21 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string/>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string/>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QSpinBox" name="sBRetryInterval">
+        <property name="toolTip">
+         <string>Time between retries if download fails.</string>
+        </property>
+        <property name="suffix">
+         <string> s</string>
+        </property>
+        <property name="maximum">
+         <number>10000</number>
+        </property>
+        <property name="value">
+         <number>300</number>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="Label4">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>&amp;Retry Interval</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBRetryInterval</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="cBInterval">
+        <property name="toolTip">
+         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Time interval to download new data. &lt;/p&gt;&lt;p&gt;Useful in combination with certain keys (e.g. %hb) in the download path.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+        </property>
+        <property name="editable">
+         <bool>true</bool>
+        </property>
+        <item>
+         <property name="text">
+          <string>0 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>1 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>2 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>3 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>6 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>12 h</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>24 h</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLineEdit" name="lEUser">
+        <property name="toolTip">
+         <string>Username for login to the server.</string>
+        </property>
+        <property name="text">
+         <string>anonymous</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QLabel" name="lbPassword">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>&amp;Password</string>
+        </property>
+        <property name="buddy">
+         <cstring>lEPassword</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QLineEdit" name="lEPassword">
+        <property name="toolTip">
+         <string>Password for the login to the server.</string>
+        </property>
+        <property name="echoMode">
+         <enum>QLineEdit::EchoMode::Password</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="2" column="1">
-    <widget class="QComboBox" name="Interval">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="editable">
-      <bool>true</bool>
-     </property>
-     <item>
-      <property name="text">
-       <string>0</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>3</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>6</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>12</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>24</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QLabel" name="Label6">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>H</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="QSpinBox" name="RetryInterval">
-     <property name="suffix">
-      <string> s</string>
-     </property>
-     <property name="maximum">
-      <number>10000</number>
-     </property>
-     <property name="value">
-      <number>300</number>
+   <item row="9" column="0">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>BtnKey</tabstop>
-  <tabstop>Addr</tabstop>
-  <tabstop>Interval</tabstop>
-  <tabstop>User</tabstop>
-  <tabstop>Offset</tabstop>
-  <tabstop>Passwd</tabstop>
-  <tabstop>PathOffset</tabstop>
-  <tabstop>RetryInterval</tabstop>
-  <tabstop>BtnOk</tabstop>
-  <tabstop>BtnCancel</tabstop>
+  <tabstop>btnKey</tabstop>
+  <tabstop>cBAddress</tabstop>
+  <tabstop>cBInterval</tabstop>
+  <tabstop>cBOffset</tabstop>
+  <tabstop>cBPathOffset</tabstop>
+  <tabstop>sBRetryInterval</tabstop>
+  <tabstop>lEUser</tabstop>
+  <tabstop>lEPassword</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../icon/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

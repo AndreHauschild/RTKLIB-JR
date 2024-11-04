@@ -6,48 +6,51 @@
 #include <QSystemTrayIcon>
 #include <QMenu>
 
-#include "ui_launchmain.h"
+namespace Ui {
+class MainForm;
+}
 
 class QCloseEvent;
 class QCloseEvent;
-class LaunchOptDlg;
+class LaunchOptDialog;
 
 //---------------------------------------------------------------------------
-class MainForm : public QDialog, private Ui::MainForm
+class MainForm : public QDialog
 {
     Q_OBJECT
+
+public:
+    explicit MainForm(QWidget *parent = 0);
 
 protected:
     void showEvent(QShowEvent *);
     void closeEvent(QCloseEvent *);
 
-public slots:
-    void BtnPlotClick();
-    void BtnConvClick();
-    void BtnStrClick();
-    void BtnPostClick();
-    void BtnNtripClick();
-    void BtnNaviClick();
-    void BtnGetClick();
-    void BtnVideoClick();
-    void BtnTrayClick();
-    void BtnOptionClick();
-    void TrayIconActivated(QSystemTrayIcon::ActivationReason);
-    void MenuExpandClick();
+    int option, minimize;
+
+protected slots:
+    void launchRTKPlot();
+    void launchRTKConv();
+    void launchStrSvr();
+    void launchRTKPost();
+    void launchSrcTblBrows();
+    void launchRTKNavi();
+    void launchRTKGet();
+    void moveToTray();
+    void showOptions();
+    void restoreFromTaskTray(QSystemTrayIcon::ActivationReason);
+    void expandWindow();
 
 private:
-    QString IniFile;
-    QSystemTrayIcon TrayIcon;
-    QMenu *trayMenu;
-    LaunchOptDlg *launchOptDlg;
-    int Tray;
-	
-    int ExecCmd(const QString &cmd, const QStringList &opt);
-    void UpdatePanel();
+    int execCommand(const QString &cmd, const QStringList &opt);
+    void updatePanel();
 
-public:
-    int Option, Minimize;
-    explicit MainForm(QWidget *parent = 0);
+    QString iniFile;
+    QSystemTrayIcon trayIcon;
+    QMenu *trayMenu;
+    LaunchOptDialog *launchOptDlg;
+    bool tray;
+    Ui::MainForm *ui;
 };
 //---------------------------------------------------------------------------
 #endif

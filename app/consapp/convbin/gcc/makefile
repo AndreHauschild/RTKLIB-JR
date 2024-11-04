@@ -10,15 +10,14 @@ INCLUDE= -I$(SRC)
 OPTIONS= -DTRACE -DENAGLO -DENAQZS -DENAGAL -DENACMP -DENAIRN -DNFREQ=3 -DNEXOBS=3
 
 CFLAGS = -std=c99 -O3 -pedantic -Wall -Wno-unused-but-set-variable $(INCLUDE) $(OPTIONS) -g
-
-LDLIBS = -lm -lrt
+LDLIBS = -lm
 
 all  : convbin
 
 convbin    : convbin.o rtkcmn.o trace.o rinex.o sbas.o preceph.o rcvraw.o convrnx.o
 convbin    : rtcm.o rtcm2.o rtcm3.o rtcm3e.o pntpos.o ephemeris.o ionex.o
 convbin    : novatel.o ublox.o crescent.o skytraq.o javad.o nvs.o
-convbin    : binex.o rt17.o septentrio.o swiftnav.o
+convbin    : binex.o rt17.o septentrio.o swiftnav.o unicore.o
 
 convbin.o  : ../convbin.c
 	$(CC) -c $(CFLAGS) ../convbin.c
@@ -70,8 +69,10 @@ rt17.o     : $(SRC)/rcv/rt17.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/rt17.c
 septentrio.o: $(SRC)/rcv/septentrio.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/septentrio.c
-swiftnav.o: $(SRC)/rcv/septentrio.c
+swiftnav.o: $(SRC)/rcv/swiftnav.c
 	$(CC) -c $(CFLAGS) $(SRC)/rcv/swiftnav.c
+unicore.o: $(SRC)/rcv/unicore.c
+	$(CC) -c $(CFLAGS) $(SRC)/rcv/unicore.c
 
 convbin.o  : $(SRC)/rtklib.h
 rtkcmn.o   : $(SRC)/rtklib.h
@@ -99,6 +100,7 @@ binex.o    : $(SRC)/rtklib.h
 rt17.o     : $(SRC)/rtklib.h
 septentrio.o: $(SRC)/rtklib.h
 swiftnav.o : $(SRC)/rtklib.h
+unciore.o  : $(SRC)/rtklib.h
 
 DATDIR = ../../../test/data/rcvraw
 
@@ -148,5 +150,3 @@ test18:
 test21:
 	stty raw < /dev/ttyACM0
 	./convbin -r ubx -o ubx.obs -n ubx.nav -s ubx.sbs -h ubx.hnav /dev/ttyACM0
-
-

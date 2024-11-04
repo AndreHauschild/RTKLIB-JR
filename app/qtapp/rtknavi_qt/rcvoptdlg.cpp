@@ -1,30 +1,28 @@
 //---------------------------------------------------------------------------
-// ported to Qt5 by Jens Reimann
+// ported to Qt by Jens Reimann
+#include <QShowEvent>
 #include "rcvoptdlg.h"
 
-#include <QShowEvent>
+#include <ui_rcvoptdlg.h>
+
 
 //---------------------------------------------------------------------------
 RcvOptDialog::RcvOptDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::RcvOptDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &RcvOptDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &RcvOptDialog::reject);
 }
 //---------------------------------------------------------------------------
-void RcvOptDialog::showEvent(QShowEvent *event)
+void RcvOptDialog::setOptions(const QString &options)
 {
-    if (event->spontaneous()) return;
-
-    OptionE->setText(Option);
+    ui->lEOption->setText(options);
 }
 //---------------------------------------------------------------------------
-void RcvOptDialog::BtnOkClick()
+QString RcvOptDialog::getOptions()
 {
-    Option = OptionE->text();
-
-    accept();
+    return ui->lEOption->text();
 }
 //---------------------------------------------------------------------------

@@ -1,1 +1,1 @@
-IDI_ICON1               ICON    DISCARDABLE     "rtkpost_Icon.ico"
+IDI_ICON1               ICON    DISCARDABLE     "../icon/rtkpost_Icon.ico"

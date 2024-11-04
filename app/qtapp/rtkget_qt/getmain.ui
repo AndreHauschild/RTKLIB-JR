@@ -11,23 +11,11 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>RTKGET</string>
-  </property>
-  <property name="toolTip">
-   <string/>
+   <string>RTKGet</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" name="Panel2" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
+    <widget class="QWidget" name="stationPanel" native="true">
      <property name="text" stdset="0">
       <string/>
      </property>
@@ -44,84 +32,104 @@
       <property name="bottomMargin">
        <number>0</number>
       </property>
-      <item row="1" column="0" rowspan="9" colspan="3">
-       <widget class="QListWidget" name="DataList">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
+      <item row="1" column="0" rowspan="6" colspan="3">
+       <widget class="QListWidget" name="dataListWidget">
         <property name="selectionMode">
          <enum>QAbstractItemView::MultiSelection</enum>
         </property>
        </widget>
       </item>
-      <item row="4" column="3">
-       <widget class="QCheckBox" name="UnZip">
+      <item row="0" column="0">
+       <widget class="QComboBox" name="cBDataType">
         <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string> Unzip/Uncompact Files</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
+         <string>Select data provider</string>
         </property>
        </widget>
       </item>
-      <item row="9" column="3" colspan="6">
-       <widget class="QComboBox" name="Dir">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+      <item row="6" column="3" colspan="4">
+       <widget class="QComboBox" name="cBDirectory">
         <property name="toolTip">
-         <string/>
+         <string>Download Directory</string>
         </property>
         <property name="editable">
          <bool>true</bool>
         </property>
        </widget>
       </item>
-      <item row="0" column="7">
-       <widget class="QLabel" name="LabelSta">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+      <item row="1" column="5" rowspan="5" colspan="3">
+       <widget class="QListWidget" name="stationListWidget">
         <property name="toolTip">
-         <string/>
+         <string>Station List</string>
         </property>
-        <property name="text">
-         <string>Stations (0)</string>
+        <property name="selectionMode">
+         <enum>QAbstractItemView::MultiSelection</enum>
         </property>
        </widget>
       </item>
-      <item row="9" column="9" colspan="2">
-       <widget class="QPushButton" name="BtnDir">
-        <property name="enabled">
-         <bool>true</bool>
+      <item row="5" column="4">
+       <widget class="QPushButton" name="btnKeywords">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="toolTip">
+         <string>Show placeholders available to specify directory</string>
+        </property>
+        <property name="text">
          <string/>
+        </property>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/key</normaloff>:/buttons/key</iconset>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="7">
+       <widget class="QPushButton" name="btnStations">
+        <property name="toolTip">
+         <string>Load Station List</string>
         </property>
         <property name="text">
          <string>...</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
+       </widget>
+      </item>
+      <item row="5" column="3">
+       <widget class="QCheckBox" name="cBLocalDirectory">
+        <property name="toolTip">
+         <string>Specify local download directory</string>
+        </property>
+        <property name="text">
+         <string> Local Directory</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="lbTimeSpan">
+        <property name="text">
+         <string>Time Span (GPST)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="6">
+       <widget class="QPushButton" name="btnAll">
+        <property name="toolTip">
+         <string>Select/Clear All</string>
+        </property>
+        <property name="text">
+         <string>&amp;All</string>
         </property>
        </widget>
       </item>
       <item row="2" column="3" colspan="2">
-       <widget class="QWidget" name="Panel4" native="true">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
+       <widget class="QWidget" name="panelFTP" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="text" stdset="0">
          <string/>
@@ -140,38 +148,26 @@
           <number>0</number>
          </property>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="FtpPasswd">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLineEdit" name="lEFtpPasswd">
            <property name="toolTip">
-            <string/>
-           </property>
-           <property name="text">
-            <string>user@</string>
+            <string>Password</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <widget class="QCheckBox" name="HidePasswd">
+          <widget class="QCheckBox" name="cBHidePasswd">
            <property name="toolTip">
-            <string/>
+            <string>Show password</string>
            </property>
            <property name="text">
             <string>Password</string>
            </property>
-           <property name="checked">
-            <bool>false</bool>
-           </property>
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QLineEdit" name="FtpLogin">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QLineEdit" name="lEFtpLogin">
            <property name="toolTip">
-            <string/>
+            <string>User name</string>
            </property>
            <property name="text">
             <string>anonymous</string>
@@ -179,147 +175,46 @@
           </widget>
          </item>
          <item row="0" column="0">
-          <widget class="QLabel" name="Label4">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
+          <widget class="QLabel" name="lblUser">
            <property name="text">
             <string>FTP Login</string>
+           </property>
+           <property name="buddy">
+            <cstring>lEFtpLogin</cstring>
            </property>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
-      <item row="0" column="9">
-       <widget class="QPushButton" name="BtnStas">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+      <item row="6" column="7">
+       <widget class="QPushButton" name="btnDir">
         <property name="toolTip">
-         <string>Load Station List</string>
+         <string>Select local download directory</string>
         </property>
-        <property name="text">
-         <string>...</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="4">
-       <widget class="QPushButton" name="BtnKeyword">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>?</string>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="1" colspan="2">
-       <widget class="QComboBox" name="SubType">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-       </widget>
-      </item>
-      <item row="10" column="0" colspan="2">
-       <widget class="QLabel" name="Label6">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Local Directory</string>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/folder</normaloff>:/buttons/folder</iconset>
         </property>
        </widget>
       </item>
       <item row="3" column="3">
-       <widget class="QCheckBox" name="SkipExist">
+       <widget class="QCheckBox" name="cBSkipExist">
         <property name="toolTip">
-         <string/>
+         <string>Don't download file if they already exist</string>
         </property>
         <property name="text">
          <string> Skip Existing Files</string>
         </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="3">
-       <widget class="QLabel" name="Label8">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>Time Span (GPST)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="3">
-       <widget class="QCheckBox" name="LocalDir">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string> Local Directory</string>
-        </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="8">
-       <widget class="QPushButton" name="BtnAll">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string>Select/Clear All</string>
-        </property>
-        <property name="text">
-         <string>A</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item row="1" column="3" colspan="2">
-       <widget class="QWidget" name="Panel1" native="true">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="layoutDirection">
-         <enum>Qt::LeftToRight</enum>
+       <widget class="QWidget" name="timePanel" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
         </property>
         <property name="text" stdset="0">
          <string/>
@@ -338,38 +233,29 @@
           <number>0</number>
          </property>
          <item row="1" column="0">
-          <widget class="QLabel" name="Label1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
+          <widget class="QLabel" name="lbStart">
            <property name="text">
             <string>Start</string>
+           </property>
+           <property name="buddy">
+            <cstring>dateTimeStart</cstring>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QLabel" name="Label3">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
+          <widget class="QLabel" name="lbEnd">
            <property name="text">
             <string>End</string>
+           </property>
+           <property name="buddy">
+            <cstring>dateTimeStop</cstring>
            </property>
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="QComboBox" name="TimeInt">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QComboBox" name="cBTimeInterval">
            <property name="toolTip">
-            <string/>
+            <string>Download time interval</string>
            </property>
            <property name="currentIndex">
             <number>7</number>
@@ -422,77 +308,71 @@
           </widget>
          </item>
          <item row="2" column="5">
-          <widget class="QPushButton" name="BtnTime2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnTimeStop">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="toolTip">
-            <string/>
+            <string>Show details of stop time</string>
            </property>
            <property name="text">
             <string>?</string>
-           </property>
-           <property name="flat">
-            <bool>true</bool>
            </property>
           </widget>
          </item>
          <item row="3" column="2" colspan="2">
-          <widget class="QLabel" name="Label2">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
+          <widget class="QLabel" name="lbNo">
            <property name="text">
             <string>No.</string>
+           </property>
+           <property name="buddy">
+            <cstring>lENumber</cstring>
            </property>
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="Label7">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
-           <property name="toolTip">
-            <string/>
-           </property>
+          <widget class="QLabel" name="lbInterval">
            <property name="text">
-            <string>Intv</string>
+            <string>Interval</string>
+           </property>
+           <property name="buddy">
+            <cstring>cBTimeInterval</cstring>
            </property>
           </widget>
          </item>
          <item row="1" column="5">
-          <widget class="QPushButton" name="BtnTime1">
-           <property name="enabled">
-            <bool>true</bool>
-           </property>
+          <widget class="QPushButton" name="btnTimeStart">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
              <horstretch>0</horstretch>
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="maximumSize">
+            <size>
+             <width>30</width>
+             <height>16777215</height>
+            </size>
+           </property>
            <property name="toolTip">
-            <string/>
+            <string>Show details of start time</string>
            </property>
            <property name="text">
             <string>?</string>
            </property>
-           <property name="flat">
-            <bool>true</bool>
-           </property>
           </widget>
          </item>
          <item row="1" column="1" colspan="4">
-          <widget class="QDateTimeEdit" name="dateTime1">
+          <widget class="QDateTimeEdit" name="dateTimeStart">
            <property name="calendarPopup">
             <bool>true</bool>
            </property>
@@ -502,7 +382,7 @@
           </widget>
          </item>
          <item row="2" column="1" colspan="4">
-          <widget class="QDateTimeEdit" name="dateTime2">
+          <widget class="QDateTimeEdit" name="dateTimeStop">
            <property name="calendarPopup">
             <bool>true</bool>
            </property>
@@ -512,83 +392,58 @@
           </widget>
          </item>
          <item row="3" column="4" colspan="2">
-          <widget class="QSpinBox" name="Number"/>
+          <widget class="QLineEdit" name="lENumber">
+           <property name="toolTip">
+            <string>Sequence number or interval (e.g. &quot;2&quot; or &quot;1-5&quot;)</string>
+           </property>
+           <property name="text">
+            <string>0</string>
+           </property>
+          </widget>
          </item>
         </layout>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QComboBox" name="DataType">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+      <item row="4" column="3">
+       <widget class="QCheckBox" name="cBUnzip">
         <property name="toolTip">
-         <string/>
+         <string>Keep uncompressed files</string>
+        </property>
+        <property name="text">
+         <string> Unzip/Uncompact Files</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="7" rowspan="8" colspan="3">
-       <widget class="QListWidget" name="StaList">
-        <property name="enabled">
-         <bool>true</bool>
+      <item row="0" column="5">
+       <widget class="QLabel" name="lbStation">
+        <property name="text">
+         <string>Stations (0)</string>
         </property>
-        <property name="toolTip">
-         <string>Station List</string>
-        </property>
-        <property name="selectionMode">
-         <enum>QAbstractItemView::MultiSelection</enum>
+        <property name="buddy">
+         <cstring>stationListWidget</cstring>
         </property>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="Msg1" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text" stdset="0">
-      <string/>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QLabel" name="MsgLabel1">
-        <property name="enabled">
-         <bool>true</bool>
+      <item row="0" column="1" colspan="2">
+       <widget class="QComboBox" name="cBSubType">
+        <property name="toolTip">
+         <string>Select type of data</string>
         </property>
+       </widget>
+      </item>
+      <item row="7" column="0" colspan="8">
+       <widget class="QLabel" name="lbMessage1">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>16777215</height>
+         </size>
         </property>
        </widget>
       </item>
@@ -596,21 +451,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Msg2" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="msg2" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -629,23 +475,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLabel" name="MsgLabel2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <widget class="QLabel" name="lbMessage2"/>
       </item>
       <item>
        <widget class="QLabel" name="lbImage">
@@ -655,27 +485,18 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="text">
-         <string/>
-        </property>
        </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Msg3" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="msg3" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -694,51 +515,32 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnHelp">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnAbout">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="maximumSize">
+         <size>
+          <width>30</width>
+          <height>16777215</height>
+         </size>
+        </property>
         <property name="toolTip">
-         <string/>
+         <string>About RTKGet</string>
         </property>
         <property name="text">
          <string>?</string>
         </property>
-        <property name="flat">
-         <bool>true</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QLabel" name="MsgLabel3">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
-        </property>
-       </widget>
+       <widget class="QLabel" name="lbMessage3"/>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnTray">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnTray">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -746,17 +548,11 @@
          </sizepolicy>
         </property>
         <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string/>
+         <string>Minimize window to tray</string>
         </property>
         <property name="icon">
-         <iconset resource="rtkget_qt.qrc">
-          <normaloff>:/buttons/ttray.bmp</normaloff>:/buttons/ttray.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/tray</normaloff>:/buttons/tray</iconset>
         </property>
        </widget>
       </item>
@@ -764,21 +560,12 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Panel3" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="panelButtons" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -797,98 +584,60 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnFile">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnFile">
         <property name="toolTip">
-         <string/>
+         <string>Show dowloaded files</string>
         </property>
         <property name="text">
          <string>&amp;Files...</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnLog">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnLog">
         <property name="toolTip">
-         <string/>
+         <string>Show log file</string>
         </property>
         <property name="text">
          <string>&amp;Log...</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOpts">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOptions">
         <property name="toolTip">
-         <string/>
+         <string>Show Option Dialog</string>
         </property>
         <property name="text">
          <string>&amp;Options...</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/tool</normaloff>:/buttons/tool</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnTest">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnTest">
         <property name="toolTip">
-         <string/>
+         <string>Test download</string>
         </property>
         <property name="text">
          <string>&amp;Test...</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnDownload">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
+       <widget class="QPushButton" name="btnDownload">
         <property name="text">
          <string>&amp;Download</string>
         </property>
-        <property name="flat">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnExit">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
+       <widget class="QPushButton" name="btnExit">
         <property name="text">
          <string>&amp;Exit</string>
-        </property>
-        <property name="flat">
-         <bool>false</bool>
         </property>
        </widget>
       </item>
@@ -898,38 +647,38 @@
   </layout>
  </widget>
  <tabstops>
-  <tabstop>BtnDownload</tabstop>
-  <tabstop>BtnExit</tabstop>
-  <tabstop>DataType</tabstop>
-  <tabstop>SubType</tabstop>
-  <tabstop>DataList</tabstop>
-  <tabstop>BtnAll</tabstop>
-  <tabstop>BtnStas</tabstop>
-  <tabstop>StaList</tabstop>
-  <tabstop>dateTime1</tabstop>
-  <tabstop>BtnTime1</tabstop>
-  <tabstop>dateTime2</tabstop>
-  <tabstop>BtnTime2</tabstop>
-  <tabstop>TimeInt</tabstop>
-  <tabstop>Number</tabstop>
-  <tabstop>FtpLogin</tabstop>
-  <tabstop>HidePasswd</tabstop>
-  <tabstop>FtpPasswd</tabstop>
-  <tabstop>SkipExist</tabstop>
-  <tabstop>UnZip</tabstop>
-  <tabstop>LocalDir</tabstop>
-  <tabstop>BtnKeyword</tabstop>
-  <tabstop>Dir</tabstop>
-  <tabstop>BtnDir</tabstop>
-  <tabstop>BtnHelp</tabstop>
-  <tabstop>BtnFile</tabstop>
-  <tabstop>BtnLog</tabstop>
-  <tabstop>BtnOpts</tabstop>
-  <tabstop>BtnTest</tabstop>
-  <tabstop>BtnTray</tabstop>
+  <tabstop>cBDataType</tabstop>
+  <tabstop>cBSubType</tabstop>
+  <tabstop>dataListWidget</tabstop>
+  <tabstop>btnAll</tabstop>
+  <tabstop>btnStations</tabstop>
+  <tabstop>stationListWidget</tabstop>
+  <tabstop>dateTimeStart</tabstop>
+  <tabstop>btnTimeStart</tabstop>
+  <tabstop>dateTimeStop</tabstop>
+  <tabstop>btnTimeStop</tabstop>
+  <tabstop>cBTimeInterval</tabstop>
+  <tabstop>lENumber</tabstop>
+  <tabstop>lEFtpLogin</tabstop>
+  <tabstop>cBHidePasswd</tabstop>
+  <tabstop>lEFtpPasswd</tabstop>
+  <tabstop>cBSkipExist</tabstop>
+  <tabstop>cBUnzip</tabstop>
+  <tabstop>cBLocalDirectory</tabstop>
+  <tabstop>btnKeywords</tabstop>
+  <tabstop>cBDirectory</tabstop>
+  <tabstop>btnDir</tabstop>
+  <tabstop>btnAbout</tabstop>
+  <tabstop>btnTray</tabstop>
+  <tabstop>btnFile</tabstop>
+  <tabstop>btnLog</tabstop>
+  <tabstop>btnOptions</tabstop>
+  <tabstop>btnTest</tabstop>
+  <tabstop>btnDownload</tabstop>
+  <tabstop>btnExit</tabstop>
  </tabstops>
  <resources>
-  <include location="rtkget_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

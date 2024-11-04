@@ -1,48 +1,46 @@
 //---------------------------------------------------------------------------
 // ported to Qt by Jens Reimann
 
-#include <QDialog>
-#include <QShowEvent>
-
 #include "keydlg.h"
 
+#include "ui_keydlg.h"
+
+
 //---------------------------------------------------------------------------
-KeyDialog::KeyDialog(QWidget *parent)
-    : QDialog(parent)
+KeyDialog::KeyDialog(QWidget *parent, int flag)
+    : QDialog(parent), ui (new Ui::KeyDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
-    Flag = 0;
+    setFlag(flag);
 
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &KeyDialog::accept);
 }
 //---------------------------------------------------------------------------
-void KeyDialog::showEvent(QShowEvent *event)
+void KeyDialog::setFlag(int flag)
 {
-    if (event->spontaneous()) return;
+    ui->labelS->setVisible(flag != 3);
+    ui->labelSecond->setVisible(flag != 3);
+    ui->labelha->setVisible(flag != 3);
+    ui->label3H_Hour->setVisible(flag != 3);
+    ui->labelhb->setVisible(flag != 3);
+    ui->label6H_Hour->setVisible(flag != 3);
+    ui->labelhc->setVisible(flag != 3);
+    ui->label12H_Hour->setVisible(flag != 3);
+    ui->labelt->setVisible(flag != 3);
+    ui->label15_min->setVisible(flag != 3);
 
-    Label10->setVisible(Flag != 3);
-    Label21->setVisible(Flag != 3);
-    Label23->setVisible(Flag != 3);
-    Label24->setVisible(Flag != 3);
-    Label25->setVisible(Flag != 3);
-    Label26->setVisible(Flag != 3);
-    Label27->setVisible(Flag != 3);
-    Label28->setVisible(Flag != 3);
-    Label29->setVisible(Flag >= 1);
-    Label30->setVisible(Flag >= 1);
-    Label31->setVisible(Flag == 2);
-    Label32->setVisible(Flag == 2);
-    Label33->setVisible(Flag == 3);
-    Label34->setVisible(Flag == 3);
-    Label35->setVisible(Flag == 3);
-    Label36->setVisible(Flag == 3);
-    Label37->setVisible(Flag == 3);
-    Label38->setVisible(Flag == 3);
-}
-//---------------------------------------------------------------------------
-void KeyDialog::BtnOkClick()
-{
-    close();
+    ui->labelr->setVisible(flag >= 1);
+    ui->labelStationID->setVisible(flag >= 1);
+
+    ui->labels->setVisible(flag == 3);
+    ui->labelStationID_L->setVisible(flag == 3);
+    ui->labelS_2->setVisible(flag == 3);
+    ui->labelStationID_U->setVisible(flag == 3);
+    ui->labelN->setVisible(flag == 3);
+    ui->labelSequenceNumber->setVisible(flag == 3);
+
+    ui->labelb->setVisible(flag == 2);
+    ui->labelBaseStationID->setVisible(flag == 2);
 }
 //---------------------------------------------------------------------------

@@ -3,30 +3,29 @@
 #define consoleH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_console.h"
 //---------------------------------------------------------------------------
 
-class Console : public QDialog, private Ui::Console
+namespace Ui {
+    class Console;
+}
+
+class Console : public QDialog
 {
     Q_OBJECT
 
-public slots:
-        void  BtnCloseClick();
-        void  BtnClearClick();
-        void  BtnAscClick();
-        void  BtnHexClick();
-        void  BtnDownClick();
+public:
+    explicit Console(QWidget* parent);
+    void  addMessage(uint8_t *msg, int n);
 
-protected:
-        void  ScrollChange();
-        void  FormResize();
+protected slots:
+    void  btnClearClicked();
+    void  btnAsciiClicked();
+    void  btnHexClicked();
+    void  btnDownClicked();
 
 private:
-        QStringList ConBuff;
-
-public:
-        explicit Console(QWidget* parent);
-        void  AddMsg(uint8_t *msg, int n);
+    QStringList consoleBuffer;
+    Ui::Console *ui;
 };
 //---------------------------------------------------------------------------
 #endif

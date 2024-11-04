@@ -11,33 +11,12 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>TEXT VIEWER</string>
-  </property>
-  <property name="toolTip">
-   <string/>
+   <string>Text Viewer</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <property name="spacing">
-    <number>0</number>
-   </property>
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
    <item>
     <widget class="QWidget" name="widget" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
       <property name="leftMargin">
        <number>0</number>
       </property>
@@ -51,35 +30,32 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLineEdit" name="FindStr">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QLineEdit" name="findStr">
         <property name="toolTip">
-         <string/>
+         <string>Search string</string>
         </property>
-        <property name="text">
-         <string/>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnFind">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnFind">
         <property name="toolTip">
-         <string/>
+         <string>Search string</string>
         </property>
         <property name="text">
          <string>&amp;Find</string>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+F</string>
         </property>
        </widget>
       </item>
       <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+         <enum>Qt::Orientation::Horizontal</enum>
         </property>
         <property name="sizeHint" stdset="0">
          <size>
@@ -90,10 +66,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnReload">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnReload">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -103,23 +76,14 @@
         <property name="toolTip">
          <string>Reload</string>
         </property>
-        <property name="text">
-         <string/>
-        </property>
         <property name="icon">
-         <iconset resource="../rtkconv_qt/rtkconv_qt.qrc">
-          <normaloff>:/buttons/reload.bmp</normaloff>:/buttons/reload.bmp</iconset>
-        </property>
-        <property name="flat">
-         <bool>true</bool>
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/reload</normaloff>:/buttons/reload</iconset>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnRead">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnReadSave">
         <property name="toolTip">
          <string/>
         </property>
@@ -129,28 +93,32 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnOpt">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnOptions">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>&amp;Option...</string>
         </property>
+        <property name="icon">
+         <iconset resource="../icon/resources.qrc">
+          <normaloff>:/buttons/tool</normaloff>:/buttons/tool</iconset>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+O</string>
+        </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClose">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnClose">
         <property name="toolTip">
          <string/>
         </property>
         <property name="text">
          <string>&amp;Close</string>
+        </property>
+        <property name="shortcut">
+         <string>Ctrl+X</string>
         </property>
         <property name="autoDefault">
          <bool>true</bool>
@@ -164,12 +132,16 @@
     </widget>
    </item>
    <item>
-    <widget class="QPlainTextEdit" name="Text"/>
+    <widget class="QPlainTextEdit" name="textEdit">
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>
  <resources>
-  <include location="../rtkconv_qt/rtkconv_qt.qrc"/>
+  <include location="../icon/resources.qrc"/>
  </resources>
  <connections/>
 </ui>

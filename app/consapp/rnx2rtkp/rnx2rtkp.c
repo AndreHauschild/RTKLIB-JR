@@ -37,7 +37,7 @@ static const char *help[]={
 " the path in the files. The extension of the SP3 file shall be .sp3 or .eph.",
 " All of the input file paths can include wild-cards (*). To avoid command",
 " line deployment of wild-cards, use \"...\" for paths with wild-cards.",
-" Command line options are as follows ([]:default). A maximum number of", 
+" Command line options are as follows ([]:default). A maximum number of",
 " input files is currently set to 16. With -k option, the",
 " processing options are input from the configuration file. In this case,",
 " command line options precede options in the configuration file.",
@@ -58,7 +58,7 @@ static const char *help[]={
 " -c        forward/backward combined solutions [off]",
 " -i        instantaneous integer ambiguity resolution [off]",
 " -h        fix and hold for integer ambiguity resolution [off]",
-" -bl bl,std baseline distance and stdev",
+" -bl bl,std     baseline distance and stdev",
 " -e        output x/y/z-ecef position [latitude/longitude/height]",
 " -a        output e/n/u-baseline [latitude/longitude/height]",
 " -n        output NMEA-0183 GGA sentence [off]",
@@ -72,7 +72,8 @@ static const char *help[]={
 " -l lat lon hgt reference (base) receiver latitude/longitude/height (deg/m)",
 "           rover latitude/longitude/height for fixed or ppp-fixed mode",
 " -y level  output solution status (0:off,1:states,2:residuals) [0]",
-" -x level  debug trace level (0:off) [0]"
+" -x level  debug trace level (0:off) [0]",
+" --version display release version",
 };
 /* show message --------------------------------------------------------------*/
 extern int showmsg(const char *format, ...)
@@ -101,21 +102,21 @@ int main(int argc, char **argv)
     gtime_t ts={0},te={0};
     double tint=0.0,es[]={2000,1,1,0,0,0},ee[]={2000,12,31,23,59,59},pos[3];
     int i,j,n,ret;
-    char *infile[MAXFILE],*outfile="",*p;
-    
+    const char *infile[MAXFILE],*outfile="",*p;
+
     prcopt.mode  =PMODE_KINEMA;
     prcopt.navsys=0;
-    prcopt.refpos=1;
-    prcopt.glomodear=1;
+    prcopt.refpos=POSOPT_SINGLE;
+    prcopt.glomodear=GLO_ARMODE_ON;
     solopt.timef=0;
     sprintf(solopt.prog ,"%s ver.%s %s",PROGNAME,VER_RTKLIB,PATCH_LEVEL);
     sprintf(filopt.trace,"%s.trace",PROGNAME);
-    
+
     /* load options from configuration file */
     for (i=1;i<argc;i++) {
         if (!strcmp(argv[i],"-k")&&i+1<argc) {
             resetsysopts();
-            if (!loadopts(argv[++i],sysopts)) return -1;
+            if (!loadopts(argv[++i],sysopts)) return EXIT_FAILURE;
             getsysopts(&prcopt,&solopt,&filopt);
         }
     }
@@ -167,12 +168,12 @@ int main(int argc, char **argv)
             for (j=0;j<2;j++) prcopt.baseline[j]=atof(argv[++i]);
         }
         else if (!strcmp(argv[i],"-r")&&i+3<argc) {
-            prcopt.refpos=prcopt.rovpos=0;
+            prcopt.refpos=prcopt.rovpos=POSOPT_POS_XYZ;
             for (j=0;j<3;j++) prcopt.rb[j]=atof(argv[++i]);
             matcpy(prcopt.ru,prcopt.rb,3,1);
         }
         else if (!strcmp(argv[i],"-l")&&i+3<argc) {
-            prcopt.refpos=prcopt.rovpos=0;
+            prcopt.refpos=prcopt.rovpos=POSOPT_POS_LLH;
             for (j=0;j<3;j++) pos[j]=atof(argv[++i]);
             for (j=0;j<2;j++) pos[j]*=D2R;
             pos2ecef(pos,prcopt.rb);
@@ -180,6 +181,10 @@ int main(int argc, char **argv)
         }
         else if (!strcmp(argv[i],"-y")&&i+1<argc) solopt.sstat=atoi(argv[++i]);
         else if (!strcmp(argv[i],"-x")&&i+1<argc) solopt.trace=atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--version")) {
+            fprintf(stderr, "rnx2rtkp RTKLIB %s %s\n", VER_RTKLIB, PATCH_LEVEL);
+            exit(0);
+        }
         else if (*argv[i]=='-') printhelp();
         else if (n<MAXFILE) infile[n++]=argv[i];
     }
@@ -188,10 +193,10 @@ int main(int argc, char **argv)
     }
     if (n<=0) {
         showmsg("error : no input file");
-        return -2;
+        return EXIT_FAILURE;
     }
     ret=postpos(ts,te,tint,0.0,&prcopt,&solopt,&filopt,infile,n,outfile,"","");
-    
+
     if (!ret) fprintf(stderr,"%40s\r","");
-    return ret;
+    return ret?EXIT_FAILURE:0;
 }

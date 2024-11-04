@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Package>
+    <DisplayName>RtkLib</DisplayName>
+    <Description>Base Library</Description>
+    <!--<Description xml:lang="de_de">Qt GUI Bibliotheken</Description>-->
+    <Version>2.4.2-34</Version>
+    <ReleaseDate>2024-02-26</ReleaseDate>
+    <Name>com.rtklib</Name>
+    <Licenses>
+	    <License name="BSD-2 License Agreement" file="license.txt"/>
+    </Licenses>
+    <!--<Translations>
+        <Translation>sv_se.qm</Translation>
+        <Translation>de_de.qm</Translation>
+    </Translations>-->
+    <SortingPriority>1</SortingPriority>
+    <ForcedInstallation>True</ForcedInstallation>
+    <Default>true</Default>
+</Package>	    

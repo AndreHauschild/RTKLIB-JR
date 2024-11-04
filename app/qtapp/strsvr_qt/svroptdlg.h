@@ -3,34 +3,38 @@
 #define svroptdlgH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_svroptdlg.h"
+
+namespace Ui {
+class SvrOptDialog;
+}
 
 class QShowEvent;
+class RefDialog;
 //---------------------------------------------------------------------------
-class SvrOptDialog : public QDialog, public Ui::SvrOptDialog
+class SvrOptDialog : public QDialog
 {
     Q_OBJECT
 
 public slots:
-    void BtnOkClick();
-    void BtnPosClick();
-    void NmeaReqTClick();
-    void BtnLocalDirClick();
-    void StaInfoSelClick();
-    void BtnLogFileClick();
+    void accept();
+    void positionSelect();
+    void localDirectorySelect();
+    void logFileSelect();
 
 protected:
     void showEvent(QShowEvent*);
+    RefDialog *refDialog;
 
 private:
-    void UpdateEnable(void);
+    void updateEnable();
+    Ui::SvrOptDialog *ui;
 
 public:
-    QString StaPosFile, ExeDirectory, LocalDirectory, ProxyAddress;
-    QString AntType, RcvType, LogFile;
-    int SvrOpt[6], TraceLevel, NmeaReq, FileSwapMargin, StaId, StaSel, RelayBack;
-    int ProgBarRange;
-    double AntPos[3], AntOff[3];
+    QString stationPositionFile, exeDirectory, localDirectory, proxyAddress;
+    QString antennaType, receiverType, logFile;
+    int serverOptions[6], traceLevel, nmeaRequest, fileSwapMargin, stationId, stationSelect, relayBack;
+    int progressBarRange;
+    double antennaPosition[3], antennaOffsets[3];
 
     explicit SvrOptDialog(QWidget *parent);
 };

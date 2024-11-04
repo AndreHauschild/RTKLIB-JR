@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>820</width>
-    <height>436</height>
+    <width>927</width>
+    <height>428</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -17,796 +17,753 @@
    <string/>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="10">
-    <widget class="QLabel" name="Label7">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Format</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="4" colspan="4">
-    <widget class="QDoubleSpinBox" name="NmeaPos1">
-     <property name="decimals">
-      <number>9</number>
-     </property>
-     <property name="minimum">
-      <double>-180.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>180.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="0" colspan="12">
-    <widget class="QLineEdit" name="FilePath3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="0" colspan="12">
-    <widget class="QLineEdit" name="FilePath1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="13">
-    <widget class="QPushButton" name="BtnFile1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="13">
-    <widget class="QPushButton" name="BtnRcvOpt3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0" colspan="4">
-    <widget class="QComboBox" name="NmeaReqL">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <item>
-      <property name="text">
-       <string>OFF</string>
+   <item row="14" column="0">
+    <widget class="QWidget" name="panelTags" native="true">
+     <layout class="QGridLayout" name="gridLayout_4">
+      <property name="leftMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Latitude/Longitude</string>
+      <property name="topMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Single Solution</string>
+      <property name="rightMargin">
+       <number>0</number>
       </property>
-     </item>
-    </widget>
-   </item>
-   <item row="1" column="13">
-    <widget class="QPushButton" name="BtnRcvOpt1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="10">
-    <widget class="QComboBox" name="Format3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="8" colspan="2">
-    <widget class="QDoubleSpinBox" name="NmeaPos2">
-     <property name="decimals">
-      <number>9</number>
-     </property>
-     <property name="minimum">
-      <double>-180.000000000000000</double>
-     </property>
-     <property name="maximum">
-      <double>180.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="10">
-    <widget class="QComboBox" name="Format2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="10">
-    <widget class="QDoubleSpinBox" name="NmeaPos3">
-     <property name="decimals">
-      <number>3</number>
-     </property>
-     <property name="maximum">
-      <double>8000.000000000000000</double>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="10">
-    <widget class="QComboBox" name="Format1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="4" colspan="3">
-    <widget class="QComboBox" name="Stream1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <item>
-      <property name="text">
-       <string>Serial</string>
+      <property name="bottomMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>TCP Client</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>TCP Server</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>NTRIP Client</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>File</string>
-      </property>
-     </item>
+      <item row="0" column="1">
+       <widget class="QComboBox" name="cBTimeSpeed">
+        <property name="toolTip">
+         <string>Select the replay speed (required time-tag file)</string>
+        </property>
+        <item>
+         <property name="text">
+          <string/>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>x0.1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>x0.2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>x0.5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>x1</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>x2</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>x5</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>x10</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="lblPlus">
+        <property name="text">
+         <string>+</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QDoubleSpinBox" name="sBTimeStart">
+        <property name="suffix">
+         <string> s</string>
+        </property>
+        <property name="maximum">
+         <double>3600.000000000000000</double>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="cBTimeTag">
+        <property name="toolTip">
+         <string>Enable time-tag replay</string>
+        </property>
+        <property name="text">
+         <string>Time-Tag</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QCheckBox" name="cB64Bit">
+        <property name="toolTip">
+         <string>Use 64 bit time-tags</string>
+        </property>
+        <property name="text">
+         <string>64bit</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="2" column="4" colspan="3">
-    <widget class="QComboBox" name="Stream2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <item>
-      <property name="text">
-       <string>Serial</string>
+   <item row="9" column="0" colspan="2">
+    <widget class="QWidget" name="PanelInputs" native="true">
+     <layout class="QGridLayout" name="gridLayout_6">
+      <property name="leftMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>TCP Client</string>
+      <property name="topMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>TCP Server</string>
+      <property name="rightMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>NTRIP Client</string>
+      <property name="bottomMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>File</string>
-      </property>
-     </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_1">
+        <property name="text">
+         <string>(1)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLineEdit" name="lEFilePath2">
+        <property name="toolTip">
+         <string>Specify file name for base station data</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QLineEdit" name="lEFilePath3">
+        <property name="toolTip">
+         <string>Specify file name for correction data</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>(2)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>(3)</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0" colspan="2">
+       <widget class="QLabel" name="lblInputFilePath">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Input File Paths</string>
+        </property>
+        <property name="buddy">
+         <cstring>lEFilePath1</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="lEFilePath1">
+        <property name="toolTip">
+         <string>Specify file name for rover data</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
-   <item row="2" column="7">
-    <widget class="QPushButton" name="BtnStr2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="13">
-    <widget class="QPushButton" name="BtnPos">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0" colspan="4">
-    <widget class="QCheckBox" name="StreamC1">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>(1) Rover</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="11" colspan="3">
-    <widget class="QPushButton" name="BtnCancel">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;Cancel</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="4">
-    <widget class="QLabel" name="LabelF2">
-     <property name="text">
-      <string>s</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="13">
-    <widget class="QPushButton" name="BtnRcvOpt2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="8" colspan="2">
-    <widget class="QPushButton" name="BtnCmd2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="1">
-    <widget class="QComboBox" name="TimeSpeedL">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <item>
-      <property name="text">
-       <string/>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>x0.1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>x0.2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>x0.5</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>x1</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>x2</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>x5</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>x10</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="13" column="2">
-    <widget class="QLabel" name="LabelF3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>+</string>
+   <item row="14" column="1">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="6">
-    <widget class="QLabel" name="LabelNmea">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Transmit NMEA GGA to Base Station</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="6" colspan="5">
-    <widget class="QPushButton" name="BtnOk">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>&amp;OK</string>
-     </property>
-     <property name="autoDefault">
-      <bool>true</bool>
-     </property>
-     <property name="default">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="13">
-    <widget class="QPushButton" name="BtnFile2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0" colspan="12">
-    <widget class="QLineEdit" name="FilePath2">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string/>
-     </property>
+   <item row="1" column="0" colspan="2">
+    <widget class="QWidget" name="wgNMEA" native="true">
+     <layout class="QGridLayout" name="gridLayout_3">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblNmea">
+        <property name="text">
+         <string>Transmit NMEA GGA to Base Station</string>
+        </property>
+        <property name="buddy">
+         <cstring>cBNmeaRequestType</cstring>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QWidget" name="widget" native="true">
+        <layout class="QGridLayout" name="gridLayout_5">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="3">
+          <widget class="QDoubleSpinBox" name="sBNmeaPosition3">
+           <property name="toolTip">
+            <string>Height to send to base station</string>
+           </property>
+           <property name="suffix">
+            <string> m</string>
+           </property>
+           <property name="decimals">
+            <number>3</number>
+           </property>
+           <property name="minimum">
+            <double>-200.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>8000.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QDoubleSpinBox" name="sBNmeaPosition1">
+           <property name="toolTip">
+            <string>Latitude to send to base station</string>
+           </property>
+           <property name="suffix">
+            <string>°</string>
+           </property>
+           <property name="decimals">
+            <number>9</number>
+           </property>
+           <property name="minimum">
+            <double>-180.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>180.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QDoubleSpinBox" name="sBNmeaPosition2">
+           <property name="toolTip">
+            <string>Longitude to send to base station</string>
+           </property>
+           <property name="suffix">
+            <string>°</string>
+           </property>
+           <property name="decimals">
+            <number>9</number>
+           </property>
+           <property name="minimum">
+            <double>-90.000000000000000</double>
+           </property>
+           <property name="maximum">
+            <double>90.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QComboBox" name="cBNmeaRequestType">
+           <property name="toolTip">
+            <string>Transmit the approximate position of the rover to the base station</string>
+           </property>
+           <item>
+            <property name="text">
+             <string>OFF</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Latitude/Longitude</string>
+            </property>
+           </item>
+           <item>
+            <property name="text">
+             <string>Single Solution</string>
+            </property>
+           </item>
+          </widget>
+         </item>
+         <item row="0" column="4">
+          <widget class="QPushButton" name="btnPosition">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="toolTip">
+            <string>Select rover position from station list</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../icon/resources.qrc">
+             <normaloff>:/buttons/ori</normaloff>:/buttons/ori</iconset>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QWidget" name="widget_3" native="true">
+        <layout class="QGridLayout" name="gridLayout_7">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="2">
+          <widget class="QLabel" name="lblMaxBaseLine">
+           <property name="text">
+            <string>Max. Baseline</string>
+           </property>
+           <property name="buddy">
+            <cstring>sBMaxBaseLine</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="lblResetCmd">
+           <property name="text">
+            <string>Reset Command</string>
+           </property>
+           <property name="buddy">
+            <cstring>lEResetCmd</cstring>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLineEdit" name="lEResetCmd">
+           <property name="toolTip">
+            <string>Reset command to send when max. baseline is reached</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="3">
+          <widget class="QDoubleSpinBox" name="sBMaxBaseLine">
+           <property name="toolTip">
+            <string>Maximum baseline which will trigger the reset command to be executed</string>
+           </property>
+           <property name="suffix">
+            <string> km</string>
+           </property>
+           <property name="maximum">
+            <double>99999.990000000005239</double>
+           </property>
+           <property name="value">
+            <double>10.000000000000000</double>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
    <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="Label10">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Input Stream</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="4">
-    <widget class="QCheckBox" name="StreamC3">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>(3) Correction</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="3">
-    <widget class="QLineEdit" name="TimeStartE">
-     <property name="text">
-      <string>0</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="8" colspan="2">
-    <widget class="QLabel" name="Label11">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Cmd</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="13">
-    <widget class="QLabel" name="Label1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Opt</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0" colspan="2">
-    <widget class="QLabel" name="LabelF1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Input File Paths</string>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="13">
-    <widget class="QPushButton" name="BtnFile3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="13" column="0">
-    <widget class="QCheckBox" name="TimeTagC">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Time</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="4">
-    <widget class="QLabel" name="Label5">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Type</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="7">
-    <widget class="QLabel" name="Label6">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>Opt</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="7">
-    <widget class="QPushButton" name="BtnStr1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="8" colspan="2">
-    <widget class="QPushButton" name="BtnCmd1">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="7">
-    <widget class="QPushButton" name="BtnStr3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="8" colspan="2">
-    <widget class="QPushButton" name="BtnCmd3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>...</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0" colspan="4">
-    <widget class="QCheckBox" name="StreamC2">
-     <property name="toolTip">
-      <string/>
-     </property>
-     <property name="text">
-      <string>(2) Base Station</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="4" colspan="3">
-    <widget class="QComboBox" name="Stream3">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
-     <item>
-      <property name="text">
-       <string>Serial</string>
+    <widget class="QWidget" name="panelStream" native="true">
+     <layout class="QGridLayout" name="gridLayout_2">
+      <property name="leftMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>TCP Client</string>
+      <property name="topMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>TCP Server</string>
+      <property name="rightMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>NTRIP Client</string>
+      <property name="bottomMargin">
+       <number>0</number>
       </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>File</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>FTP</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>HTTP</string>
-      </property>
-     </item>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QLabel" name="LabelResetCmd">
-     <property name="text">
-      <string>Reset Cmd</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="10">
-    <widget class="QLabel" name="LabelMaxBL">
-     <property name="text">
-      <string>MaxBaseline</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1" colspan="9">
-    <widget class="QLineEdit" name="EditResetCmd"/>
-   </item>
-   <item row="13" column="5">
-    <widget class="QCheckBox" name="Chk64Bit">
-     <property name="text">
-      <string>64bit</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="13">
-    <widget class="QDoubleSpinBox" name="EditMaxBL">
-     <property name="suffix">
-      <string> km</string>
-     </property>
-     <property name="maximum">
-      <double>99999.990000000005239</double>
-     </property>
-     <property name="value">
-      <double>10.000000000000000</double>
-     </property>
+      <item row="0" column="5">
+       <widget class="QLabel" name="lblReceiverOptions">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Receiver Options</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLabel" name="lblStreamType">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Stream Type</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
+       <widget class="QPushButton" name="btnStream2">
+        <property name="toolTip">
+         <string>Select options for the base station data stream</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QComboBox" name="cBStream3">
+        <property name="toolTip">
+         <string>Select input stream type for corrections</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Serial</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TCP Client</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TCP Server</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>NTRIP Client</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>File</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>FTP</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>HTTP</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="3" column="3">
+       <widget class="QPushButton" name="btnCmd3">
+        <property name="toolTip">
+         <string>Specify additional commands for the correction data stream</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QPushButton" name="btnCmd1">
+        <property name="toolTip">
+         <string>Specify additional commands for the rover</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="4">
+       <widget class="QLabel" name="lblFormat">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="5">
+       <widget class="QPushButton" name="btnReceiverOptions3">
+        <property name="toolTip">
+         <string>Define additional options for the receiver</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="4">
+       <widget class="QComboBox" name="cBFormat2">
+        <property name="toolTip">
+         <string>Select base station data stream format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="lblStreamOptions">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Stream Options</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QComboBox" name="cBFormat3">
+        <property name="toolTip">
+         <string>Select correction data stream format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="3">
+       <widget class="QPushButton" name="btnCmd2">
+        <property name="toolTip">
+         <string>Specify additional commands for the base station</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QComboBox" name="cBStream1">
+        <property name="toolTip">
+         <string>Select input stream type for rover</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Serial</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TCP Client</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TCP Server</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>NTRIP Client</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>File</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="lblInputStream">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Input Stream</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="cBStreamC1">
+        <property name="toolTip">
+         <string>Activate data input stream for the rover</string>
+        </property>
+        <property name="text">
+         <string>(1) Rover</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QPushButton" name="btnStream1">
+        <property name="toolTip">
+         <string>Select options for the rover data stream</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QCheckBox" name="cBStreamC3">
+        <property name="toolTip">
+         <string>Activate data input stream for additional corrections</string>
+        </property>
+        <property name="text">
+         <string>(3) Correction</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="cBStreamC2">
+        <property name="toolTip">
+         <string>Activate data input stream for the base station</string>
+        </property>
+        <property name="text">
+         <string>(2) Base Station</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QComboBox" name="cBFormat1">
+        <property name="toolTip">
+         <string>Select rover data stream format</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="5">
+       <widget class="QPushButton" name="btnReceiverOptions2">
+        <property name="toolTip">
+         <string>Define additional options for the receiver</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QPushButton" name="btnStream3">
+        <property name="toolTip">
+         <string>Select options for the correction data stream</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="5">
+       <widget class="QPushButton" name="btnReceiverOptions1">
+        <property name="toolTip">
+         <string>Define additional options for the receiver</string>
+        </property>
+        <property name="text">
+         <string>...</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QLabel" name="lblCommands">
+        <property name="toolTip">
+         <string/>
+        </property>
+        <property name="text">
+         <string>Commands</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QComboBox" name="cBStream2">
+        <property name="toolTip">
+         <string>Select input stream type for base station</string>
+        </property>
+        <item>
+         <property name="text">
+          <string>Serial</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TCP Client</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>TCP Server</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>NTRIP Client</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>File</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>StreamC1</tabstop>
-  <tabstop>Stream1</tabstop>
-  <tabstop>BtnStr1</tabstop>
-  <tabstop>BtnCmd1</tabstop>
-  <tabstop>Format1</tabstop>
-  <tabstop>BtnRcvOpt1</tabstop>
-  <tabstop>StreamC2</tabstop>
-  <tabstop>Stream2</tabstop>
-  <tabstop>BtnStr2</tabstop>
-  <tabstop>BtnCmd2</tabstop>
-  <tabstop>Format2</tabstop>
-  <tabstop>BtnRcvOpt2</tabstop>
-  <tabstop>StreamC3</tabstop>
-  <tabstop>Stream3</tabstop>
-  <tabstop>BtnStr3</tabstop>
-  <tabstop>BtnCmd3</tabstop>
-  <tabstop>Format3</tabstop>
-  <tabstop>BtnRcvOpt3</tabstop>
-  <tabstop>NmeaReqL</tabstop>
-  <tabstop>NmeaPos1</tabstop>
-  <tabstop>NmeaPos2</tabstop>
-  <tabstop>NmeaPos3</tabstop>
-  <tabstop>BtnPos</tabstop>
-  <tabstop>FilePath1</tabstop>
-  <tabstop>BtnFile1</tabstop>
-  <tabstop>FilePath2</tabstop>
-  <tabstop>BtnFile2</tabstop>
-  <tabstop>FilePath3</tabstop>
-  <tabstop>BtnFile3</tabstop>
-  <tabstop>TimeTagC</tabstop>
-  <tabstop>TimeSpeedL</tabstop>
-  <tabstop>TimeStartE</tabstop>
-  <tabstop>BtnOk</tabstop>
-  <tabstop>BtnCancel</tabstop>
+  <tabstop>cBStreamC1</tabstop>
+  <tabstop>cBStream1</tabstop>
+  <tabstop>btnStream1</tabstop>
+  <tabstop>btnCmd1</tabstop>
+  <tabstop>cBFormat1</tabstop>
+  <tabstop>btnReceiverOptions1</tabstop>
+  <tabstop>cBStreamC2</tabstop>
+  <tabstop>cBStream2</tabstop>
+  <tabstop>btnStream2</tabstop>
+  <tabstop>btnCmd2</tabstop>
+  <tabstop>cBFormat2</tabstop>
+  <tabstop>btnReceiverOptions2</tabstop>
+  <tabstop>cBStreamC3</tabstop>
+  <tabstop>cBStream3</tabstop>
+  <tabstop>btnStream3</tabstop>
+  <tabstop>btnCmd3</tabstop>
+  <tabstop>cBFormat3</tabstop>
+  <tabstop>btnReceiverOptions3</tabstop>
+  <tabstop>cBNmeaRequestType</tabstop>
+  <tabstop>sBNmeaPosition1</tabstop>
+  <tabstop>sBNmeaPosition2</tabstop>
+  <tabstop>sBNmeaPosition3</tabstop>
+  <tabstop>btnPosition</tabstop>
+  <tabstop>lEResetCmd</tabstop>
+  <tabstop>sBMaxBaseLine</tabstop>
+  <tabstop>lEFilePath1</tabstop>
+  <tabstop>lEFilePath2</tabstop>
+  <tabstop>lEFilePath3</tabstop>
+  <tabstop>cBTimeTag</tabstop>
+  <tabstop>cBTimeSpeed</tabstop>
+  <tabstop>cB64Bit</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../icon/resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -8,65 +8,106 @@
 #include <QIntValidator>
 #include <QCompleter>
 #include <QFileSystemModel>
+#include <QAction>
 
-extern MainForm *mainForm;
+#include "ui_getoptdlg.h"
 
 //---------------------------------------------------------------------------
 DownOptDialog::DownOptDialog(QWidget *parent)
-    : QDialog(parent)
+    : QDialog(parent), ui(new Ui::DownOptDialog)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
     QCompleter *fileCompleter = new QCompleter(this);
     QFileSystemModel *fileModel = new QFileSystemModel(fileCompleter);
     fileModel->setRootPath("");
     fileCompleter->setModel(fileModel);
-    UrlFile->setCompleter(fileCompleter);
-    LogFile->setCompleter(fileCompleter);
+    ui->lEUrlFilename->setCompleter(fileCompleter);
+    ui->lELogFilename->setCompleter(fileCompleter);
 
-    connect(BtnCancel, SIGNAL(clicked(bool)), this, SLOT(reject()));
-    connect(BtnLogFile, SIGNAL(clicked(bool)), this, SLOT(BtnLogFileClick()));
-    connect(BtnOk, SIGNAL(clicked(bool)), this, SLOT(BtnOkClick()));
-    connect(BtnUrlFile, SIGNAL(clicked(bool)), this, SLOT(BtnUrlFileClick()));
-}
-//---------------------------------------------------------------------------
-void DownOptDialog::BtnUrlFileClick()
-{
-    UrlFile->setText(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("GNSS Data URL File"))));
-}
-//---------------------------------------------------------------------------
-void DownOptDialog::BtnLogFileClick()
-{
-    LogFile->setText(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Download Log File"))));
-}
-//---------------------------------------------------------------------------
-void DownOptDialog::showEvent(QShowEvent *event)
-{
-    if (event->spontaneous()) return;
+    QAction *acLogFilename = ui->lELogFilename->addAction(QIcon(":/icons/folder"), QLineEdit::TrailingPosition);
+    acLogFilename->setToolTip(tr("Select Log File Path"));
 
-    HoldErr->setChecked(mainForm->HoldErr);
-    HoldList->setChecked(mainForm->HoldList);
-    NCol->setValue(mainForm->NCol);
-    Proxy->setText(mainForm->ProxyAddr);
-    UrlFile->setText(mainForm->UrlFile);
-    LogFile->setText(mainForm->LogFile);
-    LogAppend->setChecked(mainForm->LogAppend);
-    DateFormat->setCurrentIndex(mainForm->DateFormat);
-    TraceLevel->setCurrentIndex(mainForm->TraceLevel);
+    QAction *acUrlFilename = ui->lEUrlFilename->addAction(QIcon(":/icons/folder"), QLineEdit::TrailingPosition);
+    acUrlFilename->setToolTip(tr("Select URL File Path"));
+
+    connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &DownOptDialog::accept);
+    connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &DownOptDialog::reject);
+    connect(acLogFilename, &QAction::triggered, this, &DownOptDialog::selectLogFilename);
+    connect(acUrlFilename, &QAction::triggered, this, &DownOptDialog::selectUrlFile);
 }
 //---------------------------------------------------------------------------
-void DownOptDialog::BtnOkClick()
+void DownOptDialog::selectUrlFile()
 {
-    mainForm->HoldErr = HoldErr->isChecked();
-    mainForm->HoldList = HoldList->isChecked();
-    mainForm->NCol = NCol->value();
-    mainForm->ProxyAddr = Proxy->text();
-    mainForm->UrlFile = UrlFile->text();
-    mainForm->LogFile = LogFile->text();
-    mainForm->LogAppend = LogAppend->isChecked();
-    mainForm->DateFormat = DateFormat->currentIndex();
-    mainForm->TraceLevel = TraceLevel->currentIndex();
+    QString filename = QFileDialog::getOpenFileName(this, tr("GNSS Data URL File"));
 
-    accept();
+    if (!filename.isEmpty())
+        ui->lEUrlFilename->setText(QDir::toNativeSeparators(filename));
+}
+//---------------------------------------------------------------------------
+void DownOptDialog::selectLogFilename()
+{
+    QString filename = QFileDialog::getSaveFileName(this, tr("Download Log File"));
+
+    if (!filename.isEmpty())
+        ui->lELogFilename->setText(QDir::toNativeSeparators(filename));
+}
+//---------------------------------------------------------------------------
+void DownOptDialog::updateUi()
+{
+    ui->cBKeepErr->setChecked(holdErr);
+    ui->cBKeepList->setChecked(holdList);
+    ui->sBTestColumnCount->setValue(columnCnt);
+    ui->lEProxy->setText(proxyAddr);
+    ui->lEUrlFilename->setText(urlFile);
+    ui->lELogFilename->setText(logFile);
+    ui->cBLogAppend->setChecked(logAppend);
+    ui->cBDateFormat->setCurrentIndex(dateFormat);
+    ui->cBTraceLevel->setCurrentIndex(traceLevel);
+}
+//---------------------------------------------------------------------------
+void DownOptDialog::accept()
+{
+    holdErr = ui->cBKeepErr->isChecked();
+    holdList = ui->cBKeepList->isChecked();
+    columnCnt = ui->sBTestColumnCount->value();
+    proxyAddr = ui->lEProxy->text();
+    urlFile = ui->lEUrlFilename->text();
+    logFile = ui->lELogFilename->text();
+    logAppend = ui->cBLogAppend->isChecked();
+    dateFormat = ui->cBDateFormat->currentIndex();
+    traceLevel = ui->cBTraceLevel->currentIndex();
+
+    QDialog::accept();
+}
+//---------------------------------------------------------------------------
+void DownOptDialog::loadOptions(QSettings &setting)
+{
+    urlFile = setting.value("opt/urlfile", "").toString();
+    logFile = setting.value("opt/logfile", "").toString();
+    stations = setting.value("opt/stations", "").toString();
+    proxyAddr = setting.value("opt/proxyaddr", "").toString();
+    holdErr = setting.value("opt/holderr", 0).toInt();
+    holdList = setting.value("opt/holdlist", 0).toInt();
+    columnCnt = setting.value("opt/ncol", 35).toInt();
+    logAppend = setting.value("opt/logappend", 0).toInt();
+    dateFormat = setting.value("opt/dateformat", 0).toInt();
+    traceLevel = setting.value("opt/tracelevel", 0).toInt();
+
+    updateUi();
+}
+//---------------------------------------------------------------------------
+void DownOptDialog::saveOptions(QSettings &setting)
+{
+    setting.setValue("opt/urlfile", urlFile);
+    setting.setValue("opt/logfile", logFile);
+    setting.setValue("opt/stations", stations);
+    setting.setValue("opt/proxyaddr", proxyAddr);
+    setting.setValue("opt/holderr", holdErr);
+    setting.setValue("opt/holdlist", holdList);
+    setting.setValue("opt/ncol", columnCnt);
+    setting.setValue("opt/logappend", logAppend);
+    setting.setValue("opt/dateformat", dateFormat);
+    setting.setValue("opt/tracelevel", traceLevel);
 }
 //---------------------------------------------------------------------------

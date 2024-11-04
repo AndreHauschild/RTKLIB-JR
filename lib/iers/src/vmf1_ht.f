@@ -7,7 +7,7 @@
 *  This routine is part of the International Earth Rotation and
 *  Reference Systems Service (IERS) Conventions software collection.
 *
-*  This subroutine determines the Vienna Mapping Function 1 (VMF1) (Boehm et al. 2006).
+*  This subroutine determines the Vienna Mapping Function 1 (VMF1).
 *
 *     :------------------------------------------:
 *     :                                          :
@@ -40,7 +40,7 @@
 *     AH             d      Hydrostatic coefficient a (Note 1)
 *     AW             d      Wet coefficient a (Note 1)
 *     DMJD           d      Modified Julian Date
-*     DLAT           d      Latitude given in radians (North Latitude)
+*     DLAT           d      Ellipsoidal latitude given in radians
 *     HT             d      Ellipsoidal height given in meters
 *     ZD             d      Zenith distance in radians
 *
@@ -50,9 +50,8 @@
 *
 *  Notes:
 * 
-*  1) The coefficients can be obtained from the primary website
-*     http://ggosatm.hg.tuwien.ac.at/DELAY/ or the back-up website
-*     http://www.hg.tuwien.ac.at/~ecmwf1/. 
+*  1) The coefficients can be obtained from the website
+*     http://ggosatm.hg.tuwien.ac.at/DELAY/GRID/
 *
 *  2) The mapping functions are dimensionless scale factors.
 *
@@ -64,8 +63,8 @@
 *                  HT   = 824.17D0 meters
 *                  ZD   = 1.278564131D0 radians
 *
-*     expected output: VMF1H = 3.423513691014495652D0
-*                      VMF1W = 3.449100942061193553D0
+*     expected output: VMF1H = 3.425088087972572470D0
+*                      VMF1W = 3.448299714692572238D0
 *                     
 *  References:
 *
@@ -74,6 +73,10 @@
 *     interferometry from European Centre for Medium-Range Weather
 *     Forecasts operational analysis data," J. Geophy. Res., Vol. 111,
 *     B02406, doi:10.1029/2005JB003629
+*
+*     Please mind that the coefficients in this paper are wrong.
+*     The corrected version of the paper can be found at: 
+*     http://ggosatm.hg.tuwien.ac.at/DOCS/PAPERS/2006Boehm_etal_VMF1.pdf
 *
 *     Petit, G. and Luzum, B. (eds.), IERS Conventions (2010),
 *     IERS Technical Note No. 36, BKG (2010)
@@ -87,6 +90,14 @@
 *                               compatibility
 *  2010 September 08 B.E. Stetzler   Provided new primary website to obtain
 *                                    VMF coefficients 
+*  2011 July   21  J. Boehm     Changed latitude to ellipsoidal latitude
+*  2012 January 10 B.E. Stetzler Corrected declaration problem for 
+*                                first occurrence of topcon variable
+*                                (Noted by John McCarthy) 
+*  2012 January 11 B.E. Stetzler Updated website in notes, removed reference
+*                                to old website, and added note in references
+*  2012 January 12 B.E. Stetzler Corrected test case input and output
+*                                mentioned in the header
 *-----------------------------------------------------------------------
 
       IMPLICIT NONE
@@ -106,7 +117,7 @@
 *----------------------------------------------------------------------
       DOY = DMJD  - 44239D0 + 1 - 28
       
-      BH  = 0.0029D0
+      BH  = 0.0029D0;
       C0H = 0.062D0
       IF (DLAT.LT.0D0) THEN   ! southern hemisphere
           PHH  = PI
@@ -124,7 +135,8 @@
       SINE   = DSIN(PI/2D0 - ZD)
       BETA   = BH/( SINE + CH  )
       GAMMA  = AH/( SINE + BETA)
-      TOPCON = (1D0 + AW/(1D0 + BW/(1D0 + CW)))
+! January 10, 2012 Variable TOPCON corrected
+      TOPCON = (1D0 + AH/(1D0 + BH/(1D0 + CH)))
       VMF1H   = TOPCON/(SINE+GAMMA)
       
 *  Compute the height correction (Niell, 1996)     

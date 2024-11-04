@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=RtkPost
+GenericName=RtkLib Post-Processing
+Keywords=rtklib;GNSS
+Exec=rtkpost_qt
+Icon=rtkpost
+Categories=Science;Geoscience;

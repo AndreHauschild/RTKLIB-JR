@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=ScrTblBrows
+GenericName=RtkLib NTRIP Source Table Browser
+Keywords=rtklib;GNSS
+Exec=srctblbrows_qt
+Icon=srctblbrows
+Categories=Science;Geoscience;

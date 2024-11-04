@@ -1,5 +1,5 @@
 //---------------------------------------------------------------------------
-// rtkplot : visualization of solution and obs data ap
+// rtkplot_qt : visualization of solution and obs data ap
 //
 //          Copyright (C) 2007-2020 by T.TAKASU, All rights reserved.
 //          ported to Qt by Jens Reimann
@@ -52,6 +52,10 @@
 #include <QScreen>
 #include <QtGlobal>
 #include <QFileInfo>
+#include <QWidgetAction>
+#include <QToolTip>
+#include <QListWidget>
+#include <QMessageBox>
 
 #include <QFileInfo>
 #include <QCommandLineParser>
@@ -60,12 +64,11 @@
 #include <QSettings>
 #include <QFont>
 #include <QMimeData>
+#include <QTableView>
 
-#define INHIBIT_RTL_LOCK_MACROS
 #include "rtklib.h"
 #include "plotmain.h"
 #include "plotopt.h"
-#include "refdlg.h"
 #include "tspandlg.h"
 #include "aboutdlg.h"
 #include "conndlg.h"
@@ -78,326 +81,356 @@
 #include "viewer.h"
 #include "vmapdlg.h"
 #include "fileseldlg.h"
+#include "helper.h"
+
+#include "ui_plotmain.h"
 
 #define YLIM_AGE    10.0        // ylimit of age of differential
-#define YLIM_RATIO  20.0        // ylimit of raito factor
-#define MAXSHAPEFILE 16             // max number of shape files
-
-static int RefreshTime = 100;    // update only every 100ms
-
-extern QString color2String(const QColor &c);
+#define YLIM_RATIO  20.0        // ylimit of ratio factor
+#define qMaxSHAPEFILE 16             // max number of shape files
 
 extern "C" {
-extern void settime(gtime_t) {}
-extern void settspan(gtime_t, gtime_t) {}
+    extern void settime(gtime_t) {}
+    extern void settspan(gtime_t, gtime_t) {}
 }
 
-// instance of Plot --------------------------------------------------------
-Plot *plot = NULL;
 
 // constructor --------------------------------------------------------------
-Plot::Plot(QWidget *parent) : QMainWindow(parent)
+Plot::Plot(QWidget *parent) : QMainWindow(parent), ui(new Ui::Plot)
 {
-    setupUi(this);
+    ui->setupUi(this);
 
-    plot = this;
-
-    setWindowIcon(QIcon(":/icons/rtk2.bmp"));
+    setWindowIcon(QIcon(":/icons/rtk2"));
 
     setlocale(LC_NUMERIC, "C"); // use point as decimal separator in formatted output
 
-    gtime_t t0 = { 0, 0 };
-    nav_t nav0;
-    obs_t obs0 = { 0, 0, NULL };
-    sta_t sta0;
+    gtime_t t0 = {0, 0};
+    nav_t nav0 = {};
+    obs_t obs0 = {};
+    sta_t sta0 = {};
     gis_t gis0 = {};
-    solstatbuf_t solstat0 = { 0, 0, 0 };
-    double ep[] = { 2000, 1, 1, 0, 0, 0 }, xl[2], yl[2];
-    double xs[] = { -DEFTSPAN / 2, DEFTSPAN / 2 };
-
-    memset(&nav0, 0, sizeof(nav_t));
-    memset(&sta0, 0, sizeof(sta_t));
+    solstatbuf_t solstat0 = {0, 0, 0};
+    double ep[] = {2000, 1, 1, 0, 0, 0}, xl[2], yl[2];
+    double xs[] = {-DEFTSPAN / 2, DEFTSPAN / 2};
 
     QString file = QApplication::applicationFilePath();
     QFileInfo fi(file);
-    IniFile = fi.absolutePath() + "/" + fi.baseName() + ".ini";
+    iniFile = fi.absoluteDir().filePath(fi.baseName()) + ".ini";
 
-    toolBar->addWidget(Panel1);
+    ui->toolBar->addWidget(ui->toolPanel);
 
-    FormWidth = FormHeight = 0;
-    Drag = 0; Xn = Yn = -1; NObs = 0;
-    IndexObs = NULL;
-    Az = NULL; El = NULL;
-    Week = Flush = PlotType = 0;
-    AnimCycle = 1;
+    formWidth = formHeight = 0;
+    dragState = 0;
+    dragCurrentX = dragCurrentY = -1;
+    nObservation = 0;
+    indexObservation = NULL;
+    week = flush = plotType = 0;
+
     for (int i = 0; i < 2; i++) {
-        initsolbuf(SolData + i, 0, 0);
-        SolStat[i] = solstat0;
-        SolIndex[i] = 0;
+        initsolbuf(solutionData + i, 0, 0);
+        solutionStat[i] = solstat0;
+        solutionIndex[i] = 0;
     }
-    ObsIndex = 0;
-    Obs = obs0;
-    Nav = nav0;
-    Sta = sta0;
-    Gis = gis0;
-    SimObs = 0;
 
-    X0 = Y0 = Xc = Yc = Xs = Ys = Xcent = 0.0;
-    MouseDownTick = 0;
+    obs0.data = NULL; obs0.n = obs0.nmax = 0;
+    nav0.eph = NULL; nav0.n = nav0.nmax = 0;
+    nav0.geph = NULL; nav0.ng = nav0.ngmax = 0;
+    nav0.seph = NULL; nav0.ns = nav0.nsmax = 0;
+
+    observationIndex = 0;
+    observation = obs0;
+    navigation = nav0;
+    station = sta0;
+    gis = gis0;
+    simulatedObservation = 0;
+
+    dragStartX = dragStartY = dragCenterX = dragCenterY = dragScaleX = dragScaleY = centX = 0.0;
+    mouseDownTick = 0;
     GEState = GEDataState[0] = GEDataState[1] = 0;
     GEHeading = 0.0;
-    OEpoch = t0;
-    for (int i = 0; i < 3; i++) OPos[i] = OVel[i] = 0.0;
-    Az = El = NULL;
-    for (int i = 0; i < NFREQ + NEXOBS; i++) Mp[i] = NULL;
 
-    GraphT = new Graph(Disp);
-    GraphT->Fit = 0;
+    originEpoch = t0;
+    for (int i = 0; i < 3; i++)
+        originPosition[i] = originVelocity[i] = 0.0;
+
+    azimuth = elevation = NULL;
+    for (int i = 0; i < NFREQ + NEXOBS; i++)
+        multipath[i] = NULL;
+
+    graphTrack = new Graph(ui->lblDisplay);
+    graphTrack->fit = 0;
+
+    graphSky = new Graph(ui->lblDisplay);
+
+    graphSingle = new Graph(ui->lblDisplay);
+    graphSingle->getLimits(xl, yl);
+    graphSingle->setLimits(xs, yl);
+
+    for (int i = 0; i < 2; i++)
+        graphDual[i] = new Graph(ui->lblDisplay);
 
     for (int i = 0; i < 3; i++) {
-        GraphG[i] = new Graph(Disp);
-        GraphG[i]->XLPos = 0;
-        GraphG[i]->GetLim(xl, yl);
-        GraphG[i]->SetLim(xs, yl);
+        graphTriple[i] = new Graph(ui->lblDisplay);
+        graphTriple[i]->xLabelPosition = Graph::LabelPosition::Off;
+        graphTriple[i]->getLimits(xl, yl);
+        graphTriple[i]->setLimits(xs, yl);
     }
-    GraphR = new Graph(Disp);
-    for (int i = 0; i < 2; i++)
-        GraphE[i] = new Graph(Disp);
-    GraphS = new Graph(Disp);
 
-    GraphR->GetLim(xl, yl);
-    GraphR->SetLim(xs, yl);
+    pointCoordinateType = 0;
 
-    MapSize[0] = MapSize[1] = 0;
-    MapScaleX = MapScaleY = 0.1;
-    MapScaleEq = 0;
-    MapLat = MapLon = 0.0;
-    PointType = 0;
+    wayPoints.clear();
+    selectedWayPoint = -1;
 
-    NWayPnt = 0;
-    SelWayPnt = -1;
+    for (int i = 0; i < 3; i++) timeEnabled[i] = 0;
+    timeInterval = 0.0;
 
-    SkySize[0] = SkySize[1] = 0;
-    SkyCent[0] = SkyCent[1] = 0;
-    SkyScale = SkyScaleR = 240.0;
-    SkyFov[0] = SkyFov[1] = SkyFov[2] = 0.0;
-    SkyElMask = 1;
-    SkyDestCorr = SkyRes = SkyFlip = 0;
+    timeStart = timeEnd = epoch2time(ep);
+    console1 = new Console(this);
+    console2 = new Console(this);
 
-    for (int i = 0; i < 10; i++) SkyDest[i] = 0.0;
+    for (int i = 0; i < 361; i++) elevationMaskData[i] = 0.0;
 
-    SkyBinarize = 0;
-    SkyBinThres1 = 0.3;
-    SkyBinThres2 = 0.1;
+    traceLevel = 0;
+    connectState = openRaw = 0;
+    rtConnectionType = 0;
 
-    for (int i = 0; i < 3; i++) TimeEna[i] = 0;
-    TimeLabel = AutoScale = ShowStats = 0;
-    ShowLabel = ShowGLabel = 1;
-    ShowArrow = ShowSlip = ShowHalfC = ShowErr = ShowEph = 0;
-    PlotStyle = MarkSize = Origin = RcvPos = 0;
-    TimeInt = ElMask = YRange = 0.0;
-    MaxDop = 30.0;
-    MaxMP = 10.0;
-    TimeStart = TimeEnd = epoch2time(ep);
-    Console1 = new Console(this);
-    Console2 = new Console(this);
-    RangeList->setParent(0);
-    RangeList->setWindowFlags(Qt::Window | Qt::WindowStaysOnTopHint | Qt::X11BypassWindowManagerHint | Qt::FramelessWindowHint);
-
-    for (int i = 0; i < 361; i++) ElMaskData[i] = 0.0;
-
-    Trace = 0;
-    ConnectState = OpenRaw = 0;
-    RtConnType = 0;
     strinitcom();
-    strinit(Stream);
-    strinit(Stream + 1);
+    strinit(stream);
+    strinit(stream + 1);
 
-    FrqType->clear();
-    FrqType->addItem("L1/LC");
-    for (int i=0;i<NFREQ;i++) {
-        FrqType->addItem(QString("L%1").arg(i+1));
-    }
-    FrqType->setCurrentIndex(0);
+    ui->cBFrequencyType->clear();
+    ui->cBFrequencyType->addItem(QStringLiteral("L1/LC"));
+    if (NFREQ >= 2) ui->cBFrequencyType->addItem(QStringLiteral("L2/E5b"));
+    if (NFREQ >= 3) ui->cBFrequencyType->addItem(QStringLiteral("L5/E5a"));
+    if (NFREQ >= 4) ui->cBFrequencyType->addItem(QStringLiteral("L6"));
+    if (NFREQ >= 5) ui->cBFrequencyType->addItem(QStringLiteral("L7"));
+    if (NFREQ >= 6) ui->cBFrequencyType->addItem(QStringLiteral("L8"));
+    ui->cBFrequencyType->setCurrentIndex(0);
 
-    TLEData.n = TLEData.nmax = 0;
-    TLEData.data = NULL;
+    tleData.n = tleData.nmax = 0;
+    tleData.data = NULL;
 
+    vecMapDialog = new VecMapDialog(this, this);
     freqDialog = new FreqDialog(this);
-    mapOptDialog = new MapOptDialog(this);
+    mapOptDialog = new MapOptDialog(this, this);
     mapView = new MapView(this);
     spanDialog = new SpanDialog(this);
     connectDialog = new ConnectDialog(this);
     skyImgDialog = new SkyImgDialog(this);
     plotOptDialog = new PlotOptDialog(this);
-    aboutDialog = new AboutDialog(this);
-    pntDialog = new PntDialog(this);
-    fileSelDialog = new FileSelDialog(this);
+    aboutDialog = new AboutDialog(this, QPixmap(":/icons/rtkplot"), PRGNAME);
+    waypointsDialog = new PntDialog(this);
+    fileSelDialog = new FileSelDialog(this, this);
     viewer = new TextViewer(this);
 
-    BtnConnect->setDefaultAction(MenuConnect);
-    BtnReload->setDefaultAction(MenuReload);
-    BtnClear->setDefaultAction(MenuClear);
-    BtnOptions->setDefaultAction(MenuOptions);
-    BtnMapView->setDefaultAction(MenuMapView);
-    BtnCenterOri->setDefaultAction(MenuCenterOri);
-    BtnFitHoriz->setDefaultAction(MenuFitHoriz);
-    BtnFitVert->setDefaultAction(MenuFitVert);
-    BtnShowTrack->setDefaultAction(MenuShowTrack);
-    BtnFixCent->setDefaultAction(MenuFixCent);
-    BtnFixHoriz->setDefaultAction(MenuFixHoriz);
-    BtnFixVert->setDefaultAction(MenuFixVert);
-    BtnShowMap->setDefaultAction(MenuShowMap);
-    BtnShowGrid->setDefaultAction(MenuShowGrid);
-    BtnShowImg->setDefaultAction(MenuShowImg);
-    BtnShowSkyplot->setDefaultAction(MenuShowSkyplot);
-    MenuShowSkyplot->setChecked(true);
-    MenuShowGrid->setChecked(true);
+    ui->btnReload->setDefaultAction(ui->menuReload);
+    ui->btnClear->setDefaultAction(ui->menuClear);
+    ui->btnOptions->setDefaultAction(ui->menuOptions);
+    ui->btnMapView->setDefaultAction(ui->menuMapView);
+    ui->btnCenterOrigin->setDefaultAction(ui->menuCenterOrigin);
+    ui->btnFitHorizontal->setDefaultAction(ui->menuFitHoriz);
+    ui->btnFitVertical->setDefaultAction(ui->menuFitVert);
+    ui->btnShowTrack->setDefaultAction(ui->menuShowTrack);
+    ui->btnFixCenter->setDefaultAction(ui->menuFixCenter);
+    ui->btnFixHorizontal->setDefaultAction(ui->menuFixHoriz);
+    ui->btnFixVertical->setDefaultAction(ui->menuFixVert);
+    ui->btnShowMap->setDefaultAction(ui->menuShowMap);
+    ui->btnShowGrid->setDefaultAction(ui->menuShowGrid);
+    ui->btnShowImage->setDefaultAction(ui->menuShowImage);
+    ui->btnShowSkyplot->setDefaultAction(ui->menuShowSkyplot);
+    ui->menuShowSkyplot->setChecked(true);
+    ui->menuShowGrid->setChecked(true);
+
+    rangeListPopupAction = new QWidgetAction(ui->btnRangeList);
+    lWRangeList = new QListWidget();
+    float rangeValue[] = {0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10};
+    for (int i = 0; i < (int)(sizeof(rangeValue)/sizeof(float)); i++) {
+        float value = rangeValue[i];
+        QString unit;
+
+        if (fmod(value, 1000) == 0) {
+            unit = "km";
+            value /= 1000;
+        } else if ((fmod(value*100, 1) == 0) && (value < 1)) {
+            unit = "cm";
+            value *= 100;
+        } else unit = "m";
+
+        QListWidgetItem *item = new QListWidgetItem();
+        item->setText(QString("%L1 %L2").arg(value).arg(unit));
+        item->setData(Qt::UserRole+1, rangeValue[i]);
+        lWRangeList->addItem(item);
+    }
+    rangeListPopupAction->setDefaultWidget(lWRangeList);
+    ui->btnRangeList->setPopupMode(QToolButton::InstantPopup);
+    ui->btnRangeList->addAction(rangeListPopupAction);
 
     dirModel = new QFileSystemModel(this);
     dirModel->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
 
-    DirSelector = new QTreeView(this);
-    Panel2->layout()->addWidget(DirSelector);
-    DirSelector->setModel(dirModel);
-    DirSelector->hideColumn(1); DirSelector->hideColumn(2); DirSelector->hideColumn(3); //only show names
+    tVdirectorySelector = new QTreeView(this);
+    ui->panelBrowse->layout()->addWidget(tVdirectorySelector);
+    tVdirectorySelector->setModel(dirModel);
+    tVdirectorySelector->hideColumn(1);
+    tVdirectorySelector->hideColumn(2);
+    tVdirectorySelector->hideColumn(3); //only show diretory names
 
     fileModel = new QFileSystemModel(this);
     fileModel->setFilter((fileModel->filter() & ~QDir::Dirs & ~QDir::AllDirs));
     fileModel->setNameFilterDisables(false);
-    FileList->setModel(fileModel);
+    ui->lVFileList->setModel(fileModel);
 
+    connect(ui->btnOn1, &QPushButton::clicked, this, &Plot::updatePlotSizeAndRefresh);
+    connect(ui->btnOn2, &QPushButton::clicked, this, &Plot::updatePlotSizeAndRefresh);
+    connect(ui->btnOn3, &QPushButton::clicked, this, &Plot::updatePlotSizeAndRefresh);
+    connect(ui->btnSolution1, &QPushButton::clicked, this, &Plot::activateSolution1);
+    connect(ui->btnSolution2, &QPushButton::clicked, this, &Plot::activateSolution2);
+    connect(ui->btnSolution12, &QPushButton::clicked, this, &Plot::activateSolution12);
+    connect(ui->btnConnect, &QPushButton::clicked, this, &Plot::toggleConnectState);
+    connect(ui->btnAnimate, &QPushButton::clicked, this, &Plot::updateEnable);
+    connect(ui->btnFrequency, &QPushButton::clicked, this, &Plot::showFrequencyDialog);
+    connect(ui->menuAbout, &QAction::triggered, this, &Plot::showAboutDialog);
+    connect(ui->menuAnimationStart, &QAction::triggered, this, &Plot::menuAnimationStartClicked);
+    connect(ui->menuAnimationStop, &QAction::triggered, this, &Plot::menuAnimationStopClicked);
+    connect(ui->menuBrowse, &QAction::triggered, this, &Plot::updateBrowseBarVisibility);
+    connect(ui->menuCenterOrigin, &QAction::triggered, this, &Plot::centerOrigin);
+    connect(ui->menuClear, &QAction::triggered, this, &Plot::clear);
+    connect(ui->menuConnect, &QAction::triggered, this, &Plot::connectStream);
+    connect(ui->menuDisconnect, &QAction::triggered, this, &Plot::disconnectStream);
+    connect(ui->menuFitHoriz, &QAction::triggered, this, &Plot::fitHorizontally);
+    connect(ui->menuFitVert, &QAction::triggered, this, &Plot::fitVertically);
+    connect(ui->menuFixCenter, &QAction::triggered, this, &Plot::updatePlotAndEnable);
+    connect(ui->menuFixHoriz, &QAction::triggered, this, &Plot::fixHorizontally);
+    connect(ui->menuFixVert, &QAction::triggered, this, &Plot::updatePlotAndEnable);
+    connect(ui->menuMapView, &QAction::triggered, this, &Plot::showMapView);
+    connect(ui->menuMapImage, &QAction::triggered, this, &Plot::showMapOptionDialog);
+    connect(ui->menuMax, &QAction::triggered, this, &Plot::showWindowMaximized);
+    connect(ui->menuMonitor1, &QAction::triggered, this, &Plot::showMonitorConsole1);
+    connect(ui->menuMonitor2, &QAction::triggered, this, &Plot::showMonitorConsole2);
+    connect(ui->menuOpenElevationMask, &QAction::triggered, this, &Plot::openElevationMaskFile);
+    connect(ui->menuOpenMapImage, &QAction::triggered, this, &Plot::openMapImage);
+    connect(ui->menuOpenShape, &QAction::triggered, this, &Plot::openShapeFile);
+    connect(ui->menuOpenNav, &QAction::triggered, this, &Plot::openNavigationFile);
+    connect(ui->menuOpenObs, &QAction::triggered, this, &Plot::openObservationFile);
+    connect(ui->menuOpenSkyImage, &QAction::triggered, this, &Plot::openSkyImage);
+    connect(ui->menuOpenSolution1, &QAction::triggered, this, &Plot::openSolution1);
+    connect(ui->menuOpenSolution2, &QAction::triggered, this, &Plot::openSolution2);
+    connect(ui->menuOptions, &QAction::triggered, this, &Plot::showPlotOptionsDialog);
+    connect(ui->menuPlotMapViewHorizontal, &QAction::triggered, this, &Plot::arrangePlotMapViewHorizontally);
+    connect(ui->menuPort, &QAction::triggered, this, &Plot::showConnectionSettingsDialog);
+    connect(ui->menuQuit, &QAction::triggered, this, &Plot::close);
+    connect(ui->menuReload, &QAction::triggered, this, &Plot::reload);
+    connect(ui->menuSaveDop, &QAction::triggered, this, &Plot::saveDopFile);
+    connect(ui->menuSaveElevationMask, &QAction::triggered, this, &Plot::saveElevationMaskFile);
+    connect(ui->menuSaveImage, &QAction::triggered, this, &Plot::savePlotImage);
+    connect(ui->menuSaveSnrMp, &QAction::triggered, this, &Plot::saveSnrMpFile);
+    connect(ui->menuShowMap, &QAction::triggered, this, &Plot::updatePlotAndEnable);
+    connect(ui->menuShowImage, &QAction::triggered, this, &Plot::updatePlotAndEnable);
+    connect(ui->menuShowGrid, &QAction::triggered, this, &Plot::updateShowGrid);
+    connect(ui->menuShowSkyplot, &QAction::triggered, this, &Plot::updatePlotAndEnable);
+    connect(ui->menuShowTrack, &QAction::triggered, this, &Plot::updateShowTrack);
+    connect(ui->menuSkyImage, &QAction::triggered, this, &Plot::showSkyImageDialog);
+    connect(ui->menuSourceObservation, &QAction::triggered, this, &Plot::showObservationText);
+    connect(ui->menuSourceSolution, &QAction::triggered, this, &Plot::showSolutionText);
+    connect(ui->menuStatusBar, &QAction::triggered, this, &Plot::updateStatusBarVisibility);
+    connect(ui->menuTime, &QAction::triggered, this, &Plot::showStartEndTimeDialog);
+    connect(ui->menuToolBar, &QAction::triggered, this, &Plot::updateToolBarVisibility);
+    connect(ui->menuVisibilityAnalysis, &QAction::triggered, this, &Plot::visibilityAnalysis);
+    connect(ui->menuWaypoints, &QAction::triggered, this, &Plot::showWaypointsDialog);
+    connect(ui->menuMapLayer, &QAction::triggered, this, &Plot::showVectorMapDialog);
+    connect(ui->menuOpenWaypoints, &QAction::triggered, this, &Plot::openWaypointsFile);
+    connect(ui->menuSaveWaypoints, &QAction::triggered, this, &Plot::saveWaypointsFile);
+    connect(ui->btnPointCoordinateType, &QPushButton::clicked, this, &Plot::changePointCoordinateType);
+    connect(lWRangeList, &QListWidget::clicked, this, &Plot::rangeListItemSelected);
+    connect(&timer, &QTimer::timeout, this, &Plot::timerTimer);
+    connect(ui->cBPlotTypeSelection, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updateSelectedPlotType);
+    connect(ui->cBQFlag, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updatePlotAndEnable);
+    connect(ui->sBTime, &QScrollBar::sliderMoved, this, &Plot::updateCurrentObsSol);
+    connect(ui->cBSatelliteList, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::satelliteListChanged);
+    connect(ui->cBDopType, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updatePlotAndEnable);
+    connect(ui->cBObservationType, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updatePlotAndEnable);
+    connect(ui->cBObservationTypeSNR, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updatePlotAndEnable);
+    connect(ui->cBFrequencyType, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updatePlotAndEnable);
+    connect(ui->cBDriveSelect, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::driveSelectChanged);
+    connect(tVdirectorySelector, &QTableView::clicked, this, &Plot::directorySelectionChanged);
+    connect(tVdirectorySelector, &QTableView::doubleClicked, this, &Plot::directorySelectionSelected);
+    connect(ui->btnDirectorySelect, &QPushButton::clicked, this, &Plot::btnDirectorySelectorClicked);
+    connect(ui->lVFileList, &QListView::clicked, this, &Plot::fileListClicked);
+    connect(ui->cBFilter, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::filterClicked);
 
-    connect(BtnOn1, SIGNAL(clicked(bool)), this, SLOT(BtnOn1Click()));
-    connect(BtnOn2, SIGNAL(clicked(bool)), this, SLOT(BtnOn2Click()));
-    connect(BtnOn3, SIGNAL(clicked(bool)), this, SLOT(BtnOn3Click()));
-    connect(BtnSol1, SIGNAL(clicked(bool)), this, SLOT(BtnSol1Click()));//FIXME Double Click
-    connect(BtnSol2, SIGNAL(clicked(bool)), this, SLOT(BtnSol2Click()));
-    connect(BtnSol12, SIGNAL(clicked(bool)), this, SLOT(BtnSol12Click()));
-    connect(BtnRangeList, SIGNAL(clicked(bool)), this, SLOT(BtnRangeListClick()));
-    connect(BtnAnimate, SIGNAL(clicked(bool)), this, SLOT(BtnAnimateClick()));
-    connect(MenuAbout, SIGNAL(triggered(bool)), this, SLOT(MenuAboutClick()));
-    connect(MenuAnimStart, SIGNAL(triggered(bool)), this, SLOT(MenuAnimStartClick()));
-    connect(MenuAnimStop, SIGNAL(triggered(bool)), this, SLOT(MenuAnimStopClick()));
-    connect(MenuBrowse, SIGNAL(triggered(bool)), this, SLOT(MenuBrowseClick()));
-    connect(MenuCenterOri, SIGNAL(triggered(bool)), this, SLOT(MenuCenterOriClick()));
-    connect(MenuClear, SIGNAL(triggered(bool)), this, SLOT(MenuClearClick()));
-    connect(MenuConnect, SIGNAL(triggered(bool)), this, SLOT(MenuConnectClick()));
-    connect(MenuDisconnect, SIGNAL(triggered(bool)), this, SLOT(MenuDisconnectClick()));
-    connect(MenuFitHoriz, SIGNAL(triggered(bool)), this, SLOT(MenuFitHorizClick()));
-    connect(MenuFitVert, SIGNAL(triggered(bool)), this, SLOT(MenuFitVertClick()));
-    connect(MenuFixCent, SIGNAL(triggered(bool)), this, SLOT(MenuFixCentClick()));
-    connect(MenuFixHoriz, SIGNAL(triggered(bool)), this, SLOT(MenuFixHorizClick()));
-    connect(MenuFixVert, SIGNAL(triggered(bool)), this, SLOT(MenuFixVertClick()));
-    connect(MenuMapView, SIGNAL(triggered(bool)), this, SLOT(MenuMapViewClick()));
-    connect(MenuMapImg, SIGNAL(triggered(bool)), this, SLOT(MenuMapImgClick()));
-    connect(MenuMax, SIGNAL(triggered(bool)), this, SLOT(MenuMaxClick()));
-    connect(MenuMonitor1, SIGNAL(triggered(bool)), this, SLOT(MenuMonitor1Click()));
-    connect(MenuMonitor2, SIGNAL(triggered(bool)), this, SLOT(MenuMonitor2Click()));
-    connect(MenuOpenElevMask, SIGNAL(triggered(bool)), this, SLOT(MenuOpenElevMaskClick()));
-    connect(MenuOpenMapImage, SIGNAL(triggered(bool)), this, SLOT(MenuOpenMapImageClick()));
-    connect(MenuOpenShape, SIGNAL(triggered(bool)), this, SLOT(MenuOpenShapeClick()));
-    connect(MenuOpenNav, SIGNAL(triggered(bool)), this, SLOT(MenuOpenNavClick()));
-    connect(MenuOpenObs, SIGNAL(triggered(bool)), this, SLOT(MenuOpenObsClick()));
-    connect(MenuOpenSkyImage, SIGNAL(triggered(bool)), this, SLOT(MenuOpenSkyImageClick()));
-    connect(MenuOpenSol1, SIGNAL(triggered(bool)), this, SLOT(MenuOpenSol1Click()));
-    connect(MenuOpenSol2, SIGNAL(triggered(bool)), this, SLOT(MenuOpenSol2Click()));
-    connect(MenuOptions, SIGNAL(triggered(bool)), this, SLOT(MenuOptionsClick()));
-    connect(MenuPlotMapView, SIGNAL(triggered(bool)), this, SLOT(MenuPlotMapViewClick()));
-    connect(MenuPort, SIGNAL(triggered(bool)), this, SLOT(MenuPortClick()));
-    connect(MenuShapeFile, SIGNAL(triggered(bool)), this, SLOT(MenuShapeFileClick()));
-    connect(MenuQuit, SIGNAL(triggered(bool)), this, SLOT(MenuQuitClick()));
-    connect(MenuReload, SIGNAL(triggered(bool)), this, SLOT(MenuReloadClick()));
-    connect(MenuSaveDop, SIGNAL(triggered(bool)), this, SLOT(MenuSaveDopClick()));
-    connect(MenuSaveElMask, SIGNAL(triggered(bool)), this, SLOT(MenuSaveElMaskClick()));
-    connect(MenuSaveImage, SIGNAL(triggered(bool)), this, SLOT(MenuSaveImageClick()));
-    connect(MenuSaveSnrMp, SIGNAL(triggered(bool)), this, SLOT(MenuSaveSnrMpClick()));
-    connect(MenuShowMap, SIGNAL(triggered(bool)), this, SLOT(MenuShowMapClick()));
-    connect(MenuShowImg, SIGNAL(triggered(bool)), this, SLOT(MenuShowImgClick()));
-    connect(MenuShowGrid, SIGNAL(triggered(bool)), this, SLOT(MenuShowGridClick()));
-    connect(MenuShowSkyplot, SIGNAL(triggered(bool)), this, SLOT(MenuShowSkyplotClick()));
-    connect(MenuShowTrack, SIGNAL(triggered(bool)), this, SLOT(MenuShowTrackClick()));
-    connect(MenuSkyImg, SIGNAL(triggered(bool)), this, SLOT(MenuSkyImgClick()));
-    connect(MenuSrcObs, SIGNAL(triggered(bool)), this, SLOT(MenuSrcObsClick()));
-    connect(MenuSrcSol, SIGNAL(triggered(bool)), this, SLOT(MenuSrcSolClick()));
-    connect(MenuStatusBar, SIGNAL(triggered(bool)), this, SLOT(MenuStatusBarClick()));
-    connect(MenuTime, SIGNAL(triggered(bool)), this, SLOT(MenuTimeClick()));
-    connect(MenuToolBar, SIGNAL(triggered(bool)), this, SLOT(MenuToolBarClick()));
-    connect(MenuVisAna, SIGNAL(triggered(bool)), this, SLOT(MenuVisAnaClick()));
-    connect(MenuWaypnt, SIGNAL(triggered(bool)), this, SLOT(MenuWaypointClick()));
-    connect(MenuMapLayer, SIGNAL(triggered(bool)), this, SLOT(MenuMapLayerClick()));
-    connect(MenuOpenWaypoint, SIGNAL(triggered(bool)), this, SLOT(MenuOpenWaypointClick()));
-    connect(MenuSaveWaypoint, SIGNAL(triggered(bool)), this, SLOT(MenuSaveWaypointClick()));
-    connect(BtnMessage2, SIGNAL(clicked(bool)), this, SLOT(BtnMessage2Click()));
-    connect(RangeList, SIGNAL(clicked(QModelIndex)), this, SLOT(RangeListClick()));
-    connect(&Timer, SIGNAL(timeout()), this, SLOT(TimerTimer()));
-    connect(PlotTypeS, SIGNAL(currentIndexChanged(int)), this, SLOT(PlotTypeSChange()));
-    connect(QFlag, SIGNAL(currentIndexChanged(int)), this, SLOT(QFlagChange()));
-    connect(TimeScroll, SIGNAL(valueChanged(int)), this, SLOT(TimeScrollChange()));
-    connect(SatList, SIGNAL(currentIndexChanged(int)), this, SLOT(SatListChange()));
-    connect(DopType, SIGNAL(currentIndexChanged(int)), this, SLOT(DopTypeChange()));
-    connect(ObsType, SIGNAL(currentIndexChanged(int)), this, SLOT(ObsTypeChange()));
-    connect(ObsType2, SIGNAL(currentIndexChanged(int)), this, SLOT(ObsTypeChange()));
-    connect(FrqType, SIGNAL(currentIndexChanged(int)), this, SLOT(ObsTypeChange()));
-    connect(DriveSel, SIGNAL(currentIndexChanged(QString)), this, SLOT(DriveSelChanged()));
-    connect(DirSelector, SIGNAL(clicked(QModelIndex)), this, SLOT(DirSelChange(QModelIndex)));
-    connect(DirSelector, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(DirSelSelected(QModelIndex)));
-    connect(BtnDirSel, SIGNAL(clicked(bool)), this, SLOT(BtnDirSelClick()));
-    connect(FileList, SIGNAL(clicked(QModelIndex)), this, SLOT(FileListClick(QModelIndex)));
-    connect(Filter, SIGNAL(currentIndexChanged(QString)), this, SLOT(FilterClick()));
+    ui->statusbar->addPermanentWidget(ui->lblMessage2);
+    ui->statusbar->addPermanentWidget(ui->btnPointCoordinateType);
 
-
-    bool state = false;
-#ifdef QWEBKIT
-    state = true;
-#endif
+    bool mapAvailable = false;
 #ifdef QWEBENGINE
-    state = true;
+    mapAvailable = true;
 #endif
-    MenuMapView->setEnabled(state);
-    MenuPlotMapView->setEnabled(state);
+    ui->menuMapView->setEnabled(mapAvailable);
+    ui->menuPlotMapViewHorizontal->setEnabled(mapAvailable);
 
-    Disp->setAttribute(Qt::WA_OpaquePaintEvent);
+    ui->lblDisplay->setAttribute(Qt::WA_OpaquePaintEvent);
     setMouseTracking(true);
 
-    LoadOpt();
+    loadOptions();
 
-    updateTime.start();
+    updateTimer.start();
     qApp->installEventFilter(this);
 }
 // destructor ---------------------------------------------------------------
 Plot::~Plot()
 {
-    delete [] IndexObs;
-    delete [] Az;
-    delete [] El;
+    delete [] indexObservation;
+    delete [] azimuth;
+    delete [] elevation;
 
-    for (int i = 0; i < NFREQ + NEXOBS; i++) delete Mp[i];
+    for (int i = 0; i < NFREQ + NEXOBS; i++) delete multipath[i];
 
-    delete GraphT;
-    delete GraphR;
-    delete GraphS;
+    delete graphTrack;
+    delete graphSingle;
+    delete graphSky;
+
     for (int i = 0; i < 2; i++)
-        delete GraphE[i];
+        delete graphDual[i];
     for (int i = 0; i < 3; i++)
-        delete GraphG[i];
-    delete RangeList;
+        delete graphTriple[i];
 
-    delete DirSelector;
+    delete lWRangeList;
+
+    delete tVdirectorySelector;
 }
 // callback on all events ----------------------------------------------------
 bool Plot::eventFilter(QObject *obj, QEvent *event)
 {
-    if ((obj == Disp) && (event->type() == QEvent::MouseMove))
+    if (event->type() == QEvent::MouseMove)
     {
-        QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
-        if (childAt(mouseEvent->pos()) == Disp)
+        if (obj == ui->lblDisplay) {
+            QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
             mouseMove(mouseEvent);
+            return true;
+        } else
+            ui->lblMessage2->setText("");
     }
-    if ((obj == Disp) && (event->type() == QEvent::Resize))
+    if (event->type() == QEvent::Resize)
     {
-        UpdateSize();
-        Refresh();
+        if (obj == ui->lblDisplay) {
+            updatePlotSizes();
+            refresh();
+            return true;
+        }
+    }
+
+    // buttons in Qt do not support capturing double-clicks
+    if ((obj == ui->btnSolution1) && (event->type() == QEvent::MouseButtonDblClick))
+    {
+        openSolution1();
+        event->accept();
+        return true;
+    }
+    if ((obj == ui->btnSolution2) && (event->type() == QEvent::MouseButtonDblClick))
+    {
+        openSolution2();
+        event->accept();
+        return true;
     }
 
     return false;
@@ -406,16 +439,15 @@ bool Plot::eventFilter(QObject *obj, QEvent *event)
 void Plot::showEvent(QShowEvent *event)
 {
     if (event->spontaneous()) {
-        Refresh();
+        refresh();
         return;
     }
-    QString path1 = "", path2 = "";
-    char str_path[256];
+    QString path1, path2;
 
-    trace(3, "FormShow\n");
+    trace(3, "showEvent\n");
 
     QCommandLineParser parser;
-    parser.setApplicationDescription("RTK plot");
+    parser.setApplicationDescription(tr("RTK plot"));
     parser.addHelpOption();
     parser.addVersionOption();
 
@@ -453,9 +485,9 @@ void Plot::showEvent(QShowEvent *event)
     parser.process(*QApplication::instance());
 
     if (parser.isSet(rawOption))
-        OpenRaw = 1;
+        openRaw = 1;
     if (parser.isSet(titleOption))
-        Title = parser.value(titleOption);
+        title = parser.value(titleOption);
     if (parser.isSet(pathOption))
         path1 = parser.value(pathOption);
     if (parser.isSet(path1Option))
@@ -463,130 +495,129 @@ void Plot::showEvent(QShowEvent *event)
     if (parser.isSet(path2Option))
         path2 = parser.value(path2Option);
     if (parser.isSet(traceOption))
-        Trace = parser.value(traceOption).toInt();
+        traceLevel = parser.value(traceOption).toInt();
 
     const QStringList args = parser.positionalArguments();
-    QString file;
-    foreach(file, args)
-    OpenFiles.append(file);
+    foreach(const QString &file, args)
+        openFiles.append(file);
 
-    if (Trace>0) {
+    if (traceLevel > 0) {
         traceopen(TRACEFILE);
-        tracelevel(Trace);
+        tracelevel(traceLevel);
     }
-    LoadOpt();
+    loadOptions();
 
-    UpdateType(PlotType >= PLOT_OBS ? PLOT_TRK : PlotType);
+    updatePlotType(plotType >= PLOT_OBS ? PLOT_TRK : plotType);
 
-    UpdateColor();
-    UpdateSatMask();
-    UpdateOrigin();
-    UpdateSize();
+    updateColor();
+    updateSatelliteMask();
+    updateOrigin();
+    updatePlotSizes();
 
-    if (path1 != "" || path2 != "") {
-        ConnectPath(path1, 0);
-        ConnectPath(path2, 1);
-        Connect();
-    } else if (OpenFiles.count() <= 0) {
-        setWindowTitle(Title != "" ? Title : QString(tr("%1 ver. %2 %3")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
+    if (!path1.isEmpty() || !path2.isEmpty()) {
+        connectPath(path1, 0);
+        connectPath(path2, 1);
+        connectStream();
+    } else if (openFiles.count() <= 0) {
+        setWindowTitle(!title.isEmpty() ? title : tr("%1 ver. %2 %3").arg(PRGNAME, VER_RTKLIB, PATCH_LEVEL));
     }
-    if (ShapeFile!="") {
+
+    if (!plotOptDialog->getShapeFile().isEmpty()) {
         QStringList files;
-        char *paths[MAXSHAPEFILE];
-        for (int i=0;i<MAXSHAPEFILE;i++) {
-            paths[i]=new char [1024];
-        }
-        int n=expath(qPrintable(ShapeFile),paths,MAXSHAPEFILE);
+        char *paths[qMaxSHAPEFILE];
 
-        for (int i=0;i<n;i++) {
+        for (int i = 0; i < qMaxSHAPEFILE; i++) {
+            paths[i] = new char [1024];
+        }
+        int n = expath(qPrintable(plotOptDialog->getShapeFile()), paths, qMaxSHAPEFILE);
+
+        for (int i = 0; i < n; i++) {
             files.append(paths[i]);
         }
-        ReadShapeFile(files);
+        readShapeFile(files);
 
-        for (int i=0;i<MAXSHAPEFILE;i++) {
-            delete [] paths[i];
+        for (int i = 0; i < qMaxSHAPEFILE; i++) {
+            delete[] paths[i];
         }
     }
-    if (TLEFile != "")
-        tle_read(qPrintable(TLEFile), &TLEData);
-    if (TLESatFile != "")
-        tle_name_read(qPrintable(TLESatFile), &TLEData);
+
+    if (!plotOptDialog->getTleFile().isEmpty())
+        tle_read(qPrintable(plotOptDialog->getTleFile()), &tleData);
+    if (!plotOptDialog->getTleSatelliteFile().isEmpty())
+        tle_name_read(qPrintable(plotOptDialog->getTleSatelliteFile()), &tleData);
 
     QFileInfoList drives = QDir::drives();
     if (drives.size() > 1 && drives.at(0).filePath() != "/") {
-        Panel1->setVisible(true);
-        DriveSel->clear();
+        ui->panelDrive->setVisible(true);
+        ui->cBDriveSelect->clear();
 
         foreach(const QFileInfo &drive, drives) {
-            DriveSel->addItem(drive.filePath());
+            ui->cBDriveSelect->addItem(drive.filePath());
         }
     } else {
-        Panel1->setVisible(false); // do not show drive selection on unix
+        ui->panelDrive->setVisible(false); // do not show drive selection on unix
     }
-    if (Dir == "") Dir = drives.at(0).filePath();
+    if (directory.isEmpty()) directory = drives.at(0).filePath();
 
-    DriveSel->setCurrentText(Dir.mid(0, Dir.indexOf(":") + 2));
-    dirModel->setRootPath(Dir);
-    DirSelector->setVisible(false);
-    DirSelected->setText(Dir);
-    fileModel->setRootPath(Dir);
-    FileList->setRootIndex(fileModel->index(Dir));
-    FilterClick();
+    ui->cBDriveSelect->setCurrentText(directory.mid(0, directory.indexOf(":") + 2));  // preselect correct drive
+    dirModel->setRootPath(directory);
+    tVdirectorySelector->setVisible(false);
+    ui->lblDirectorySelected->setText(directory);
+    fileModel->setRootPath(directory);
+    ui->lVFileList->setRootIndex(fileModel->index(directory));
+    filterClicked();
 
-    if (MenuBrowse->isChecked()) {
-        PanelBrowse->setVisible(true);
-    }
-    else {
-        PanelBrowse->setVisible(false);
-    }
-
-    strinit(&StrTimeSync);
-    NStrBuff=0;
-
-    if (TimeSyncOut) {
-        sprintf(str_path,":%d",TimeSyncPort);
-        stropen(&StrTimeSync,STR_TCPSVR,STR_MODE_RW,str_path);
+    if (ui->menuBrowse->isChecked()) {
+        ui->panelBrowse->setVisible(true);
+    } else {
+        ui->panelBrowse->setVisible(false);
     }
 
-    Timer.start(RefCycle);
-    UpdatePlot();
-    UpdateEnable();
+    strinit(&streamTimeSync);
+    nStreamBuffer = 0;
 
-    if (OpenFiles.count() > 0) {
-        if (CheckObs(OpenFiles.at(0)) || OpenRaw) ReadObs(OpenFiles);
-        else ReadSol(OpenFiles, 0);
+    if (plotOptDialog->getTimeSyncOut()) {
+        stropen(&streamTimeSync, STR_TCPSVR, STR_MODE_RW, qPrintable(QStringLiteral(":%1").arg(plotOptDialog->getTimeSyncPort())));
+    }
+
+    timer.start(plotOptDialog->getRefreshCycle());
+    updatePlot();
+    updateEnable();
+
+    if (openFiles.count() > 0) {
+        if (isObservation(openFiles.at(0)) || openRaw)
+            readObservation(openFiles);
+        else
+            readSolution(openFiles, 0);
     }
 }
 // callback on form-close ---------------------------------------------------
 void Plot::closeEvent(QCloseEvent *)
 {
-    trace(3, "FormClose\n");
+    trace(3, "closeEvent\n");
 
-    RangeList->setVisible(false);
+    lWRangeList->hide();
 
-    SaveOpt();
+    saveOption();
 
-    if (Trace > 0) traceclose();
+    if (traceLevel > 0) traceclose();
 }
 
 // callback for painting   --------------------------------------------------
 void Plot::paintEvent(QPaintEvent *)
 {
-    UpdateDisp();
+    updateDisplay();
 }
 // callback on form-resize --------------------------------------------------
 void Plot::resizeEvent(QResizeEvent *)
 {
-    trace(3, "FormResize\n");
+    trace(3, "resizeEvent\n");
 
     // suppress repeated resize callback
-    if (FormWidth == width() && FormHeight == height()) return;
+    if (formWidth == width() && formHeight == height()) return;
 
-    UpdateSize();
-    Refresh();
-
-    FormWidth = width();
-    FormHeight = height();
+    formWidth = width();
+    formHeight = height();
 }
 // callback on drag-and-drop files ------------------------------------------
 void Plot::dragEnterEvent(QDragEnterEvent *event)
@@ -601,638 +632,560 @@ void Plot::dragEnterEvent(QDragEnterEvent *event)
 void Plot::dropEvent(QDropEvent *event)
 {
     QStringList files;
-    int n;
 
     trace(3, "dropEvent\n");
 
-    if (ConnectState || !event->mimeData()->hasUrls())
+    if (connectState || !event->mimeData()->hasUrls())
         return;
+
     foreach(QUrl url, event->mimeData()->urls()) {
         files.append(QDir::toNativeSeparators(url.toString()));
     }
 
-    QString file=files.at(0);
+    const QString &file = files.at(0);
 
-    if (files.size() == 1 && (n = files.at(0).lastIndexOf('.')) != -1) {
-        QString ext = files.at(0).mid(n).toLower();
+    if (files.size() == 1) {
+        QFileInfo fi(file);
+        QString ext = fi.completeSuffix();
         if ((ext == "jpg") || (ext == "jpeg")) {
-            if (PlotType == PLOT_TRK)
-                ReadMapData(file);
-            else if (PlotType == PLOT_SKY || PlotType == PLOT_MPS)
-                ReadSkyData(file);
-        }
-        ;
-    } else if (CheckObs(files.at(0))) {
-        ReadObs(files);
-    } else if (!BtnSol1->isChecked() && BtnSol2->isChecked()) {
-        ReadSol(files, 1);
+            if (plotType == PLOT_TRK)
+                readMapData(file);
+            else if (plotType == PLOT_SKY || plotType == PLOT_MPS)
+                readSkyData(file);
+        };
+    } else if (isObservation(files.at(0))) {
+        readObservation(files);
+    } else if (!ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked()) {
+        readSolution(files, 1);
     } else {
-        ReadSol(files, 0);
+        readSolution(files, 0);
     }
 }
 // callback on menu-open-solution-1 -----------------------------------------
-void Plot::MenuOpenSol1Click()
+void Plot::openSolution1()
 {
-    trace(3, "MenuOpenSol1Click\n");
+    trace(3, "openSolution1\n");
 
-    ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Solution 1"), QString(), tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)")))), 0);
+    readSolution(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Solution 1"), solutionFiles[0].value(0), tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)")))), 0);
 }
 // callback on menu-open-solution-2 -----------------------------------------
-void Plot::MenuOpenSol2Click()
+void Plot::openSolution2()
 {
-    trace(3, "MenuOpenSol2Click\n");
+    trace(3, "openSolution2\n");
 
-    ReadSol(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Solution 2"), QString(), tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)")))), 1);
+    readSolution(QStringList(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Solution 2"), solutionFiles[1].value(0), tr("Solution File (*.pos *.stat *.nmea *.txt *.ubx);;All (*.*)")))), 1);
 }
 // callback on menu-open-map-image ------------------------------------------
-void Plot::MenuOpenMapImageClick()
+void Plot::openMapImage()
 {
-    trace(3, "MenuOpenMapImage\n");
+    trace(3, "openMapImage\n");
 
-    ReadMapData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Map Image"), MapImageFile, tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
+    readMapData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Map Image"), mapImageFile, tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
 }
 // callback on menu-open-track-points ---------------------------------------
-void Plot::MenuOpenShapeClick()
+void Plot::openShapeFile()
 {
-    trace(3, "MenuOpenShapePath\n");
+    trace(3, "openShapeFile\n");
 
     QStringList files = QFileDialog::getOpenFileNames(this, tr("Open Shape File"), QString(), tr("Shape File (*.shp);;All (*.*)"));
     for (int i = 0; i < files.size(); i++)
         files[i] = QDir::toNativeSeparators(files.at(i));
 
-    ReadShapeFile(files);
+    readShapeFile(files);
 }
 // callback on menu-open-sky-image ------------------------------------------
-void Plot::MenuOpenSkyImageClick()
+void Plot::openSkyImage()
 {
-    trace(3, "MenuOpenSkyImage\n");
+    trace(3, "openSkyImage\n");
 
-    ReadSkyData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Sky Image"), SkyImageFile, tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
+    readSkyData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Sky Image"), skyImageFile, tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
 }
 // callback on menu-oepn-waypoint -------------------------------------------
-void Plot::MenuOpenWaypointClick()
+void Plot::openWaypointsFile()
 {
-    trace(3, "MenuOpenWaypointClick\n");
+    trace(3, "openWaypointFile\n");
 
-    ReadWaypoint(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Waypoint"), SkyImageFile, tr("Waypoint File (*.gpx, *.pos);;All (*.*)"))));
+    readWaypoints(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Waypoints"), QString(), tr("Waypoints File (*.gpx *.pos);;All (*.*)"))));
 }
 // callback on menu-open-obs-data -------------------------------------------
-void Plot::MenuOpenObsClick()
+void Plot::openObservationFile()
 {
-    trace(3, "MenuOpenObsClick\n");
-    ReadObs(QFileDialog::getOpenFileNames(this, tr("Open Obs/Nav Data"), QString(), tr("RINEX OBS (*.obs *.*o *.*d *.O.rnx *.*o.gz *.*o.Z *.d.gz *.d.Z);;All (*.*)")));
+    trace(3, "openObservationFile\n");
+    readObservation(QFileDialog::getOpenFileNames(this, tr("Open Obs/Nav Data"), observationFiles.value(0), tr("RINEX OBS (*.obs *.*o *.*O *.*d *.O.rnx *O.rnx *O.rnx.gz *O.crx *O.crx.gz *.*o.gz *.*o.Z *.d.gz *.d.Z);;All (*.*)")));
 }
 // callback on menu-open-nav-data -------------------------------------------
-void Plot::MenuOpenNavClick()
+void Plot::openNavigationFile()
 {
-    trace(3, "MenuOpenNavClick\n");
+    trace(3, "openNavigationFile\n");
 
-    ReadNav(QFileDialog::getOpenFileNames(this, tr("Open Raw Obs/Nav Messages"), QString(), tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p *N.rnx);;All (*.*)")));
+    readNavigation(QFileDialog::getOpenFileNames(this, tr("Open Raw Obs/Nav Messages"), navigationFiles.value(0), tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p *N.rnx *N.rnx.gz);;All (*.*)")));
 }
 // callback on menu-open-elev-mask ------------------------------------------
-void Plot::MenuOpenElevMaskClick()
+void Plot::openElevationMaskFile()
 {
-    trace(3, "MenuOpenElevMaskClick\n");
+    trace(3, "openElevationMaskFile\n");
 
-    ReadElMaskData(QDir::toNativeSeparators(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Opene Elevation Mask"), QString(), tr("Text File (*.txt);;All (*.*)")))));
+    readElevationMaskData(QDir::toNativeSeparators(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Elevation Mask"), QString(), tr("Text File (*.txt);;All (*.*)")))));
 }
 // callback on menu-vis-analysis --------------------------------------------
-void Plot::MenuVisAnaClick()
+void Plot::visibilityAnalysis()
 {
-    if (RcvPos != 1) { // lat/lon/height
-        ShowMsg(tr("specify Receiver Position as Lat/Lon/Hgt"));
+    if (plotOptDialog->getReceiverPosition() != 1) { // lat/lon/height
+        QMessageBox::information(this, tr("Visibility analysis failed."),
+                                 tr("Please set \"Receiver Position\" to \"Lat/Lon/Height\" in the option dialog and provide its coordinates."));
         return;
     }
-    if (spanDialog->TimeStart.time == 0) {
-        int week;
-        double tow = time2gpst(utc2gpst(timeget()), &week);
-        spanDialog->TimeStart = gpst2time(week, floor(tow / 3600.0) * 3600.0);
-        spanDialog->TimeEnd = timeadd(spanDialog->TimeStart, 86400.0);
-        spanDialog->TimeInt = 30.0;
+    if (plotOptDialog->getTleFile().isEmpty() || plotOptDialog->getTleSatelliteFile().isEmpty()) {
+        QMessageBox::information(this, tr("Visibility analysis failed."),
+                                 tr("Please specify TLE data in the option dialog."));
+        return;
     }
-    spanDialog->TimeEna[0] = spanDialog->TimeEna[1] = spanDialog->TimeEna[2] = 1;
-    spanDialog->TimeVal[0] = spanDialog->TimeVal[1] = spanDialog->TimeVal[2] = 2;
+
+    if (spanDialog->getStartTime().time == 0) {
+        int week;
+        gtime_t now;
+        double tow = time2gpst(utc2gpst(timeget()), &week);
+
+        now = gpst2time(week, floor(tow / 3600.0) * 3600.0);
+        spanDialog->setStartTime(now);
+        spanDialog->setEndTime(timeadd(now, 86400.0));
+        spanDialog->setTimeInterval(30.0);
+    }
+    for (int i = 0; i < 3; i++) {
+        spanDialog->setTimeEnable(i, true);
+        spanDialog->setTimeValid(i, 2);
+    }
 
     spanDialog->exec();
 
     if (spanDialog->result() == QDialog::Accepted) {
-        TimeStart = spanDialog->TimeStart;
-        TimeEnd = spanDialog->TimeEnd;
-        TimeInt = spanDialog->TimeInt;
-        GenVisData();
+        timeStart = spanDialog->getStartTime();
+        timeEnd = spanDialog->getEndTime();
+        timeInterval = spanDialog->getTimeInterval();
+        generateVisibilityData();
     }
-    spanDialog->TimeVal[0] = spanDialog->TimeVal[1] = spanDialog->TimeVal[2] = 1;
+    for (int i = 0; i < 3; i++)
+        spanDialog->setTimeValid(i, 1);
 }
 // callback on menu-save image ----------------------------------------------
-void Plot::MenuSaveImageClick()
+void Plot::savePlotImage()
 {
-    Buff.save(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Image"), QString(), tr("JPEG  (*.jpg);;Windows Bitmap (*.bmp)"))));
+    trace(3, "savePlotImage\n");
+    buffer.save(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Image"), QString(), tr("JPEG  (*.jpg);;Windows Bitmap (*.bmp)"))));
 }
 // callback on menu-save-waypoint -------------------------------------------
-void Plot::MenuSaveWaypointClick()
+void Plot::saveWaypointsFile()
 {
-    trace(3, "MenuSaveWaypointClick\n");
+    trace(3, "saveWaypointsFile\n");
 
-    SaveWaypoint(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Waypoint"), QString(), tr("GPX File (*.gpx, *.pos);;All (*.*)"))));
+    saveWaypoints(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Waypoints"), QString(), tr("GPX File (*.gpx *.pos);;All (*.*)"))));
 }
 // callback on menu-save-# of sats/dop --------------------------------------
-void Plot::MenuSaveDopClick()
+void Plot::saveDopFile()
 {
-    trace(3, "MenuSaveDopClick\n");
+    trace(3, "saveDopFile\n");
 
-    SaveDop(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Data"), QString(), tr("All (*.*);;Text File (*.txt)"))));
+    saveDop(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Data"), QString(), tr("All (*.*);;Text File (*.txt)"))));
 }
 // callback on menu-save-snr,azel -------------------------------------------
-void Plot::MenuSaveSnrMpClick()
+void Plot::saveSnrMpFile()
 {
-    trace(3, "MenuSaveSnrMpClick\n");
+    trace(3, "saveSnrMpFile\n");
 
-    SaveSnrMp(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Data"), QString(), tr("All (*.*);;Text File (*.txt)"))));
+    saveSnrMp(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Data"), QString(), tr("All (*.*);;Text File (*.txt)"))));
 }
 // callback on menu-save-elmask ---------------------------------------------
-void Plot::MenuSaveElMaskClick()
+void Plot::saveElevationMaskFile()
 {
-    trace(3, "MenuSaveElMaskClick\n");
+    trace(3, "saveElevationMaskFile\n");
 
-    SaveElMask(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Data"), QString(), tr("All (*.*);;Text File (*.txt)"))));
-}
-// callback on menu-connect -------------------------------------------------
-void Plot::MenuConnectClick()
-{
-    trace(3, "MenuConnectClick\n");
-
-    Connect();
-}
-// callback on menu-disconnect ----------------------------------------------
-void Plot::MenuDisconnectClick()
-{
-    trace(3, "MenuDisconnectClick\n");
-
-    Disconnect();
+    saveElevationMask(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Data"), QString(), tr("All (*.*);;Text File (*.txt)"))));
 }
 // callback on menu-connection-settings -------------------------------------
-void Plot::MenuPortClick()
+void Plot::showConnectionSettingsDialog()
 {
-    int i;
+    trace(3, "showConnectionSettingsDialog\n");
 
-    trace(3, "MenuPortClick\n");
+    for (int i = 0; i < 2; i++) {
+        connectDialog->setStreamType(i, rtStream[i]);
+        connectDialog->setStreamFormat(i, rtFormat[i]);
+    }
+    connectDialog->setTimeFormat(rtTimeFormat);
+    connectDialog->setDegFormat(rtDegFormat);
+    connectDialog->setFieldSeparator(rtFieldSeperator);
+    connectDialog->setTimeoutTime(rtTimeoutTime);
+    connectDialog->setReconnectTime(rtReconnectTime);
+    for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 3; j++)
+            connectDialog->setPath(i, j, streamPaths[i][j]);
 
-    connectDialog->Stream1 = RtStream[0];
-    connectDialog->Stream2 = RtStream[1];
-    connectDialog->Format1 = RtFormat[0];
-    connectDialog->Format2 = RtFormat[1];
-    connectDialog->TimeForm = RtTimeForm;
-    connectDialog->DegForm = RtDegForm;
-    connectDialog->FieldSep = RtFieldSep;
-    connectDialog->TimeOutTime = RtTimeOutTime;
-    connectDialog->ReConnTime = RtReConnTime;
-    for (i = 0; i < 3; i++) {
-        connectDialog->Paths1[i] = StrPaths[0][i];
-        connectDialog->Paths2[i] = StrPaths[1][i];
+    for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 2; j++) {
+            connectDialog->setCommands(i, j, streamCommands[i][j]);
+            connectDialog->setCommandsEnabled(i,j, streamCommandEnabled[i][j]);
     }
-    for (i = 0; i < 2; i++) {
-        connectDialog->Cmds1  [i] = StrCmds[0][i];
-        connectDialog->Cmds2  [i] = StrCmds[1][i];
-        connectDialog->CmdEna1[i] = StrCmdEna[0][i];
-        connectDialog->CmdEna2[i] = StrCmdEna[1][i];
-    }
-    for (i = 0; i < 10; i++) connectDialog->TcpHistory [i] = StrHistory [i];
+    for (int i = 0; i < 10; i++) connectDialog->setHistory(i, streamHistory[i]);
 
     connectDialog->exec();
-
     if (connectDialog->result() != QDialog::Accepted) return;
 
-    RtStream[0] = connectDialog->Stream1;
-    RtStream[1] = connectDialog->Stream2;
-    RtFormat[0] = connectDialog->Format1;
-    RtFormat[1] = connectDialog->Format2;
-    RtTimeForm = connectDialog->TimeForm;
-    RtDegForm = connectDialog->DegForm;
-    RtFieldSep = connectDialog->FieldSep;
-    RtTimeOutTime = connectDialog->TimeOutTime;
-    RtReConnTime = connectDialog->ReConnTime;
-    for (i = 0; i < 3; i++) {
-        StrPaths[0][i] = connectDialog->Paths1[i];
-        StrPaths[1][i] = connectDialog->Paths2[i];
+    for (int i = 0; i < 2; i++) {
+        rtStream[i] = connectDialog->getStreamType(i);
+        rtFormat[i] = connectDialog->getStreamFormat(i);
     }
-    for (i = 0; i < 2; i++) {
-        StrCmds  [0][i] = connectDialog->Cmds1  [i];
-        StrCmds  [1][i] = connectDialog->Cmds2  [i];
-        StrCmdEna[0][i] = connectDialog->CmdEna1[i];
-        StrCmdEna[1][i] = connectDialog->CmdEna2[i];
+    rtTimeFormat = connectDialog->getTimeFormat();
+    rtDegFormat = connectDialog->getDegFormat();
+    rtFieldSeperator = connectDialog->getFieldSeparator();
+    rtTimeoutTime = connectDialog->getTimeoutTime();
+    rtReconnectTime = connectDialog->getReconnectTime();
+    for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 3; j++) {
+            streamPaths[i][j] = connectDialog->getPath(i, j);
     }
-    for (i = 0; i < 10; i++) StrHistory [i] = connectDialog->TcpHistory [i];
-}
-// callback on menu-reload --------------------------------------------------
-void Plot::MenuReloadClick()
-{
-    trace(3, "MenuReloadClick\n");
-
-    Reload();
-}
-// callback on menu-clear ---------------------------------------------------
-void Plot::MenuClearClick()
-{
-    trace(3, "MenuClearClick\n");
-
-    Clear();
-}
-// callback on menu-exit-----------------------------------------------------
-void Plot::MenuQuitClick()
-{
-    trace(3, "MenuQuitClick\n");
-
-    close();
+    for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 2; j++) {
+            streamCommands[i][j] = connectDialog->getCommands(i, j);
+            streamCommandEnabled[i][j] = connectDialog->getCommandsEnabled(i, j);
+    }
+    for (int i = 0; i < 10; i++) streamHistory[i] = connectDialog->getHistory(i);
 }
 // callback on menu-time-span/interval --------------------------------------
-void Plot::MenuTimeClick()
+void Plot::showStartEndTimeDialog()
 {
     sol_t *sols, *sole;
     int i;
 
-    trace(3, "MenuTimeClick\n");
+    trace(3, "showTimeSpanDialog\n");
 
-    if (!TimeEna[0]) {
-        if (Obs.n > 0) {
-            TimeStart = Obs.data[0].time;
-        } else if (BtnSol2->isChecked() && SolData[1].n > 0) {
-            sols = getsol(SolData + 1, 0);
-            TimeStart = sols->time;
-        } else if (SolData[0].n > 0) {
-            sols = getsol(SolData, 0);
-            TimeStart = sols->time;
+    // if no start time is set by the user...
+    if (!timeEnabled[0]) {
+        if (observation.n > 0) {
+            timeStart = observation.data[0].time;
+        } else if (ui->btnSolution2->isChecked() && solutionData[1].n > 0) {
+            sols = getsol(solutionData + 1, 0);
+            timeStart = sols->time;
+        } else if (solutionData[0].n > 0) {
+            sols = getsol(solutionData, 0);
+            timeStart = sols->time;
         }
     }
-    if (!TimeEna[1]) {
-        if (Obs.n > 0) {
-            TimeEnd = Obs.data[Obs.n - 1].time;
-        } else if (BtnSol2->isChecked() && SolData[1].n > 0) {
-            sole = getsol(SolData + 1, SolData[1].n - 1);
-            TimeEnd = sole->time;
-        } else if (SolData[0].n > 0) {
-            sole = getsol(SolData, SolData[0].n - 1);
-            TimeEnd = sole->time;
+    // if no end time is set by the user...
+    if (!timeEnabled[1]) {
+        if (observation.n > 0) {
+            timeEnd = observation.data[observation.n - 1].time;
+        } else if (ui->btnSolution2->isChecked() && solutionData[1].n > 0) {
+            sole = getsol(solutionData + 1, solutionData[1].n - 1);
+            timeEnd = sole->time;
+        } else if (solutionData[0].n > 0) {
+            sole = getsol(solutionData, solutionData[0].n - 1);
+            timeEnd = sole->time;
         }
     }
+
+    spanDialog->setStartTime(timeStart);
+    spanDialog->setEndTime(timeEnd);
+    spanDialog->setTimeInterval(timeInterval);
+    spanDialog->setTimeValid(0, !connectState);
+    spanDialog->setTimeValid(1, !connectState);
     for (i = 0; i < 3; i++)
-        spanDialog->TimeEna[i] = TimeEna[i];
-
-    spanDialog->TimeStart = TimeStart;
-    spanDialog->TimeEnd = TimeEnd;
-    spanDialog->TimeInt = TimeInt;
-    spanDialog->TimeVal[0] = !ConnectState;
-    spanDialog->TimeVal[1] = !ConnectState;
+        spanDialog->setTimeEnable(i, timeEnabled[i]);
 
     spanDialog->exec();
-
     if (spanDialog->result() != QDialog::Accepted) return;
 
-    if (TimeEna[0] != spanDialog->TimeEna[0] ||
-        TimeEna[1] != spanDialog->TimeEna[1] ||
-        TimeEna[2] != spanDialog->TimeEna[2] ||
-        timediff(TimeStart, spanDialog->TimeStart) != 0.0 ||
-        timediff(TimeEnd, spanDialog->TimeEnd) != 0.0 ||
-        !qFuzzyCompare(TimeInt, spanDialog->TimeInt)) {
-        for (i = 0; i < 3; i++) TimeEna[i] = spanDialog->TimeEna[i];
+    // check for changed settings
+    if (timeEnabled[0] != spanDialog->getTimeEnable(0) ||
+        timeEnabled[1] != spanDialog->getTimeEnable(1) ||
+        timeEnabled[2] != spanDialog->getTimeEnable(2) ||
+        timediff(timeStart, spanDialog->getStartTime()) != 0.0 ||
+        timediff(timeEnd, spanDialog->getEndTime()) != 0.0 ||
+        !qFuzzyCompare(timeInterval, spanDialog->getTimeInterval()))
+    {
+        for (i = 0; i < 3; i++) timeEnabled[i] = spanDialog->getTimeEnable(i);
 
-        TimeStart = spanDialog->TimeStart;
-        TimeEnd = spanDialog->TimeEnd;
-        TimeInt = spanDialog->TimeInt;
+        timeStart = spanDialog->getStartTime();
+        timeEnd = spanDialog->getEndTime();
+        timeInterval = spanDialog->getTimeInterval();
 
-        Reload();
+        reload();
     }
 }
 // callback on menu-map-image -----------------------------------------------
-void Plot::MenuMapImgClick()
+void Plot::showMapOptionDialog()
 {
-    trace(3, "MenuMapImgClick\n");
+    trace(3, "showMapOptionDialog\n");
 
     mapOptDialog->show();
 }
 // callback on menu-sky image -----------------------------------------------
-void Plot::MenuSkyImgClick()
+void Plot::showSkyImageDialog()
 {
-    trace(3, "MenuSkyImgClick\n");
+    trace(3, "showSkyImageDialog\n");
 
     skyImgDialog->show();
 }
 // callback on menu-vec map -------------------------------------------------
-void Plot::MenuMapLayerClick()
+void Plot::showVectorMapDialog()
 {
-    trace(3, "MenuMapLayerClick\n");
-
-    vecMapDialog = new VecMapDialog(this);
+    trace(3, "showVectorMapDialog\n");
 
     vecMapDialog->exec();
 
-    delete vecMapDialog;
-
+    refresh();
 }
 // callback on menu-solution-source -----------------------------------------
-void Plot::MenuSrcSolClick()
+void Plot::showSolutionText()
 {
-    int sel = !BtnSol1->isChecked() && BtnSol2->isChecked();
+    int sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked();
 
-    trace(3, "MenuSrcSolClick\n");
+    trace(3, "showSolutionText\n");
 
-    if (SolFiles[sel].count() <= 0) return;
+    if (solutionFiles[sel].count() <= 0) return;
 
-    viewer->setWindowTitle(SolFiles[sel].at(0));
-    viewer->Option = 0;
+    viewer->setWindowTitle(solutionFiles[sel].at(0));
+    viewer->setOption(0);
     viewer->show();
-    viewer->Read(SolFiles[sel].at(0));
+    viewer->read(solutionFiles[sel].at(0));
 }
 // callback on menu-obs-data-source -----------------------------------------
-void Plot::MenuSrcObsClick()
+void Plot::showObservationText()
 {
-    TextViewer *viewer;
     char file[1024], tmpfile[1024];
     int cstat;
 
-    trace(3, "MenuSrcObsClick\n");
+    trace(3, "showObservationText\n");
 
-    if (ObsFiles.count() <= 0) return;
+    if (observationFiles.count() <= 0) return;
 
-    strcpy(file, qPrintable(ObsFiles.at(0)));
+    strncpy(file, qPrintable(observationFiles.at(0)), 1023);
     cstat = rtk_uncompress(file, tmpfile);
 
-    viewer = new TextViewer(this);
-    viewer->setWindowTitle(ObsFiles.at(0));
-    viewer->Option = 0;
+    viewer->setWindowTitle(observationFiles.at(0));
+    viewer->setOption(0);
     viewer->show();
-    viewer->Read(!cstat ? file : tmpfile);
+    viewer->read(!cstat ? file : tmpfile);
+
     if (cstat) remove(tmpfile);
 }
 // callback on menu-copy-to-clipboard ---------------------------------------
-void Plot::MenuCopyClick()
+void Plot::copyPlotToClipboard()
 {
-    trace(3, "MenuCopyClick\n");
+    trace(3, "menuCopyClicked\n");
 
     QClipboard *clipboard = QApplication::clipboard();
 
-    clipboard->setPixmap(Buff);
+    clipboard->setPixmap(buffer);
 }
 // callback on menu-options -------------------------------------------------
-void Plot::MenuOptionsClick()
+void Plot::showPlotOptionsDialog()
 {
-    QString tlefile = TLEFile, tlesatfile = TLESatFile;
-    double oopos[3];
-    char str_path[256];
-    int timesyncout=TimeSyncOut, rcvpos=RcvPos;
+    double ooPosition_old[3];
+    QString tlefile_old = plotOptDialog->getTleFile(), tlesatfile_old = plotOptDialog->getTleSatelliteFile();
+    int timesyncout_old = plotOptDialog->getTimeSyncOut(), rcvpos_old = plotOptDialog->getReceiverPosition();
 
-    trace(3, "MenuOptionsClick\n");
+    trace(3, "showPlotOptionsDialog\n");
 
-    matcpy(oopos,OOPos,3,1);
+    matcpy(ooPosition_old, plotOptDialog->getOoPosition(), 3, 1);
 
     plotOptDialog->move(pos().x() + width() / 2 - plotOptDialog->width() / 2,
-                pos().y() + height() / 2 - plotOptDialog->height() / 2);
-    plotOptDialog->plot = this;
+                        pos().y() + height() / 2 - plotOptDialog->height() / 2);
 
     plotOptDialog->exec();
-
     if (plotOptDialog->result() != QDialog::Accepted) return;
 
-    SaveOpt();
+    saveOption();
 
-    for (int i = 0; i < 3; i++) oopos[i] -= OOPos[i];
+    for (int i = 0; i < 3; i++) ooPosition_old[i] -= plotOptDialog->getOoPosition()[i];
 
-    if (TLEFile != tlefile) {
-        free(TLEData.data);
-        TLEData.data = NULL;
-        TLEData.n = TLEData.nmax = 0;
-        tle_read(qPrintable(TLEFile), &TLEData);
+    if (plotOptDialog->getTleFile() != tlefile_old) {
+        free(tleData.data);
+        tleData.data = NULL;
+        tleData.n = tleData.nmax = 0;
+        tle_read(qPrintable(plotOptDialog->getTleFile()), &tleData);
     }
-    if (TLEFile != tlefile || TLESatFile != tlesatfile)
-        tle_name_read(qPrintable(TLESatFile), &TLEData);
-    if (rcvpos != RcvPos || norm(oopos, 3) > 1E-3 || TLEFile != tlefile) {
-        if (SimObs) GenVisData(); else UpdateObs(NObs);
+
+    if (plotOptDialog->getTleFile() != tlefile_old || plotOptDialog->getTleSatelliteFile() != tlesatfile_old)
+        tle_name_read(qPrintable(plotOptDialog->getTleSatelliteFile()), &tleData);
+
+    if (rcvpos_old != plotOptDialog->getReceiverPosition() || norm(ooPosition_old, 3) > 1E-3 || plotOptDialog->getTleFile() != tlefile_old) {
+        if (simulatedObservation)
+            generateVisibilityData();
+        else
+            updateObservation(nObservation);
     }
-    UpdateColor();
-    UpdateSize();
-    UpdateOrigin();
-    UpdateInfo();
-    UpdateSatMask();
-    UpdateSatList();
 
-    Refresh();
-    Timer.start(RefCycle);
+    updateColor();
+    updatePlotSizes();
+    updateOrigin();
+    updateStatusBarInformation();
+    updateSatelliteMask();
+    updateSatelliteList();
 
-    for (int i = 0; i < RangeList->count(); i++) {
-        QString str=RangeList->item(i)->text();
-        double range;
-        QString unit;
+    refresh();
+    timer.start(plotOptDialog->getRefreshCycle());
 
-        QStringList tokens = str.split(' ');
-        if (tokens.length()==2) {
-            bool ok;
-            range = tokens.at(0).toInt(&ok);
-            unit = tokens.at(1);
-            if (ok) {
-                if (unit == "cm") range*=0.01;
-                else if (unit == "km") range*=1000.0;
-                if (range==YRange) {
-                    RangeList->item(i)->setSelected(true);
-                    break;
-                }
-
+    // select correct y range
+    for (int i = 0; i < lWRangeList->count(); i++) {
+        bool ok;
+        double range = lWRangeList->item(i)->data(Qt::UserRole+1).toDouble(&ok);
+        if (ok) {
+            if (fabs(range - plotOptDialog->getYRange()) < 0.0001) {
+                lWRangeList->item(i)->setSelected(true);
+                break;
             }
         }
     }
-    if (!timesyncout && TimeSyncOut) {
-        sprintf(str_path,":%d",TimeSyncPort);
-        stropen(&StrTimeSync,STR_TCPSVR,STR_MODE_RW,str_path);
+    if (!timesyncout_old && plotOptDialog->getTimeSyncOut()) {
+        stropen(&streamTimeSync, STR_TCPSVR, STR_MODE_RW, qPrintable(QStringLiteral(":%d").arg(plotOptDialog->getTimeSyncPort())));
     }
-    else if (timesyncout && !TimeSyncOut) {
-        strclose(&StrTimeSync);
+    else if (timesyncout_old && !plotOptDialog->getTimeSyncOut()) {
+        strclose(&streamTimeSync);
     }
 }
 // callback on menu-show-tool-bar -------------------------------------------
-void Plot::MenuToolBarClick()
+void Plot::updateToolBarVisibility()
 {
-    trace(3, "MenuToolBarClick\n");
+    trace(3, "updateToolBarVisibility\n");
 
-    toolBar->setVisible(MenuToolBar->isChecked());
+    ui->toolBar->setVisible(ui->menuToolBar->isChecked());
 
-    UpdateSize();
-    Refresh();
+    updatePlotSizes();
+    refresh();
 }
 // callback on menu-show-status-bar -----------------------------------------
-void Plot::MenuStatusBarClick()
+void Plot::updateStatusBarVisibility()
 {
-    trace(3, "MenuStatusBarClick\n");
+    trace(3, "updateStatusBarVisibility\n");
 
-    statusbar->setVisible(MenuStatusBar->isChecked());
-    UpdateSize();
-    Refresh();
+    ui->statusbar->setVisible(ui->menuStatusBar->isChecked());
+    updatePlotSizes();
+    refresh();
 }
 // callback on menu-show-browse-panel ---------------------------------------
-void Plot::MenuBrowseClick()
+void Plot::updateBrowseBarVisibility()
 {
-    trace(3,"MenuBrowseClick\n");
+    trace(3,"updateBrowseBarVisibility\n");
 
-    if (MenuBrowse->isChecked()) {
-        PanelBrowse->setVisible(true);
-    }
-    else {
-        PanelBrowse->setVisible(false);
-    }
+    ui->panelBrowse->setVisible(ui->menuBrowse->isChecked());
 
-    Disp->updateGeometry();
+    ui->lblDisplay->updateGeometry();
 
-    UpdateSize();
-    Refresh();
+    updatePlotSizes();
+    refresh();
 }
 // callback on menu-waypoints -----------------------------------------------
-void Plot::MenuWaypointClick()
+void Plot::showWaypointsDialog()
 {
-    trace(3, "MenuWaypointClick\n");
+    trace(3, "showWaypointsDialog\n");
 
-    pntDialog->show();
+    waypointsDialog->show();
 }
 // callback on menu-input-monitor-1 -----------------------------------------
-void Plot::MenuMonitor1Click()
+void Plot::showMonitorConsole1()
 {
-    trace(3, "MenuMonitor1Click\n");
+    trace(3, "showMonitorConsole1\n");
 
-    Console1->setWindowTitle(tr("Monitor RT Input 1"));
-    Console1->show();
+    console1->setWindowTitle(tr("Monitor RT Input 1"));
+    console1->show();
 }
 // callback on menu-input-monitor-2 -----------------------------------------
-void Plot::MenuMonitor2Click()
+void Plot::showMonitorConsole2()
 {
-    trace(3, "MenuMonitor2Click\n");
+    trace(3, "showMonitorConsole2\n");
 
-    Console2->setWindowTitle(tr("Monitor RT Input 2"));
-    Console2->show();
+    console2->setWindowTitle(tr("Monitor RT Input 2"));
+    console2->show();
 }
 // callback on menu-map-view ---------------------------------------
-void Plot::MenuMapViewClick()
+void Plot::showMapView()
 {
-    trace(3, "MenuGEClick\n");
+    trace(3, "showMapView\n");
 
     mapView->setWindowTitle(
-        QString(tr("%1 ver.%2 %3: Google Earth View")).arg(PRGNAME).arg(VER_RTKLIB).arg(PATCH_LEVEL));
+        QString(tr("%1 ver.%2 %3: Map View")).arg(PRGNAME,VER_RTKLIB, PATCH_LEVEL));
     mapView->show();
 }
 // callback on menu-center-origin -------------------------------------------
-void Plot::MenuCenterOriClick()
+void Plot::centerOrigin()
 {
-    trace(3, "MenuCenterOriClick\n");
+    trace(3, "centerOrigin\n");
 
-    SetRange(0, YRange);
-    Refresh();
+    setRange(0, getYRange());
+    refresh();
 }
 // callback on menu-fit-horizontal ------------------------------------------
-void Plot::MenuFitHorizClick()
+void Plot::fitHorizontally()
 {
-    trace(3, "MenuFitHorizClick\n");
+    trace(3, "fitHorizontally\n");
 
-    if (PlotType == PLOT_TRK) FitRange(0); else FitTime();
-    Refresh();
+    if (plotType == PLOT_TRK)
+        fitRange(0);
+    else
+        fitTime();
+
+    refresh();
 }
 // callback on menu-fit-vertical --------------------------------------------
-void Plot::MenuFitVertClick()
+void Plot::fitVertically()
 {
-    trace(3, "MenuFitVertClick\n");
+    trace(3, "fitVertically\n");
 
-    FitRange(0);
-    Refresh();
-}
-// callback on menu-show-skyplot --------------------------------------------
-void Plot::MenuShowSkyplotClick()
-{
-    trace(3, "MenuShowSkyplotClick\n");
+    fitRange(0);
 
-    UpdatePlot();
-    UpdateEnable();
-}
-// callback on menu-show-map-image ------------------------------------------
-void Plot::MenuShowImgClick()
-{
-    trace(3, "MenuShowImgClick\n");
-
-    UpdatePlot();
-    UpdateEnable();
+    refresh();
 }
 // callback on menu-show-grid -----------------------------------------------
-void Plot::MenuShowGridClick()
+void Plot::updateShowGrid()
 {
-    trace(3,"MenuShowGrid\n");
+    trace(3,"menuShowGridClicked\n");
 
-    UpdatePlot();
-    UpdateEnable();
-    Refresh();
+    updatePlot();
+    updateEnable();
+    refresh();
 }
 // callback on menu-show-track-points ---------------------------------------
-void Plot::MenuShowTrackClick()
+void Plot::updateShowTrack()
 {
-    trace(3, "MenuShowTrackClick\n");
+    trace(3, "menuShowTrackClicked\n");
 
-    if (!MenuShowTrack->isChecked()) {
-        MenuFixHoriz->setChecked(false);
-        MenuFixVert->setChecked(false);
+    if (!ui->menuShowTrack->isChecked()) {
+        ui->menuFixHoriz->setChecked(false);
+        ui->menuFixVert->setChecked(false);
     }
-    UpdatePlot();
-    UpdateEnable();
-}
-// callback on menu-fix-center ----------------------------------------------
-void Plot::MenuFixCentClick()
-{
-    trace(3, "MenuFixCentClick\n");
-
-    UpdatePlot();
-    UpdateEnable();
+    updatePlot();
+    updateEnable();
 }
 // callback on menu-fix-horizontal ------------------------------------------
-void Plot::MenuFixHorizClick()
+void Plot::fixHorizontally()
 {
-    trace(3, "MenuFixHorizClick\n");
+    trace(3, "menuFixHorizontalClicked\n");
 
-    Xcent = 0.0;
-    UpdatePlot();
-    UpdateEnable();
-}
-// callback on menu-fix-vertical --------------------------------------------
-void Plot::MenuFixVertClick()
-{
-    trace(3, "MenuFixVertClick\n");
-
-    UpdatePlot();
-    UpdateEnable();
-}
-// callback on menu-show-map -------------------------------------------------
-void Plot::MenuShowMapClick()
-{
-    trace(3, "MenuShowMapClick\n");
-
-    UpdatePlot();
-    UpdateEnable();
+    centX = 0.0;
+    updatePlot();
+    updateEnable();
 }
 // callback on menu-windows-maximize ----------------------------------------
-void Plot::MenuMaxClick()
+void Plot::showWindowMaximized()
 {
-    QScreen *scr = QApplication::screens().at(0);
-    QRect rect = scr->availableGeometry();
-    QSize thisDecoration = this->frameSize() - this->size();
+    trace(3, "showWindowMaximized\n");
 
-    this->move(rect.x(), rect.y());
-    this->resize(rect.width() - thisDecoration.width(), rect.height() - thisDecoration.height());
+    this->showMaximized();
 
     mapView->hide();
 }
 // callback on menu-windows-mapview -----------------------------------------
-void Plot::MenuPlotMapViewClick()
+void Plot::arrangePlotMapViewHorizontally()
 {
+    // arrange main window and map window side-by-side
     QScreen *scr = QApplication::screens().at(0);
     QRect rect = scr->availableGeometry();
     QSize thisDecoration = this->frameSize() - this->size();
 
-    this->move(rect.x(), rect.y());
-    this->resize(rect.width() / 2 - thisDecoration.width(), rect.height() - thisDecoration.height());
+    this->setGeometry(rect.x(), rect.y(), rect.width() / 2 - thisDecoration.width(), rect.height() - thisDecoration.height());
 
-    QSize GEDecoration = mapView->frameSize() - mapView->size();
-    mapView->resize(rect.width()/2 - GEDecoration.width(), rect.height() - GEDecoration.height());
-    mapView->move(rect.x() + rect.width() / 2, rect.y());
+    QSize MapDecoration = mapView->frameSize() - mapView->size();
+    mapView->setGeometry(rect.x() + rect.width() / 2, rect.y(),
+                         rect.width()/2 - MapDecoration.width(), rect.height() - MapDecoration.height());
 
     mapView->setVisible(true);
 }
@@ -1265,809 +1218,773 @@ void Plot::DispGesture()
 }
 #endif
 // callback on menu-animation-start -----------------------------------------
-void Plot::MenuAnimStartClick()
+void Plot::menuAnimationStartClicked()
 {
-    trace(3, "MenuAnimStartClick\n");
+    trace(3, "menuAnimationStartClicked\n");
 }
 // callback on menu-animation-stop ------------------------------------------
-void Plot::MenuAnimStopClick()
+void Plot::menuAnimationStopClicked()
 {
-    trace(3, "MenuAnimStopClick\n");
+    trace(3, "menuAnimationStopClicked\n");
 }
 // callback on menu-about ---------------------------------------------------
-void Plot::MenuAboutClick()
+void Plot::showAboutDialog()
 {
-    trace(3, "MenuAboutClick\n");
+    trace(3, "menuAboutClick\n");
 
-    aboutDialog->About = PRGNAME;
-    aboutDialog->IconIndex = 2;
     aboutDialog->exec();
 }
 // callback on button-connect/disconnect ------------------------------------
-void Plot::BtnConnectClick()
+void Plot::toggleConnectState()
 {
-    trace(3, "BtnConnectClick\n");
+    trace(3, "toggleConnectState\n");
 
-    if (!ConnectState) MenuConnectClick();
-    else MenuDisconnectClick();
+    if (!connectState)
+        connectStream();
+    else
+        disconnectStream();
 }
 // callback on button-solution-1 --------------------------------------------
-void Plot::BtnSol1Click()
+void Plot::activateSolution1()
 {
-    trace(3, "BtnSol1Click\n");
+    trace(3, "activateSolution1\n");
 
-    BtnSol12->setChecked(false);
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+    if (solutionData[0].n <= 0 && observation.n < 0) {
+        ui->btnSolution1->setChecked(false);
+        return;
+    }
+
+    ui->btnSolution12->setChecked(false);
+
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
 // callback on button-solution-2 --------------------------------------------
-void Plot::BtnSol2Click()
+void Plot::activateSolution2()
 {
-    trace(3, "BtnSol2Click\n");
+    trace(3, "activateSolution2\n");
 
-    BtnSol12->setChecked(false);
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+    if (solutionData[1].n <= 0) {
+        ui->btnSolution2->setChecked(false);
+        return;
+    }
+
+    ui->btnSolution12->setChecked(false);
+
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
 // callback on button-solution-1-2 ------------------------------------------
-void Plot::BtnSol12Click()
+void Plot::activateSolution12()
 {
-    trace(3, "BtnSol12Click\n");
+    trace(3, "activateSolution12\n");
 
-    BtnSol1->setChecked(false);
-    BtnSol2->setChecked(false);
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+    ui->btnSolution1->setChecked(false);
+    ui->btnSolution2->setChecked(false);
+
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
-// callback on button-solution-1 double-click -------------------------------
-void Plot::BtnSol1DblClick()
+// --------------------------------------------------------------------------
+void Plot::updatePlotSizeAndRefresh()
 {
-    trace(3, "BtnSol1DblClick\n");
+    trace(3, "updatePlotSizeAndRefresh\n");
 
-    MenuOpenSol1Click();
+    updatePlotSizes();
+    refresh();
 }
-// callback on button-solution-2 double-click -------------------------------
-void Plot::BtnSol2DblClick()
-{
-    trace(3, "BtnSol2DblClick\n");
-
-    MenuOpenSol2Click();
-}
-
-// callback on button-plot-1-onoff ------------------------------------------
-void Plot::BtnOn1Click()
-{
-    trace(3, "BtnOn1Click\n");
-
-    UpdateSize();
-    Refresh();
-}
-// callback on button-plot-2-onoff-------------------------------------------
-void Plot::BtnOn2Click()
-{
-    trace(3, "BtnOn2Click\n");
-
-    UpdateSize();
-    Refresh();
-}
-// callback on button-plot-3-onoff ------------------------------------------
-void Plot::BtnOn3Click()
-{
-    trace(3, "BtnOn3Click\n");
-
-    UpdateSize();
-    Refresh();
-}
-// callback on button-range-list --------------------------------------------
-void Plot::BtnRangeListClick()
-{
-    QToolButton *btn=(QToolButton *)sender();
-    trace(3, "BtnRangeListClick\n");
-
-    QPoint pos = btn->mapToGlobal(btn->pos());
-    pos.rx() -= btn->width();
-    pos.ry() += btn->height();
-
-    RangeList->move(pos);
-    RangeList->setVisible(!RangeList->isVisible());
-}
-// callback on button-range-list --------------------------------------------
-void Plot::RangeListClick()
+// --------------------------------------------------------------------------
+double Plot::getYRange()
 {
     bool okay;
-    QString unit;
     QListWidgetItem *i;
+    double defaultYRange = 5;
 
-    trace(3, "RangeListClick\n");
+    if ((i = lWRangeList->currentItem()) == NULL) return defaultYRange;
 
-    RangeList->setVisible(false);
-    if ((i = RangeList->currentItem()) == NULL) return;
+    float yRange = i->data(Qt::UserRole+1).toDouble(&okay);
 
-    QStringList tokens = i->text().split(" ");
+    if (!okay) return defaultYRange;
 
-    if (tokens.length()!=2) return;
-
-    YRange = tokens.at(0).toDouble(&okay);
-    if (!okay) return;
-
-    unit = tokens.at(1);
-
-    if (unit == "cm") YRange*=0.01;
-    else if (unit == "km") YRange*=1000.0;
-    SetRange(0, YRange);
-    UpdatePlot();
-    UpdateEnable();
+    return yRange;
 }
 
-// callback on button-animation ---------------------------------------------
-void Plot::BtnAnimateClick()
+// callback on button-range-list --------------------------------------------
+void Plot::rangeListItemSelected()
 {
-    trace(3, "BtnAnimateClick\n");
+    trace(3, "rangeListItemSelected\n");
 
-    UpdateEnable();
+    lWRangeList->close();
+    rangeListPopupAction->toggle();
+
+    setRange(0, getYRange());
+    updatePlot();
+    updateEnable();
 }
 // callback on button-message 2 ---------------------------------------------
-void Plot::BtnMessage2Click()
+void Plot::changePointCoordinateType()
 {
-    if (++PointType > 2) PointType = 0;
+    if (++pointCoordinateType > 2) pointCoordinateType = 0;
 }
 // callback on plot-type selection change -----------------------------------
-void Plot::PlotTypeSChange()
+void Plot::updateSelectedPlotType()
 {
     int i;
 
-    trace(3, "PlotTypeSChnage\n");
+    trace(3, "updateSelectedPlotType\n");
 
-    for (i = 0; !PTypes[i].isNull(); i++)
-        if (PlotTypeS->currentText() == PTypes[i]) UpdateType(i);
+    i = ui->cBPlotTypeSelection->currentData().toInt();
+    updatePlotType(i);
 
-    UpdateTime();
-    UpdatePlot();
-    UpdateEnable();
+    updateTime();
+    updatePlot();
+    updateEnable();
 }
-// callback on quality-flag selection change --------------------------------
-void Plot::QFlagChange()
+// -------------------------------------------------------------------------
+void Plot::updatePlotAndEnable()
 {
-    trace(3, "QFlagChange\n");
+    trace(3, "updatePlotAndEnable\n");
 
-    UpdatePlot();
-    UpdateEnable();
-}
-// callback on obs-type selection change ------------------------------------
-void Plot::ObsTypeChange()
-{
-    trace(3, "ObsTypeChange\n");
-
-    UpdatePlot();
-    UpdateEnable();
-}
-// callback on dop-type selection change ------------------------------------
-void Plot::DopTypeChange()
-{
-    trace(3, "DopTypeChange\n");
-
-    UpdatePlot();
-    UpdateEnable();
+    updatePlot();
+    updateEnable();
 }
 // callback on satellite-list selection change ------------------------------
-void Plot::SatListChange()
+void Plot::satelliteListChanged()
 {
-    trace(3, "SatListChange\n");
+    trace(3, "satelliteListChanged\n");
 
-    UpdateSatSel();
-    UpdatePlot();
-    UpdateEnable();
+    updateSatelliteSelection();
+    updatePlot();
+    updateEnable();
 }
 // callback on time scroll-bar change ---------------------------------------
-void Plot::TimeScrollChange()
+void Plot::updateCurrentObsSol()
 {
-    int sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
+    int sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
 
-    trace(3, "TimeScrollChange\n");
+    trace(3, "updateCurrentObsSol\n");
 
-    if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES)
-        SolIndex[sel] = TimeScroll->value();
+    if (plotType <= PLOT_NSAT || plotType == PLOT_RES)
+        solutionIndex[sel] = ui->sBTime->value();
     else
-        ObsIndex = TimeScroll->value();
-    UpdatePlot();
+        observationIndex = ui->sBTime->value();
+    updatePlot();
 }
 // callback on mouse-down event ---------------------------------------------
 void Plot::mousePressEvent(QMouseEvent *event)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    X0 = Disp->mapFromGlobal(event->globalPosition()).x();
-    Y0 = Disp->mapFromGlobal(event->globalPosition()).y();
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+    dragStartX = ui->lblDisplay->mapFromGlobal(event->globalPosition()).x();
+    dragStartY = ui->lblDisplay->mapFromGlobal(event->globalPosition()).y();
 #else
-    X0 = Disp->mapFromGlobal(event->globalPos()).x();
-    Y0 = Disp->mapFromGlobal(event->globalPos()).y();
+    dragStartX = ui->lblDisplay->mapFromGlobal(event->globalPos()).x();
+    dragStartY = ui->lblDisplay->mapFromGlobal(event->globalPos()).y();
 #endif
-    Xcent0 = Xcent;
+    dragCentX = centX;
 
-    trace(3, "DispMouseDown: X=%d Y=%d\n", X0, Y0);
+    trace(3, "mousePressEvent: X=%d Y=%d\n", dragStartX, dragStartY);
 
-    Drag = event->buttons().testFlag(Qt::LeftButton) ? 1 : (event->buttons().testFlag(Qt::RightButton) ? 11 : 0);
+    dragState = event->buttons().testFlag(Qt::LeftButton) ? 1 : (event->buttons().testFlag(Qt::RightButton) ? 11 : 0);
 
-    if (PlotType == PLOT_TRK)
-        MouseDownTrk(X0, Y0);
-    else if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES || PlotType == PLOT_SNR)
-        MouseDownSol(X0, Y0);
-    else if (PlotType == PLOT_OBS || PlotType == PLOT_DOP)
-        MouseDownObs(X0, Y0);
-    else Drag = 0;
-
-    RangeList->setVisible(false);
+    if (plotType == PLOT_TRK)
+        mouseDownTrack(dragStartX, dragStartY);
+    else if (plotType <= PLOT_NSAT || plotType == PLOT_RES || plotType == PLOT_SNR)
+        mouseDownSolution(dragStartX, dragStartY);
+    else if (plotType == PLOT_OBS || plotType == PLOT_DOP)
+        mouseDownObservation(dragStartX, dragStartY);
+    else
+        dragState = 0;
 }
 // callback on mouse-move event ---------------------------------------------
 void Plot::mouseMove(QMouseEvent *event)
 {
     double dx, dy, dxs, dys;
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    if ((abs(Disp->mapFromGlobal(event->globalPosition()).x() - Xn) < 1) &&
-        (abs(Disp->mapFromGlobal(event->globalPosition()).y() - Yn) < 1)) return;
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+    if ((abs(ui->lblDisplay->mapFromGlobal(event->globalPosition()).x() - dragCurrentX) < 1) &&
+        (abs(ui->lblDisplay->mapFromGlobal(event->globalPosition()).y() - dragCurrentY) < 1)) return;
 
-    Xn = Disp->mapFromGlobal(event->globalPosition()).x();
-    Yn = Disp->mapFromGlobal(event->globalPosition()).y();
+    dragCurrentX = ui->lblDisplay->mapFromGlobal(event->globalPosition()).x();
+    dragCurrentY = ui->lblDisplay->mapFromGlobal(event->globalPosition()).y();
 #else
-    if ((abs(Disp->mapFromGlobal(event->globalPos()).x() - Xn) < 1) &&
-        (abs(Disp->mapFromGlobal(event->globalPos()).y() - Yn) < 1)) return;
+    if ((abs(ui->lblDisplay->mapFromGlobal(event->globalPos()).x() - dragCurrentX) < 1) &&
+        (abs(ui->lblDisplay->mapFromGlobal(event->globalPos()).y() - dragCurrentY) < 1)) return;
 
-    Xn = Disp->mapFromGlobal(event->globalPos()).x();
-    Yn = Disp->mapFromGlobal(event->globalPos()).y();
+    dragCurrentX = ui->lblDisplay->mapFromGlobal(event->globalPos()).x();
+    dragCurrentY = ui->lblDisplay->mapFromGlobal(event->globalPos()).y();
 #endif
+    trace(4, "mouseMove: X=%d Y=%d\n", dragCurrentX, dragCurrentY);
 
-    trace(4, "DispMouseMove: X=%d Y=%d\n", Xn, Yn);
-
-    if (Drag == 0) {
-        UpdatePoint(Xn, Yn);
+    if (dragState == 0) {
+        updatePoint(dragCurrentX, dragCurrentY);
         return;
     }
 
-    dx = (X0 - Xn) * Xs;
-    dy = (Yn - Y0) * Ys;
-    dxs = pow(2.0, (X0 - Xn) / 100.0);
-    dys = pow(2.0, (Yn - Y0) / 100.0);
+    dx = (dragStartX - dragCurrentX) * dragScaleX;
+    dy = (dragCurrentY - dragStartY) * dragScaleY;
+    dxs = pow(2.0, (dragStartX - dragCurrentX) / 100.0);
+    dys = pow(2.0, (dragCurrentY - dragStartY) / 100.0);
 
-    if (PlotType == PLOT_TRK)
-        MouseMoveTrk(Xn, Yn, dx, dy, dxs, dys);
-    else if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES || PlotType == PLOT_SNR)
-        MouseMoveSol(Xn, Yn, dx, dy, dxs, dys);
-    else if (PlotType == PLOT_OBS || PlotType == PLOT_DOP)
-        MouseMoveObs(Xn, Yn, dx, dy, dxs, dys);
+    if (plotType == PLOT_TRK)
+        mouseMoveTrack(dragCurrentX, dragCurrentY, dx, dy, dxs, dys);
+    else if (plotType <= PLOT_NSAT || plotType == PLOT_RES || plotType == PLOT_SNR)
+        mouseMoveSolution(dragCurrentX, dragCurrentY, dx, dy, dxs, dys);
+    else if (plotType == PLOT_OBS || plotType == PLOT_DOP)
+        mouseMoveObservation(dragCurrentX, dragCurrentY, dx, dy, dxs, dys);
 }
 // callback on mouse-up event -----------------------------------------------
 void Plot::mouseReleaseEvent(QMouseEvent *event)
 {
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-    trace(3, "DispMouseUp: X=%d Y=%d\n", Disp->mapFromGlobal(event->globalPosition()).x(), Disp->mapFromGlobal(event->globalPosition()).y());
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+    trace(3, "mouseReleaseEvent: X=%d Y=%d\n", ui->lblDisplay->mapFromGlobal(event->globalPosition()).x(),
+          ui->lblDisplay->mapFromGlobal(event->globalPosition()).y());
 #else
-    trace(3, "DispMouseUp: X=%d Y=%d\n", Disp->mapFromGlobal(event->globalPos()).x(), Disp->mapFromGlobal(event->globalPos()).y());
+    trace(3, "mouseReleaseEvent: X=%d Y=%d\n", ui->lblDisplay->mapFromGlobal(event->globalPos()).x(),
+          ui->lblDisplay->mapFromGlobal(event->globalPos()).y());
 #endif
-    Drag = 0;
+    if (dragState == 0) return;
+    dragState = 0;
+
     setCursor(Qt::ArrowCursor);
-    Refresh();
-    Refresh_MapView();
+    refresh();
+    refresh_MapView();
 }
 // callback on mouse-double-click -------------------------------------------
 void Plot::mouseDoubleClickEvent(QMouseEvent *event)
 {
-    QPoint p(static_cast<int>(X0), static_cast<int>(Y0));
-    double x, y;
-
     if (event->button() != Qt::LeftButton) return;
 
-    trace(3, "DispDblClick X=%d Y=%d\n", p.x(), p.y());
+    QPoint p(static_cast<int>(dragStartX), static_cast<int>(dragStartY));
+    double x, y;
 
-    if (BtnFixHoriz->isChecked()) return;
+    trace(3, "mouseDoubleClickEvent X=%d Y=%d\n", p.x(), p.y());
 
-    if (PlotType == PLOT_TRK) {
-        GraphT->ToPos(p, x, y);
-        GraphT->SetCent(x, y);
-        Refresh();
-        Refresh_MapView();
-    } else if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES || PlotType == PLOT_SNR) {
-        GraphG[0]->ToPos(p, x, y);
-        SetCentX(x);
-        Refresh();
-    } else if (PlotType == PLOT_OBS || PlotType == PLOT_DOP) {
-        GraphR->ToPos(p, x, y);
-        SetCentX(x);
-        Refresh();
+    if (ui->btnFixHorizontal->isChecked()) return;
+
+    if (plotType == PLOT_TRK) {
+        graphTrack->toPos(p, x, y);
+        graphTrack->setCenter(x, y);
+
+        refresh();
+        refresh_MapView();
+    } else if (plotType <= PLOT_NSAT || plotType == PLOT_RES || plotType == PLOT_SNR) {
+        graphTriple[0]->toPos(p, x, y);
+
+        setCenterX(x);
+        refresh();
+    } else if (plotType == PLOT_OBS || plotType == PLOT_DOP) {
+        graphSingle->toPos(p, x, y);
+
+        setCenterX(x);
+        refresh();
     }
 }
 // callback on mouse-leave event --------------------------------------------
 void Plot::leaveEvent(QEvent *)
 {
-    trace(3, "DispMouseLeave\n");
+    trace(3, "leaveEvent\n");
 
-    Xn = Yn = -1;
-    Message2->setVisible(false);
-    Message2->setText("");
+    dragCurrentX = dragCurrentY = -1;
+    ui->lblMessage2->setVisible(false);
+    ui->lblMessage2->setText("");
 }
 // callback on mouse-down event on track-plot -------------------------------
-void Plot::MouseDownTrk(int X, int Y)
+void Plot::mouseDownTrack(int x, int y)
 {
-    int i, sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
+    int i, sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
 
-    trace(3, "MouseDownTrk: X=%d Y=%d\n", X, Y);
+    trace(3, "mouseDownTrack: X=%d Y=%d\n", x, y);
 
-    if (Drag == 1 && (i = SearchPos(X, Y)) >= 0) {
-        SolIndex[sel] = i;
-        UpdateTime();
-        UpdateInfo();
-        Drag = 0;
-        Refresh();
+    if (dragState == 1 && (i = searchPosition(x, y)) >= 0) {
+        solutionIndex[sel] = i;
+
+        dragState = 0;
+
+        updateTime();
+        updateStatusBarInformation();        
+        refresh();
     } else {
-        GraphT->GetCent(Xc, Yc);
-        GraphT->GetScale(Xs, Ys);
-        setCursor(Drag == 1 ? Qt::SizeAllCursor : Qt::SplitVCursor);
+        graphTrack->getCenter(dragCenterX, dragCenterY);
+        graphTrack->getScale(dragScaleX, dragScaleY);
+
+        setCursor(dragState == 1 ? Qt::SizeAllCursor : Qt::SplitVCursor);
     }
 }
 // callback on mouse-down event on solution-plot ----------------------------
-void Plot::MouseDownSol(int X, int Y)
+void Plot::mouseDownSolution(int x, int y)
 {
-    QPushButton *btn[] = { BtnOn1, BtnOn2, BtnOn3 };
-    QPoint pnt, p(X, Y);
-    gtime_t time = { 0, 0 };
+    QPushButton *btn[] = {ui->btnOn1, ui->btnOn2, ui->btnOn3};
+    QPoint pnt, p(x, y);
+    gtime_t time = {0, 0};
     sol_t *data;
-    double x, xl[2], yl[2];
-    int i, area = -1, sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
+    double x_pos, xl[2], yl[2];
+    int i, area = -1, sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
 
-    trace(3, "MouseDownSol: X=%d Y=%d\n", X, Y);
+    trace(3, "mouseDownSolution: X=%d Y=%d\n", x, y);
 
-    if (PlotType == PLOT_SNR) {
-        if (0 <= ObsIndex && ObsIndex < NObs) time = Obs.data[IndexObs[ObsIndex]].time;
+    if (plotType == PLOT_SNR) {
+        if (0 <= observationIndex && observationIndex < nObservation)
+            time = observation.data[indexObservation[observationIndex]].time;
     } else {
-        if ((data = getsol(SolData + sel, SolIndex[sel]))) time = data->time;
+        if ((data = getsol(solutionData + sel, solutionIndex[sel])))
+            time = data->time;
     }
-    if (time.time && !MenuFixHoriz->isChecked()) {
-        x = TimePos(time);
+    if (time.time && !ui->menuFixHoriz->isChecked()) {
+        x_pos = timePosition(time);
 
-        GraphG[0]->GetLim(xl, yl);
-        GraphG[0]->ToPoint(x, yl[1], pnt);
+        graphTriple[0]->getLimits(xl, yl);
+        graphTriple[0]->toPoint(x_pos, yl[1], pnt);
 
-        if ((X - pnt.x()) * (X - pnt.x()) + (Y - pnt.y()) * (Y - pnt.y()) < 25) {
+        if ((x - pnt.x()) * (x - pnt.x()) + (y - pnt.y()) * (y - pnt.y()) < 5*5) {
             setCursor(Qt::SizeHorCursor);
-            Drag = 20;
-            Refresh();
+
+            dragState = 20;
+            refresh();
+
             return;
         }
     }
     for (i = 0; i < 3; i++) {
-        if (!btn[i]->isChecked() || (i != 1 && PlotType == PLOT_SNR)) continue;
+        if (!btn[i]->isChecked() || (i != 1 && plotType == PLOT_SNR)) continue;
 
-        GraphG[i]->GetCent(Xc, Yc);
-        GraphG[i]->GetScale(Xs, Ys);
-        area = GraphG[i]->OnAxis(Disp->mapFromGlobal(p));
+        graphTriple[i]->getCenter(dragCenterX, dragCenterY);
+        graphTriple[i]->getScale(dragScaleX, dragScaleY);
+        area = graphTriple[i]->onAxis(p);
 
-        if (Drag == 1 && area == 0) {
+        if (dragState == 1 && area == 0) { // within plot
             setCursor(Qt::SizeAllCursor);
-            Drag += i;
+            dragState += i;
             return;
-        } else if (area == 1) {
-            setCursor(Drag == 1 ? Qt::SizeVerCursor : Qt::SplitVCursor);
-            Drag += i + 4;
+        } else if (area == 1) { // left of plot (on y axis)
+            setCursor(dragState == 1 ? Qt::SizeVerCursor : Qt::SplitVCursor);
+            dragState += i + 4;
             return;
         } else if (area == 0) {
             break;
         }
     }
-    if (area == 0 || area == 8) {
-        setCursor(Drag == 1 ? Qt::SizeHorCursor : Qt::SplitHCursor);
-        Drag += 3;
+    if (area == 0 || area == 8) {  // within or below plot
+        setCursor(dragState == 1 ? Qt::SizeHorCursor : Qt::SplitHCursor);
+        dragState += 3;
     } else {
-        Drag = 0;
+        dragState = 0;
     }
 }
 // callback on mouse-down event on observation-data-plot --------------------
-void Plot::MouseDownObs(int X, int Y)
+void Plot::mouseDownObservation(int x, int y)
 {
-    QPoint pnt, p(X, Y);
-    double x, xl[2], yl[2];
+    QPoint pnt, p(x, y);
+    double x_pos, xl[2], yl[2];
     int area;
 
-    trace(3, "MouseDownObs: X=%d Y=%d\n", X, Y);
+    trace(3, "mouseDownObservation: X=%d Y=%d\n", x, y);
 
-    if (0 <= ObsIndex && ObsIndex < NObs && !MenuFixHoriz->isChecked()) {
-        x = TimePos(Obs.data[IndexObs[ObsIndex]].time);
+    if (0 <= observationIndex && observationIndex < nObservation && !ui->menuFixHoriz->isChecked()) {
+        x_pos = timePosition(observation.data[indexObservation[observationIndex]].time);
 
-        GraphR->GetLim(xl, yl);
-        GraphR->ToPoint(x, yl[1], pnt);
+        graphSingle->getLimits(xl, yl);
+        graphSingle->toPoint(x_pos, yl[1], pnt);
 
-        if ((X - pnt.x()) * (X - pnt.x()) + (Y - pnt.y()) * (Y - pnt.y()) < 25) {
+        if ((x - pnt.x()) * (x - pnt.x()) + (y - pnt.y()) * (y - pnt.y()) < 5*5) {
             setCursor(Qt::SizeHorCursor);
-            Drag = 20;
-            Refresh();
+            dragState = 20;
+            refresh();
             return;
         }
     }
-    GraphR->GetCent(Xc, Yc);
-    GraphR->GetScale(Xs, Ys);
-    area = GraphR->OnAxis(Disp->mapFromGlobal(p));
+    graphSingle->getCenter(dragCenterX, dragCenterY);
+    graphSingle->getScale(dragScaleX, dragScaleY);
+    area = graphSingle->onAxis(p);
 
-    if (area == 0 || area == 8) {
-        setCursor(Drag == 1 ? Qt::SizeHorCursor : Qt::SplitHCursor);
-        Drag += 3;
+    if (area == 0 || area == 8) {  // within or below plot
+        setCursor(dragState == 1 ? Qt::SizeHorCursor : Qt::SplitHCursor);
+        dragState += 3;
     } else {
-        Drag = 0;
+        dragState = 0;
     }
 }
 // callback on mouse-move event on track-plot -------------------------------
-void Plot::MouseMoveTrk(int X, int Y, double dx, double dy,
-            double dxs, double dys)
+void Plot::mouseMoveTrack(int x, int y, double dx, double dy,
+                          double dxs, double dys)
 {
-    trace(4, "MouseMoveTrk: X=%d Y=%d\n", X, Y);
+    trace(4, "mouseMoveTrack: X=%d Y=%d\n", x, y);
 
     Q_UNUSED(dxs);
 
-    if (Drag == 1 && !MenuFixHoriz->isChecked())
-        GraphT->SetCent(Xc + dx, Yc + dy);
-    else if (Drag > 1)
-        GraphT->SetScale(Xs * dys, Ys * dys);
-    MenuCenterOri->setChecked(false);
+    if (dragState == 1 && !ui->menuFixHoriz->isChecked())
+        graphTrack->setCenter(dragCenterX + dx, dragCenterY + dy);
+    else if (dragState > 1)
+        graphTrack->setScale(dragScaleX * dys, dragScaleY * dys);
 
-    if (updateTime.elapsed() < RefreshTime) return;
-    updateTime.restart();
+    ui->menuCenterOrigin->setChecked(false);
 
-    Refresh();
+    if (updateTimer.elapsed() < plotOptDialog->getRefreshCycle()) return;
+
+    updateTimer.restart();
+
+    refresh();
 }
 // callback on mouse-move event on solution-plot ----------------------------
-void Plot::MouseMoveSol(int X, int Y, double dx, double dy,
-            double dxs, double dys)
+void Plot::mouseMoveSolution(int x, int y, double dx, double dy,
+                            double dxs, double dys)
 {
-    QPoint p1, p2, p(X, Y);
-    double x, y, xs, ys;
-    int i, sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
+    QPoint p1, p2, p = QPoint(x, y);
+    double cx, cy, xs, ys;
+    int i, sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
 
-    trace(4, "MouseMoveSol: X=%d Y=%d\n", X, Y);
+    trace(4, "mouseMoveSolution: X=%d Y=%d\n", x, y);
 
-    if (Drag <= 4) {
-        for (i = 0; i < 3; i++) {
-            GraphG[i]->GetCent(x, y);
-            if (!MenuFixHoriz->isChecked())
-                x = Xc + dx;
-            if (!MenuFixVert->isChecked() || !MenuFixVert->isEnabled())
-                y = i == Drag - 1 ? Yc + dy : y;
-            GraphG[i]->SetCent(x, y);
-            SetCentX(x);
+    if (dragState <= 4) {
+        for (int panel = 0; panel < 3; panel++) {
+            graphTriple[panel]->getCenter(cx, cy);
+            if (!ui->menuFixHoriz->isChecked())
+                cx = dragCenterX + dx;
+            if (!ui->menuFixVert->isChecked() || !ui->menuFixVert->isEnabled())
+                cy = (panel == dragState - 1) ? dragCenterY + dy : cy;
+            graphTriple[panel]->setCenter(cx, cy);
+            setCenterX(cx);
         }
-        if (MenuFixHoriz->isChecked()) {
-            GraphG[0]->GetPos(p1, p2);
-            Xcent = Xcent0 + 2.0 * (X - X0) / (p2.x() - p1.x());
-            if (Xcent > 1.0) Xcent = 1.0;
-            if (Xcent < -1.0) Xcent = -1.0;
+        if (ui->menuFixHoriz->isChecked()) {
+            graphTriple[0]->getExtent(p1, p2);
+            centX = dragCentX + 2.0 * (x - dragStartX) / (p2.x() - p1.x());
+            if (centX > 1.0) centX = 1.0;
+            if (centX < -1.0) centX = -1.0;
         }
-    } else if (Drag <= 7) {
-        GraphG[Drag - 5]->GetCent(x, y);
-        if (!MenuFixVert->isChecked() || !MenuFixVert->isEnabled())
-            y = Yc + dy;
-        GraphG[Drag - 5]->SetCent(x, y);
-    } else if (Drag <= 14) {
-        for (i = 0; i < 3; i++) {
-            GraphG[i]->GetScale(xs, ys);
-            GraphG[i]->SetScale(Xs * dxs, ys);
+    } else if (dragState <= 7) {
+        graphTriple[dragState - 5]->getCenter(cx, cy);
+        if (!ui->menuFixVert->isChecked() || !ui->menuFixVert->isEnabled())
+            cy = dragCenterY + dy;
+        graphTriple[dragState - 5]->setCenter(cx, cy);
+    } else if (dragState <= 14) {
+        for (int panel = 0; panel < 3; panel++) {
+            graphTriple[panel]->getScale(xs, ys);
+            graphTriple[panel]->setScale(dragScaleX * dxs, ys);
         }
-        SetScaleX(Xs * dxs);
-    } else if (Drag <= 17) {
-        GraphG[Drag - 15]->GetScale(xs, ys);
-        GraphG[Drag - 15]->SetScale(xs, Ys * dys);
-    } else if (Drag == 20) {
-        GraphG[0]->ToPos(p, x, y);
-        if (PlotType == PLOT_SNR) {
-            for (i = 0; i < NObs; i++)
-                if (TimePos(Obs.data[IndexObs[i]].time) >= x) break;
-            ObsIndex = i < NObs ? i : NObs - 1;
+        setScaleX(dragScaleX * dxs);
+    } else if (dragState <= 17) {
+        graphTriple[dragState - 15]->getScale(xs, ys);
+        graphTriple[dragState - 15]->setScale(xs, dragScaleY * dys);
+    } else if (dragState == 20) {
+        graphTriple[0]->toPos(p, cx, cy);
+        if (plotType == PLOT_SNR) {
+            for (i = 0; i < nObservation; i++)
+                if (timePosition(observation.data[indexObservation[i]].time) >= cx) break;
+            observationIndex = i < nObservation ? i : nObservation - 1;
         } else {
-            for (i = 0; i < SolData[sel].n; i++)
-                if (TimePos(SolData[sel].data[i].time) >= x) break;
-            SolIndex[sel] = i < SolData[sel].n ? i : SolData[sel].n - 1;
+            for (i = 0; i < solutionData[sel].n; i++)
+                if (timePosition(solutionData[sel].data[i].time) >= cx) break;
+            solutionIndex[sel] = i < solutionData[sel].n ? i : solutionData[sel].n - 1;
         }
-        UpdateTime();
+        updateTime();
     }
-    MenuCenterOri->setChecked(false);
+    ui->menuCenterOrigin->setChecked(false);
 
-    if (updateTime.elapsed() < RefreshTime) return;
-    updateTime.restart();
+    if (updateTimer.elapsed() < plotOptDialog->getRefreshCycle()) return;
+    updateTimer.restart();
 
-    Refresh();
+    refresh();
 }
 // callback on mouse-move events on observataion-data-plot ------------------
-void Plot::MouseMoveObs(int X, int Y, double dx, double dy,
+void Plot::mouseMoveObservation(int x, int y, double dx, double dy,
             double dxs, double dys)
 {
-    QPoint p1, p2, p(X, Y);
-    double x, y, xs, ys;
+    QPoint p1, p2, p = QPoint(x, y);
+    double cx, cy, xs, ys;
     int i;
 
     Q_UNUSED(dys);
 
-    trace(4, "MouseMoveObs: X=%d Y=%d\n", X, Y);
+    trace(4, "mouseMoveObservation: X=%d Y=%d\n", x, y);
 
-    if (Drag <= 4) {
-        GraphR->GetCent(x, y);
-        if (!MenuFixHoriz->isChecked()) x = Xc + dx;
-        if (!MenuFixVert->isChecked()) y = Yc + dy;
-        GraphR->SetCent(x, y);
-        SetCentX(x);
+    if (dragState <= 4) {
+        graphSingle->getCenter(cx, cy);
+        if (!ui->menuFixHoriz->isChecked()) cx = dragCenterX + dx;
+        if (!ui->menuFixVert->isChecked()) cy = dragCenterY + dy;
+        graphSingle->setCenter(cx, cy);
+        setCenterX(cx);
 
-        if (MenuFixHoriz->isChecked()) {
-            GraphR->GetPos(p1, p2);
-            Xcent = Xcent0 + 2.0 * (X - X0) / (p2.x() - p1.x());
-            if (Xcent > 1.0) Xcent = 1.0;
-            if (Xcent < -1.0) Xcent = -1.0;
+        if (ui->menuFixHoriz->isChecked()) {
+            graphSingle->getExtent(p1, p2);
+            centX = dragCentX + 2.0 * (x - dragStartX) / (p2.x() - p1.x());
+            if (centX > 1.0) centX = 1.0;
+            if (centX < -1.0) centX = -1.0;
         }
-    } else if (Drag <= 14) {
-        GraphR->GetScale(xs, ys);
-        GraphR->SetScale(Xs * dxs, ys);
-        SetScaleX(Xs * dxs);
-    } else if (Drag == 20) {
-        GraphR->ToPos(p, x, y);
-        for (i = 0; i < NObs; i++)
-            if (TimePos(Obs.data[IndexObs[i]].time) >= x) break;
-        ObsIndex = i < NObs ? i : NObs - 1;
-        UpdateTime();
+    } else if (dragState <= 14) {
+        graphSingle->getScale(xs, ys);
+        graphSingle->setScale(dragScaleX * dxs, ys);
+        setScaleX(dragScaleX * dxs);
+    } else if (dragState == 20) {
+        graphSingle->toPos(p, cx, cy);
+        for (i = 0; i < nObservation; i++)
+            if (timePosition(observation.data[indexObservation[i]].time) >= cx) break;
+        observationIndex = i < nObservation ? i : nObservation - 1;
+        updateTime();
     }
-    MenuCenterOri->setChecked(false);
+    ui->menuCenterOrigin->setChecked(false);
 
-    if (updateTime.elapsed() < RefreshTime) return;
-    updateTime.restart();
+    if (updateTimer.elapsed() < plotOptDialog->getRefreshCycle()) return;
+    updateTimer.restart();
 
-    Refresh();
+    refresh();
 }
 // callback on mouse-wheel events -------------------------------------------
 void Plot::wheelEvent(QWheelEvent *event)
 {
-    QPoint p(Xn, Yn);
+    QPoint p;
     double xs, ys, ds = pow(2.0, -event->angleDelta().y() / 1200.0);
-    int i, area = -1;
+    int panel, area = -1;
 
     event->accept();
 
-    trace(4, "MouseWheel: WheelDelta=%d\n", event->angleDelta().y());
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+    p = ui->lblDisplay->mapFromGlobal(event->globalPosition()).toPoint();
+#else
+    p = ui->lblDisplay->mapFromGlobal(event->globalPosition().toPoint());
+#endif
 
-    if (Xn < 0 || Yn < 0) return;
+    trace(4, "wheelEvent: WheelDelta=%d\n", event->angleDelta().y());
 
-    if (PlotType == PLOT_TRK) { // track-plot
-        GraphT->GetScale(xs, ys);
-        GraphT->SetScale(xs * ds, ys * ds);
-    } else if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES || PlotType == PLOT_SNR) {
-        for (i = 0; i < 3; i++) {
-            if (PlotType == PLOT_SNR && i != 1) continue;
-            area = GraphG[i]->OnAxis(p);
-            if (area == 0 || area == 1 || area == 2) {
-                GraphG[i]->GetScale(xs, ys);
-                GraphG[i]->SetScale(xs, ys * ds);
-            } else if (area == 0) {
-                break;
+    if (p.x() < 0 || p.y() < 0) return;
+
+    if (plotType == PLOT_TRK) { // track-plot
+        graphTrack->getScale(xs, ys);
+        graphTrack->setScale(xs * ds, ys * ds);
+    } else if (plotType <= PLOT_NSAT || plotType == PLOT_RES || plotType == PLOT_SNR) {
+        for (panel = 0; panel < 3; panel++) {
+            if (plotType == PLOT_SNR && panel != 1) continue;
+
+            area = graphTriple[panel]->onAxis(p);
+            if (area == 0 || area == 1 || area == 2) {  // center, left or right of point p
+                graphTriple[panel]->getScale(xs, ys);
+                graphTriple[panel]->setScale(xs, ys * ds);
             }
         }
-        if (area == 8) {
-            for (i = 0; i < 3; i++) {
-                GraphG[i]->GetScale(xs, ys);
-                GraphG[i]->SetScale(xs * ds, ys);
-                SetScaleX(xs * ds);
+        if (area == 8) {  // below point p
+            for (panel = 0; panel < 3; panel++) {
+                graphTriple[panel]->getScale(xs, ys);
+                graphTriple[panel]->setScale(xs * ds, ys);
+                setScaleX(xs * ds);
             }
         }
-    } else if (PlotType == PLOT_OBS || PlotType == PLOT_DOP) {
-        area = GraphR->OnAxis(p);
-        if (area == 0 || area == 8) {
-            GraphR->GetScale(xs, ys);
-            GraphR->SetScale(xs * ds, ys);
-            SetScaleX(xs * ds);
+    } else if (plotType == PLOT_OBS || plotType == PLOT_DOP) {
+        area = graphSingle->onAxis(p);
+        if (area == 0 || area == 8) {  // center or below
+            graphSingle->getScale(xs, ys);
+            graphSingle->setScale(xs * ds, ys);
+            setScaleX(xs * ds);
         }
     } else {
         return;
     }
 
-    Refresh();
+    refresh();
 }
 // callback on key-down events ----------------------------------------------
 void Plot::keyPressEvent(QKeyEvent *event)
 {
-    double sfact = 1.05, fact = event->modifiers().testFlag(Qt::ShiftModifier) ? 1.0 : 10.0;
+    double scaleFactor = 1.05, factor = event->modifiers().testFlag(Qt::ShiftModifier) ? 1.0 : 10.0;
     double xc, yc, yc1, yc2, yc3, xs, ys, ys1, ys2, ys3;
-    int key = event->modifiers().testFlag(Qt::ControlModifier) ? 10 : 0;
 
-    trace(3, "FormKeyDown:\n");
+    trace(3, "keyPressEvent:\n");
 
-    switch (event->key()) {
-    case Qt::Key_Up: key += 1; break;
-    case Qt::Key_Down: key += 2; break;
-    case Qt::Key_Left: key += 3; break;
-    case Qt::Key_Right: key += 4; break;
-    default: return;
-    }
     if (event->modifiers().testFlag(Qt::AltModifier)) return;
 
-    if (PlotType == PLOT_TRK) {
-        GraphT->GetCent(xc, yc);
-        GraphT->GetScale(xs, ys);
-        if (key == 1) {
-            if (!MenuFixHoriz->isChecked()) yc += fact * ys;
+    if (plotType == PLOT_TRK) {
+        graphTrack->getCenter(xc, yc);
+        graphTrack->getScale(xs, ys);
+        if (event->key() == Qt::Key_Up) {
+            if (!ui->menuFixHoriz->isChecked()) yc += factor * ys;
         }
-        if (key == 2) {
-            if (!MenuFixHoriz->isChecked()) yc -= fact * ys;
+        if (event->key() == Qt::Key_Down) {
+            if (!ui->menuFixHoriz->isChecked()) yc -= factor * ys;
         }
-        if (key == 3) {
-            if (!MenuFixHoriz->isChecked()) xc -= fact * xs;
+        if (event->key() == Qt::Key_Left) {
+            if (!ui->menuFixHoriz->isChecked()) xc -= factor * xs;
         }
-        if (key == 4) {
-            if (!MenuFixHoriz->isChecked()) xc += fact * xs;
+        if (event->key() == Qt::Key_Right) {
+            if (!ui->menuFixHoriz->isChecked()) xc += factor * xs;
         }
-        if (key == 11) {
-            xs /= sfact; ys /= sfact;
+        if ((event->key() == Qt::Key_Up) && (event->modifiers().testFlag(Qt::ControlModifier))) {
+            xs /= scaleFactor; ys /= scaleFactor;
         }
-        if (key == 12) {
-            xs *= sfact; ys *= sfact;
+        if ((event->key() == Qt::Key_Down) && (event->modifiers().testFlag(Qt::ControlModifier))) {
+            xs *= scaleFactor; ys *= scaleFactor;
         }
-        GraphT->SetCent(xc, yc);
-        GraphT->SetScale(xs, ys);
-    } else if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES) {
-        GraphG[0]->GetCent(xc, yc1);
-        GraphG[1]->GetCent(xc, yc2);
-        GraphG[2]->GetCent(xc, yc3);
-        GraphG[0]->GetScale(xs, ys1);
-        GraphG[1]->GetScale(xs, ys2);
-        GraphG[2]->GetScale(xs, ys3);
-        if (key == 1) {
-            if (!MenuFixVert->isChecked()) yc1 += fact * ys1;
-            yc2 += fact * ys2;
-            yc3 += fact * ys3;
+        graphTrack->setCenter(xc, yc);
+        graphTrack->setScale(xs, ys);
+    } else if (plotType <= PLOT_NSAT || plotType == PLOT_RES) {
+        graphTriple[0]->getCenter(xc, yc1);
+        graphTriple[1]->getCenter(xc, yc2);
+        graphTriple[2]->getCenter(xc, yc3);
+        graphTriple[0]->getScale(xs, ys1);
+        graphTriple[1]->getScale(xs, ys2);
+        graphTriple[2]->getScale(xs, ys3);
+        if (event->key() == Qt::Key_Up) {
+            if (!ui->menuFixVert->isChecked()) yc1 += factor * ys1;
+            yc2 += factor * ys2;
+            yc3 += factor * ys3;
         }
-        if (key == 2) {
-            if (!MenuFixVert->isChecked()) yc1 -= fact * ys1;
-            yc2 -= fact * ys2;
-            yc3 -= fact * ys3;
+        if (event->key() == Qt::Key_Down) {
+            if (!ui->menuFixVert->isChecked()) yc1 -= factor * ys1;
+            yc2 -= factor * ys2;
+            yc3 -= factor * ys3;
         }
-        if (key == 3) {
-            if (!MenuFixHoriz->isChecked()) xc -= fact * xs;
+        if (event->key() == Qt::Key_Left) {
+            if (!ui->menuFixHoriz->isChecked()) xc -= factor * xs;
         }
-        if (key == 4) {
-            if (!MenuFixHoriz->isChecked()) xc += fact * xs;
+        if (event->key() == Qt::Key_Right) {
+            if (!ui->menuFixHoriz->isChecked()) xc += factor * xs;
         }
-        if (key == 11) {
-            ys1 /= sfact;
-            ys2 /= sfact;
-            ys3 /= sfact;
+        if ((event->key() == Qt::Key_Up) && (event->modifiers().testFlag(Qt::ControlModifier))) {
+            ys1 /= scaleFactor;
+            ys2 /= scaleFactor;
+            ys3 /= scaleFactor;
         }
-        if (key == 12) {
-            ys1 *= sfact;
-            ys2 *= sfact;
-            ys3 *= sfact;
+        if ((event->key() == Qt::Key_Down) && (event->modifiers().testFlag(Qt::ControlModifier))) {
+            ys1 *= scaleFactor;
+            ys2 *= scaleFactor;
+            ys3 *= scaleFactor;
         }
-        if (key == 13) xs *= sfact;
-        if (key == 14) xs /= sfact;
-        GraphG[0]->SetCent(xc, yc1);
-        GraphG[1]->SetCent(xc, yc2);
-        GraphG[2]->SetCent(xc, yc3);
-        GraphG[0]->SetScale(xs, ys1);
-        GraphG[1]->SetScale(xs, ys2);
-        GraphG[2]->SetScale(xs, ys3);
-    } else if (PlotType == PLOT_OBS || PlotType == PLOT_DOP || PlotType == PLOT_SNR) {
-        GraphR->GetCent(xc, yc);
-        GraphR->GetScale(xs, ys);
-        if (key == 1) {
-            if (!MenuFixVert->isChecked()) yc += fact * ys;
+        if ((event->key() == Qt::Key_Left) && (event->modifiers().testFlag(Qt::ControlModifier)))
+            xs *= scaleFactor;
+        if ((event->key() == Qt::Key_Right) && (event->modifiers().testFlag(Qt::ControlModifier)))
+            xs /= scaleFactor;
+        graphTriple[0]->setCenter(xc, yc1);
+        graphTriple[1]->setCenter(xc, yc2);
+        graphTriple[2]->setCenter(xc, yc3);
+        graphTriple[0]->setScale(xs, ys1);
+        graphTriple[1]->setScale(xs, ys2);
+        graphTriple[2]->setScale(xs, ys3);
+    } else if (plotType == PLOT_OBS || plotType == PLOT_DOP || plotType == PLOT_SNR) {
+        graphSingle->getCenter(xc, yc);
+        graphSingle->getScale(xs, ys);
+        if (event->key() == Qt::Key_Up) {
+            if (!ui->menuFixVert->isChecked()) yc += factor * ys;
         }
-        if (key == 2) {
-            if (!MenuFixVert->isChecked()) yc -= fact * ys;
+        if (event->key() == Qt::Key_Down) {
+            if (!ui->menuFixVert->isChecked()) yc -= factor * ys;
         }
-        if (key == 3) {
-            if (!MenuFixHoriz->isChecked()) xc -= fact * xs;
+        if (event->key() == Qt::Key_Left) {
+            if (!ui->menuFixHoriz->isChecked()) xc -= factor * xs;
         }
-        if (key == 4) {
-            if (!MenuFixHoriz->isChecked()) xc += fact * xs;
+        if (event->key() == Qt::Key_Right) {
+            if (!ui->menuFixHoriz->isChecked()) xc += factor * xs;
         }
-        if (key == 11) ys /= sfact;
-        if (key == 12) xs *= sfact;
-        if (key == 13) xs *= sfact;
-        if (key == 14) xs /= sfact;
-        GraphR->SetCent(xc, yc);
-        GraphR->SetScale(xs, ys);
+        if ((event->key() == Qt::Key_Up) && (event->modifiers().testFlag(Qt::ControlModifier)))
+            ys /= scaleFactor;
+        if ((event->key() == Qt::Key_Down) && (event->modifiers().testFlag(Qt::ControlModifier)))
+            ys *= scaleFactor;
+        if ((event->key() == Qt::Key_Left) && (event->modifiers().testFlag(Qt::ControlModifier)))
+            xs *= scaleFactor;
+        if ((event->key() == Qt::Key_Right) && (event->modifiers().testFlag(Qt::ControlModifier)))
+            xs /= scaleFactor;
+
+        graphSingle->setCenter(xc, yc);
+        graphSingle->setScale(xs, ys);
     }
-    Refresh();
+    refresh();
 }
 // callback on interval-timer -----------------------------------------------
-void Plot::TimerTimer()
+void Plot::timerTimer()
 {
-    const QColor color[] = { Qt::red, Qt::gray, QColor(0x00, 0xAA, 0xFF), Qt::green, QColor(0x00, 0xff, 0x00) };
-    QLabel *strstatus[] = { StrStatus1, StrStatus2 };
-    Console *console[] = { Console1, Console2 };
-    QString connectmsg = "";
+    const QColor color[] = {Qt::red, Qt::gray, Color::Orange, Qt::green, Color::Lime};
+    QLabel *lblStreamStatus[] = {ui->lblStreamStatus1, ui->lblStreamStatus2};
+    Console *console[] = {console1, console2};
+    QString connectmsg ;
     static uint8_t buff[16384];
-    solopt_t opt = solopt_default;
+    solopt_t solopt = solopt_default;
     sol_t *sol;
-    const gtime_t ts = { 0, 0 };
+    const gtime_t ts = {0, 0};
     gtime_t time = {0, 0};
-    double tint = TimeEna[2]?TimeInt:0.0, pos[3], ep[6];
-    int i, j, n, inb, inr, cycle, nmsg[2] = { 0 }, stat, istat;
-    int sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
+    double tint = timeEnabled[2] ? timeInterval : 0.0, pos[3], ep[6];
+    int i, j, n, inb, inr, cycle, nmsg[2] = {0}, stat, istat;
+    int sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
     char msg[MAXSTRMSG] = "";
 
-    trace(4, "TimeTimer\n");
+    trace(4, "timerTimer\n");
 
-    if (ConnectState) { // real-time input mode
-        for (i = 0; i < 2; i++) {
-            opt.posf = RtFormat[i];
-            opt.times = RtTimeForm == 0 ? 0 : RtTimeForm - 1;
-            opt.timef = RtTimeForm >= 1;
-            opt.degf = RtDegForm;
-            strcpy(opt.sep, qPrintable(RtFieldSep));
-            strsum(Stream + i, &inb, &inr, NULL, NULL);
-            stat = strstat(Stream + i, msg);
-            strstatus[i]->setStyleSheet(QStringLiteral("QLabel {color %1;}").arg(color2String(color[stat < 3 ? stat + 1 : 3])));
+    if (connectState) { // real-time input mode
+        for (int streamNo = 0; streamNo < 2; streamNo++) {
+            solopt.posf = rtFormat[streamNo];
+            solopt.times = (rtTimeFormat == 0) ? TIMES_GPST : (rtTimeFormat - 1);
+            solopt.timef = rtTimeFormat >= 1;
+            solopt.degf = rtDegFormat;
+            strncpy(solopt.sep, qPrintable(rtFieldSeperator), 63);
+            strsum(stream + streamNo, &inb, &inr, NULL, NULL);
+            stat = strstat(stream + streamNo, msg);
+            setWidgetTextColor(lblStreamStatus[streamNo], color[stat < 3 ? stat + 1 : 3]);
             if (*msg && strcmp(msg, "localhost"))
-                connectmsg += QStringLiteral("(%1) %2 ").arg(i + 1).arg(msg);
-            while ((n = strread(Stream + i, buff, sizeof(buff))) > 0) {
+                connectmsg += QStringLiteral("(%1) %2 ").arg(streamNo + 1).arg(msg);
+            while ((n = strread(stream + streamNo, buff, sizeof(buff))) > 0) {
                 for (j = 0; j < n; j++) {
-                    istat = inputsol(buff[j], ts, ts, tint, 0, &opt, SolData + i);
+                    istat = inputsol(buff[j], ts, ts, tint, SOLQ_NONE, &solopt, solutionData + streamNo);
                     if (istat == 0) continue;
                     if (istat < 0) { // disconnect received
-                        Disconnect();
+                        disconnectStream();
                         return;
                     }
-                    if (Week == 0 && SolData[i].n == 1) { // first data
-                        if (PlotType > PLOT_NSAT)
-                            UpdateType(PLOT_TRK);
-                        time2gpst(SolData[i].time, &Week);
-                        UpdateOrigin();
-                        ecef2pos(SolData[i].data[0].rr, pos);
-                        mapView->SetCent(pos[0]*R2D,pos[1]*R2D);
+                    if (week == 0 && solutionData[streamNo].n == 1) { // first data
+                        if (plotType > PLOT_NSAT)
+                            updatePlotType(PLOT_TRK);
+                        time2gpst(solutionData[streamNo].time, &week);
+                        updateOrigin();
+                        ecef2pos(solutionData[streamNo].data[0].rr, pos);
+                        mapView->setCenter(pos[0] * R2D, pos[1] * R2D);
                     }
-                    nmsg[i]++;
+                    nmsg[streamNo]++;
                 }
-                console[i]->AddMsg(buff, n);
+                console[streamNo]->addMessage(buff, n);
             }
-            if (nmsg[i] > 0) {
-                strstatus[i]->setStyleSheet(QStringLiteral("QLabel {color %1;}").arg(color2String(color[4])));
-                SolIndex[i] = SolData[i].n - 1;
+            if (nmsg[streamNo] > 0) {
+                setWidgetTextColor(lblStreamStatus[streamNo], color[4]);
+                solutionIndex[streamNo] = solutionData[streamNo].n - 1;
             }
         }
-        ConnectMsg->setText(connectmsg);
-
+        ui->lblConnectMessage->setText(connectmsg);
         if (nmsg[0] <= 0 && nmsg[1] <= 0) return;
-    } else if (BtnAnimate->isEnabled() && BtnAnimate->isChecked()) { // animation mode
-        cycle = AnimCycle <= 0 ? 1 : AnimCycle;
+    } else if (ui->btnAnimate->isEnabled() && ui->btnAnimate->isChecked()) { // animation mode
+        cycle = plotOptDialog->getAnimationCycle() <= 0 ? 1 : plotOptDialog->getAnimationCycle();
 
-        if (PlotType <= PLOT_NSAT || PlotType == PLOT_RES) {
-            SolIndex[sel] += cycle;
-            if (SolIndex[sel] >= SolData[sel].n - 1) {
-                SolIndex[sel] = SolData[sel].n - 1;
-                BtnAnimate->setChecked(false);
+        if (plotType <= PLOT_NSAT || plotType == PLOT_RES) {
+            solutionIndex[sel] += cycle;
+            if (solutionIndex[sel] >= solutionData[sel].n - 1) {
+                solutionIndex[sel] = solutionData[sel].n - 1;
+                ui->btnAnimate->setChecked(false);
             }
         } else {
-            ObsIndex += cycle;
-            if (ObsIndex >= NObs - 1) {
-                ObsIndex = NObs - 1;
-                BtnAnimate->setChecked(false);
+            observationIndex += cycle;
+            if (observationIndex >= nObservation - 1) {
+                observationIndex = nObservation - 1;
+                ui->btnAnimate->setChecked(false);
             }
         }
-    } else if (TimeSyncOut) { // time sync
+    } else if (plotOptDialog->getTimeSyncOut()) { // time sync
         time.time = 0;
-        while (strread(&StrTimeSync, (uint8_t *)StrBuff + NStrBuff, 1)) {
-            if (++NStrBuff >= 1023) {
-                NStrBuff = 0;
+        while (strread(&streamTimeSync, (uint8_t *)streamBuffer + nStreamBuffer, 1)) {
+            if (++nStreamBuffer >= 1023) {
+                nStreamBuffer = 0;
                 continue;
             }
-            if (StrBuff[NStrBuff-1] == '\n') {
-                StrBuff[NStrBuff-1] = '\0';
-                if (sscanf(StrBuff,"%lf/%lf/%lf %lf:%lf:%lf",ep,ep+1,ep+2,
-                           ep+3,ep+4,ep+5)>=6) {
-                    time=epoch2time(ep);
+            if (streamBuffer[nStreamBuffer - 1] == '\n') {
+                streamBuffer[nStreamBuffer - 1] = '\0';
+                if (sscanf(streamBuffer, "%lf/%lf/%lf %lf:%lf:%lf", ep, ep + 1, ep + 2,
+                           ep + 3, ep + 4, ep + 5) >= 6) {
+                    time = epoch2time(ep);
                 }
-                NStrBuff = 0;
+                nStreamBuffer = 0;
             }
         }
-        if (time.time && (PlotType <= PLOT_NSAT || PlotType <= PLOT_RES)) {
-           i = SolIndex[sel];
-           if (!(sol = getsol(SolData + sel, i))) return;
+        if (time.time && (plotType <= PLOT_NSAT || plotType <= PLOT_RES)) {
+           i = solutionIndex[sel];
+           if (!(sol = getsol(solutionData + sel, i))) return;
+
            double tt = timediff(sol->time, time);
            if (tt < -DTTOL) {
-               for (;i < SolData[sel].n; i++) {
-                   if (!(sol = getsol(SolData + sel,i))) continue;
+               for (;i < solutionData[sel].n; i++) {
+                   if (!(sol = getsol(solutionData + sel,i))) continue;
                    if (timediff(sol->time, time) >= -DTTOL) {
                        i--;
                        break;
@@ -2075,11 +1992,11 @@ void Plot::TimerTimer()
                }
            } else if (tt > DTTOL) {
                for (;i >= 0; i--) {
-                   if (!(sol = getsol(SolData + sel,i))) continue;
+                   if (!(sol = getsol(solutionData + sel,i))) continue;
                    if (timediff(sol->time, time) <= DTTOL) break;
                }
            }
-           SolIndex[sel] = MAX(0, MIN(SolData[sel].n - 1, i));
+           solutionIndex[sel] = qMax(0, qMin(solutionData[sel].n - 1, i));
         }
         else return;
     }
@@ -2087,416 +2004,455 @@ void Plot::TimerTimer()
         return;
     }
 
-    UpdateTime();
+    updateTime();
 
-    if (updateTime.elapsed() < RefreshTime) return;
-    updateTime.restart();
+    if (updateTimer.elapsed() < plotOptDialog->getRefreshCycle()) return;
+    updateTimer.restart();
 
-    UpdatePlot();
+    updatePlot();
 }
 // set center of x-axis -----------------------------------------------------
-void Plot::SetCentX(double c)
+void Plot::setCenterX(double c)
 {
     double x, y;
-    int i;
+    int panel;
 
-    trace(3, "SetCentX: c=%.3f:\n", c);
+    trace(3, "SetCenterX: c=%.3f:\n", c);
 
-    GraphR->GetCent(x, y);
-    GraphR->SetCent(c, y);
-    for (i = 0; i < 3; i++) {
-        GraphG[i]->GetCent(x, y);
-        GraphG[i]->SetCent(c, y);
+    graphSingle->getCenter(x, y);
+    graphSingle->setCenter(c, y);
+    for (panel = 0; panel < 3; panel++) {
+        graphTriple[panel]->getCenter(x, y);
+        graphTriple[panel]->setCenter(c, y);
     }
 }
 // set scale of x-axis ------------------------------------------------------
-void Plot::SetScaleX(double s)
+void Plot::setScaleX(double s)
 {
     double xs, ys;
-    int i;
+    int panel;
 
     trace(3, "SetScaleX: s=%.3f:\n", s);
 
-    GraphR->GetScale(xs, ys);
-    GraphR->SetScale(s, ys);
-    for (i = 0; i < 3; i++) {
-        GraphG[i]->GetScale(xs, ys);
-        GraphG[i]->SetScale(s, ys);
+    graphSingle->getScale(xs, ys);
+    graphSingle->setScale(s, ys);
+    for (panel = 0; panel < 3; panel++) {
+        graphTriple[panel]->getScale(xs, ys);
+        graphTriple[panel]->setScale(s, ys);
     }
 }
 // update plot-type with fit-range ------------------------------------------
-void Plot::UpdateType(int type)
+void Plot::updatePlotType(int type)
 {
-    trace(3, "UpdateType: type=%d\n", type);
+    trace(3, "updatePlotType: type=%d\n", type);
 
-    PlotType = type;
+    plotType = type;
 
-    if (AutoScale && PlotType <= PLOT_SOLA && (SolData[0].n > 0 || SolData[1].n > 0))
-        FitRange(0);
+    if (plotOptDialog->getAutoScale() && plotType <= PLOT_SOLA && (solutionData[0].n > 0 || solutionData[1].n > 0))
+        fitRange(0);
     else
-        SetRange(0, YRange);
-    UpdatePlotType();
+        setRange(0, getYRange());
+
+    updatePlotTypeMenu();
 }
 // update size of plot ------------------------------------------------------
-void Plot::UpdateSize(void)
+void Plot::updatePlotSizes()
 {
-    QPushButton *btn[] = { BtnOn1, BtnOn2, BtnOn3 };
-    QPoint p1(0, 0), p2(Disp->width(), Disp->height());
-    double xs, ys,font_px=Disp->font().pixelSize()*1.33;
-    int i, n, h, tmargin, bmargin, rmargin, lmargin;
+    QPushButton *btn[] = {ui->btnOn1, ui->btnOn2, ui->btnOn3};
+    QPoint p1(0, 0), p2(ui->lblDisplay->width(), ui->lblDisplay->height());
+    double xs, ys, font_px = plotOptDialog->getFont().pointSize()*1.33;
+    int i, numPanels, h, tmargin, bmargin, rmargin, lmargin;
 
-    trace(3, "UpdateSize\n");
+    trace(3, "updatePlotSizes\n");
 
-    tmargin=(int)(font_px*0.9); // top margin (px)
-    bmargin=(int)(font_px*1.8); // bottom
-    rmargin=(int)(font_px*1.2); // right
-    lmargin=(int)(font_px*3.6); // left
+    tmargin = (int)(font_px * 0.9); // top margin (px)
+    bmargin = (int)(font_px * 1.8); // bottom
+    rmargin = (int)(font_px * 1.2); // right
+    lmargin = (int)(font_px * 4.6); // left
 
-    GraphT->resize();
-    GraphS->resize();
-    GraphR->resize();
-    for (int i = 0; i < 3; i++)
-        GraphG[i]->resize();
-    for (int i = 0; i < 2; i++)
-        GraphE[i]->resize();
+    graphTrack->setPosition(p1, p2);
 
-    GraphT->SetPos(p1, p2);
-    GraphS->SetPos(p1, p2);
-    GraphS->GetScale(xs, ys);
-    xs = MAX(xs, ys);
-    GraphS->SetScale(xs, xs);
-    p1.rx() += lmargin; p1.ry() += tmargin;
-    p2.rx() -= rmargin; p2.setY(p2.y() - bmargin);
-    GraphR->SetPos(p1, p2);
+    graphSky->setPosition(p1, p2);
+    graphSky->getScale(xs, ys);
+    xs = qMax(xs, ys);
+    graphSky->setScale(xs, xs);
 
-    p1.setX(p1.x()+(int)(font_px*1.2));
-    p1.setY(tmargin); p2.setY(p1.y());
-    for (i = n = 0; i < 3; i++) if (btn[i]->isChecked()) n++;
+    p1.rx() += lmargin;
+    p1.ry() += tmargin;
+    p2.rx() -= rmargin;
+    p2.ry() -= bmargin;
+    graphSingle->setPosition(p1, p2);
+
+    p1.setY(tmargin);
+    p2.setY(p1.y());
+
+    // tripple panel
+    for (i = numPanels = 0; i < 3; i++) if (btn[i]->isChecked()) numPanels++;
     for (i = 0; i < 3; i++) {
-        if (!btn[i]->isChecked() || (n <= 0)) continue;
-        if (n == 0) break;
-        h = (Disp->height() - tmargin - bmargin) / n;
+        if (!btn[i]->isChecked() || (numPanels <= 0)) continue;
+        h = (ui->lblDisplay->height() - tmargin - bmargin) / numPanels;
         p2.ry() += h;
-        GraphG[i]->SetPos(p1, p2);
+        graphTriple[i]->setPosition(p1, p2);
         p1.ry() += h;
     }
-    p1.setY(tmargin); p2.setY(p1.y());
-    for (i = n = 0; i < 2; i++) if (btn[i]->isChecked()) n++;
+
+    // dual panel
+    p1.setY(tmargin);
+    p2.setY(p1.y());
+    for (i = numPanels = 0; i < 2; i++) if (btn[i]->isChecked()) numPanels++;
     for (i = 0; i < 2; i++) {
-        if (!btn[i]->isChecked() || (n <= 0)) continue;
-        if (n == 0) break;
-        h = (Disp->height() - tmargin - bmargin) / n;
+        if (!btn[i]->isChecked() || (numPanels <= 0)) continue;
+        h = (ui->lblDisplay->height() - tmargin - bmargin) / numPanels;
         p2.ry() += h;
-        GraphE[i]->SetPos(p1, p2);
+        graphDual[i]->setPosition(p1, p2);
         p1.ry() += h;
     }
 }
 // update colors on plot ----------------------------------------------------
-void Plot::UpdateColor(void)
+void Plot::updateColor()
 {
     int i;
 
-    trace(3, "UpdateColor\n");
+    trace(3, "updateColor\n");
 
     for (i = 0; i < 3; i++) {
-        GraphT->Color[i] = CColor[i];
-        GraphR->Color[i] = CColor[i];
-        GraphS->Color[i] = CColor[i];
-        GraphG[0]->Color[i] = CColor[i];
-        GraphG[1]->Color[i] = CColor[i];
-        GraphG[2]->Color[i] = CColor[i];
+        graphTrack->color[i] = plotOptDialog->getCColor(i);
+        graphSingle->color[i] = plotOptDialog->getCColor(i);
+        graphSky->color[i] = plotOptDialog->getCColor(i);
+        graphTriple[0]->color[i] = plotOptDialog->getCColor(i);
+        graphTriple[1]->color[i] = plotOptDialog->getCColor(i);
+        graphTriple[2]->color[i] = plotOptDialog->getCColor(i);
     }
-    Disp->setFont(Font);
+    ui->lblDisplay->setFont(font);
 }
 // update time-cursor -------------------------------------------------------
-void Plot::UpdateTime(void)
+void Plot::updateTime()
 {
     gtime_t time;
     sol_t *sol;
     double tt;
-    int i, sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
+    int i, sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
 
-    trace(3, "UpdateTime\n");
+    trace(3, "updateTime\n");
+
+    if (observationIndex < 0) return;
 
     // time-cursor change on solution-plot
-    if (PlotType <= PLOT_NSAT || PlotType <= PLOT_RES) {
-        TimeScroll->setMaximum(MAX(1, SolData[sel].n - 1));
-        TimeScroll->setValue(SolIndex[sel]);
-        if (!(sol = getsol(SolData + sel, SolIndex[sel]))) return;
+    if (plotType <= PLOT_NSAT || plotType <= PLOT_RES) {
+        ui->sBTime->setMaximum(qMax(1, solutionData[sel].n - 1));
+        ui->sBTime->setValue(solutionIndex[sel]);
+        if (!(sol = getsol(solutionData + sel, solutionIndex[sel]))) return;
         time = sol->time;
-    } else if (NObs > 0) { // time-cursor change on observation-data-plot
-        TimeScroll->setMaximum(MAX(1, NObs - 1));
-        TimeScroll->setValue(ObsIndex);
-        time = Obs.data[IndexObs[ObsIndex]].time;
+    } else if (nObservation > 0) { // time-cursor change on observation-data-plot
+        ui->sBTime->setMaximum(qMax(1, nObservation - 1));
+        ui->sBTime->setValue(observationIndex);
+        time = observation.data[indexObservation[observationIndex]].time;
     } else {
         return;
     }
 
     // time-synchronization between solutions and observation-data
     for (sel = 0; sel < 2; sel++) {
-        i = SolIndex[sel];
-        if (!(sol = getsol(SolData + sel, i))) continue;
+        i = solutionIndex[sel];
+        if (!(sol = getsol(solutionData + sel, i))) continue;
         tt = timediff(sol->time, time);
         if (tt < -DTTOL) {
-            for (; i < SolData[sel].n; i++) {
-                if (!(sol = getsol(SolData + sel, i))) continue;
+            for (; i < solutionData[sel].n; i++) {
+                if (!(sol = getsol(solutionData + sel, i))) continue;
                 if (timediff(sol->time, time) >= -DTTOL) break;
             }
         } else if (tt > DTTOL) {
             for (; i >= 0; i--) {
-                if (!(sol = getsol(SolData + sel, i))) continue;
+                if (!(sol = getsol(solutionData + sel, i))) continue;
                 if (timediff(sol->time, time) <= DTTOL) break;
             }
         }
-        SolIndex[sel] = MAX(0, MIN(SolData[sel].n - 1, i));
+        solutionIndex[sel] = qMax(0, qMin(solutionData[sel].n - 1, i));
     }
-    i = ObsIndex;
-    if (i <= NObs - 1) {
-        tt = timediff(Obs.data[IndexObs[i]].time, time);
+    i = observationIndex;
+    if (i <= nObservation - 1) {
+        tt = timediff(observation.data[indexObservation[i]].time, time);
         if (tt < -DTTOL) {
-            for (; i < NObs; i++)
-                if (timediff(Obs.data[IndexObs[i]].time, time) >= -DTTOL) break;
+            for (; i < nObservation; i++)
+                if (timediff(observation.data[indexObservation[i]].time, time) >= -DTTOL) break;
         } else if (tt > DTTOL) {
             for (; i >= 0; i--)
-                if (timediff(Obs.data[IndexObs[i]].time, time) <= DTTOL) break;
+                if (timediff(observation.data[indexObservation[i]].time, time) <= DTTOL) break;
         }
-        ObsIndex = MAX(0, MIN(NObs - 1, i));
+        observationIndex = qMax(0, qMin(nObservation - 1, i));
     }
 }
 // update origin of plot ----------------------------------------------------
-void Plot::UpdateOrigin(void)
+void Plot::updateOrigin()
 {
-    gtime_t time = { 0, 0 };
+    gtime_t time = {0, 0};
     sol_t *sol;
-    double opos[3] = { 0 }, pos[3], ovel[3] = { 0 };
-    int i, j, n = 0, sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
+    double opos[3] = {0}, pos[3], ovel[3] = {0};
+    int i, j, n = 0, sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
     QString sta;
 
-    trace(3, "UpdateOrigin\n");
+    trace(3, "updateOrigin\n");
 
-    if (Origin == ORG_STARTPOS) {
-        if (!(sol = getsol(SolData, 0)) || sol->type != 0) return;
-        for (i = 0; i < 3; i++) opos[i] = sol->rr[i];
-    } else if (Origin == ORG_ENDPOS) {
-        if (!(sol = getsol(SolData, SolData[0].n - 1)) || sol->type != 0) return;
-        for (i = 0; i < 3; i++) opos[i] = sol->rr[i];
-    } else if (Origin == ORG_AVEPOS) {
-        for (i = 0; (sol = getsol(SolData, i)) != NULL; i++) {
+    if (plotOptDialog->getOrigin() == ORG_STARTPOS) {
+        if (!(sol = getsol(solutionData, 0)) || sol->type != 0) return;
+        for (i = 0; i < 3; i++)
+            opos[i] = sol->rr[i];
+    } else if (plotOptDialog->getOrigin() == ORG_ENDPOS) {
+        if (!(sol = getsol(solutionData, solutionData[0].n - 1)) || sol->type != 0) return;
+        for (i = 0; i < 3; i++)
+            opos[i] = sol->rr[i];
+    } else if (plotOptDialog->getOrigin() == ORG_AVEPOS) {
+        for (i = 0; (sol = getsol(solutionData, i)) != NULL; i++) {
             if (sol->type != 0) continue;
-            for (j = 0; j < 3; j++) opos[j] += sol->rr[j];
+            for (j = 0; j < 3; j++)
+                opos[j] += sol->rr[j];
             n++;
         }
-        if (n > 0) for (i = 0; i < 3; i++) opos[i] /= n;
-    } else if (Origin == ORG_FITPOS) {
-        if (!FitPos(&time, opos, ovel)) return;
-    } else if (Origin == ORG_REFPOS) {
-        if (norm(SolData[0].rb, 3) > 0.0) {
-            for (i = 0; i < 3; i++) opos[i] = SolData[0].rb[i];
+        if (n > 0)
+            for (i = 0; i < 3; i++) opos[i] /= n;
+    } else if (plotOptDialog->getOrigin() == ORG_FITPOS) {
+        if (!fitPositions(&time, opos, ovel)) return;
+    } else if (plotOptDialog->getOrigin() == ORG_REFPOS) {
+        if (norm(solutionData[0].rb, 3) > 0.0) {
+            for (i = 0; i < 3; i++)
+                opos[i] = solutionData[0].rb[i];
         } else {
-            if (!(sol = getsol(SolData, 0)) || sol->type != 0) return;
-            for (i = 0; i < 3; i++) opos[i] = sol->rr[i];
+            if (!(sol = getsol(solutionData, 0)) || sol->type != 0) return;
+            for (i = 0; i < 3; i++)
+                opos[i] = sol->rr[i];
         }
-    } else if (Origin == ORG_LLHPOS) {
-        pos2ecef(OOPos, opos);
-    } else if (Origin == ORG_AUTOPOS) {
-        if (SolFiles[sel].count() > 0) {
-            QFileInfo fi(SolFiles[sel].at(0));
+    } else if (plotOptDialog->getOrigin() == ORG_LLHPOS) {
+        pos2ecef(plotOptDialog->getOoPosition(), opos);
+    } else if (plotOptDialog->getOrigin() == ORG_AUTOPOS) {
+        if (solutionFiles[sel].count() > 0) {
+            QFileInfo fi(solutionFiles[sel].at(0));
 
-            ReadStaPos(fi.baseName().left(4).toUpper(), sta, opos);
+            readStationPosition(fi.baseName().left(4).toUpper(), sta, opos);
         }
-    } else if (Origin == ORG_IMGPOS) {
-        pos[0] = MapLat * D2R;
-        pos[1] = MapLon * D2R;
+    } else if (plotOptDialog->getOrigin() == ORG_IMGPOS) {
+        pos[0] = mapOptDialog->getMapLatitude() * D2R;
+        pos[1] = mapOptDialog->getMapLongitude() * D2R;
         pos[2] = 0.0;
         pos2ecef(pos, opos);
-    } else if (Origin == ORG_MAPPOS) {
-        pos[0] = (Gis.bound[0] + Gis.bound[1]) / 2.0;
-        pos[1] = (Gis.bound[2] + Gis.bound[3]) / 2.0;
+    } else if (plotOptDialog->getOrigin() == ORG_MAPPOS) {
+        pos[0] = (gis.bound[0] + gis.bound[1]) / 2.0;
+        pos[1] = (gis.bound[2] + gis.bound[3]) / 2.0;
         pos[2] = 0.0;
         pos2ecef(pos, opos);
-    } else if (Origin - ORG_PNTPOS < MAXWAYPNT) {
-        for (i = 0; i < 3; i++) opos[i] = PntPos[Origin - ORG_PNTPOS][i];
+    } else if (plotOptDialog->getOrigin() - ORG_PNTPOS < wayPoints.size()) {
+        for (i = 0; i < 3; i++)
+            opos[i] = wayPoints[plotOptDialog->getOrigin() - ORG_PNTPOS].position[i];
     }
     if (norm(opos, 3) <= 0.0) {
         // default start position
-        if (!(sol = getsol(SolData, 0)) || sol->type != 0) return;
-        for (i = 0; i < 3; i++) opos[i] = sol->rr[i];
+        if (!(sol = getsol(solutionData, 0)) || sol->type != 0) return;
+        for (i = 0; i < 3; i++)
+            opos[i] = sol->rr[i];
     }
-    OEpoch = time;
+    originEpoch = time;
     for (i = 0; i < 3; i++) {
-        OPos[i] = opos[i];
-        OVel[i] = ovel[i];
+        originPosition[i] = opos[i];
+        originVelocity[i] = ovel[i];
     }
-    Refresh_MapView();
+    refresh_MapView();
 }
 // update satellite mask ----------------------------------------------------
-void Plot::UpdateSatMask(void)
+void Plot::updateSatelliteMask()
 {
     int sat, prn;
-    char buff[256], *p;
 
-    trace(3, "UpdateSatMask\n");
+    trace(3, "updateSatelliteMask\n");
 
-    for (sat = 1; sat <= MAXSAT; sat++) SatMask[sat - 1] = 0;
+    // clear mask
+    for (sat = 1; sat <= MAXSAT; sat++) satelliteMask[sat - 1] = 0;
+
     for (sat = 1; sat <= MAXSAT; sat++)
-        if (!(satsys(sat, &prn) & NavSys)) SatMask[sat - 1] = 1;
-    if (ExSats != "") {
-        strcpy(buff, qPrintable(ExSats));
+        if (!(satsys(sat, &prn) & plotOptDialog->getNavSys())) satelliteMask[sat - 1] = 1;
 
-        for (p = strtok(buff, " "); p; p = strtok(NULL, " ")) {
-            if (*p == '+' && (sat = satid2no(p + 1))) SatMask[sat - 1] = 0; // included
-            else if ((sat = satid2no(p))) SatMask[sat - 1] = 1;             // excluded
+    if (!plotOptDialog->getExcludedSatellites().isEmpty()) {
+        foreach (QString sat, plotOptDialog->getExcludedSatellites().split(' ', Qt::SkipEmptyParts)) {
+            unsigned char ex;
+            int satNo;
+            if (sat[0] == '+')
+            {
+                ex = 0;
+                sat = sat.mid(1);
+            } else ex = 1;
+            if (!(satNo = satid2no(qPrintable(sat)))) continue;
+            satelliteMask[satNo - 1] = ex;
         }
     }
 }
 // update satellite select ---------------------------------------------------
-void Plot::UpdateSatSel(void)
+void Plot::updateSatelliteSelection()
 {
-    QString SatListText = SatList->currentText();
+    QString satelliteList = ui->cBSatelliteList->currentText();
     char id[16];
-    int i, sys = 0;
+    int sys = 0;
 
-    if (SatListText == "G") sys = SYS_GPS;
-    else if (SatListText == "R") sys = SYS_GLO;
-    else if (SatListText == "E") sys = SYS_GAL;
-    else if (SatListText == "J") sys = SYS_QZS;
-    else if (SatListText == "C") sys = SYS_CMP;
-    else if (SatListText == "I") sys = SYS_IRN;
-    else if (SatListText == "S") sys = SYS_SBS;
+    if (satelliteList == "G") sys = SYS_GPS;
+    else if (satelliteList == "R") sys = SYS_GLO;
+    else if (satelliteList == "E") sys = SYS_GAL;
+    else if (satelliteList == "J") sys = SYS_QZS;
+    else if (satelliteList == "C") sys = SYS_CMP;
+    else if (satelliteList == "I") sys = SYS_IRN;
+    else if (satelliteList == "S") sys = SYS_SBS;
 
-    for (i = 0; i < MAXSAT; i++) {
+    for (int i = 0; i < MAXSAT; i++) {
         satno2id(i + 1, id);
-        SatSel[i] = SatListText == "ALL" || SatListText == id || satsys(i + 1, NULL) == sys;
+        satelliteSelection[i] = (satelliteList == "ALL") || (satelliteList == id) || satsys(i + 1, NULL) == sys;
     }
 }
 // update enable/disable of widgets -----------------------------------------
-void Plot::UpdateEnable(void)
+void Plot::updateEnable()
 {
-    bool data = BtnSol1->isChecked() || BtnSol2->isChecked() || BtnSol12->isChecked();
-    bool plot = (PLOT_SOLP <= PlotType) && (PlotType <= PLOT_NSAT);
-    bool sel = (!BtnSol1->isChecked()) && (BtnSol2->isChecked()) ? 1 : 0;
+    bool data = ui->btnSolution1->isChecked() || ui->btnSolution2->isChecked() || ui->btnSolution12->isChecked();
+    bool plot = (PLOT_SOLP <= plotType) && (plotType <= PLOT_NSAT);
+    bool sel = (!ui->btnSolution1->isChecked()) && (ui->btnSolution2->isChecked()) ? 1 : 0;
 
-    trace(3, "UpdateEnable\n");
+    trace(3, "updateEnable\n");
 
-    Panel1->setVisible(MenuToolBar->isChecked());
-    Panel21->setVisible(MenuStatusBar->isChecked());
+    ui->toolPanel->setVisible(ui->menuToolBar->isChecked());
+    ui->statusbar->setVisible(ui->menuStatusBar->isChecked());
 
-    MenuConnect->setChecked(ConnectState);
-    BtnSol1->setEnabled(true);
-    BtnSol2->setEnabled(PlotType<=PLOT_NSAT||PlotType==PLOT_RES||PlotType==PLOT_RESE);
-    BtnSol12->setEnabled(!ConnectState && PlotType <= PLOT_SOLA && SolData[0].n > 0 && SolData[1].n > 0);
+    ui->menuConnect->setChecked(connectState);
+    ui->btnSolution1->setEnabled(true);
+    ui->btnSolution2->setEnabled(plotType <= PLOT_NSAT || plotType == PLOT_RES || plotType == PLOT_RESE);
+    ui->btnSolution12->setEnabled(!connectState && plotType <= PLOT_SOLA && solutionData[0].n > 0 && solutionData[1].n > 0);
 
-    QFlag->setVisible(PlotType == PLOT_TRK || PlotType == PLOT_SOLP ||
-              PlotType == PLOT_SOLV || PlotType == PLOT_SOLA ||
-              PlotType == PLOT_NSAT);
-    ObsType->setVisible(PlotType == PLOT_OBS || PlotType <= PLOT_SKY);
-    ObsType2->setVisible(PlotType == PLOT_SNR || PlotType == PLOT_SNRE || PlotType == PLOT_MPS);
+    // combo boxes
+    ui->cBQFlag->setVisible(plotType == PLOT_TRK || plotType == PLOT_SOLP ||
+                            plotType == PLOT_SOLV || plotType == PLOT_SOLA ||
+                            plotType == PLOT_NSAT);
+    ui->cBObservationType->setVisible(plotType == PLOT_OBS || plotType == PLOT_SKY);
+    ui->cBObservationTypeSNR->setVisible(plotType == PLOT_SNR || plotType == PLOT_SNRE || plotType == PLOT_MPS);
 
-    FrqType->setVisible(PlotType == PLOT_RES||PlotType==PLOT_RESE);
-    DopType->setVisible(PlotType == PLOT_DOP);
-    SatList->setVisible(PlotType == PLOT_RES ||PlotType==PLOT_RESE||PlotType>=PLOT_OBS||
-                PlotType == PLOT_SKY || PlotType == PLOT_DOP ||
-                PlotType == PLOT_SNR || PlotType == PLOT_SNRE ||
-                PlotType == PLOT_MPS);
-    QFlag->setEnabled(data);
-    ObsType->setEnabled(data && !SimObs);
-    ObsType2->setEnabled(data && !SimObs);
+    ui->cBFrequencyType->setVisible(plotType == PLOT_RES || plotType == PLOT_RESE);
+    ui->cBDopType->setVisible(plotType == PLOT_DOP);
+    ui->cBSatelliteList->setVisible(plotType == PLOT_RES || plotType == PLOT_RESE || plotType >= PLOT_OBS ||
+                                    plotType == PLOT_SKY || plotType == PLOT_DOP ||
+                                    plotType == PLOT_SNR || plotType == PLOT_SNRE ||
+                                    plotType == PLOT_MPS);
+    ui->cBQFlag->setEnabled(data);
+    ui->cBObservationType->setEnabled(data && !simulatedObservation);
+    ui->cBObservationTypeSNR->setEnabled(data && !simulatedObservation);
 
-    Panel102->setVisible(PlotType==PLOT_SOLP||PlotType==PLOT_SOLV||
-                         PlotType==PLOT_SOLA||PlotType==PLOT_NSAT||
-                         PlotType==PLOT_RES ||PlotType==PLOT_RESE||
-                         PlotType==PLOT_SNR ||PlotType==PLOT_SNRE);
-    BtnOn1->setEnabled(plot||PlotType==PLOT_SNR||PlotType==PLOT_RES||
-                             PlotType==PLOT_RESE||PlotType==PLOT_SNRE);
-    BtnOn2->setEnabled(plot||PlotType==PLOT_SNR||PlotType==PLOT_RES||
-                             PlotType==PLOT_RESE||PlotType==PLOT_SNRE);
-    BtnOn3->setEnabled(plot || PlotType == PLOT_SNR || PlotType == PLOT_RES);
+    // tool bar part
+    ui->toolPanelOn->setVisible(plotType == PLOT_SOLP || plotType == PLOT_SOLV ||
+                                        plotType == PLOT_SOLA || plotType == PLOT_NSAT ||
+                                        plotType == PLOT_RES || plotType == PLOT_RESE ||
+                                        plotType == PLOT_SNR || plotType == PLOT_SNRE);
+    ui->btnOn1->setEnabled(plot || plotType == PLOT_SNR || plotType == PLOT_RES ||
+                           plotType == PLOT_RESE || plotType == PLOT_SNRE);
+    ui->btnOn2->setEnabled(plot || plotType == PLOT_SNR || plotType == PLOT_RES ||
+                           plotType == PLOT_RESE || plotType == PLOT_SNRE);
+    ui->btnOn3->setEnabled(plot || plotType == PLOT_SNR || plotType == PLOT_RES);
 
-    BtnCenterOri->setVisible(PlotType == PLOT_TRK || PlotType == PLOT_SOLP ||
-                 PlotType == PLOT_SOLV || PlotType == PLOT_SOLA ||
-                 PlotType == PLOT_NSAT);
-    BtnCenterOri->setEnabled(PlotType != PLOT_NSAT);
-    BtnRangeList->setVisible(PlotType == PLOT_TRK || PlotType == PLOT_SOLP ||
-                 PlotType == PLOT_SOLV || PlotType == PLOT_SOLA ||
-                 PlotType == PLOT_NSAT);
-    BtnRangeList->setEnabled(PlotType != PLOT_NSAT);
+    ui->btnRangeList->setVisible(plotType == PLOT_TRK || plotType == PLOT_SOLP ||
+                                 plotType == PLOT_SOLV || plotType == PLOT_SOLA ||
+                                 plotType == PLOT_NSAT);
+    ui->btnRangeList->setEnabled(plotType != PLOT_NSAT);
 
 
-    BtnFitHoriz->setVisible(PlotType == PLOT_SOLP || PlotType == PLOT_SOLV ||
-                PlotType == PLOT_SOLA || PlotType == PLOT_NSAT ||
-                PlotType == PLOT_RES || PlotType == PLOT_OBS ||
-                PlotType == PLOT_DOP || PlotType == PLOT_SNR ||
-                PlotType == PLOT_SNRE);
-    BtnFitVert->setVisible(PlotType == PLOT_TRK || PlotType == PLOT_SOLP ||
-                   PlotType == PLOT_SOLV || PlotType == PLOT_SOLA);
-    BtnFitHoriz->setEnabled(data);
-    BtnFitVert->setEnabled(data);
+    ui->btnCenterOrigin->setVisible(plotType == PLOT_TRK || plotType == PLOT_SOLP ||
+                                    plotType == PLOT_SOLV || plotType == PLOT_SOLA ||
+                                    plotType == PLOT_NSAT);
+    ui->btnCenterOrigin->setEnabled(plotType != PLOT_NSAT);
+    ui->menuCenterOrigin->setEnabled(ui->btnCenterOrigin->isVisible() && ui->btnCenterOrigin->isEnabled());
 
-    MenuShowTrack->setEnabled(data);
-    BtnFixCent->setVisible(PlotType == PLOT_TRK);
-    BtnFixHoriz->setVisible(PlotType == PLOT_SOLP || PlotType == PLOT_SOLV ||
-                PlotType == PLOT_SOLA || PlotType == PLOT_NSAT ||
-                PlotType == PLOT_RES || PlotType == PLOT_OBS ||
-                PlotType == PLOT_DOP || PlotType == PLOT_SNR);
-    BtnFixVert->setVisible(PlotType == PLOT_SOLP || PlotType == PLOT_SOLV ||
-                   PlotType == PLOT_SOLA);
-    BtnFixCent->setEnabled(data);
-    BtnFixHoriz->setEnabled(data);
-    BtnFixVert->setEnabled(data);
-    BtnShowMap->setVisible(PlotType == PLOT_TRK);
-    BtnShowMap->setEnabled(!BtnSol12->isChecked());
-    MenuMapView->setVisible(PlotType==PLOT_TRK||PlotType==PLOT_SOLP);
-    Panel12->setVisible(!ConnectState);
-    BtnAnimate->setVisible(data && MenuShowTrack->isChecked());
-    TimeScroll->setVisible(data && MenuShowTrack->isChecked());
-    TimeScroll->setEnabled(data && MenuShowTrack->isChecked());
+    // fit actions
+    ui->btnFitHorizontal->setVisible(plotType == PLOT_SOLP || plotType == PLOT_SOLV ||
+                                     plotType == PLOT_SOLA || plotType == PLOT_NSAT ||
+                                     plotType == PLOT_RES || plotType == PLOT_OBS ||
+                                     plotType == PLOT_DOP || plotType == PLOT_SNR ||
+                                     plotType == PLOT_SNRE);
+    ui->btnFitVertical->setVisible(plotType == PLOT_TRK || plotType == PLOT_SOLP ||
+                                   plotType == PLOT_SOLV || plotType == PLOT_SOLA);
+    ui->btnFitHorizontal->setEnabled(data && ui->btnFitHorizontal->isVisible());
+    ui->menuFitHoriz->setEnabled(ui->btnFitHorizontal->isEnabled());
+    ui->btnFitVertical->setEnabled(data && ui->btnFitVertical->isVisible());
+    ui->menuFitVert->setEnabled(ui->btnFitVertical->isEnabled());
 
-    if (!MenuShowTrack->isChecked()) {
-        MenuFixHoriz->setEnabled(false);
-        MenuFixVert->setEnabled(false);
-        MenuFixCent->setEnabled(false);
-        BtnAnimate->setChecked(false);
+    // fix actions
+    ui->btnFixCenter->setVisible(plotType == PLOT_TRK);
+    ui->btnFixHorizontal->setVisible(plotType == PLOT_SOLP || plotType == PLOT_SOLV ||
+                                     plotType == PLOT_SOLA || plotType == PLOT_NSAT ||
+                                     plotType == PLOT_RES || plotType == PLOT_OBS ||
+                                     plotType == PLOT_DOP || plotType == PLOT_SNR);
+    ui->btnFixVertical->setVisible(plotType == PLOT_SOLP || plotType == PLOT_SOLV ||
+                                   plotType == PLOT_SOLA);
+    ui->btnFixCenter->setEnabled(data);
+    ui->menuFixCenter->setEnabled(ui->btnFixCenter->isVisible() && ui->btnFixCenter->isEnabled());
+    ui->btnFixHorizontal->setEnabled(data);
+    ui->menuFixHoriz->setEnabled(ui->btnFixHorizontal->isVisible() && ui->btnFixHorizontal->isEnabled());
+    ui->btnFixVertical->setEnabled(data);
+    ui->menuFixVert->setEnabled(ui->btnFixVertical->isVisible() && ui->btnFixVertical->isEnabled());
+
+    if (!ui->menuShowTrack->isChecked()) {
+        ui->menuFixHoriz->setEnabled(false);
+        ui->menuFixVert->setEnabled(false);
+        ui->menuFixCenter->setEnabled(false);
+        ui->btnAnimate->setChecked(false);
     }
-    MenuMapImg->setEnabled(MapImage.height() > 0);
-    MenuSkyImg->setEnabled(SkyImageI.height() > 0);
-    MenuSrcSol->setEnabled(SolFiles[sel].count() > 0);
-    MenuSrcObs->setEnabled(ObsFiles.count() > 0);
-    MenuMapLayer->setEnabled(true);
 
-    MenuShowSkyplot->setEnabled(MenuShowSkyplot->isVisible());
+    // animations
+    ui->toolPanelAnimate->setVisible(!connectState);
+    ui->btnAnimate->setVisible(data && ui->menuShowTrack->isChecked());
+    ui->sBTime->setVisible(data && ui->menuShowTrack->isChecked());
+    ui->sBTime->setEnabled(data && ui->menuShowTrack->isChecked());
+    ui->menuAnimationStart->setEnabled(!connectState && ui->btnAnimate->isVisible() && !ui->btnAnimate->isChecked());
+    ui->menuAnimationStop->setEnabled(!connectState && ui->btnAnimate->isVisible() && ui->btnAnimate->isChecked());
 
-    BtnShowImg->setVisible(PlotType == PLOT_TRK || PlotType == PLOT_SKY ||
-                   PlotType == PLOT_MPS);
-    BtnShowGrid->setVisible(PlotType==PLOT_TRK);
-    MenuAnimStart->setEnabled(!ConnectState && BtnAnimate->isEnabled() && !BtnAnimate->isChecked());
-    MenuAnimStop->setEnabled(!ConnectState && BtnAnimate->isEnabled() && BtnAnimate->isChecked());
+    // show dialog actions
+    ui->menuShowTrack->setEnabled(data);
+    ui->btnShowTrack->setVisible(ui->menuShowTrack->isEnabled());
+    ui->btnShowSkyplot->setVisible(plotType == PLOT_SKY || plotType == PLOT_MPS);
+    ui->menuShowSkyplot->setEnabled(ui->btnShowSkyplot->isVisible());
+    ui->btnShowMap->setVisible(plotType == PLOT_TRK);
+    ui->btnShowMap->setEnabled(!ui->btnSolution12->isChecked());
+    ui->menuShowMap->setEnabled(ui->btnShowMap->isVisible() && ui->btnShowMap->isEnabled());
+    ui->menuMapView->setEnabled(plotType == PLOT_TRK || plotType == PLOT_SOLP);
+    ui->btnMapView->setVisible(ui->menuMapView->isEnabled());
+    ui->menuMapImage->setEnabled(mapImageOriginal.height() > 0);
+    ui->menuSkyImage->setEnabled(skyImageOriginal.height() > 0);
+    ui->menuSourceSolution->setEnabled(solutionFiles[sel].count() > 0);
+    ui->menuSourceObservation->setEnabled(observationFiles.count() > 0);
+    ui->menuMapLayer->setEnabled(true);
 
-    MenuOpenSol1->setEnabled(!ConnectState);
-    MenuOpenSol2->setEnabled(!ConnectState);
-    MenuConnect->setEnabled(!ConnectState);
-    MenuDisconnect->setEnabled(ConnectState);
-    MenuPort->setEnabled(!ConnectState);
-    MenuOpenObs->setEnabled(!ConnectState);
-    MenuOpenNav->setEnabled(!ConnectState);
-    MenuOpenElevMask->setEnabled(!ConnectState);
-    MenuReload->setEnabled(!ConnectState);
+    // show actions
+    ui->btnShowImage->setVisible((plotType == PLOT_TRK && !mapImageOriginal.isNull()) ||
+                                 ((plotType == PLOT_SKY || plotType == PLOT_MPS) && !skyImageOriginal.isNull()));
+    ui->menuShowImage->setEnabled(ui->btnShowImage->isVisible());
+    ui->btnShowGrid->setVisible(plotType == PLOT_TRK);
+    ui->menuShowGrid->setEnabled(ui->btnShowGrid->isVisible());
 
-    MenuReload->setEnabled(!ConnectState);
-    StrStatus->setEnabled(ConnectState);
-    BtnFreq->setVisible(FrqType->isVisible()||ObsType->isVisible()||ObsType2->isVisible());
+    ui->menuOpenSolution1->setEnabled(!connectState);
+    ui->menuOpenSolution2->setEnabled(!connectState);
+    ui->menuConnect->setEnabled(!connectState);
+    ui->menuDisconnect->setEnabled(connectState);
+    ui->menuPort->setEnabled(!connectState);
+    ui->menuOpenObs->setEnabled(!connectState);
+    ui->menuOpenNav->setEnabled(!connectState);
+    ui->menuOpenElevationMask->setEnabled(!connectState);
+    ui->menuReload->setEnabled(!connectState);
+
+    ui->wgStreamStatus->setEnabled(connectState);
+    ui->btnFrequency->setVisible(ui->cBFrequencyType->isVisible() || ui->cBObservationType->isVisible() || ui->cBObservationTypeSNR->isVisible());
+
+    ui->btnPointCoordinateType->setVisible(plotType == PLOT_TRK);
 }
 // linear-fitting of positions ----------------------------------------------
-int Plot::FitPos(gtime_t *time, double *opos, double *ovel)
+int Plot::fitPositions(gtime_t *time, double *opos, double *ovel)
 {
     sol_t *sol;
     int i, j;
-    double t, x[2], Ay[3][2] = { { 0 } }, AA[3][4] = { { 0 } };
+    double t, x[2], Ay[3][2] = {{0}}, AA[3][4] = {{0}};
 
-    trace(3, "FitPos\n");
+    trace(3, "fitPosition\n");
 
-    if (SolData[0].n <= 0) return 0;
+    if (solutionData[0].n <= 0) return 0;
 
-    for (i = 0; (sol = getsol(SolData, i)) != NULL; i++) {
+    for (i = 0; (sol = getsol(solutionData, i)) != NULL; i++) {
         if (sol->type != 0) continue;
         if (time->time == 0) *time = sol->time;
         t = timediff(sol->time, *time);
@@ -2518,26 +2474,29 @@ int Plot::FitPos(gtime_t *time, double *opos, double *ovel)
     return 1;
 }
 // fit time-range of plot ---------------------------------------------------
-void Plot::FitTime(void)
+void Plot::fitTime()
 {
-    sol_t *sols, *sole;
-    double tl[2] = { 86400.0 * 7, 0.0 }, tp[2], xl[2], yl[2], zl[2];
-    int sel = !BtnSol1->isChecked() && BtnSol2->isChecked() ? 1 : 0;
+    sol_t *sol_start, *sol_end;
+    double tl[2] = {86400.0 * 7, 0.0}, tp[2], xl[2], yl[2], zl[2];
+    int sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
 
-    trace(3, "FitTime\n");
+    trace(3, "fitTime\n");
 
-    sols = getsol(SolData + sel, 0);
-    sole = getsol(SolData + sel, SolData[sel].n - 1);
-    if (sols && sole) {
-        tl[0] = MIN(tl[0], TimePos(sols->time));
-        tl[1] = MAX(tl[1], TimePos(sole->time));
+    // time from solutions
+    sol_start = getsol(solutionData + sel, 0);
+    sol_end = getsol(solutionData + sel, solutionData[sel].n - 1);
+    if (sol_start && sol_end) {
+        tl[0] = qMin(tl[0], timePosition(sol_start->time));
+        tl[1] = qMax(tl[1], timePosition(sol_end->time));
     }
-    if (Obs.n > 0) {
-        tl[0] = MIN(tl[0], TimePos(Obs.data[0].time));
-        tl[1] = MAX(tl[1], TimePos(Obs.data[Obs.n - 1].time));
+    // time from observations
+    if (observation.n > 0) {
+        tl[0] = qMin(tl[0], timePosition(observation.data[0].time));
+        tl[1] = qMax(tl[1], timePosition(observation.data[observation.n - 1].time));
     }
-    if (TimeEna[0]) tl[0] = TimePos(TimeStart);
-    if (TimeEna[1]) tl[1] = TimePos(TimeEnd);
+    // time from user input
+    if (timeEnabled[0]) tl[0] = timePosition(timeStart);
+    if (timeEnabled[1]) tl[1] = timePosition(timeEnd);
 
     if (qFuzzyCompare(tl[0], tl[1])) {
         tl[0] = tl[0] - DEFTSPAN / 2.0;
@@ -2546,122 +2505,131 @@ void Plot::FitTime(void)
         tl[0] = -DEFTSPAN / 2.0;
         tl[1] = DEFTSPAN / 2.0;
     }
-    GraphG[0]->GetLim(tp, xl);
-    GraphG[1]->GetLim(tp, yl);
-    GraphG[2]->GetLim(tp, zl);
-    GraphG[0]->SetLim(tl, xl);
-    GraphG[1]->SetLim(tl, yl);
-    GraphG[2]->SetLim(tl, zl);
-    GraphR->GetLim(tp, xl);
-    GraphR->SetLim(tl, xl);
+
+    graphTriple[0]->getLimits(tp, xl);
+    graphTriple[1]->getLimits(tp, yl);
+    graphTriple[2]->getLimits(tp, zl);
+    graphTriple[0]->setLimits(tl, xl);
+    graphTriple[1]->setLimits(tl, yl);
+    graphTriple[2]->setLimits(tl, zl);
+
+    graphSingle->getLimits(tp, xl);
+    graphSingle->setLimits(tl, xl);
 }
 // set x/y-range of plot ----------------------------------------------------
-void Plot::SetRange(int all, double range)
+void Plot::setRange(int all, double range)
 {
-    double xl[] = { -range, range };
-    double yl[] = { -range, range };
-    double zl[] = { -range, range };
+    double xl[] = {-range, range};
+    double yl[] = {-range, range};
+    double zl[] = {-range, range};
     double xs, ys, tl[2], xp[2], pos[3];
 
-    trace(3, "SetRange: all=%d range=%.3f\n", all, range);
+    trace(3, "setRange: all=%d range=%.3f\n", all, range);
 
-    if (all || PlotType == PLOT_TRK) {
-        GraphT->SetLim(xl, yl);
-        GraphT->GetScale(xs, ys);
-        GraphT->SetScale(MAX(xs, ys), MAX(xs, ys));
-        if (norm(OPos, 3) > 0.0) {
-            ecef2pos(OPos, pos);
-            mapView->SetCent(pos[0] * R2D, pos[1] * R2D);
+    if (all || plotType == PLOT_TRK) {
+        graphTrack->setLimits(xl, yl);
+        graphTrack->getScale(xs, ys);
+        graphTrack->setScale(qMax(xs, ys), qMax(xs, ys));
+        if (norm(originPosition, 3) > 0.0) {
+            ecef2pos(originPosition, pos);
+            mapView->setCenter(pos[0] * R2D, pos[1] * R2D);
         }
     }
-    if (PLOT_SOLP <= PlotType && PlotType <= PLOT_SOLA) {
-        GraphG[0]->GetLim(tl, xp);
-        GraphG[0]->SetLim(tl, xl);
-        GraphG[1]->SetLim(tl, yl);
-        GraphG[2]->SetLim(tl, zl);
-    } else if (PlotType == PLOT_NSAT) {
-        GraphG[0]->GetLim(tl, xp);
+    if (PLOT_SOLP <= plotType && plotType <= PLOT_SOLA) {
+        graphTriple[0]->getLimits(tl, xp);
+        graphTriple[0]->setLimits(tl, xl);
+        graphTriple[1]->setLimits(tl, yl);
+        graphTriple[2]->setLimits(tl, zl);
+    } else if (plotType == PLOT_NSAT) {
+        graphTriple[0]->getLimits(tl, xp);
         xl[0] = yl[0] = zl[0] = 0.0;
-        xl[1] = MaxDop;
+        xl[1] = plotOptDialog->getMaxDop();
         yl[1] = YLIM_AGE;
         zl[1] = YLIM_RATIO;
-        GraphG[0]->SetLim(tl, xl);
-        GraphG[1]->SetLim(tl, yl);
-        GraphG[2]->SetLim(tl, zl);
-    } else if (PlotType < PLOT_SNR) {
-        GraphG[0]->GetLim(tl, xp);
-        xl[0] = -MaxMP; xl[1] = MaxMP;
-        yl[0] = -MaxMP/100.0; yl[1] = MaxMP/100.0;
-        zl[0] = 0.0; zl[1] = 90.0;
-        GraphG[0]->SetLim(tl, xl);
-        GraphG[1]->SetLim(tl, yl);
-        GraphG[2]->SetLim(tl, zl);
+        graphTriple[0]->setLimits(tl, xl);
+        graphTriple[1]->setLimits(tl, yl);
+        graphTriple[2]->setLimits(tl, zl);
+    } else if (plotType < PLOT_SNR) {
+        graphTriple[0]->getLimits(tl, xp);
+        xl[0] = -plotOptDialog->getMaxMP();
+        xl[1] = plotOptDialog->getMaxMP();
+        yl[0] = -plotOptDialog->getMaxMP()/100.0;
+        yl[1] = plotOptDialog->getMaxMP()/100.0;
+        zl[0] = 0.0;
+        zl[1] = 90.0;
+        graphTriple[0]->setLimits(tl, xl);
+        graphTriple[1]->setLimits(tl, yl);
+        graphTriple[2]->setLimits(tl, zl);
     } else {
-        GraphG[0]->GetLim(tl, xp);
-        xl[0] = 10.0; xl[1] = 60.0;
-        yl[0] = -MaxMP; yl[1] = MaxMP;
-        zl[0] = 0.0; zl[1] = 90.0;
-        GraphG[0]->SetLim(tl, xl);
-        GraphG[1]->SetLim(tl, yl);
-        GraphG[2]->SetLim(tl, zl);
+        graphTriple[0]->getLimits(tl, xp);
+        xl[0] = 10.0;
+        xl[1] = 60.0;
+        yl[0] = -plotOptDialog->getMaxMP();
+        yl[1] = plotOptDialog->getMaxMP();
+        zl[0] = 0.0;
+        zl[1] = 90.0;
+        graphTriple[0]->setLimits(tl, xl);
+        graphTriple[1]->setLimits(tl, yl);
+        graphTriple[2]->setLimits(tl, zl);
     }
 }
 // fit x/y-range of plot ----------------------------------------------------
-void Plot::FitRange(int all)
+void Plot::fitRange(int all)
 {
     TIMEPOS *pos, *pos1, *pos2;
     sol_t *data;
-    double xs, ys, xp[2], tl[2], xl[] = { 1E8, -1E8 }, yl[2] = { 1E8, -1E8 }, zl[2] = { 1E8, -1E8 };
-    double lat, lon, lats[2] = { 90, -90 }, lons[2] = { 180, -180 }, llh[3];
-    int i, type = PlotType - PLOT_SOLP;
+    double xs, ys, xp[2], tl[2], xl[] = {1E8, -1E8}, yl[2] = {1E8, -1E8}, zl[2] = {1E8, -1E8};
+    double lat, lon, lats[2] = {90, -90}, lons[2] = {180, -180}, llh[3];
+    int i, type = plotType - PLOT_SOLP;
 
-    trace(3, "FitRange: all=%d\n", all);
+    trace(3, "fitRange: all=%d\n", all);
 
-    MenuFixHoriz->setChecked(false);
+    ui->menuFixHoriz->setChecked(false);
 
-    if (BtnSol1->isChecked()) {
-        pos = SolToPos(SolData, -1, QFlag->currentIndex(), type);
+    if (ui->btnSolution1->isChecked()) {
+        pos = solutionToPosition(solutionData, -1, ui->cBQFlag->currentIndex(), type);
 
         for (i = 0; i < pos->n; i++) {
-            xl[0] = MIN(xl[0], pos->x[i]);
-            yl[0] = MIN(yl[0], pos->y[i]);
-            zl[0] = MIN(zl[0], pos->z[i]);
-            xl[1] = MAX(xl[1], pos->x[i]);
-            yl[1] = MAX(yl[1], pos->y[i]);
-            zl[1] = MAX(zl[1], pos->z[i]);
+            xl[0] = qMin(xl[0], pos->x[i]);
+            yl[0] = qMin(yl[0], pos->y[i]);
+            zl[0] = qMin(zl[0], pos->z[i]);
+            xl[1] = qMax(xl[1], pos->x[i]);
+            yl[1] = qMax(yl[1], pos->y[i]);
+            zl[1] = qMax(zl[1], pos->z[i]);
         }
         delete pos;
     }
-    if (BtnSol2->isChecked()) {
-        pos = SolToPos(SolData + 1, -1, QFlag->currentIndex(), type);
+    if (ui->btnSolution2->isChecked()) {
+        pos = solutionToPosition(solutionData + 1, -1, ui->cBQFlag->currentIndex(), type);
 
         for (i = 0; i < pos->n; i++) {
-            xl[0] = MIN(xl[0], pos->x[i]);
-            yl[0] = MIN(yl[0], pos->y[i]);
-            zl[0] = MIN(zl[0], pos->z[i]);
-            xl[1] = MAX(xl[1], pos->x[i]);
-            yl[1] = MAX(yl[1], pos->y[i]);
-            zl[1] = MAX(zl[1], pos->z[i]);
+            xl[0] = qMin(xl[0], pos->x[i]);
+            yl[0] = qMin(yl[0], pos->y[i]);
+            zl[0] = qMin(zl[0], pos->z[i]);
+            xl[1] = qMax(xl[1], pos->x[i]);
+            yl[1] = qMax(yl[1], pos->y[i]);
+            zl[1] = qMax(zl[1], pos->z[i]);
         }
         delete pos;
     }
-    if (BtnSol12->isChecked()) {
-        pos1 = SolToPos(SolData, -1, 0, type);
-        pos2 = SolToPos(SolData + 1, -1, 0, type);
-        pos = pos1->diff(pos2, QFlag->currentIndex());
+    if (ui->btnSolution12->isChecked()) {
+        pos1 = solutionToPosition(solutionData, -1, 0, type);
+        pos2 = solutionToPosition(solutionData + 1, -1, 0, type);
+        pos = pos1->diff(pos2, ui->cBQFlag->currentIndex());
 
         for (i = 0; i < pos->n; i++) {
-            xl[0] = MIN(xl[0], pos->x[i]);
-            yl[0] = MIN(yl[0], pos->y[i]);
-            zl[0] = MIN(zl[0], pos->z[i]);
-            xl[1] = MAX(xl[1], pos->x[i]);
-            yl[1] = MAX(yl[1], pos->y[i]);
-            zl[1] = MAX(zl[1], pos->z[i]);
+            xl[0] = qMin(xl[0], pos->x[i]);
+            yl[0] = qMin(yl[0], pos->y[i]);
+            zl[0] = qMin(zl[0], pos->z[i]);
+            xl[1] = qMax(xl[1], pos->x[i]);
+            yl[1] = qMax(yl[1], pos->y[i]);
+            zl[1] = qMax(zl[1], pos->z[i]);
         }
         delete pos1;
         delete pos2;
         delete pos;
     }
+    // add margins
     xl[0] -= 0.05;
     xl[1] += 0.05;
     yl[0] -= 0.05;
@@ -2669,364 +2637,165 @@ void Plot::FitRange(int all)
     zl[0] -= 0.05;
     zl[1] += 0.05;
 
-    if (all || PlotType == PLOT_TRK) {
-        GraphT->SetLim(xl, yl);
-        GraphT->GetScale(xs, ys);
-        GraphT->SetScale(MAX(xs, ys), MAX(xs, ys));
+    if (all || plotType == PLOT_TRK) {
+        graphTrack->setLimits(xl, yl);
+        graphTrack->getScale(xs, ys);
+        graphTrack->setScale(qMax(xs, ys), qMax(xs, ys));
     }
-    if (all || PlotType <= PLOT_SOLA || PlotType == PLOT_RES) {
-        GraphG[0]->GetLim(tl, xp);
-        GraphG[0]->SetLim(tl, xl);
-        GraphG[1]->SetLim(tl, yl);
-        GraphG[2]->SetLim(tl, zl);
+    if (all || plotType <= PLOT_SOLA || plotType == PLOT_RES) {
+        graphTriple[0]->getLimits(tl, xp);
+
+        graphTriple[0]->setLimits(tl, xl);
+        graphTriple[1]->setLimits(tl, yl);
+        graphTriple[2]->setLimits(tl, zl);
     }
     if (all) {
-        if (BtnSol1->isChecked()) {
-            for (i = 0; (data = getsol(SolData, i)) != NULL; i++) {
+        if (ui->btnSolution1->isChecked()) {
+            for (i = 0; (data = getsol(solutionData, i)) != NULL; i++) {
                 ecef2pos(data->rr, llh);
-                lats[0] = MIN(lats[0], llh[0] * R2D);
-                lons[0] = MIN(lons[0], llh[1] * R2D);
-                lats[1] = MAX(lats[1], llh[0] * R2D);
-                lons[1] = MAX(lons[1], llh[1] * R2D);
+                lats[0] = qMin(lats[0], llh[0] * R2D);
+                lons[0] = qMin(lons[0], llh[1] * R2D);
+                lats[1] = qMax(lats[1], llh[0] * R2D);
+                lons[1] = qMax(lons[1], llh[1] * R2D);
             }
         }
-        if (BtnSol2->isChecked()) {
-            for (i = 0; (data = getsol(SolData + 1, i)) != NULL; i++) {
+        if (ui->btnSolution2->isChecked()) {
+            for (i = 0; (data = getsol(solutionData + 1, i)) != NULL; i++) {
                 ecef2pos(data->rr, llh);
-                lats[0] = MIN(lats[0], llh[0] * R2D);
-                lons[0] = MIN(lons[0], llh[1] * R2D);
-                lats[1] = MAX(lats[1], llh[0] * R2D);
-                lons[1] = MAX(lons[1], llh[1] * R2D);
+                lats[0] = qMin(lats[0], llh[0] * R2D);
+                lons[0] = qMin(lons[0], llh[1] * R2D);
+                lats[1] = qMax(lats[1], llh[0] * R2D);
+                lons[1] = qMax(lons[1], llh[1] * R2D);
             }
         }
         if (lats[0] <= lats[1] && lons[0] <= lons[1]) {
             lat = (lats[0] + lats[1]) / 2.0;
             lon = (lons[0] + lons[1]) / 2.0;
         }
+        // FIXME: for what reason was lat/lon calculated here?
     }
 }
 // set center of track plot -------------------------------------------------
-void Plot::SetTrkCent(double lat, double lon)
+void Plot::setTrackCenter(double lat, double lon)
 {
-    gtime_t time = { 0, 0 };
-    double pos[3] = { 0 }, rr[3], xyz[3];
+    gtime_t time = {0, 0};
+    double pos[3] = {0}, rr[3], xyz[3];
 
-    if (PlotType != PLOT_TRK) return;
+    if (plotType != PLOT_TRK) return;
+
     pos[0] = lat * D2R;
     pos[1] = lon * D2R;
     pos2ecef(pos, rr);
-    PosToXyz(time, rr, 0, xyz);
-    GraphT->SetCent(xyz[0], xyz[1]);
-    UpdatePlot();
+    positionToXyz(time, rr, 0, xyz);
+    graphTrack->setCenter(xyz[0], xyz[1]);
+
+    updatePlot();
 }
 // load options from ini-file -----------------------------------------------
-void Plot::LoadOpt(void)
+void Plot::loadOptions()
 {
-    QSettings settings(IniFile, QSettings::IniFormat);
+    QSettings settings(iniFile, QSettings::IniFormat);
 
-    trace(3, "LoadOpt\n");
+    trace(3, "loadOptions\n");
 
-//    PlotType = settings.value("plot/plottype", 0).toInt();
-    TimeLabel = settings.value("plot/timelabel", 1).toInt();
-    LatLonFmt = settings.value("plot/latlonfmt", 0).toInt();
-    AutoScale = settings.value("plot/autoscale", 1).toInt();
-    ShowStats = settings.value("plot/showstats", 0).toInt();
-    ShowLabel = settings.value("plot/showlabel", 1).toInt();
-    ShowGLabel = settings.value("plot/showglabel", 1).toInt();
-    ShowCompass = settings.value("plot/showcompass", 0).toInt();
-    ShowScale = settings.value("plot/showscale", 1).toInt();
-    ShowArrow = settings.value("plot/showarrow", 0).toInt();
-    ShowSlip = settings.value("plot/showslip", 0).toInt();
-    ShowHalfC = settings.value("plot/showhalfc", 0).toInt();
-    ShowErr = settings.value("plot/showerr", 0).toInt();
-    ShowEph = settings.value("plot/showeph", 0).toInt();
-    PlotStyle = settings.value("plot/plotstyle", 0).toInt();
-    MarkSize = settings.value("plot/marksize", 2).toInt();
-    NavSys = settings.value("plot/navsys", SYS_ALL).toInt();
-    AnimCycle = settings.value("plot/animcycle", 10).toInt();
-    RefCycle = settings.value("plot/refcycle", 100).toInt();
-    HideLowSat = settings.value("plot/hidelowsat", 0).toInt();
-    ElMaskP = settings.value("plot/elmaskp", 0).toInt();
-    ExSats = settings.value("plot/exsats", "").toString();
-    RtBuffSize = settings.value("plot/rtbuffsize", 10800).toInt();
-    TimeSyncOut = settings.value("plot/timesyncout", 0).toInt();
-    TimeSyncPort = settings.value("plot/timesyncport", 10071).toInt();
-    RtStream[0] = settings.value("plot/rtstream1", 0).toInt();
-    RtStream[1] = settings.value("plot/rtstream2", 0).toInt();
-    RtFormat[0] = settings.value("plot/rtformat1", 0).toInt();
-    RtFormat[1] = settings.value("plot/rtformat2", 0).toInt();
-    RtTimeForm = settings.value("plot/rttimeform", 0).toInt();
-    RtDegForm = settings.value("plot/rtdegform", 0).toInt();
-    RtFieldSep = settings.value("plot/rtfieldsep", "").toString();
-    RtTimeOutTime = settings.value("plot/rttimeouttime", 0).toInt();
-    RtReConnTime = settings.value("plot/rtreconntime", 10000).toInt();
+//    plotType = settings.value("plot/plottype", 0).toInt();
+    rtStream[0] = settings.value("plot/rtstream1", 0).toInt();
+    rtStream[1] = settings.value("plot/rtstream2", 0).toInt();
+    rtFormat[0] = settings.value("plot/rtformat1", 0).toInt();
+    rtFormat[1] = settings.value("plot/rtformat2", 0).toInt();
+    rtTimeFormat = settings.value("plot/rttimeform", 0).toInt();
+    rtDegFormat = settings.value("plot/rtdegform", 0).toInt();
+    rtFieldSeperator = settings.value("plot/rtfieldsep", "").toString();
+    rtTimeoutTime = settings.value("plot/rttimeouttime", 0).toInt();
+    rtReconnectTime = settings.value("plot/rtreconntime", 10000).toInt();
 
-    MColor[0][0] = settings.value("plot/mcolor0", QColor(0xc0, 0xc0, 0xc0)).value<QColor>();
-    MColor[0][1] = settings.value("plot/mcolor1", QColor(Qt::green)).value<QColor>();
-    MColor[0][2] = settings.value("plot/mcolor2", QColor(0x00, 0xAA, 0xFF)).value<QColor>();
-    MColor[0][3] = settings.value("plot/mcolor3", QColor(0xff, 0x00, 0xff)).value<QColor>();
-    MColor[0][4] = settings.value("plot/mcolor4", QColor(Qt::blue)).value<QColor>();
-    MColor[0][5] = settings.value("plot/mcolor5", QColor(Qt::red)).value<QColor>();
-    MColor[0][6] = settings.value("plot/mcolor6", QColor(0x80, 0x80, 0x00)).value<QColor>();
-    MColor[0][7] = settings.value("plot/mcolor7", QColor(Qt::gray)).value<QColor>();
-    MColor[1][0] = settings.value("plot/mcolor8", QColor(0xc0, 0xc0, 0xc0)).value<QColor>();
-    MColor[1][1] = settings.value("plot/mcolor9", QColor(0x80, 0x40, 0x00)).value<QColor>();
-    MColor[1][2] = settings.value("plot/mcolor10", QColor(0x00, 0x80, 0x80)).value<QColor>();
-    MColor[1][3] = settings.value("plot/mcolor11", QColor(0xFF, 0x00, 0x80)).value<QColor>();
-    MColor[1][4] = settings.value("plot/mcolor12", QColor(0xFF, 0x80, 0x00)).value<QColor>();
-    MColor[1][5] = settings.value("plot/mcolor13", QColor(0x80, 0x80, 0xFF)).value<QColor>();
-    MColor[1][6] = settings.value("plot/mcolor14", QColor(0xFF, 0x80, 0x80)).value<QColor>();
-    MColor[1][7] = settings.value("plot/mcolor15", QColor(Qt::gray)).value<QColor>();
-    MapColor[0] = settings.value("plot/mapcolor1", QColor(0xc0, 0xc0, 0xc0)).value<QColor>();
-    MapColor[1] = settings.value("plot/mapcolor2", QColor(0xc0, 0xc0, 0xc0)).value<QColor>();
-    MapColor[2] = settings.value("plot/mapcolor3", QColor(0xf0, 0xd0, 0xd0)).value<QColor>();
-    MapColor[3] = settings.value("plot/mapcolor4", QColor(0xd0, 0xf0, 0xd0)).value<QColor>();
-    MapColor[4] = settings.value("plot/mapcolor5", QColor(0xd0, 0xd0, 0xf0)).value<QColor>();
-    MapColor[5] = settings.value("plot/mapcolor6", QColor(0xd0, 0xf0, 0xf0)).value<QColor>();
-    MapColor[6] = settings.value("plot/mapcolor7", QColor(0xf8, 0xf8, 0xd0)).value<QColor>();
-    MapColor[7] = settings.value("plot/mapcolor8", QColor(0xf0, 0xf0, 0xf0)).value<QColor>();
-    MapColor[8] = settings.value("plot/mapcolor9", QColor(0xf0, 0xf0, 0xf0)).value<QColor>();
-    MapColor[9] = settings.value("plot/mapcolor10", QColor(0xf0, 0xf0, 0xf0)).value<QColor>();
-    MapColor[10] = settings.value("plot/mapcolor11", QColor(Qt::white)).value<QColor>();
-    MapColor[11] = settings.value("plot/mapcolor12", QColor(Qt::white)).value<QColor>();
-    MapColorF[0] = settings.value("plot/mapcolorf1", QColor(Qt::white)).value<QColor>();
-    MapColorF[1] = settings.value("plot/mapcolorf2", QColor(Qt::white)).value<QColor>();
-    MapColorF[2] = settings.value("plot/mapcolorf3", QColor(Qt::white)).value<QColor>();
-    MapColorF[3] = settings.value("plot/mapcolorf4", QColor(Qt::white)).value<QColor>();
-    MapColorF[4] = settings.value("plot/mapcolorf5", QColor(Qt::white)).value<QColor>();
-    MapColorF[5] = settings.value("plot/mapcolorf6", QColor(Qt::white)).value<QColor>();
-    MapColorF[6] = settings.value("plot/mapcolorf7", QColor(Qt::white)).value<QColor>();
-    MapColorF[7] = settings.value("plot/mapcolorf8", QColor(Qt::white)).value<QColor>();
-    MapColorF[8] = settings.value("plot/mapcolorf9", QColor(Qt::white)).value<QColor>();
-    MapColorF[9] = settings.value("plot/mapcolorf10", QColor(Qt::white)).value<QColor>();
-    MapColorF[10] = settings.value("plot/mapcolorf11", QColor(Qt::white)).value<QColor>();
-    MapColorF[11] = settings.value("plot/mapcolorf12", QColor(Qt::white)).value<QColor>();
-    CColor[0] = settings.value("plot/color1", QColor(Qt::white)).value<QColor>();
-    CColor[1] = settings.value("plot/color2", QColor(0xc0, 0xc0, 0xc0)).value<QColor>();
-    CColor[2] = settings.value("plot/color3", QColor(Qt::black)).value<QColor>();
-    CColor[3] = settings.value("plot/color4", QColor(0xc0, 0xc0, 0xc0)).value<QColor>();
+    ui->menuBrowse->setChecked(settings.value("solbrows/show", 0).toBool());
+    ui->browseSplitter->restoreState(settings.value("solbrows/split1", 100).toByteArray());
+    directory = settings.value("solbrows/dir",  "C:\\").toString();
 
-    plotOptDialog->refDialog->StaPosFile = settings.value("plot/staposfile", "").toString();
-
-    ElMask = settings.value("plot/elmask", 0.0).toDouble();
-    MaxDop = settings.value("plot/maxdop", 30.0).toDouble();
-    MaxMP = settings.value("plot/maxmp", 10.0).toDouble();
-    YRange = settings.value("plot/yrange", 5.0).toDouble();
-    Origin = settings.value("plot/orgin", 2).toInt();
-    RcvPos = settings.value("plot/rcvpos", 0).toInt();
-    OOPos[0] = settings.value("plot/oopos1", 0).toDouble();
-    OOPos[1] = settings.value("plot/oopos2", 0).toDouble();
-    OOPos[2] = settings.value("plot/oopos3", 0).toDouble();
-    ShapeFile = settings.value("plot/shapefile", "").toString();
-    TLEFile = settings.value("plot/tlefile", "").toString();
-    TLESatFile = settings.value("plot/tlesatfile", "").toString();
-
-    FontName = settings.value("plot/fontname","Tahoma").toString();
-    FontSize = settings.value("plot/fontsize",8).toInt();
-    Font.setFamily(FontName);
-    Font.setPointSize(FontSize);
-
-    RnxOpts = settings.value("plot/rnxopts", "").toString();
-
-    MapApi = settings.value("mapview/mapapi" , 0).toInt();
-    ApiKey = settings.value("mapview/apikey" ,"").toString();
-    MapStrs[0][0] = settings.value("mapview/mapstrs_0_0","OpenStreetMap").toString();
-    MapStrs[0][1] = settings.value("mapview/mapstrs_0_1","https://tile.openstreetmap.org/{z}/{x}/{y}.png").toString();
-    MapStrs[0][2] = settings.value("mapview/mapstrs_0_2","https://osm.org/copyright").toString();
-    for (int i=1;i<6;i++) for (int j=0;j<3;j++) {
-        MapStrs[i][j] = settings.value(QString("mapview/mapstrs_%1_%2").arg(i).arg(j),"").toString();
-    }
-    for (int i=0;i<2;i++) {
-        StrCmds  [0][i] = settings.value(QString("str/strcmd1_%1").arg(i), "").toString();
-        StrCmds  [1][i] = settings.value(QString("str/strcmd2_%1").arg(i), "").toString();
-        StrCmdEna[0][i] = settings.value(QString("str/strcmdena1_%1").arg(i), 0).toInt();
-        StrCmdEna[1][i] = settings.value(QString("str/strcmdena2_%1").arg(i), 0).toInt();
+    for (int i = 0; i < 2; i++) {
+        streamCommands[0][i] = settings.value(QString("str/strcmd1_%1").arg(i), "").toString();
+        streamCommands[1][i] = settings.value(QString("str/strcmd2_%1").arg(i), "").toString();
+        streamCommandEnabled[0][i] = settings.value(QString("str/strcmdena1_%1").arg(i), 0).toInt();
+        streamCommandEnabled[1][i] = settings.value(QString("str/strcmdena2_%1").arg(i), 0).toInt();
     }
     for (int i = 0; i < 3; i++) {
-        StrPaths[0][i] = settings.value(QString("str/strpath1_%1").arg(i), "").toString();
-        StrPaths[1][i] = settings.value(QString("str/strpath2_%1").arg(i), "").toString();
+        streamPaths[0][i] = settings.value(QString("str/strpath1_%1").arg(i), "").toString();
+        streamPaths[1][i] = settings.value(QString("str/strpath2_%1").arg(i), "").toString();
     }
     for (int i = 0; i < 10; i++) {
-        StrHistory [i] = settings.value(QString("str/strhistry_%1").arg(i), "").toString();
+        streamHistory [i] = settings.value(QString("str/strhistry_%1").arg(i), "").toString();
     }
 
-    TextViewer::Color1 = settings.value("viewer/color1", QColor(Qt::black)).value<QColor>();
-    TextViewer::Color2 = settings.value("viewer/color2", QColor(Qt::white)).value<QColor>();
-    TextViewer::FontD.setFamily(settings.value("viewer/fontname", "Consolas").toString());
-    TextViewer::FontD.setPointSize(settings.value("viewer/fontsize", 9).toInt());
+    plotOptDialog->loadOptions(settings);
+    vecMapDialog->loadOptions(settings);
+    viewer->loadOptions(settings);
+    mapView->loadOptions(settings);
 
-    MenuBrowse->setChecked(settings.value("solbrows/show",       0).toBool());
-    BrowseSplitter->restoreState(settings.value("solbrows/split1",   100).toByteArray());
-    Dir  =settings.value("solbrows/dir",  "C:\\").toString();
-
-    for (int i = 0; i < RangeList->count(); i++) {
-        QString s=RangeList->item(i)->text();
-        double range;
-        QString unit;
+    for (int i = 0; i < lWRangeList->count(); i++) {
         bool ok;
+        double range = lWRangeList->item(i)->data(Qt::UserRole+1).toDouble(&ok);
 
-        QStringList tokens = s.split(' ');
-        if (tokens.size()==2) {
-            range = tokens.at(0).toInt(&ok);
-            unit = tokens.at(1);
-            if (ok) {
-                if (unit == "cm") range*=0.01;
-                else if (unit == "km") range*=1000.0;
-                if (range==YRange) {
-                    RangeList->item(i)->setSelected(true);
-                    break;
-                }
-
+        if (ok) {
+            if (fabs(range - plotOptDialog->getYRange()) < 0.0001) {
+                lWRangeList->item(i)->setSelected(true);
+                break;
             }
         }
-
     }
 }
 // save options to ini-file -------------------------------------------------
-void Plot::SaveOpt(void)
+void Plot::saveOption()
 {
-    QSettings settings(IniFile, QSettings::IniFormat);
+    QSettings settings(iniFile, QSettings::IniFormat);
 
-    trace(3, "SaveOpt\n");
+    trace(3, "saveOption\n");
 
     //settings.setValue("plot/plottype", PlotType);
-    settings.setValue("plot/timelabel", TimeLabel);
-    settings.setValue("plot/latlonfmt", LatLonFmt);
-    settings.setValue("plot/autoscale", AutoScale);
-    settings.setValue("plot/showstats", ShowStats);
-    settings.setValue("plot/showlabel", ShowLabel);
-    settings.setValue("plot/showglabel", ShowGLabel);
-    settings.setValue("plot/showcompass", ShowCompass);
-    settings.setValue("plot/showscale", ShowScale);
-    settings.setValue("plot/showarrow", ShowArrow);
-    settings.setValue("plot/showslip", ShowSlip);
-    settings.setValue("plot/showhalfc", ShowHalfC);
-    settings.setValue("plot/showerr", ShowErr);
-    settings.setValue("plot/showeph", ShowEph);
-    settings.setValue("plot/plotstyle", PlotStyle);
-    settings.setValue("plot/marksize", MarkSize);
-    settings.setValue("plot/navsys", NavSys);
-    settings.setValue("plot/animcycle", AnimCycle);
-    settings.setValue("plot/refcycle", RefCycle);
-    settings.setValue("plot/hidelowsat", HideLowSat);
-    settings.setValue("plot/elmaskp", ElMaskP);
-    settings.setValue("plot/exsats", ExSats);
-    settings.setValue("plot/rtbuffsize", RtBuffSize);
-    settings.setValue("plot/timesyncout", TimeSyncOut);
-    settings.setValue("plot/timesyncport", TimeSyncPort);
-    settings.setValue("plot/rtstream1", RtStream[0]);
-    settings.setValue("plot/rtstream2", RtStream[1]);
-    settings.setValue("plot/rtformat1", RtFormat[0]);
-    settings.setValue("plot/rtformat2", RtFormat[1]);
-    settings.setValue("plot/rttimeform", RtTimeForm);
-    settings.setValue("plot/rtdegform", RtDegForm);
-    settings.setValue("plot/rtfieldsep", RtFieldSep);
-    settings.setValue("plot/rttimeouttime", RtTimeOutTime);
-    settings.setValue("plot/rtreconntime", RtReConnTime);
+    settings.setValue("plot/rtstream1", rtStream[0]);
+    settings.setValue("plot/rtstream2", rtStream[1]);
+    settings.setValue("plot/rtformat1", rtFormat[0]);
+    settings.setValue("plot/rtformat2", rtFormat[1]);
+    settings.setValue("plot/rttimeform", rtTimeFormat);
+    settings.setValue("plot/rtdegform", rtDegFormat);
+    settings.setValue("plot/rtfieldsep", rtFieldSeperator);
+    settings.setValue("plot/rttimeouttime", rtTimeoutTime);
+    settings.setValue("plot/rtreconntime", rtReconnectTime);
 
-    settings.setValue("plot/mcolor0", MColor[0][0]);
-    settings.setValue("plot/mcolor1", MColor[0][1]);
-    settings.setValue("plot/mcolor2", MColor[0][2]);
-    settings.setValue("plot/mcolor3", MColor[0][3]);
-    settings.setValue("plot/mcolor4", MColor[0][4]);
-    settings.setValue("plot/mcolor5", MColor[0][5]);
-    settings.setValue("plot/mcolor6", MColor[0][6]);
-    settings.setValue("plot/mcolor7", MColor[0][7]);
-    settings.setValue("plot/mcolor8", MColor[0][0]);
-    settings.setValue("plot/mcolor9", MColor[1][1]);
-    settings.setValue("plot/mcolor10", MColor[1][2]);
-    settings.setValue("plot/mcolor11", MColor[1][3]);
-    settings.setValue("plot/mcolor12", MColor[1][4]);
-    settings.setValue("plot/mcolor13", MColor[1][5]);
-    settings.setValue("plot/mcolor14", MColor[1][6]);
-    settings.setValue("plot/mcolor15", MColor[1][7]);
-    settings.setValue("plot/mapcolor1", MapColor[0]);
-    settings.setValue("plot/mapcolor2", MapColor[1]);
-    settings.setValue("plot/mapcolor3", MapColor[2]);
-    settings.setValue("plot/mapcolor4", MapColor[3]);
-    settings.setValue("plot/mapcolor5", MapColor[4]);
-    settings.setValue("plot/mapcolor6", MapColor[5]);
-    settings.setValue("plot/mapcolor7", MapColor[6]);
-    settings.setValue("plot/mapcolor8", MapColor[7]);
-    settings.setValue("plot/mapcolor9", MapColor[8]);
-    settings.setValue("plot/mapcolor10", MapColor[9]);
-    settings.setValue("plot/mapcolor11", MapColor[10]);
-    settings.setValue("plot/mapcolor12", MapColor[11]);
-    settings.setValue("plot/mapcolorf1", MapColorF[0]);
-    settings.setValue("plot/mapcolorf2", MapColorF[1]);
-    settings.setValue("plot/mapcolorf3", MapColorF[2]);
-    settings.setValue("plot/mapcolorf4", MapColorF[3]);
-    settings.setValue("plot/mapcolorf5", MapColorF[4]);
-    settings.setValue("plot/mapcolorf6", MapColorF[5]);
-    settings.setValue("plot/mapcolorf7", MapColorF[6]);
-    settings.setValue("plot/mapcolorf8", MapColorF[7]);
-    settings.setValue("plot/mapcolorf9", MapColorF[8]);
-    settings.setValue("plot/mapcolorf10", MapColorF[9]);
-    settings.setValue("plot/mapcolorf11", MapColorF[10]);
-    settings.setValue("plot/mapcolorf12", MapColorF[11]);
-    settings.setValue("plot/color1", CColor[0]);
-    settings.setValue("plot/color2", CColor[1]);
-    settings.setValue("plot/color3", CColor[2]);
-    settings.setValue("plot/color4", CColor[3]);
-
-    settings.setValue("plot/staposfile", plotOptDialog->refDialog->StaPosFile);
-
-    settings.setValue("plot/elmask", ElMask);
-    settings.setValue("plot/maxdop", MaxDop);
-    settings.setValue("plot/maxmp", MaxMP);
-    settings.setValue("plot/yrange", YRange);
-    settings.setValue("plot/orgin", Origin);
-    settings.setValue("plot/rcvpos", RcvPos);
-    settings.setValue("plot/oopos1", OOPos[0]);
-    settings.setValue("plot/oopos2", OOPos[1]);
-    settings.setValue("plot/oopos3", OOPos[2]);
-    settings.setValue("plot/shapefile", ShapeFile);
-    settings.setValue("plot/tlefile", TLEFile);
-    settings.setValue("plot/tlesatfile", TLESatFile);
-
-    settings.setValue("plot/fontname", Font.family());
-    settings.setValue("plot/fontsize", Font.pointSize());
-
-    settings.setValue("plot/rnxopts", RnxOpts);
-    settings.setValue("mapview/apikey", ApiKey);
-    settings.setValue("mapview/mapapi", MapApi);
-     for (int i=0;i<6;i++) for (int j=0;j<3;j++) {
-         settings.setValue(QString("mapview/mapstrs_%1_%2").arg(i).arg(j),MapStrs[i][j]);
-     }
+    settings.setValue("solbrows/dir", fileSelDialog->getDirectory());
+    settings.setValue("solbrows/split1", ui->browseSplitter->saveState());
+    settings.setValue("solbrows/show", ui->menuBrowse->isChecked());
 
     for (int i = 0; i < 2; i++) {
-        settings.setValue(QString("str/strcmd1_%1").arg(i), StrCmds  [0][i]);
-        settings.setValue(QString("str/strcmd2_%1").arg(i), StrCmds  [1][i]);
-        settings.setValue(QString("str/strcmdena1_%1").arg(i), StrCmdEna[0][i]);
-        settings.setValue(QString("str/strcmdena2_%1").arg(i), StrCmdEna[1][i]);
+        settings.setValue(QString("str/strcmd1_%1").arg(i), streamCommands[0][i]);
+        settings.setValue(QString("str/strcmd2_%1").arg(i), streamCommands[1][i]);
+        settings.setValue(QString("str/strcmdena1_%1").arg(i), streamCommandEnabled[0][i]);
+        settings.setValue(QString("str/strcmdena2_%1").arg(i), streamCommandEnabled[1][i]);
     }
     for (int i = 0; i < 3; i++) {
-        settings.setValue(QString("str/strpath1_%1").arg(i), StrPaths[0][i]);
-        settings.setValue(QString("str/strpath2_%1").arg(i), StrPaths[1][i]);
+        settings.setValue(QString("str/strpath1_%1").arg(i), streamPaths[0][i]);
+        settings.setValue(QString("str/strpath2_%1").arg(i), streamPaths[1][i]);
     }
     for (int i = 0; i < 10; i++) {
-        settings.setValue(QString("str/strhistry_%1").arg(i), StrHistory [i]);
+        settings.setValue(QString("str/strhistry_%1").arg(i), streamHistory [i]);
     }
 
-    settings.setValue("viewer/color1", TextViewer::Color1);
-    settings.setValue("viewer/color2", TextViewer::Color2);
-    settings.setValue("viewer/fontname", TextViewer::FontD.family());
-    settings.setValue("viewer/fontsize", TextViewer::FontD.pointSize());
-
-    settings.setValue("solbrows/dir", fileSelDialog->Dir);
-    settings.setValue("solbrows/split1", BrowseSplitter->saveState());
+    plotOptDialog->saveOptions(settings);
+    vecMapDialog->saveOptions(settings);
+    viewer->saveOptions(settings);
+    mapView->saveOptions(settings);
 }
 
 //---------------------------------------------------------------------------
-void Plot::DriveSelChanged()
+void Plot::driveSelectChanged()
 {
-    DirSelector->setVisible(false);
+    tVdirectorySelector->setVisible(false);
 
-    DirSelector->setRootIndex(dirModel->index(DriveSel->currentText()));
-    DirSelected->setText(DriveSel->currentText());
+    tVdirectorySelector->setRootIndex(dirModel->index(ui->cBDriveSelect->currentText()));
+    ui->lblDirectorySelected->setText(ui->cBDriveSelect->currentText());
 }
 //---------------------------------------------------------------------------
-void Plot::BtnDirSelClick()
+void Plot::btnDirectorySelectorClicked()
 {
 #ifdef FLOATING_DIRSELECTOR
     QPoint pos = Panel5->mapToGlobal(BtnDirSel->pos());
@@ -3035,48 +2804,78 @@ void Plot::BtnDirSelClick()
 
     DirSelector->move(pos);
 #endif
-    DirSelector->setVisible(!DirSelector->isVisible());
+    tVdirectorySelector->setVisible(!tVdirectorySelector->isVisible());
 }
 //---------------------------------------------------------------------------
-void Plot::DirSelChange(QModelIndex index)
+void Plot::directorySelectionChanged(QModelIndex index)
 {
-    DirSelector->expand(index);
+    tVdirectorySelector->expand(index);
 
-    Dir = dirModel->filePath(index);
-    DirSelected->setText(Dir);
-    fileModel->setRootPath(Dir);
-    FileList->setRootIndex(fileModel->index(Dir));
+    directory = dirModel->filePath(index);
+    ui->lblDirectorySelected->setText(directory);
+    fileModel->setRootPath(directory);
+    ui->lVFileList->setRootIndex(fileModel->index(directory));
 }
 //---------------------------------------------------------------------------
-void Plot::DirSelSelected(QModelIndex)
+void Plot::directorySelectionSelected(QModelIndex)
 {
-    DirSelector->setVisible(false);
+    tVdirectorySelector->setVisible(false);
 }
 //---------------------------------------------------------------------------
-void Plot::FileListClick(QModelIndex index)
+void Plot::fileListClicked(QModelIndex index)
 {
     QStringList file;
 
     file.append(fileModel->filePath(index));
-    plot->ReadSol(file, 0);
+    readSolution(file, 0);
 
-    DirSelector->setVisible(false);
+    tVdirectorySelector->setVisible(false);
 }
 //---------------------------------------------------------------------------
-void Plot::FilterClick()
+void Plot::filterClicked()
 {
-    QString filter = Filter->currentText();
+    QString filter = ui->cBFilter->currentText();
 
     // only keep data between brackets
     filter = filter.mid(filter.indexOf("(") + 1);
     filter.remove(")");
 
-    fileModel->setNameFilters(filter.split(" "));
-    DirSelector->setVisible(false);
+    fileModel->setNameFilters(filter.split(" ", Qt::SkipEmptyParts));
+    tVdirectorySelector->setVisible(false);
 }
 //---------------------------------------------------------------------------
-void Plot::BtnFreqClick()
+void Plot::showFrequencyDialog()
 {
     freqDialog->exec();
+}
+//---------------------------------------------------------------------------
+QString Plot::getMapImageFileName()
+{
+    return mapImageFile;
+}
+//---------------------------------------------------------------------------
+QString Plot::getSkyImageFileName()
+{
+    return skyImageFile;
+}
+//---------------------------------------------------------------------------
+void Plot::setWayPoints(const QList<WayPoint>& pnts)
+{
+    wayPoints = pnts;
+}
+//---------------------------------------------------------------------------
+const QList<WayPoint>& Plot::getWayPoints()
+{
+    return wayPoints;
+}
+//---------------------------------------------------------------------------
+void Plot::setSelectedWayPoint(int pnt)
+{
+    selectedWayPoint = pnt;
+}
+//---------------------------------------------------------------------------
+int Plot::getSelectedWayPoint()
+{
+    return selectedWayPoint;
 }
 //---------------------------------------------------------------------------

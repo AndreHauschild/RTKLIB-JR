@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=RtkGet
+GenericName=RtkLib Data Downloader
+Keywords=rtklib;GNSS
+Exec=rtkget_qt
+Icon=rtkget
+Categories=Science;Geoscience;

@@ -3,28 +3,34 @@
 #define startdlgH
 //---------------------------------------------------------------------------
 #include <QDialog>
-#include "ui_startdlg.h"
 
 #include "rtklib.h"
-class QShowEvent;
+
+namespace Ui {
+class StartDialog;
+}
 
 //---------------------------------------------------------------------------
-class StartDialog : public QDialog, private Ui::StartDialog
+class StartDialog : public QDialog
 {
     Q_OBJECT
 
-protected:
-    void showEvent(QShowEvent*);
-
-public slots:
-    void BtnOkClick();
-    void BtnFileTimeClick();
-
 public:
-	gtime_t Time;
-    QString FileName;
+    explicit StartDialog(QWidget *parent = nullptr);
 
-    explicit StartDialog(QWidget *parent=NULL);
+    gtime_t getTime();
+    void setTime(const gtime_t&);
+    const QString &getFileName() {return filename;}
+    void setFileName(const QString &filename);
+
+protected:
+    QString filename;
+
+private:
+    Ui::StartDialog *ui;
+
+protected slots:
+    void setTimeFromFile();
 };
 //---------------------------------------------------------------------------
 #endif

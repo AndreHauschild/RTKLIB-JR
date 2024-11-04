@@ -75,6 +75,7 @@
 *                           suppress warning for buffer overflow by sprintf()
 *                           use integer types in stdint.h
 *-----------------------------------------------------------------------------*/
+#define _POSIX_C_SOURCE 199506
 #include <ctype.h>
 #include "rtklib.h"
 #ifndef WIN32
@@ -344,14 +345,14 @@ static DWORD WINAPI serialthread(void *arg)
 /* open serial ---------------------------------------------------------------*/
 static serial_t *openserial(const char *path, int mode, char *msg)
 {
-    const int br[]={
-        300,600,1200,2400,4800,9600,19200,38400,57600,115200,230400,460800,
-        921600
-    };
     serial_t *serial;
     int i,brate=115200,bsize=8,stopb=1,tcp_port=0;
     char *p,parity='N',dev[128],port[128],fctr[64]="",path_tcp[32],msg_tcp[128];
 #ifdef WIN32
+    const int br[]={
+        300,600,1200,2400,4800,9600,19200,38400,57600,115200,230400,460800,
+        921600
+    };
     DWORD error,rw=0,siz=sizeof(COMMCONFIG);
     COMMCONFIG cc={0};
     COMMTIMEOUTS co={MAXDWORD,0,0,0,0}; /* non-block-read */
@@ -359,10 +360,17 @@ static serial_t *openserial(const char *path, int mode, char *msg)
 #else
 #ifdef __APPLE__
     /* MacOS doesn't support higher baudrates (>230400B) */
+    const int br[]={
+        300,600,1200,2400,4800,9600,19200,38400,57600,115200,230400
+    };
     const speed_t bs[]={
         B300,B600,B1200,B2400,B4800,B9600,B19200,B38400,B57600,B115200,B230400
     };
 #else /* regular Linux with higher baudrates */
+    const int br[]={
+        300,600,1200,2400,4800,9600,19200,38400,57600,115200,230400,460800,
+        921600
+    };
     const speed_t bs[]={
         B300,B600,B1200,B2400,B4800,B9600,B19200,B38400,B57600,B115200,B230400,
         B460800,B921600
@@ -377,15 +385,16 @@ static serial_t *openserial(const char *path, int mode, char *msg)
     
     if ((p=strchr(path,':'))) {
         strncpy(port,path,p-path); port[p-path]='\0';
-        sscanf(p,":%d:%d:%c:%d:%s",&brate,&bsize,&parity,&stopb,fctr);
+        sscanf(p,":%d:%d:%c:%d:%63s",&brate,&bsize,&parity,&stopb,fctr);
     }
     else strcpy(port,path);
     
     if ((p=strchr(path,'#'))) {
         sscanf(p,"#%d",&tcp_port);
     }
-    for (i=0;i<13;i++) if (br[i]==brate) break;
-    if (i>=13) {
+    int nbr = sizeof(br) / sizeof(int);
+    for (i=0;i<nbr;i++) if (br[i]==brate) break;
+    if (i>=nbr) {
         sprintf(msg,"bitrate error (%d)",brate);
         tracet(1,"openserial: %s path=%s\n",msg,path);
         free(serial);
@@ -525,6 +534,7 @@ static int readserial(serial_t *serial, uint8_t *buff, int n, char *msg)
     
     /* write received stream to tcp server port */
     if (serial->tcpsvr&&nr>0) {
+        /* TODO handle no-blocking write ? */
         writetcpsvr(serial->tcpsvr,buff,(int)nr,msg_tcp);
     }
     return nr;
@@ -540,7 +550,12 @@ static int writeserial(serial_t *serial, uint8_t *buff, int n, char *msg)
 #ifdef WIN32
     if ((ns=writeseribuff(serial,buff,n))<n) serial->error=1;
 #else
-    if (write(serial->dev,buff,n)<n) {
+    ns=write(serial->dev,buff,n);
+    if (ns<0) {
+        if (errno==EAGAIN) {
+            /* TODO ?? */
+        }
+        ns = 0;
         serial->error=1;
     }
 #endif
@@ -791,7 +806,7 @@ static int statexfile(file_t *file, char *msg)
     p+=sprintf(p,"  tick_f  = %u\n",file->tick_f);
     p+=sprintf(p,"  start   = %.3f\n",file->start);
     p+=sprintf(p,"  speed   = %.3f\n",file->speed);
-    p+=sprintf(p,"  swapintv= %.3f\n",file->swapintv);
+    sprintf(p,"  swapintv= %.3f\n",file->swapintv);
     return state;
 }
 /* read file -----------------------------------------------------------------*/
@@ -1572,25 +1587,23 @@ static int reqntrip_c(ntrip_t *ntrip, char *msg)
 /* test ntrip server response ------------------------------------------------*/
 static int rspntrip_s(ntrip_t *ntrip, char *msg)
 {
-    int i,nb;
-    char *p,*q;
-    
     tracet(3,"rspntrip_s: state=%d nb=%d\n",ntrip->state,ntrip->nb);
-    ntrip->buff[ntrip->nb]='0';
+    ntrip->buff[ntrip->nb]='\0';
     tracet(5,"rspntrip_s: n=%d buff=\n%s\n",ntrip->nb,ntrip->buff);
     
+    char *p;
     if ((p=strstr((char *)ntrip->buff,NTRIP_RSP_OK_SVR))) { /* ok */
-        q=(char *)ntrip->buff;
         p+=strlen(NTRIP_RSP_OK_SVR);
-        ntrip->nb-=p-q;
-        for (i=0;i<ntrip->nb;i++) *q++=*p++;
+        ntrip->nb-=p-(char *)ntrip->buff;
+        /* Discard all buffer content before the OK. */
+        memmove(ntrip->buff, p, ntrip->nb);
         ntrip->state=2;
         sprintf(msg,"%s/%s",ntrip->tcp->svr.saddr,ntrip->mntpnt);
         tracet(3,"rspntrip_s: response ok nb=%d\n",ntrip->nb);
         return 1;
     }
-    else if ((p=strstr((char *)ntrip->buff,NTRIP_RSP_ERROR))) { /* error */
-        nb=ntrip->nb<MAXSTATMSG?ntrip->nb:MAXSTATMSG;
+    else if (strstr((char *)ntrip->buff,NTRIP_RSP_ERROR)) { /* error */
+        int nb=ntrip->nb<MAXSTATMSG?ntrip->nb:MAXSTATMSG;
         sprintf(msg,"%.*s",nb,(char *)ntrip->buff);
         if ((p=strchr(msg,'\r'))) *p='\0';
         tracet(3,"rspntrip_s: %s nb=%d\n",msg,ntrip->nb);
@@ -1613,25 +1626,23 @@ static int rspntrip_s(ntrip_t *ntrip, char *msg)
 /* test ntrip client response ------------------------------------------------*/
 static int rspntrip_c(ntrip_t *ntrip, char *msg)
 {
-    int i;
-    char *p,*q;
-    
     tracet(3,"rspntrip_c: state=%d nb=%d\n",ntrip->state,ntrip->nb);
-    ntrip->buff[ntrip->nb]='0';
+    ntrip->buff[ntrip->nb]='\0';
     tracet(5,"rspntrip_c: n=%d buff=\n%s\n",ntrip->nb,ntrip->buff);
     
+    char *p;
     if ((p=strstr((char *)ntrip->buff,NTRIP_RSP_OK_CLI))) { /* ok */
-        q=(char *)ntrip->buff;
         p+=strlen(NTRIP_RSP_OK_CLI);
-        ntrip->nb-=p-q;
-        for (i=0;i<ntrip->nb;i++) *q++=*p++;
+        ntrip->nb-=p-(char *)ntrip->buff;
+        /* Discard all buffer content before the OK. */
+        memmove(ntrip->buff, p, ntrip->nb);
         ntrip->state=2;
         sprintf(msg,"%s/%s",ntrip->tcp->svr.saddr,ntrip->mntpnt);
         tracet(3,"rspntrip_c: response ok nb=%d\n",ntrip->nb);
         ntrip->tcp->tirecon=ticonnect;
         return 1;
     }
-    if ((p=strstr((char *)ntrip->buff,NTRIP_RSP_SRCTBL))) { /* source table */
+    if (strstr((char *)ntrip->buff,NTRIP_RSP_SRCTBL)) { /* source table */
         if (!*ntrip->mntpnt) { /* source table request */
             ntrip->state=2;
             sprintf(msg,"source table received");
@@ -1649,6 +1660,7 @@ static int rspntrip_c(ntrip_t *ntrip, char *msg)
         discontcp(&ntrip->tcp->svr,ntrip->tcp->tirecon);
     }
     else if ((p=strstr((char *)ntrip->buff,NTRIP_RSP_HTTP))) { /* http response */
+        char *q;
         if ((q=strchr(p,'\r'))) *q='\0'; else ntrip->buff[128]='\0';
         strcpy(msg,p);
         tracet(3,"rspntrip_s: %s nb=%d\n",msg,ntrip->nb);
@@ -1751,17 +1763,24 @@ static void closentrip(ntrip_t *ntrip)
 /* read ntrip ----------------------------------------------------------------*/
 static int readntrip(ntrip_t *ntrip, uint8_t *buff, int n, char *msg)
 {
-    int nb;
-    
     tracet(4,"readntrip:\n");
     
     if (!waitntrip(ntrip,msg)) return 0;
     
-    if (ntrip->nb>0) { /* read response buffer first */
-        nb=ntrip->nb<=n?ntrip->nb:n;
-        memcpy(buff,ntrip->buff+ntrip->nb-nb,nb);
-        ntrip->nb=0;
-        return nb;
+    if (ntrip->nb>0) {
+        /* Read from the response buffer first */
+        if (ntrip->nb <= n) {
+            /* Empty the buffer. */
+            int nb=ntrip->nb;
+            memcpy(buff,ntrip->buff,nb);
+            ntrip->nb=0;
+            return nb;
+        }
+        /* Partial use of the response buffer */
+        memcpy(buff,ntrip->buff,n);
+        memmove(ntrip->buff,ntrip->buff+n,ntrip->nb-n);
+        ntrip->nb-=n;
+        return n;
     }
     return readtcpcli(ntrip->tcp,buff,n,msg);
 }
@@ -1797,7 +1816,7 @@ static int statexntrip(ntrip_t *ntrip, char *msg)
     p+=sprintf(p,"  passwd  = %s\n",ntrip->passwd);
     p+=sprintf(p,"  str     = %s\n",ntrip->str);
     p+=sprintf(p,"  svr:\n");
-    p+=statextcp(&ntrip->tcp->svr,p);
+    statextcp(&ntrip->tcp->svr,p);
     return state;
 }
 /* open ntrip-caster ---------------------------------------------------------*/
@@ -1880,7 +1899,7 @@ static void rsp_ntripc(ntripc_t *ntripc, int i)
 {
     const char *rsp1=NTRIP_RSP_UNAUTH,*rsp2=NTRIP_RSP_OK_CLI;
     ntripc_con_t *con=ntripc->con+i;
-    char url[256]="",mntpnt[256]="",proto[256]="",user[513],user_pwd[256],*p,*q;
+    char url[256]="",mntpnt[256]="",proto[256]="",user[513],user_pwd[712],*p,*q;
     
     tracet(3,"rspntripc_c i=%d\n",i);
     con->buff[con->nb]='\0';
@@ -1921,7 +1940,8 @@ static void rsp_ntripc(ntripc_t *ntripc, int i)
         sprintf(user,"%s:%s",ntripc->user,ntripc->passwd);
         q=user_pwd;
         q+=sprintf(q,"Authorization: Basic ");
-        q+=encbase64(q,(uint8_t *)user,strlen(user));
+        encbase64(q,(uint8_t *)user,strlen(user));
+        strcat(user_pwd,"\r\n");
         if (!(p=strstr((char *)con->buff,"Authorization:"))||
             strncmp(p,user_pwd,strlen(user_pwd))) {
             tracet(2,"rsp_ntripc_c: authroziation error\n");
@@ -2126,7 +2146,7 @@ static udp_t *openudpsvr(const char *path, char *msg)
     
     if (sscanf(sport,"%d",&port)<1) {
         sprintf(msg,"port error: %s",sport);
-        tracet(2,"openudpsvr: port error port=%s\n",port);
+        tracet(2,"openudpsvr: port error port=%s\n",sport);
         return NULL;
     }
     return genudp(0,port,"",msg);
@@ -2170,7 +2190,7 @@ static int statexudpsvr(udp_t *udpsvr, char *msg)
     if (!state) return 0;
     p+=sprintf(p,"  type    = %d\n",udpsvr->type);
     p+=sprintf(p,"  sock    = %d\n",(int)udpsvr->sock);
-    p+=sprintf(p,"  port    = %d\n",udpsvr->port);
+    sprintf(p,"  port    = %d\n",udpsvr->port);
     return state;
 }
 /* open udp client -----------------------------------------------------------*/
@@ -2223,7 +2243,7 @@ static int statexudpcli(udp_t *udpcli, char *msg)
     p+=sprintf(p,"  type    = %d\n",udpcli->type);
     p+=sprintf(p,"  sock    = %d\n",(int)udpcli->sock);
     p+=sprintf(p,"  addr    = %s\n",udpcli->saddr);
-    p+=sprintf(p,"  port    = %d\n",udpcli->port);
+    sprintf(p,"  port    = %d\n",udpcli->port);
     return state;
 }
 /* decode ftp path -----------------------------------------------------------*/
@@ -2259,7 +2279,7 @@ static void decodeftppath(const char *path, char *addr, char *file, char *user,
         if ((q=strchr(buff,':'))) {
              *q='\0'; if (passwd) strcpy(passwd,q+1);
         }
-        *q='\0'; if (user) strcpy(user,buff); 
+        if (user) strcpy(user,buff);
     }
     else p=buff;
     
@@ -2519,17 +2539,16 @@ static void closemembuf(membuf_t *membuf)
 /* read memory buffer --------------------------------------------------------*/
 static int readmembuf(membuf_t *membuf, uint8_t *buff, int n, char *msg)
 {
-    int i,nr=0;
-    
     tracet(4,"readmembuf: n=%d\n",n);
     
     if (!membuf) return 0;
     
     rtklib_lock(&membuf->lock);
     
-    for (i=membuf->rp;i!=membuf->wp&&nr<n;i++) {
-        if (i>=membuf->bufsize) i=0;
+    size_t i=membuf->rp, nr=0;
+    while (i!=membuf->wp&&nr<n) {
         buff[nr++]=membuf->buf[i];
+        if (++i>=membuf->bufsize) i=0;
     }
     membuf->rp=i;
     rtklib_unlock(&membuf->lock);
@@ -2575,7 +2594,7 @@ static int statexmembuf(membuf_t *membuf, char *msg)
     if (!state) return 0;
     p+=sprintf(p,"  buffsize= %d\n",membuf->bufsize);
     p+=sprintf(p,"  wp      = %d\n",membuf->wp);
-    p+=sprintf(p,"  rp      = %d\n",membuf->rp);
+    sprintf(p,"  rp      = %d\n",membuf->rp);
     return state;
 }
 /* initialize stream environment -----------------------------------------------
@@ -2629,8 +2648,8 @@ extern void strinit(stream_t *stream)
 *                                 STR_UDPSVR   = UDP server (read only)
 *                                 STR_UDPCLI   = UDP client (write only)
 *                                 STR_MEMBUF   = memory buffer (FIFO)
-*                                 STR_FTP      = download by FTP (raed only)
-*                                 STR_HTTP     = download by HTTP (raed only)
+*                                 STR_FTP      = download by FTP (read only)
+*                                 STR_HTTP     = download by HTTP (read only)
 *          int mode         I   stream mode (STR_MODE_???)
 *                                 STR_MODE_R   = read only
 *                                 STR_MODE_W   = write only
@@ -3128,7 +3147,8 @@ static int gen_hex(const char *msg, uint8_t *buff)
     trace(4,"gen_hex: msg=%s\n",msg);
     
     strncpy(mbuff,msg,1023);
-    for (p=strtok(mbuff," ");p&&narg<256;p=strtok(NULL," ")) {
+    char *r;
+    for (p=strtok_r(mbuff," ",&r);p&&narg<256;p=strtok_r(NULL," ",&r)) {
         args[narg++]=p;
     }
     for (i=0;i<narg;i++) {

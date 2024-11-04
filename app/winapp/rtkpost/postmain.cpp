@@ -828,8 +828,8 @@ int __fastcall TMainForm::ExecProc(void)
     showmsg((char *)"reading...");
     
     // post processing positioning
-    if ((stat=postpos(ts,te,ti,tu,&prcopt,&solopt,&filopt,infile,n,outfile,
-                      rov,base))==1) {
+    if ((stat=postpos(ts,te,ti,tu,&prcopt,&solopt,&filopt,(const char **)infile,n,(const char *)outfile,
+                      (const char *)rov,base))==1) {
         showmsg((char *)"aborted");
     }
     delete [] rov ;
@@ -918,21 +918,17 @@ int __fastcall TMainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
         prcopt.baseline[0]=0.0;
         prcopt.baseline[1]=0.0;
     }
-    if (PosMode!=PMODE_FIXED&&PosMode!=PMODE_PPP_FIXED) {
-        for (int i=0;i<3;i++) prcopt.ru[i]=0.0;
+    for (int i=0;i<3;i++) prcopt.ru[i]=RovPos[i];
+    if (RovPosType<=2) {
+        prcopt.rovpos = RovPosType < 2 ? POSOPT_POS_LLH : POSOPT_POS_XYZ;
     }
-    else if (RovPosType<=2) {
-        for (int i=0;i<3;i++) prcopt.ru[i]=RovPos[i];
-    }
-    else prcopt.rovpos=RovPosType-2; /* 1:single,2:posfile,3:rinex */
+    else prcopt.rovpos=RovPosType-1; /* 1:single,2:posfile,3:rinex */
     
-    if (PosMode==PMODE_SINGLE||PosMode==PMODE_MOVEB) {
-        for (int i=0;i<3;i++) prcopt.rb[i]=0.0;
+    for (int i=0;i<3;i++) prcopt.rb[i]=RefPos[i];
+    if (RefPosType<=2) {
+        prcopt.refpos = RefPosType < 2 ? POSOPT_POS_LLH : POSOPT_POS_XYZ;
     }
-    else if (RefPosType<=2) {
-        for (int i=0;i<3;i++) prcopt.rb[i]=RefPos[i];
-    }
-    else prcopt.refpos=RefPosType-2;
+    else prcopt.refpos=RefPosType-1;
     
     if (RovAntPcv) {
         strcpy(prcopt.anttype[0],RovAnt.c_str());
@@ -960,7 +956,7 @@ int __fastcall TMainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     
     // solution options
     solopt.posf     =SolFormat;
-    solopt.times    =TimeFormat==0?0:TimeFormat-1;
+    solopt.times    =TimeFormat==0?TIMES_GPST:(TimeFormat - 1);
     solopt.timef    =TimeFormat==0?0:1;
     solopt.timeu    =TimeDecimal<=0?0:TimeDecimal;
     solopt.degf     =LatLonFormat;

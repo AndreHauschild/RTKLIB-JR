@@ -4,31 +4,33 @@
 //---------------------------------------------------------------------------
 #include <QDialog>
 
-#include "ui_serioptdlg.h"
+namespace Ui {
+class SerialOptDialog;
+}
 
 class CmdOptDialog;
 //---------------------------------------------------------------------------
-class SerialOptDialog : public QDialog, private Ui::SerialOptDialog
+class SerialOptDialog : public QDialog
 {
     Q_OBJECT
 
-protected:
-    void showEvent(QShowEvent *);
-
-    CmdOptDialog *cmdOptDialog;
-
-    void UpdatePortList(void);
-    void UpdateEnable();
-
-public slots:
-    void  BtnOkClick();
-    void  OutTcpPortClick();
-
 public:
-    QString Path, Cmds[2];
-    int Opt, CmdEna[2];
+    explicit SerialOptDialog(QWidget*, int options = 0);
 
-    explicit SerialOptDialog(QWidget*);
+    void setOptions(int options);
+    QString getPath();
+    void setPath(const QString &path);
+
+protected:
+    void updatePortList();
+    void showEvent(QShowEvent *event);
+
+private:
+    Ui::SerialOptDialog *ui;
+
+protected slots:
+    void updateEnable();
+
 };
 //---------------------------------------------------------------------------
 #endif

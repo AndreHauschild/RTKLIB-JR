@@ -10,93 +10,86 @@
 
 #include "rtklib.h"
 
-#include "ui_getmain.h"
+namespace Ui {
+class MainForm;
+}
 
 class TextViewer;
+class DownOptDialog;
 class DownloadThread;
 class TimeDialog;
+class QComboBox;
 
 //---------------------------------------------------------------------------
-class MainForm : public QWidget, public Ui::MainForm
+class MainForm : public QWidget
 {
      Q_OBJECT
 
+public:
+    explicit MainForm(QWidget* parent);
+
+    void showMessage(int i, const QString&);
+
 protected:
     void  closeEvent(QCloseEvent *);
-
-    void  FormCreate();
-
+    void  showEvent(QShowEvent*);
     void  dragEnterEvent(QDragEnterEvent *event);
     void  dropEvent(QDropEvent * event);
 
-public slots:
-    void  BtnExitClick();
-    void  BtnOptsClick();
-    void  BtnLogClick();
-    void  BtnDownloadClick();
-    void  DataTypeChange();
-    void  BtnFileClick();
-    void  DataListClick();
-    void  BtnDirClick();
-    void  LocalDirClick();
-    void  BtnStasClick();
-    void  BtnKeywordClick();
-    void  BtnHelpClick();
-    void  HidePasswdClick();
-    void  TimerTimer();
-    void  BtnTrayClick();
-    void  TrayIconActivated(QSystemTrayIcon::ActivationReason);
-    void  BtnTestClick();
-    void  StaListClick();
-    void  BtnAllClick();
-    void  DirChange();
-    void  DownloadFinished();
-    void  BtnTime1Click();
-    void  BtnTime2Click();
-    void  UpdateEnable(void);
+    QString iniFilename;
+    QTimer busyTimer;
+    int timerCnt;
+
+protected slots:
+    void  showOptionsDialog();
+    void  viewLogFile();
+    void  download();
+    void  openOutputDirectory();
+    void  dataListSelectionChanged();
+    void  selectOutputDirectory();
+    void  localDirectoryCheckBoxClicked();
+    void  showStationDialog();
+    void  showKeyDialog();
+    void  showAboutDialog();
+    void  busyTimerTriggered();
+    void  minimizeToTray();
+    void  restoreFromTaskTray(QSystemTrayIcon::ActivationReason);
+    void  testDownload();
+    void  selectDeselectAllStations();
+    void  downloadFinished();
+    void  showStartTimeDetails();
+    void  showStopTimeDetails();
+    void  updateEnable();
+    void  updateDataListWidget();
+    void  updateMessage();
 
 private:
-    QStringList Types;
-    QStringList Urls;
-    QStringList Locals;
-    QPixmap Images[8];
-    QSystemTrayIcon TrayIcon;
-    DownloadThread *thread;
+    QStringList types;
+    QStringList urls;
+    QStringList locals;
+    QPixmap images[8];
+    QSystemTrayIcon trayIcon;
+    DownloadThread *processingThread;
     TextViewer *viewer;
     TimeDialog *timeDialog;
+    DownOptDialog *downOptDialog;
 
-    void  LoadOpt(void);
-    void  SaveOpt(void);
-    void  UpdateType(void);
-    void  UpdateMsg(void);
-    void  UpdateStaList(void);
-    void  PanelEnable(int ena);
-    void  GetTime(gtime_t *ts, gtime_t *te, double *ti);
-    int   SelectUrl(url_t *urls);
-    int   SelectSta(char **stas);
-    void  LoadUrl(QString file);
-    void  LoadSta(QString file);
-    int   ExecCmd(const QString &cmd, const QStringList &opt);
-    void  ReadHist(QSettings &, QString key, QComboBox *);
-    void  WriteHist(QSettings &, QString key, QComboBox *);
-    void  AddHist(QComboBox *combo);
+    Ui::MainForm *ui;
+
+    void  loadOptions();
+    void  saveOptions();
+    void  updateStationListLabel();
+    void  panelEnable(int ena);
+    void  getTime(gtime_t *ts, gtime_t *te, double *ti);
+    int   selectUrl(url_t *urls);
+    int   selectStation(char **stas);
+    void  loadUrlList(const QString &file);
+    void  loadStationFile(const QString &file);
+    int   execCommand(const QString &cmd, const QStringList &opt);
+    void  readHistory(QSettings &, const QString &key, QComboBox *);
+    void  writeHistory(QSettings &, const QString &key, QComboBox *);
+    void  addHistory(QComboBox *combo);
 	
-public:
-    QString IniFile;
-    QString UrlFile;
-    QString LogFile;
-    QString Stations;
-    QString ProxyAddr;
-	int HoldErr;
-	int HoldList;
-	int NCol;
-	int DateFormat;
-	int TraceLevel;
-	int LogAppend;
-	int TimerCnt;
-    QTimer Timer;
-
-    explicit MainForm(QWidget* parent);
 };
 //---------------------------------------------------------------------------
 #endif

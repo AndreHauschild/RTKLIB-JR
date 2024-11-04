@@ -59,7 +59,7 @@ extern "C" {
 
 #define VER_RTKLIB  "demo5"             /* library version */
 
-#define PATCH_LEVEL "b34i"               /* patch level */
+#define PATCH_LEVEL "b34k"               /* patch level */
 
 #define COPYRIGHT_RTKLIB \
             "Copyright (C) 2007-2020 T.Takasu\nAll rights reserved."
@@ -117,6 +117,16 @@ extern "C" {
 #define SYS_IRN     0x40                /* navigation system: IRNS */
 #define SYS_LEO     0x80                /* navigation system: LEO */
 #define SYS_ALL     0xFF                /* navigation system: all */
+
+/* System codes used in rnxopt_t mask, tobs, shift, and nobs. */
+#define RNX_SYS_GPS 0                   /* Navigation system: GPS */
+#define RNX_SYS_GLO 1                   /* Navigation system: GLONASS */
+#define RNX_SYS_GAL 2                   /* Navigation system: Galileo */
+#define RNX_SYS_QZS 3                   /* Navigation system: QZSS */
+#define RNX_SYS_SBS 4                   /* Navigation system: SBAS */
+#define RNX_SYS_CMP 5                   /* Navigation system: BeiDou */
+#define RNX_SYS_IRN 6                   /* Navigation system: IRNS */
+#define RNX_NUMSYS  7
 
 #define TSYS_GPS    0                   /* time system: GPS time */
 #define TSYS_UTC    1                   /* time system: UTC */
@@ -295,7 +305,7 @@ extern "C" {
 #define CODE_L1N    6                   /* obs code: L1codeless,B1codeless (GPS,BDS) */
 #define CODE_L1S    7                   /* obs code: L1C(D)     (GPS,QZS) */
 #define CODE_L1L    8                   /* obs code: L1C(P)     (GPS,QZS) */
-#define CODE_L1E    9                   /* (not used) */
+#define CODE_L1E    9                   /* obs code: L1C/B      (QZS) */
 #define CODE_L1A    10                  /* obs code: E1A,B1A    (GAL,BDS) */
 #define CODE_L1B    11                  /* obs code: E1B        (GAL) */
 #define CODE_L1X    12                  /* obs code: E1B+C,L1C(D+P),B1D+P (GAL,QZS,BDS) */
@@ -355,7 +365,9 @@ extern "C" {
 #define CODE_L4A    66                  /* obs code: G1aL1OCd   (GLO) */
 #define CODE_L4B    67                  /* obs code: G1aL1OCd   (GLO) */
 #define CODE_L4X    68                  /* obs code: G1al1OCd+p (GLO) */
-#define MAXCODE     68                  /* max number of obs code */
+#define CODE_L6D    69                  /* obs code: B3A(D)     (BDS) */
+#define CODE_L6P    70                  /* obs code: B3A(P)     (BDS) */
+#define MAXCODE     70                  /* max number of obs code */
 
 #define PMODE_SINGLE 0                  /* positioning mode: single */
 #define PMODE_DGPS   1                  /* positioning mode: DGPS/DGNSS */
@@ -403,7 +415,6 @@ extern "C" {
 #define IONOOPT_EST 4                   /* ionosphere option: estimation */
 #define IONOOPT_TEC 5                   /* ionosphere option: IONEX TEC model */
 #define IONOOPT_QZS 6                   /* ionosphere option: QZSS broadcast model */
-#define IONOOPT_STEC 8                  /* ionosphere option: SLANT TEC model */
 
 #define TROPOPT_OFF 0                   /* troposphere option: correction off */
 #define TROPOPT_SAAS 1                  /* troposphere option: Saastamoinen model */
@@ -432,11 +443,12 @@ extern "C" {
 #define SBSOPT_ICORR 4                  /* SBAS option: ionosphere correction */
 #define SBSOPT_RANGE 8                  /* SBAS option: ranging */
 
-#define POSOPT_POS   0                  /* pos option: LLH/XYZ */
-#define POSOPT_SINGLE 1                 /* pos option: average of single pos */
-#define POSOPT_FILE  2                  /* pos option: read from pos file */
-#define POSOPT_RINEX 3                  /* pos option: rinex header pos */
-#define POSOPT_RTCM  4                  /* pos option: rtcm/raw station pos */
+#define POSOPT_POS_LLH 0                /* pos option: LLH */
+#define POSOPT_POS_XYZ 1                /* pos option: XYZ */
+#define POSOPT_SINGLE  2                /* pos option: average of single pos */
+#define POSOPT_FILE    3                /* pos option: read from pos file */
+#define POSOPT_RINEX   4                /* pos option: rinex header pos */
+#define POSOPT_RTCM    5                /* pos option: rtcm/raw station pos */
 
 #define STR_NONE     0                  /* stream type: none */
 #define STR_SERIAL   1                  /* stream type: serial */
@@ -452,26 +464,29 @@ extern "C" {
 #define STR_UDPCLI   11                 /* stream type: UDP server */
 #define STR_MEMBUF   12                 /* stream type: memory buffer */
 
-#define STRFMT_RTCM2 0                  /* stream format: RTCM 2 */
-#define STRFMT_RTCM3 1                  /* stream format: RTCM 3 */
-#define STRFMT_OEM4  2                  /* stream format: NovAtel OEMV/4 */
-#define STRFMT_CNAV  3                  /* stream format: ComNav */
-#define STRFMT_UBX   4                  /* stream format: u-blox LEA-*T */
-#define STRFMT_SBP   5                  /* stream format: Swift Navigation SBP */
-#define STRFMT_CRES  6                  /* stream format: Hemisphere */
-#define STRFMT_STQ   7                  /* stream format: SkyTraq S1315F */
-#define STRFMT_JAVAD 8                  /* stream format: JAVAD GRIL/GREIS */
-#define STRFMT_NVS   9                  /* stream format: NVS NVC08C */
-#define STRFMT_BINEX 10                 /* stream format: BINEX */
-#define STRFMT_RT17  11                 /* stream format: Trimble RT17 */
-#define STRFMT_SEPT  12                 /* stream format: Septentrio */
-#define STRFMT_TERSUS 13                /* stream format: TERSUS */
-#define STRFMT_RINEX 14                 /* stream format: RINEX */
-#define STRFMT_SP3   15                 /* stream format: SP3 */
-#define STRFMT_RNXCLK 16                /* stream format: RINEX CLK */
-#define STRFMT_SBAS  17                 /* stream format: SBAS messages */
-#define STRFMT_NMEA  18                 /* stream format: NMEA 0183 */
-#define MAXRCVFMT    13                 /* max number of receiver format */
+#define STRFMT_RTCM2   0                  /* stream format: RTCM 2 */
+#define STRFMT_RTCM3   1                  /* stream format: RTCM 3 */
+#define STRFMT_OEM4    2                  /* stream format: NovAtel OEMV/4 */
+/* Comnav currently not supported */
+/* #define STRFMT_CNAV    3 */            /* stream format: ComNav */
+#define STRFMT_UBX     4                  /* stream format: u-blox LEA-*T */
+#define STRFMT_SBP     5                  /* stream format: Swift Navigation SBP */
+#define STRFMT_CRES    6                  /* stream format: Hemisphere */
+#define STRFMT_STQ     7                  /* stream format: SkyTraq S1315F */
+#define STRFMT_JAVAD   8                  /* stream format: JAVAD GRIL/GREIS */
+#define STRFMT_NVS     9                  /* stream format: NVS NVC08C */
+#define STRFMT_BINEX   10                 /* stream format: BINEX */
+#define STRFMT_RT17    11                 /* stream format: Trimble RT17 */
+#define STRFMT_SEPT    12                 /* stream format: Septentrio */
+/* Tersus currently not supported */
+/* #define STRFMT_TERSUS   13 */          /* stream format: TERSUS */
+#define STRFMT_UNICORE 14                /* stream format: UNICORE */
+#define STRFMT_RINEX   15                 /* stream format: RINEX */
+#define STRFMT_SP3     16                 /* stream format: SP3 */
+#define STRFMT_RNXCLK  17                /* stream format: RINEX CLK */
+#define STRFMT_SBAS    18                 /* stream format: SBAS messages */
+#define STRFMT_NMEA    19                 /* stream format: NMEA 0183 */
+#define MAXRCVFMT      14                 /* max number of receiver format */
 
 #define STR_MODE_R  0x1                 /* stream mode: read */
 #define STR_MODE_W  0x2                 /* stream mode: write */
@@ -530,6 +545,8 @@ extern "C" {
 #define rtklib_lock(f)     EnterCriticalSection(f)
 #define rtklib_unlock(f)   LeaveCriticalSection(f)
 #define RTKLIB_FILEPATHSEP '\\'
+/* strtok_r not supported in Windows */
+#define strtok_r(str,delim,ptr) strtok(str,delim)
 #else
 #define rtklib_thread_t    pthread_t
 #define rtklib_lock_t      pthread_mutex_t
@@ -555,7 +572,7 @@ typedef struct {        /* observation data record */
     double L[NFREQ+NEXOBS]; /* observation data carrier-phase (cycle) */
     double P[NFREQ+NEXOBS]; /* observation data pseudorange (m) */
     float  D[NFREQ+NEXOBS]; /* observation data doppler frequency (Hz) */
-    
+
     int timevalid;      /* time is valid (Valid GNSS fix) for time mark */
     gtime_t eventime;   /* time of event (GPST) */
     uint8_t Lstd[NFREQ+NEXOBS]; /* stdev of carrier phase (0.004 cycles)  */
@@ -641,7 +658,7 @@ typedef struct {        /* GPS/QZS/GAL broadcast ephemeris type */
 typedef struct {        /* GLONASS broadcast ephemeris type */
     int sat;            /* satellite number */
     int iode;           /* IODE (0-6 bit of tb field) */
-    int frq;            /* satellite frequency number */
+    int frq;            /* Satellite frequency number (-7 to 13) */
     int svh,sva,age;    /* satellite health, accuracy, age of operation */
     gtime_t toe;        /* epoch of ephemerides (gpst) */
     gtime_t tof;        /* message frame time (gpst) */
@@ -848,7 +865,10 @@ typedef struct {        /* navigation data type */
 
 typedef struct {        /* station parameter type */
     char name   [MAXANT]; /* marker name */
-    char marker [MAXANT]; /* marker number */
+    char markerno[MAXANT]; /* marker number */
+    char markertype[MAXANT]; /* marker type */
+    char observer[MAXANT]; /* Observer */
+    char agency[MAXANT];  /* Agency */
     char antdes [MAXANT]; /* antenna descriptor */
     char antsno [MAXANT]; /* antenna serial number */
     char rectype[MAXANT]; /* receiver type descriptor */
@@ -938,13 +958,13 @@ typedef struct {        /* RTCM control struct type */
     uint16_t lock[MAXSAT][NFREQ+NEXOBS]; /* lock time */
     uint16_t loss[MAXSAT][NFREQ+NEXOBS]; /* loss of lock count */
     gtime_t lltime[MAXSAT][NFREQ+NEXOBS]; /* last lock time */
-    int nbyte;          /* number of bytes in message buffer */ 
-    int nbit;           /* number of bits in word buffer */ 
+    int nbyte;          /* number of bytes in message buffer */
+    int nbit;           /* number of bits in word buffer */
     int len;            /* message length (bytes) */
     uint8_t buff[1200]; /* message buffer */
     uint32_t word;      /* word buffer for rtcm 2 */
     uint32_t nmsg2[100]; /* message count of RTCM 2 (1-99:1-99,0:other) */
-    uint32_t nmsg3[400]; /* message count of RTCM 3 (1-299:1001-1299,300-329:4070-4099,0:ohter) */
+    uint32_t nmsg3[400]; /* message count of RTCM 3 (1-299:1001-1299,300-329:4070-4099,0:other) */
     char opt[256];      /* RTCM dependent options */
 } rtcm_t;
 
@@ -954,7 +974,7 @@ typedef struct {        /* RINEX control struct type */
     char   type;        /* RINEX file type ('O','N',...) */
     int    sys;         /* navigation system */
     int    tsys;        /* time system */
-    char   tobs[8][MAXOBSTYPE][4]; /* rinex obs types */
+    char   tobs[RNX_NUMSYS][MAXOBSTYPE][4]; /* rinex obs types */
     obs_t  obs;         /* observation data */
     nav_t  nav;         /* navigation data */
     sta_t  sta;         /* station info */
@@ -1026,10 +1046,10 @@ typedef struct {        /* processing options type */
     double elmaskhold;  /* elevation mask to hold ambiguity (deg) */
     double thresslip;   /* slip threshold of geometry-free phase (m) */
     double thresdop;    /* slip threshold of doppler (m) */
-    double varholdamb;  /* variance for fix-and-hold psuedo measurements (cycle^2) */
+    double varholdamb;  /* variance for fix-and-hold pseudo measurements (cycle^2) */
     double gainholdamb; /* gain used for GLO and SBAS sats to adjust ambiguity */
     double maxtdiff;    /* max difference of time (sec) */
-    double maxinno[2];  /* reject threshold of innovation for code and phase (m) */
+    double maxinno[2];  /* reject threshold of innovation for phase and code (m) */
     double baseline[2]; /* baseline length constraint {const,sigma} (m) */
     double ru[3];       /* rover position for fixed mode {x,y,z} (ecef) (m) */
     double rb[3];       /* base position for relative mode {x,y,z} (ecef) (m) */
@@ -1091,10 +1111,13 @@ typedef struct {        /* RINEX options type */
     double ttol;        /* time tolerance (s) */
     double tunit;       /* time unit for multiple-session (s) */
     int rnxver;         /* RINEX version (x100) */
-    int navsys;         /* navigation system */
+    int navsys;         /* navigation system, SYS_ mask */
     int obstype;        /* observation type */
     int freqtype;       /* frequency type */
-    char mask[7][64];   /* code mask {GPS,GLO,GAL,QZS,SBS,CMP,IRN} */
+    /* The mask allocates room for a nul terminator in the last element to
+     * support access as a string, but it is accessed randomly and must be full
+     * length. */
+    char mask[RNX_NUMSYS][MAXCODE+1]; /* code mask {GPS,GLO,GAL,QZS,SBS,CMP,IRN} */
     char staid [32];    /* station id for rinex file name */
     char prog  [32];    /* program */
     char runby [32];    /* run-by */
@@ -1117,13 +1140,14 @@ typedef struct {        /* RINEX options type */
     int autopos;        /* auto approx position */
     int phshift;        /* phase shift correction */
     int halfcyc;        /* half cycle correction */
+    int sortsats;       /* Sort by satellite index */
     int sep_nav;        /* separated nav files */
     gtime_t tstart;     /* first obs time */
     gtime_t tend;       /* last obs time */
     gtime_t trtcm;      /* approx log start time for rtcm */
-    char tobs[7][MAXOBSTYPE][4]; /* obs types {GPS,GLO,GAL,QZS,SBS,CMP,IRN} */
-    double shift[7][MAXOBSTYPE]; /* phase shift (cyc) {GPS,GLO,GAL,QZS,SBS,CMP,IRN} */
-    int nobs[7];        /* number of obs types {GPS,GLO,GAL,QZS,SBS,CMP,IRN} */
+    char tobs[RNX_NUMSYS][MAXOBSTYPE][4]; /* obs types {GPS,GLO,GAL,QZS,SBS,CMP,IRN} */
+    double shift[RNX_NUMSYS][MAXOBSTYPE]; /* phase shift (cyc) {GPS,GLO,GAL,QZS,SBS,CMP,IRN} */
+    int nobs[RNX_NUMSYS]; /* number of obs types {GPS,GLO,GAL,QZS,SBS,CMP,IRN} */
 } rnxopt_t;
 
 typedef struct {        /* satellite status type */
@@ -1197,7 +1221,7 @@ typedef struct {        /* receiver raw data control type */
     double prCA[MAXSAT],dpCA[MAXSAT]; /* L1/CA pseudorange/doppler for javad */
     uint8_t halfc[MAXSAT][NFREQ+NEXOBS]; /* half-cycle resolved */
     char freqn[MAXOBS]; /* frequency number for javad */
-    int nbyte;          /* number of bytes in message buffer */ 
+    int nbyte;          /* number of bytes in message buffer */
     int len;            /* message length (bytes) */
     int iod;            /* issue of data */
     int tod;            /* time of day (ms) */
@@ -1574,6 +1598,7 @@ EXPORT int outrnxinavh(FILE *fp, const rnxopt_t *opt, const nav_t *nav);
 EXPORT int outrnxnavb (FILE *fp, const rnxopt_t *opt, const eph_t *eph);
 EXPORT int outrnxgnavb(FILE *fp, const rnxopt_t *opt, const geph_t *geph);
 EXPORT int outrnxhnavb(FILE *fp, const rnxopt_t *opt, const seph_t *seph);
+EXPORT int rnxcomment(rnxopt_t *opt, const char *format, ...);
 EXPORT int rtk_uncompress(const char *file, char *uncfile);
 EXPORT int convrnx(int format, rnxopt_t *opt, const char *file, char **ofile);
 EXPORT int  init_rnxctr (rnxctr_t *rnx);
@@ -1606,7 +1631,7 @@ EXPORT void readsp3(const char *file, nav_t *nav, int opt);
 EXPORT int  readsap(const char *file, gtime_t time, nav_t *nav);
 EXPORT int  readdcb(const char *file, nav_t *nav, const sta_t *sta);
 EXPORT int code2bias_ix(const int sys,const int code);
-EXPORT int  readfcb(const char *file, nav_t *nav);
+/*EXPORT int  readfcb(const char *file, nav_t *nav);*/
 EXPORT void alm2pos(gtime_t time, const alm_t *alm, double *rs, double *dts);
 
 EXPORT int tle_read(const char *file, tle_t *tle);
@@ -1624,7 +1649,7 @@ EXPORT uint32_t rtk_crc32 (const uint8_t *buff, int len);
 EXPORT uint32_t rtk_crc24q(const uint8_t *buff, int len);
 EXPORT uint16_t rtk_crc16 (const uint8_t *buff, int len);
 EXPORT int decode_word (uint32_t word, uint8_t *data);
-EXPORT int decode_frame(const uint8_t *buff, eph_t *eph, alm_t *alm,
+EXPORT int decode_frame(const uint8_t *buff, int sys, eph_t *eph, alm_t *alm,
                         double *ion, double *utc);
 EXPORT int test_glostr(const uint8_t *buff);
 EXPORT int decode_glostr(const uint8_t *buff, geph_t *geph, double *utc);
@@ -1644,10 +1669,9 @@ EXPORT int input_raw  (raw_t *raw, int format, uint8_t data);
 EXPORT int input_rawf (raw_t *raw, int format, FILE *fp);
 
 EXPORT int init_rt17  (raw_t *raw);
-EXPORT int init_cmr   (raw_t *raw);
+EXPORT int init_sbf   (raw_t *raw);
 EXPORT void free_rt17 (raw_t *raw);
-EXPORT void free_cmr  (raw_t *raw);
-EXPORT int update_cmr (raw_t *raw, rtksvr_t *svr, obs_t *obs);
+EXPORT void free_sbf  (raw_t *raw);
 
 EXPORT int input_oem4  (raw_t *raw, uint8_t data);
 EXPORT int input_cnav  (raw_t *raw, uint8_t data);
@@ -1661,6 +1685,7 @@ EXPORT int input_bnx   (raw_t *raw, uint8_t data);
 EXPORT int input_rt17  (raw_t *raw, uint8_t data);
 EXPORT int input_sbf   (raw_t *raw, uint8_t data);
 EXPORT int input_tersus(raw_t *raw, uint8_t data);
+EXPORT int input_unicore(raw_t *raw, uint8_t data);
 EXPORT int input_oem4f (raw_t *raw, FILE *fp);
 EXPORT int input_cnavf (raw_t *raw, FILE *fp);
 EXPORT int input_ubxf  (raw_t *raw, FILE *fp);
@@ -1673,6 +1698,7 @@ EXPORT int input_bnxf  (raw_t *raw, FILE *fp);
 EXPORT int input_rt17f (raw_t *raw, FILE *fp);
 EXPORT int input_sbff  (raw_t *raw, FILE *fp);
 EXPORT int input_tersusf(raw_t *raw, FILE *fp);
+EXPORT int input_unicoref(raw_t *raw, FILE *fp);
 
 EXPORT int gen_ubx (const char *msg, uint8_t *buff);
 EXPORT int gen_stq (const char *msg, uint8_t *buff);
@@ -1694,11 +1720,11 @@ EXPORT void freesolbuf(solbuf_t *solbuf);
 EXPORT void freesolstatbuf(solstatbuf_t *solstatbuf);
 EXPORT sol_t *getsol(solbuf_t *solbuf, int index);
 EXPORT int addsol(solbuf_t *solbuf, const sol_t *sol);
-EXPORT int readsol (char *files[], int nfile, solbuf_t *sol);
-EXPORT int readsolt(char *files[], int nfile, gtime_t ts, gtime_t te,
+EXPORT int readsol (const char *files[], int nfile, solbuf_t *sol);
+EXPORT int readsolt(const char *files[], int nfile, gtime_t ts, gtime_t te,
                     double tint, int qflag, solbuf_t *sol);
-EXPORT int readsolstat(char *files[], int nfile, solstatbuf_t *statbuf);
-EXPORT int readsolstatt(char *files[], int nfile, gtime_t ts, gtime_t te,
+EXPORT int readsolstat(const char *files[], int nfile, solstatbuf_t *statbuf);
+EXPORT int readsolstatt(const char *files[], int nfile, gtime_t ts, gtime_t te,
                         double tint, solstatbuf_t *statbuf);
 EXPORT int inputsol(uint8_t data, gtime_t ts, gtime_t te, double tint,
                     int qflag, const solopt_t *opt, solbuf_t *solbuf);
@@ -1799,7 +1825,7 @@ EXPORT void rtkfree(rtk_t *rtk);
 EXPORT int  rtkpos (rtk_t *rtk, const obsd_t *obs, int nobs, const nav_t *nav);
 EXPORT int  rtkopenstat(const char *file, int level);
 EXPORT void rtkclosestat(void);
-EXPORT int  rtkoutstat(rtk_t *rtk, char *buff);
+EXPORT int  rtkoutstat(rtk_t *rtk, int level, char *buff);
 
 /* precise point positioning -------------------------------------------------*/
 EXPORT void pppos(rtk_t *rtk, const obsd_t *obs, int n, const nav_t *nav);
@@ -1812,15 +1838,15 @@ EXPORT int ppp_ar(rtk_t *rtk, const obsd_t *obs, int n, int *exc,
 /* post-processing positioning -----------------------------------------------*/
 EXPORT int postpos(gtime_t ts, gtime_t te, double ti, double tu,
                    const prcopt_t *popt, const solopt_t *sopt,
-                   const filopt_t *fopt, char **infile, int n, char *outfile,
+                   const filopt_t *fopt, const char **infile, int n, const char *outfile,
                    const char *rov, const char *base);
 
 /* stream server functions ---------------------------------------------------*/
 EXPORT void strsvrinit (strsvr_t *svr, int nout);
-EXPORT int  strsvrstart(strsvr_t *svr, int *opts, int *strs, char **paths,
-                        char **logs, strconv_t **conv, char **cmds,
-                        char **cmds_priodic, const double *nmeapos);
-EXPORT void strsvrstop (strsvr_t *svr, char **cmds);
+EXPORT int  strsvrstart(strsvr_t *svr, int *opts, int *strs, const char **paths,
+                        const char **logs, strconv_t **conv, const char **cmds,
+                        const char **cmds_priodic, const double *nmeapos);
+EXPORT void strsvrstop (strsvr_t *svr, const char **cmds);
 EXPORT void strsvrstat (strsvr_t *svr, int *stat, int *log_stat, int *byte,
                         int *bps, char *msg);
 EXPORT strconv_t *strconvnew(int itype, int otype, const char *msgs, int staid,
@@ -1831,11 +1857,11 @@ EXPORT void strconvfree(strconv_t *conv);
 EXPORT int  rtksvrinit  (rtksvr_t *svr);
 EXPORT void rtksvrfree  (rtksvr_t *svr);
 EXPORT int  rtksvrstart (rtksvr_t *svr, int cycle, int buffsize, int *strs,
-                         char **paths, int *formats, int navsel, char **cmds,
-                         char **cmds_periodic, char **rcvopts, int nmeacycle,
+                         const char **paths, int *formats, int navsel, const char **cmds,
+                         const char **cmds_periodic, const char **rcvopts, int nmeacycle,
                          int nmeareq, const double *nmeapos, prcopt_t *prcopt,
                          solopt_t *solopt, stream_t *moni, char *errmsg);
-EXPORT void rtksvrstop  (rtksvr_t *svr, char **cmds);
+EXPORT void rtksvrstop  (rtksvr_t *svr, const char **cmds);
 EXPORT int  rtksvropenstr(rtksvr_t *svr, int index, int str, const char *path,
                           const solopt_t *solopt);
 EXPORT void rtksvrclosestr(rtksvr_t *svr, int index);
@@ -1847,15 +1873,15 @@ EXPORT void rtksvrsstat (rtksvr_t *svr, int *sstat, char *msg);
 EXPORT int  rtksvrmark(rtksvr_t *svr, const char *name, const char *comment);
 
 /* downloader functions ------------------------------------------------------*/
-EXPORT int dl_readurls(const char *file, char **types, int ntype, url_t *urls,
+EXPORT int dl_readurls(const char *file, const char **types, int ntype, url_t *urls,
                        int nmax);
 EXPORT int dl_readstas(const char *file, char **stas, int nmax);
 EXPORT int dl_exec(gtime_t ts, gtime_t te, double ti, int seqnos, int seqnoe,
-                   const url_t *urls, int nurl, char **stas, int nsta,
+                   const url_t *urls, int nurl, const char **stas, int nsta,
                    const char *dir, const char *usr, const char *pwd,
                    const char *proxy, int opts, char *msg, FILE *fp);
 EXPORT void dl_test(gtime_t ts, gtime_t te, double ti, const url_t *urls,
-                    int nurl, char **stas, int nsta, const char *dir,
+                    int nurl, const char **stas, int nsta, const char *dir,
                     int ncol, int datefmt, FILE *fp);
 
 /* GIS data functions --------------------------------------------------------*/

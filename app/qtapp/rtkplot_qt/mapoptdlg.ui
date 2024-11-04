@@ -6,30 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>489</width>
-    <height>197</height>
+    <width>515</width>
+    <height>167</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Map Image</string>
   </property>
-  <property name="toolTip">
-   <string/>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QWidget" name="Panel1" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
+    <widget class="QWidget" name="panelSize" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
        <verstretch>0</verstretch>
       </sizepolicy>
-     </property>
-     <property name="toolTip">
-      <string/>
      </property>
      <property name="text" stdset="0">
       <string/>
@@ -52,33 +43,34 @@
       </property>
       <item>
        <widget class="QLabel" name="Label1">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
         <property name="text">
-         <string>Image Size W/H (pixels)</string>
+         <string>Image Size Width/Height</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBMapSize1</cstring>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="MapSize1"/>
+       <widget class="QSpinBox" name="sBMapSize1">
+        <property name="toolTip">
+         <string>Image width in pixel</string>
+        </property>
+        <property name="suffix">
+         <string> px</string>
+        </property>
+        <property name="maximum">
+         <number>100000</number>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QLabel" name="Label2">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
-        </property>
-        <property name="toolTip">
-         <string/>
         </property>
         <property name="text">
          <string>x</string>
@@ -86,19 +78,23 @@
        </widget>
       </item>
       <item>
-       <widget class="QSpinBox" name="MapSize2"/>
+       <widget class="QSpinBox" name="sBMapSize2">
+        <property name="toolTip">
+         <string>Image height in pixel</string>
+        </property>
+        <property name="suffix">
+         <string> px</string>
+        </property>
+        <property name="maximum">
+         <number>100000</number>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="Panel2" native="true">
-     <property name="enabled">
-      <bool>true</bool>
-     </property>
-     <property name="toolTip">
-      <string/>
-     </property>
+    <widget class="QWidget" name="panelPosition" native="true">
      <property name="text" stdset="0">
       <string/>
      </property>
@@ -120,24 +116,21 @@
       </property>
       <item row="1" column="0" colspan="2">
        <widget class="QLabel" name="Label5">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
         <property name="text">
-         <string>Image Center Lon/Lat (°)</string>
+         <string>Image Center Lon/Lat</string>
+        </property>
+        <property name="buddy">
+         <cstring>sBLongitude</cstring>
         </property>
        </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="Lon">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QDoubleSpinBox" name="sBLongitude">
         <property name="toolTip">
-         <string/>
+         <string>Longitude of map center</string>
+        </property>
+        <property name="suffix">
+         <string>°</string>
         </property>
         <property name="decimals">
          <number>9</number>
@@ -154,12 +147,12 @@
        </widget>
       </item>
       <item row="1" column="3">
-       <widget class="QDoubleSpinBox" name="Lat">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QDoubleSpinBox" name="sBLatitude">
         <property name="toolTip">
-         <string/>
+         <string>Latitutde of map center</string>
+        </property>
+        <property name="suffix">
+         <string>°</string>
         </property>
         <property name="decimals">
          <number>9</number>
@@ -177,65 +170,65 @@
       </item>
       <item row="2" column="0">
        <widget class="QLabel" name="Label6">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
         <property name="text">
-         <string>Scale X/Y (m/pixel)</string>
+         <string>Scale X/Y</string>
+        </property>
+        <property name="buddy">
+         <cstring>cBScaleEqual</cstring>
         </property>
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QCheckBox" name="ScaleEq">
+       <widget class="QCheckBox" name="cBScaleEqual">
         <property name="toolTip">
-         <string/>
+         <string>Same scaling for x- and y-direction</string>
         </property>
         <property name="text">
          <string>X=Y</string>
         </property>
-        <property name="checked">
-         <bool>false</bool>
-        </property>
        </widget>
       </item>
       <item row="2" column="2">
-       <widget class="QDoubleSpinBox" name="ScaleX">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QDoubleSpinBox" name="sBScaleX">
         <property name="toolTip">
-         <string/>
+         <string>Scaling factor in x-direction in meter per pixel</string>
+        </property>
+        <property name="suffix">
+         <string> m/px</string>
         </property>
         <property name="decimals">
-         <number>4</number>
+         <number>5</number>
         </property>
         <property name="maximum">
-         <double>1.000000000000000</double>
+         <double>1000.000000000000000</double>
         </property>
         <property name="singleStep">
          <double>0.000100000000000</double>
+        </property>
+        <property name="value">
+         <double>0.100000000000000</double>
         </property>
        </widget>
       </item>
       <item row="2" column="3">
-       <widget class="QDoubleSpinBox" name="ScaleY">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QDoubleSpinBox" name="sBScaleY">
         <property name="toolTip">
-         <string/>
+         <string>Scaling factor in y-direction in meter per pixel</string>
+        </property>
+        <property name="suffix">
+         <string> m/px</string>
         </property>
         <property name="decimals">
-         <number>4</number>
+         <number>5</number>
         </property>
         <property name="maximum">
-         <double>8.000000000000000</double>
+         <double>1000.000000000000000</double>
         </property>
         <property name="singleStep">
          <double>0.000100000000000</double>
+        </property>
+        <property name="value">
+         <double>0.100000000000000</double>
         </property>
        </widget>
       </item>
@@ -243,7 +236,7 @@
     </widget>
    </item>
    <item>
-    <widget class="QWidget" name="widget" native="true">
+    <widget class="QWidget" name="panelButtons" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -264,12 +257,9 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QPushButton" name="BtnSave">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnSaveTag">
         <property name="toolTip">
-         <string/>
+         <string>Save map image tag</string>
         </property>
         <property name="text">
          <string>&amp;Save Tag</string>
@@ -277,12 +267,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnCenter">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnCenter">
         <property name="toolTip">
-         <string/>
+         <string>Use current map center</string>
         </property>
         <property name="text">
          <string>&amp;Center</string>
@@ -290,12 +277,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnUpdate">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
+       <widget class="QPushButton" name="btnUpdate">
         <property name="toolTip">
-         <string/>
+         <string>Update display</string>
         </property>
         <property name="text">
          <string>&amp;Update</string>
@@ -303,21 +287,9 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="BtnClose">
-        <property name="enabled">
-         <bool>true</bool>
-        </property>
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="text">
-         <string>&amp;Close</string>
-        </property>
-        <property name="autoDefault">
-         <bool>true</bool>
-        </property>
-        <property name="default">
-         <bool>true</bool>
+       <widget class="QDialogButtonBox" name="buttonBox">
+        <property name="standardButtons">
+         <set>QDialogButtonBox::StandardButton::Close</set>
         </property>
        </widget>
       </item>
