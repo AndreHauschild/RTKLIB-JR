@@ -43,7 +43,8 @@ static void dumpnav(nav_t *nav)
 static void dumpsta(sta_t *sta)
 {
     printf("name    = %s\n",sta->name);
-    printf("marker  = %s\n",sta->marker);
+    printf("marker  = %s\n",sta->markerno);
+    printf("marker  = %s\n",sta->markertype);
     printf("antdes  = %s\n",sta->antdes);
     printf("antsno  = %s\n",sta->antsno);
     printf("rectype = %s\n",sta->rectype);
