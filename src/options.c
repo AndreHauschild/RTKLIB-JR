@@ -88,7 +88,7 @@ EXPORT opt_t sysopts[]={
     {"pos1-posopt6",    3,  (void *)&prcopt_.posopt[5],  SWTOPT },
     {"pos1-exclsats",   2,  (void *)exsats_,             "prn ..."},
     {"pos1-navsys",     0,  (void *)&prcopt_.navsys,     NAVOPT },
-
+    
     {"pos2-armode",     3,  (void *)&prcopt_.modear,     ARMOPT },
     {"pos2-gloarmode",  3,  (void *)&prcopt_.glomodear,  GAROPT },
     {"pos2-bdsarmode",  3,  (void *)&prcopt_.bdsmodear,  SWTOPT },
@@ -120,7 +120,7 @@ EXPORT opt_t sysopts[]={
     {"pos2-niter",      0,  (void *)&prcopt_.niter,      ""     },
     {"pos2-baselen",    1,  (void *)&prcopt_.baseline[0],"m"    },
     {"pos2-basesig",    1,  (void *)&prcopt_.baseline[1],"m"    },
-
+    
     {"out-solformat",   3,  (void *)&solopt_.posf,       SOLOPT },
     {"out-outhead",     3,  (void *)&solopt_.outhead,    SWTOPT },
     {"out-outopt",      3,  (void *)&solopt_.outopt,     SWTOPT },
@@ -158,6 +158,7 @@ EXPORT opt_t sysopts[]={
     {"stats-prntrop",   1,  (void *)&prcopt_.prn[2],     "m"    },
     {"stats-prnpos",    1,  (void *)&prcopt_.prn[5],     "m"    },
     {"stats-clkstab",   1,  (void *)&prcopt_.sclkstab,   "s/s"  },
+    
     {"ant1-postype",    3,  (void *)&prcopt_.rovpos,     POSOPT },
     {"ant1-pos1",       1,  (void *)&antpos_[0][0],      "deg|m"},
     {"ant1-pos2",       1,  (void *)&antpos_[0][1],      "deg|m"},
@@ -166,6 +167,7 @@ EXPORT opt_t sysopts[]={
     {"ant1-antdele",    1,  (void *)&prcopt_.antdel[0][0],"m"   },
     {"ant1-antdeln",    1,  (void *)&prcopt_.antdel[0][1],"m"   },
     {"ant1-antdelu",    1,  (void *)&prcopt_.antdel[0][2],"m"   },
+    
     {"ant2-postype",    3,  (void *)&prcopt_.refpos,     POSOPT },
     {"ant2-pos1",       1,  (void *)&antpos_[1][0],      "deg|m"},
     {"ant2-pos2",       1,  (void *)&antpos_[1][1],      "deg|m"},
@@ -176,13 +178,13 @@ EXPORT opt_t sysopts[]={
     {"ant2-antdelu",    1,  (void *)&prcopt_.antdel[1][2],"m"   },
     {"ant2-maxaveep",   0,  (void *)&prcopt_.maxaveep    ,""    },
     {"ant2-initrst",    3,  (void *)&prcopt_.initrst,    SWTOPT },
-
+    
     {"misc-timeinterp", 3,  (void *)&prcopt_.intpref,    SWTOPT },
     {"misc-sbasatsel",  0,  (void *)&prcopt_.sbassatsel, "0:all"},
     {"misc-rnxopt1",    2,  (void *)prcopt_.rnxopt[0],   ""     },
     {"misc-rnxopt2",    2,  (void *)prcopt_.rnxopt[1],   ""     },
     {"misc-pppopt",     2,  (void *)prcopt_.pppopt,      ""     },
-
+    
     {"file-satantfile", 2,  (void *)&filopt_.satantp,    ""     },
     {"file-rcvantfile", 2,  (void *)&filopt_.rcvantp,    ""     },
     {"file-staposfile", 2,  (void *)&filopt_.stapos,     ""     },
@@ -195,7 +197,7 @@ EXPORT opt_t sysopts[]={
     {"file-geexefile",  2,  (void *)&filopt_.geexe,      ""     },
     {"file-solstatfile",2,  (void *)&filopt_.solstat,    ""     },
     {"file-tracefile",  2,  (void *)&filopt_.trace,      ""     },
-
+    
     {"",0,NULL,""} /* terminator */
 };
 /* discard space characters at tail ------------------------------------------*/
