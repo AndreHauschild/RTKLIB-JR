@@ -53,6 +53,9 @@
 #include <QtGlobal>
 #include <QFileInfo>
 #include <QWidgetAction>
+#include <QToolTip>
+#include <QListWidget>
+#include <QMessageBox>
 
 #include <QFileInfo>
 #include <QCommandLineParser>
@@ -168,7 +171,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent), ui(new Ui::Plot)
 
     for (int i = 0; i < 3; i++) {
         graphTriple[i] = new Graph(ui->lblDisplay);
-        graphTriple[i]->xLabelPosition = Graph::LabelPosition::On;
+        graphTriple[i]->xLabelPosition = Graph::LabelPosition::Off;
         graphTriple[i]->getLimits(xl, yl);
         graphTriple[i]->setLimits(xs, yl);
     }
@@ -216,7 +219,7 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent), ui(new Ui::Plot)
     skyImgDialog = new SkyImgDialog(this);
     plotOptDialog = new PlotOptDialog(this);
     aboutDialog = new AboutDialog(this, QPixmap(":/icons/rtkplot"), PRGNAME);
-    waypointDialog = new PntDialog(this);
+    waypointsDialog = new PntDialog(this);
     fileSelDialog = new FileSelDialog(this, this);
     viewer = new TextViewer(this);
 
@@ -238,10 +241,29 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent), ui(new Ui::Plot)
     ui->menuShowSkyplot->setChecked(true);
     ui->menuShowGrid->setChecked(true);
 
-    QWidgetAction* popupAction = new QWidgetAction(this);
-    popupAction->setDefaultWidget(ui->lWRangeList);
+    rangeListPopupAction = new QWidgetAction(ui->btnRangeList);
+    lWRangeList = new QListWidget();
+    float rangeValue[] = {0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10};
+    for (int i = 0; i < (int)(sizeof(rangeValue)/sizeof(float)); i++) {
+        float value = rangeValue[i];
+        QString unit;
+
+        if (fmod(value, 1000) == 0) {
+            unit = "km";
+            value /= 1000;
+        } else if ((fmod(value*100, 1) == 0) && (value < 1)) {
+            unit = "cm";
+            value *= 100;
+        } else unit = "m";
+
+        QListWidgetItem *item = new QListWidgetItem();
+        item->setText(QString("%L1 %L2").arg(value).arg(unit));
+        item->setData(Qt::UserRole+1, rangeValue[i]);
+        lWRangeList->addItem(item);
+    }
+    rangeListPopupAction->setDefaultWidget(lWRangeList);
     ui->btnRangeList->setPopupMode(QToolButton::InstantPopup);
-    ui->btnRangeList->addAction(popupAction);
+    ui->btnRangeList->addAction(rangeListPopupAction);
 
     dirModel = new QFileSystemModel(this);
     dirModel->setFilter(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -314,12 +336,12 @@ Plot::Plot(QWidget *parent) : QMainWindow(parent), ui(new Ui::Plot)
     connect(ui->menuTime, &QAction::triggered, this, &Plot::showStartEndTimeDialog);
     connect(ui->menuToolBar, &QAction::triggered, this, &Plot::updateToolBarVisibility);
     connect(ui->menuVisibilityAnalysis, &QAction::triggered, this, &Plot::visibilityAnalysis);
-    connect(ui->menuWaypoint, &QAction::triggered, this, &Plot::showWaypointDialog);
+    connect(ui->menuWaypoints, &QAction::triggered, this, &Plot::showWaypointsDialog);
     connect(ui->menuMapLayer, &QAction::triggered, this, &Plot::showVectorMapDialog);
-    connect(ui->menuOpenWaypoint, &QAction::triggered, this, &Plot::openWaypointFile);
-    connect(ui->menuSaveWaypoint, &QAction::triggered, this, &Plot::saveWaypointFile);
+    connect(ui->menuOpenWaypoints, &QAction::triggered, this, &Plot::openWaypointsFile);
+    connect(ui->menuSaveWaypoints, &QAction::triggered, this, &Plot::saveWaypointsFile);
     connect(ui->btnPointCoordinateType, &QPushButton::clicked, this, &Plot::changePointCoordinateType);
-    connect(ui->lWRangeList, &QListWidget::clicked, this, &Plot::rangeListItemSelected);
+    connect(lWRangeList, &QListWidget::clicked, this, &Plot::rangeListItemSelected);
     connect(&timer, &QTimer::timeout, this, &Plot::timerTimer);
     connect(ui->cBPlotTypeSelection, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updateSelectedPlotType);
     connect(ui->cBQFlag, static_cast<void (QComboBox::*)(int)>(&QComboBox::currentIndexChanged), this, &Plot::updatePlotAndEnable);
@@ -372,22 +394,25 @@ Plot::~Plot()
     for (int i = 0; i < 3; i++)
         delete graphTriple[i];
 
-    delete ui->lWRangeList;
+    delete lWRangeList;
 
     delete tVdirectorySelector;
 }
 // callback on all events ----------------------------------------------------
 bool Plot::eventFilter(QObject *obj, QEvent *event)
 {
-    if (obj == ui->lblDisplay) {
-        if (event->type() == QEvent::MouseMove)
-        {
+    if (event->type() == QEvent::MouseMove)
+    {
+        if (obj == ui->lblDisplay) {
             QMouseEvent *mouseEvent = static_cast<QMouseEvent*>(event);
             mouseMove(mouseEvent);
             return true;
-        }
-        if (event->type() == QEvent::Resize)
-        {
+        } else
+            ui->lblMessage2->setText("");
+    }
+    if (event->type() == QEvent::Resize)
+    {
+        if (obj == ui->lblDisplay) {
             updatePlotSizes();
             refresh();
             return true;
@@ -523,14 +548,14 @@ void Plot::showEvent(QShowEvent *event)
 
     QFileInfoList drives = QDir::drives();
     if (drives.size() > 1 && drives.at(0).filePath() != "/") {
-        ui->toolPanel->setVisible(true);
+        ui->panelDrive->setVisible(true);
         ui->cBDriveSelect->clear();
 
         foreach(const QFileInfo &drive, drives) {
             ui->cBDriveSelect->addItem(drive.filePath());
         }
     } else {
-        ui->toolPanel->setVisible(false); // do not show drive selection on unix
+        ui->panelDrive->setVisible(false); // do not show drive selection on unix
     }
     if (directory.isEmpty()) directory = drives.at(0).filePath();
 
@@ -571,7 +596,7 @@ void Plot::closeEvent(QCloseEvent *)
 {
     trace(3, "closeEvent\n");
 
-    ui->lWRangeList->setVisible(false);
+    lWRangeList->hide();
 
     saveOption();
 
@@ -590,9 +615,6 @@ void Plot::resizeEvent(QResizeEvent *)
 
     // suppress repeated resize callback
     if (formWidth == width() && formHeight == height()) return;
-
-    updatePlotSizes();
-    refresh();
 
     formWidth = width();
     formHeight = height();
@@ -679,24 +701,24 @@ void Plot::openSkyImage()
     readSkyData(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Sky Image"), skyImageFile, tr("JPEG File (*.jpg *.jpeg);;All (*.*)"))));
 }
 // callback on menu-oepn-waypoint -------------------------------------------
-void Plot::openWaypointFile()
+void Plot::openWaypointsFile()
 {
     trace(3, "openWaypointFile\n");
 
-    readWaypoint(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Waypoint"), QString(), tr("Waypoint File (*.gpx, *.pos);;All (*.*)"))));
+    readWaypoints(QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Open Waypoints"), QString(), tr("Waypoints File (*.gpx *.pos);;All (*.*)"))));
 }
 // callback on menu-open-obs-data -------------------------------------------
 void Plot::openObservationFile()
 {
     trace(3, "openObservationFile\n");
-    readObservation(QFileDialog::getOpenFileNames(this, tr("Open Obs/Nav Data"), observationFiles.value(0), tr("RINEX OBS (*.obs *.*o *.*d *.O.rnx *.*o.gz *.*o.Z *.d.gz *.d.Z);;All (*.*)")));
+    readObservation(QFileDialog::getOpenFileNames(this, tr("Open Obs/Nav Data"), observationFiles.value(0), tr("RINEX OBS (*.obs *.*o *.*O *.*d *.O.rnx *O.rnx *O.rnx.gz *O.crx *O.crx.gz *.*o.gz *.*o.Z *.d.gz *.d.Z);;All (*.*)")));
 }
 // callback on menu-open-nav-data -------------------------------------------
 void Plot::openNavigationFile()
 {
     trace(3, "openNavigationFile\n");
 
-    readNavigation(QFileDialog::getOpenFileNames(this, tr("Open Raw Obs/Nav Messages"), navigationFiles.value(0), tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p *N.rnx);;All (*.*)")));
+    readNavigation(QFileDialog::getOpenFileNames(this, tr("Open Raw Obs/Nav Messages"), navigationFiles.value(0), tr("RINEX NAV (*.nav *.gnav *.hnav *.qnav *.*n *.*g *.*h *.*q *.*p *N.rnx *N.rnx.gz);;All (*.*)")));
 }
 // callback on menu-open-elev-mask ------------------------------------------
 void Plot::openElevationMaskFile()
@@ -709,15 +731,24 @@ void Plot::openElevationMaskFile()
 void Plot::visibilityAnalysis()
 {
     if (plotOptDialog->getReceiverPosition() != 1) { // lat/lon/height
-        showMessage(tr("Specify receiver position as lat/lon/height"));
+        QMessageBox::information(this, tr("Visibility analysis failed."),
+                                 tr("Please set \"Receiver Position\" to \"Lat/Lon/Height\" in the option dialog and provide its coordinates."));
         return;
     }
+    if (plotOptDialog->getTleFile().isEmpty() || plotOptDialog->getTleSatelliteFile().isEmpty()) {
+        QMessageBox::information(this, tr("Visibility analysis failed."),
+                                 tr("Please specify TLE data in the option dialog."));
+        return;
+    }
+
     if (spanDialog->getStartTime().time == 0) {
         int week;
+        gtime_t now;
         double tow = time2gpst(utc2gpst(timeget()), &week);
 
-        spanDialog->setStartTime(gpst2time(week, floor(tow / 3600.0) * 3600.0));
-        spanDialog->setEndTime(timeadd(spanDialog->getStartTime(), 86400.0));
+        now = gpst2time(week, floor(tow / 3600.0) * 3600.0);
+        spanDialog->setStartTime(now);
+        spanDialog->setEndTime(timeadd(now, 86400.0));
         spanDialog->setTimeInterval(30.0);
     }
     for (int i = 0; i < 3; i++) {
@@ -743,11 +774,11 @@ void Plot::savePlotImage()
     buffer.save(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Image"), QString(), tr("JPEG  (*.jpg);;Windows Bitmap (*.bmp)"))));
 }
 // callback on menu-save-waypoint -------------------------------------------
-void Plot::saveWaypointFile()
+void Plot::saveWaypointsFile()
 {
-    trace(3, "saveWaypointFile\n");
+    trace(3, "saveWaypointsFile\n");
 
-    saveWaypoint(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Waypoint"), QString(), tr("GPX File (*.gpx, *.pos);;All (*.*)"))));
+    saveWaypoints(QDir::toNativeSeparators(QFileDialog::getSaveFileName(this, tr("Save Waypoints"), QString(), tr("GPX File (*.gpx *.pos);;All (*.*)"))));
 }
 // callback on menu-save-# of sats/dop --------------------------------------
 void Plot::saveDopFile()
@@ -850,14 +881,14 @@ void Plot::showStartEndTimeDialog()
             timeEnd = sole->time;
         }
     }
-    for (i = 0; i < 3; i++)
-        spanDialog->setTimeEnable(i, timeEnabled[i]);
 
     spanDialog->setStartTime(timeStart);
     spanDialog->setEndTime(timeEnd);
     spanDialog->setTimeInterval(timeInterval);
     spanDialog->setTimeValid(0, !connectState);
     spanDialog->setTimeValid(1, !connectState);
+    for (i = 0; i < 3; i++)
+        spanDialog->setTimeEnable(i, timeEnabled[i]);
 
     spanDialog->exec();
     if (spanDialog->result() != QDialog::Accepted) return;
@@ -899,6 +930,8 @@ void Plot::showVectorMapDialog()
     trace(3, "showVectorMapDialog\n");
 
     vecMapDialog->exec();
+
+    refresh();
 }
 // callback on menu-solution-source -----------------------------------------
 void Plot::showSolutionText()
@@ -992,23 +1025,13 @@ void Plot::showPlotOptionsDialog()
     timer.start(plotOptDialog->getRefreshCycle());
 
     // select correct y range
-    for (int i = 0; i < ui->lWRangeList->count(); i++) {
-        QString str = ui->lWRangeList->item(i)->text();
-        double range;
-        QString unit;
-
-        QStringList tokens = str.split(' ', Qt::SkipEmptyParts);
-        if (tokens.length() == 2) {
-            bool ok;
-            range = tokens.at(0).toInt(&ok);
-            unit = tokens.at(1);
-            if (ok) {
-                if (unit == "cm") range *= 0.01;
-                else if (unit == "km") range *= 1000.0;
-                if (range == plotOptDialog->getYRange()) {
-                    ui->lWRangeList->item(i)->setSelected(true);
-                    break;
-                }
+    for (int i = 0; i < lWRangeList->count(); i++) {
+        bool ok;
+        double range = lWRangeList->item(i)->data(Qt::UserRole+1).toDouble(&ok);
+        if (ok) {
+            if (fabs(range - plotOptDialog->getYRange()) < 0.0001) {
+                lWRangeList->item(i)->setSelected(true);
+                break;
             }
         }
     }
@@ -1051,11 +1074,11 @@ void Plot::updateBrowseBarVisibility()
     refresh();
 }
 // callback on menu-waypoints -----------------------------------------------
-void Plot::showWaypointDialog()
+void Plot::showWaypointsDialog()
 {
-    trace(3, "showWaypointDialog\n");
+    trace(3, "showWaypointsDialog\n");
 
-    waypointDialog->show();
+    waypointsDialog->show();
 }
 // callback on menu-input-monitor-1 -----------------------------------------
 void Plot::showMonitorConsole1()
@@ -1226,6 +1249,11 @@ void Plot::activateSolution1()
 {
     trace(3, "activateSolution1\n");
 
+    if (solutionData[0].n <= 0 && observation.n < 0) {
+        ui->btnSolution1->setChecked(false);
+        return;
+    }
+
     ui->btnSolution12->setChecked(false);
 
     updateTime();
@@ -1236,6 +1264,11 @@ void Plot::activateSolution1()
 void Plot::activateSolution2()
 {
     trace(3, "activateSolution2\n");
+
+    if (solutionData[1].n <= 0) {
+        ui->btnSolution2->setChecked(false);
+        return;
+    }
 
     ui->btnSolution12->setChecked(false);
 
@@ -1266,23 +1299,15 @@ void Plot::updatePlotSizeAndRefresh()
 // --------------------------------------------------------------------------
 double Plot::getYRange()
 {
-    QString unit;
     bool okay;
     QListWidgetItem *i;
     double defaultYRange = 5;
 
-    if ((i = ui->lWRangeList->currentItem()) == NULL) return defaultYRange;
+    if ((i = lWRangeList->currentItem()) == NULL) return defaultYRange;
 
-    QStringList tokens = i->text().split(" ", Qt::SkipEmptyParts);
+    float yRange = i->data(Qt::UserRole+1).toDouble(&okay);
 
-    if (tokens.length() != 2) return defaultYRange;
-
-    double yRange = tokens.at(0).toDouble(&okay);
     if (!okay) return defaultYRange;
-
-    unit = tokens.at(1);
-    if (unit == "cm") yRange *= 0.01;
-    else if (unit == "km") yRange *= 1000.0;
 
     return yRange;
 }
@@ -1290,10 +1315,10 @@ double Plot::getYRange()
 // callback on button-range-list --------------------------------------------
 void Plot::rangeListItemSelected()
 {
-
     trace(3, "rangeListItemSelected\n");
 
-    ui->lWRangeList->setVisible(false);
+    lWRangeList->close();
+    rangeListPopupAction->toggle();
 
     setRange(0, getYRange());
     updatePlot();
@@ -1311,8 +1336,8 @@ void Plot::updateSelectedPlotType()
 
     trace(3, "updateSelectedPlotType\n");
 
-    for (i = 0; !PTypes[i].isEmpty(); i++)
-        if (ui->cBPlotTypeSelection->currentText() == PTypes[i]) updatePlotType(i);
+    i = ui->cBPlotTypeSelection->currentData().toInt();
+    updatePlotType(i);
 
     updateTime();
     updatePlot();
@@ -1352,11 +1377,11 @@ void Plot::updateCurrentObsSol()
 void Plot::mousePressEvent(QMouseEvent *event)
 {
 #if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
-    dragStartX = mapFromGlobal(event->globalPosition()).x();
-    dragStartY = mapFromGlobal(event->globalPosition()).y();
+    dragStartX = ui->lblDisplay->mapFromGlobal(event->globalPosition()).x();
+    dragStartY = ui->lblDisplay->mapFromGlobal(event->globalPosition()).y();
 #else
-    dragStartX = mapFromGlobal(event->globalPos()).x();
-    dragStartY = mapFromGlobal(event->globalPos()).y();
+    dragStartX = ui->lblDisplay->mapFromGlobal(event->globalPos()).x();
+    dragStartY = ui->lblDisplay->mapFromGlobal(event->globalPos()).y();
 #endif
     dragCentX = centX;
 
@@ -1372,8 +1397,6 @@ void Plot::mousePressEvent(QMouseEvent *event)
         mouseDownObservation(dragStartX, dragStartY);
     else
         dragState = 0;
-
-    ui->lWRangeList->setVisible(false);
 }
 // callback on mouse-move event ---------------------------------------------
 void Plot::mouseMove(QMouseEvent *event)
@@ -1381,17 +1404,17 @@ void Plot::mouseMove(QMouseEvent *event)
     double dx, dy, dxs, dys;
 
 #if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
-    if ((abs(mapFromGlobal(event->globalPosition()).x() - dragCurrentX) < 1) &&
-        (abs(mapFromGlobal(event->globalPosition()).y() - dragCurrentY) < 1)) return;
+    if ((abs(ui->lblDisplay->mapFromGlobal(event->globalPosition()).x() - dragCurrentX) < 1) &&
+        (abs(ui->lblDisplay->mapFromGlobal(event->globalPosition()).y() - dragCurrentY) < 1)) return;
 
-    dragCurrentX = mapFromGlobal(event->globalPosition()).x();
-    dragCurrentY = mapFromGlobal(event->globalPosition()).y();
+    dragCurrentX = ui->lblDisplay->mapFromGlobal(event->globalPosition()).x();
+    dragCurrentY = ui->lblDisplay->mapFromGlobal(event->globalPosition()).y();
 #else
-    if ((abs(mapFromGlobal(event->globalPos()).x() - dragCurrentX) < 1) &&
-        (abs(mapFromGlobal(event->globalPos()).y() - dragCurrentY) < 1)) return;
+    if ((abs(ui->lblDisplay->mapFromGlobal(event->globalPos()).x() - dragCurrentX) < 1) &&
+        (abs(ui->lblDisplay->mapFromGlobal(event->globalPos()).y() - dragCurrentY) < 1)) return;
 
-    dragCurrentX = mapFromGlobal(event->globalPos()).x();
-    dragCurrentY = mapFromGlobal(event->globalPos()).y();
+    dragCurrentX = ui->lblDisplay->mapFromGlobal(event->globalPos()).x();
+    dragCurrentY = ui->lblDisplay->mapFromGlobal(event->globalPos()).y();
 #endif
     trace(4, "mouseMove: X=%d Y=%d\n", dragCurrentX, dragCurrentY);
 
@@ -1416,9 +1439,11 @@ void Plot::mouseMove(QMouseEvent *event)
 void Plot::mouseReleaseEvent(QMouseEvent *event)
 {
 #if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
-    trace(3, "mouseReleaseEvent: X=%d Y=%d\n", mapFromGlobal(event->globalPosition()).x(), mapFromGlobal(event->globalPosition()).y());
+    trace(3, "mouseReleaseEvent: X=%d Y=%d\n", ui->lblDisplay->mapFromGlobal(event->globalPosition()).x(),
+          ui->lblDisplay->mapFromGlobal(event->globalPosition()).y());
 #else
-    trace(3, "mouseReleaseEvent: X=%d Y=%d\n", mapFromGlobal(event->globalPos()).x(), mapFromGlobal(event->globalPos()).y());
+    trace(3, "mouseReleaseEvent: X=%d Y=%d\n", ui->lblDisplay->mapFromGlobal(event->globalPos()).x(),
+          ui->lblDisplay->mapFromGlobal(event->globalPos()).y());
 #endif
     if (dragState == 0) return;
     dragState = 0;
@@ -1527,7 +1552,7 @@ void Plot::mouseDownSolution(int x, int y)
 
         graphTriple[i]->getCenter(dragCenterX, dragCenterY);
         graphTriple[i]->getScale(dragScaleX, dragScaleY);
-        area = graphTriple[i]->onAxis(mapFromGlobal(p));
+        area = graphTriple[i]->onAxis(p);
 
         if (dragState == 1 && area == 0) { // within plot
             setCursor(Qt::SizeAllCursor);
@@ -1572,7 +1597,7 @@ void Plot::mouseDownObservation(int x, int y)
     }
     graphSingle->getCenter(dragCenterX, dragCenterY);
     graphSingle->getScale(dragScaleX, dragScaleY);
-    area = graphSingle->onAxis(mapFromGlobal(p));
+    area = graphSingle->onAxis(p);
 
     if (area == 0 || area == 8) {  // within or below plot
         setCursor(dragState == 1 ? Qt::SizeHorCursor : Qt::SplitHCursor);
@@ -1606,7 +1631,7 @@ void Plot::mouseMoveTrack(int x, int y, double dx, double dy,
 void Plot::mouseMoveSolution(int x, int y, double dx, double dy,
                             double dxs, double dys)
 {
-    QPoint p1, p2, p = mapFromGlobal(QPoint(x, y));
+    QPoint p1, p2, p = QPoint(x, y);
     double cx, cy, xs, ys;
     int i, sel = !ui->btnSolution1->isChecked() && ui->btnSolution2->isChecked() ? 1 : 0;
 
@@ -1666,7 +1691,7 @@ void Plot::mouseMoveSolution(int x, int y, double dx, double dy,
 void Plot::mouseMoveObservation(int x, int y, double dx, double dy,
             double dxs, double dys)
 {
-    QPoint p1, p2, p = mapFromGlobal(QPoint(x, y));
+    QPoint p1, p2, p = QPoint(x, y);
     double cx, cy, xs, ys;
     int i;
 
@@ -1708,15 +1733,21 @@ void Plot::mouseMoveObservation(int x, int y, double dx, double dy,
 // callback on mouse-wheel events -------------------------------------------
 void Plot::wheelEvent(QWheelEvent *event)
 {
-    QPoint p(dragCurrentX, dragCurrentY);
+    QPoint p;
     double xs, ys, ds = pow(2.0, -event->angleDelta().y() / 1200.0);
     int panel, area = -1;
 
     event->accept();
 
+#if QT_VERSION > QT_VERSION_CHECK(6, 0, 0)
+    p = ui->lblDisplay->mapFromGlobal(event->globalPosition()).toPoint();
+#else
+    p = ui->lblDisplay->mapFromGlobal(event->globalPosition().toPoint());
+#endif
+
     trace(4, "wheelEvent: WheelDelta=%d\n", event->angleDelta().y());
 
-    if (dragCurrentX < 0 || dragCurrentY < 0) return;
+    if (p.x() < 0 || p.y() < 0) return;
 
     if (plotType == PLOT_TRK) { // track-plot
         graphTrack->getScale(xs, ys);
@@ -1726,14 +1757,12 @@ void Plot::wheelEvent(QWheelEvent *event)
             if (plotType == PLOT_SNR && panel != 1) continue;
 
             area = graphTriple[panel]->onAxis(p);
-            if (area == 0 || area == 1 || area == 2) {
+            if (area == 0 || area == 1 || area == 2) {  // center, left or right of point p
                 graphTriple[panel]->getScale(xs, ys);
                 graphTriple[panel]->setScale(xs, ys * ds);
-            } else if (area == 0) {
-                break;  // FIXME: this branch is never reached
             }
         }
-        if (area == 8) {
+        if (area == 8) {  // below point p
             for (panel = 0; panel < 3; panel++) {
                 graphTriple[panel]->getScale(xs, ys);
                 graphTriple[panel]->setScale(xs * ds, ys);
@@ -1742,7 +1771,7 @@ void Plot::wheelEvent(QWheelEvent *event)
         }
     } else if (plotType == PLOT_OBS || plotType == PLOT_DOP) {
         area = graphSingle->onAxis(p);
-        if (area == 0 || area == 8) {
+        if (area == 0 || area == 8) {  // center or below
             graphSingle->getScale(xs, ys);
             graphSingle->setScale(xs * ds, ys);
             setScaleX(xs * ds);
@@ -2031,7 +2060,7 @@ void Plot::updatePlotSizes()
 {
     QPushButton *btn[] = {ui->btnOn1, ui->btnOn2, ui->btnOn3};
     QPoint p1(0, 0), p2(ui->lblDisplay->width(), ui->lblDisplay->height());
-    double xs, ys, font_px = QFontMetrics(ui->lblDisplay->font()).height()*1.33;
+    double xs, ys, font_px = plotOptDialog->getFont().pointSize()*1.33;
     int i, numPanels, h, tmargin, bmargin, rmargin, lmargin;
 
     trace(3, "updatePlotSizes\n");
@@ -2039,7 +2068,7 @@ void Plot::updatePlotSizes()
     tmargin = (int)(font_px * 0.9); // top margin (px)
     bmargin = (int)(font_px * 1.8); // bottom
     rmargin = (int)(font_px * 1.2); // right
-    lmargin = (int)(font_px * 3.6); // left
+    lmargin = (int)(font_px * 4.6); // left
 
     graphTrack->setPosition(p1, p2);
 
@@ -2054,7 +2083,6 @@ void Plot::updatePlotSizes()
     p2.ry() -= bmargin;
     graphSingle->setPosition(p1, p2);
 
-    p1.setX(p1.x() + (int)(font_px * 1.2));
     p1.setY(tmargin);
     p2.setY(p1.y());
 
@@ -2069,7 +2097,6 @@ void Plot::updatePlotSizes()
     }
 
     // dual panel
-    p1.rx() += (int)(font_px*1.2);
     p1.setY(tmargin);
     p2.setY(p1.y());
     for (i = numPanels = 0; i < 2; i++) if (btn[i]->isChecked()) numPanels++;
@@ -2330,7 +2357,8 @@ void Plot::updateEnable()
     ui->btnCenterOrigin->setVisible(plotType == PLOT_TRK || plotType == PLOT_SOLP ||
                                     plotType == PLOT_SOLV || plotType == PLOT_SOLA ||
                                     plotType == PLOT_NSAT);
-    ui->menuCenterOrigin->setEnabled(plotType != PLOT_NSAT);
+    ui->btnCenterOrigin->setEnabled(plotType != PLOT_NSAT);
+    ui->menuCenterOrigin->setEnabled(ui->btnCenterOrigin->isVisible() && ui->btnCenterOrigin->isEnabled());
 
     // fit actions
     ui->btnFitHorizontal->setVisible(plotType == PLOT_SOLP || plotType == PLOT_SOLV ||
@@ -2340,8 +2368,10 @@ void Plot::updateEnable()
                                      plotType == PLOT_SNRE);
     ui->btnFitVertical->setVisible(plotType == PLOT_TRK || plotType == PLOT_SOLP ||
                                    plotType == PLOT_SOLV || plotType == PLOT_SOLA);
-    ui->menuFitHoriz->setEnabled(data && ui->btnFitHorizontal->isVisible());
-    ui->menuFitVert->setEnabled(data && ui->btnFitVertical->isVisible());
+    ui->btnFitHorizontal->setEnabled(data && ui->btnFitHorizontal->isVisible());
+    ui->menuFitHoriz->setEnabled(ui->btnFitHorizontal->isEnabled());
+    ui->btnFitVertical->setEnabled(data && ui->btnFitVertical->isVisible());
+    ui->menuFitVert->setEnabled(ui->btnFitVertical->isEnabled());
 
     // fix actions
     ui->btnFixCenter->setVisible(plotType == PLOT_TRK);
@@ -2351,9 +2381,12 @@ void Plot::updateEnable()
                                      plotType == PLOT_DOP || plotType == PLOT_SNR);
     ui->btnFixVertical->setVisible(plotType == PLOT_SOLP || plotType == PLOT_SOLV ||
                                    plotType == PLOT_SOLA);
-    ui->menuFixCenter->setEnabled(data);
-    ui->menuFixHoriz->setEnabled(data);
-    ui->menuFixVert->setEnabled(data);
+    ui->btnFixCenter->setEnabled(data);
+    ui->menuFixCenter->setEnabled(ui->btnFixCenter->isVisible() && ui->btnFixCenter->isEnabled());
+    ui->btnFixHorizontal->setEnabled(data);
+    ui->menuFixHoriz->setEnabled(ui->btnFixHorizontal->isVisible() && ui->btnFixHorizontal->isEnabled());
+    ui->btnFixVertical->setEnabled(data);
+    ui->menuFixVert->setEnabled(ui->btnFixVertical->isVisible() && ui->btnFixVertical->isEnabled());
 
     if (!ui->menuShowTrack->isChecked()) {
         ui->menuFixHoriz->setEnabled(false);
@@ -2376,18 +2409,19 @@ void Plot::updateEnable()
     ui->btnShowSkyplot->setVisible(plotType == PLOT_SKY || plotType == PLOT_MPS);
     ui->menuShowSkyplot->setEnabled(ui->btnShowSkyplot->isVisible());
     ui->btnShowMap->setVisible(plotType == PLOT_TRK);
-    ui->menuShowMap->setEnabled(!ui->btnSolution12->isChecked());
+    ui->btnShowMap->setEnabled(!ui->btnSolution12->isChecked());
+    ui->menuShowMap->setEnabled(ui->btnShowMap->isVisible() && ui->btnShowMap->isEnabled());
     ui->menuMapView->setEnabled(plotType == PLOT_TRK || plotType == PLOT_SOLP);
     ui->btnMapView->setVisible(ui->menuMapView->isEnabled());
-    ui->menuMapImage->setEnabled(mapImage.height() > 0);
+    ui->menuMapImage->setEnabled(mapImageOriginal.height() > 0);
     ui->menuSkyImage->setEnabled(skyImageOriginal.height() > 0);
     ui->menuSourceSolution->setEnabled(solutionFiles[sel].count() > 0);
     ui->menuSourceObservation->setEnabled(observationFiles.count() > 0);
     ui->menuMapLayer->setEnabled(true);
 
     // show actions
-    ui->btnShowImage->setVisible(plotType == PLOT_TRK || plotType == PLOT_SKY ||
-                                 plotType == PLOT_MPS);
+    ui->btnShowImage->setVisible((plotType == PLOT_TRK && !mapImageOriginal.isNull()) ||
+                                 ((plotType == PLOT_SKY || plotType == PLOT_MPS) && !skyImageOriginal.isNull()));
     ui->menuShowImage->setEnabled(ui->btnShowImage->isVisible());
     ui->btnShowGrid->setVisible(plotType == PLOT_TRK);
     ui->menuShowGrid->setEnabled(ui->btnShowGrid->isVisible());
@@ -2698,23 +2732,14 @@ void Plot::loadOptions()
     viewer->loadOptions(settings);
     mapView->loadOptions(settings);
 
-    for (int i = 0; i < ui->lWRangeList->count(); i++) {
-        QString s = ui->lWRangeList->item(i)->text();
-        double range;
-        QString unit;
+    for (int i = 0; i < lWRangeList->count(); i++) {
         bool ok;
+        double range = lWRangeList->item(i)->data(Qt::UserRole+1).toDouble(&ok);
 
-        QStringList tokens = s.split(' ', Qt::SkipEmptyParts);
-        if (tokens.size() == 2) {
-            range = tokens.at(0).toInt(&ok);
-            unit = tokens.at(1);
-            if (ok) {
-                if (unit == "cm") range *= 0.01;
-                else if (unit == "km") range *= 1000.0;
-                if (range == plotOptDialog->getYRange()) {
-                    ui->lWRangeList->item(i)->setSelected(true);
-                    break;
-                }
+        if (ok) {
+            if (fabs(range - plotOptDialog->getYRange()) < 0.0001) {
+                lWRangeList->item(i)->setSelected(true);
+                break;
             }
         }
     }

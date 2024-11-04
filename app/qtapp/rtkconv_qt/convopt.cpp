@@ -175,7 +175,7 @@ void ConvOptDialog::accept()
 //---------------------------------------------------------------------------
 void ConvOptDialog::showFrequencyDialog()
 {
-    freqDialog->exec();
+    freqDialog->show();
 }
 //---------------------------------------------------------------------------
 void ConvOptDialog::showMaskDialog()
@@ -201,7 +201,7 @@ void ConvOptDialog::showMaskDialog()
 
     codeOptDialog->setFrequencyType(frequencyType);
 
-    codeOptDialog->show();
+    codeOptDialog->exec();
 
 }
 //---------------------------------------------------------------------------
@@ -240,7 +240,7 @@ void ConvOptDialog::showFcnDialog()
 //---------------------------------------------------------------------------
 void ConvOptDialog::loadOptions(QSettings &ini)
 {
-    QString mask = "11111111111111111111111111111111111111111111111111111111111111111111";
+    QString mask = "1111111111111111111111111111111111111111111111111111111111111111111111";
 
     rinexVersion = ini.value("opt/rnxver", 6).toInt();
     rinexFile = ini.value("opt/rnxfile", 0).toInt();

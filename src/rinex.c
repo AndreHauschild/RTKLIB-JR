@@ -253,7 +253,10 @@ static void init_sta(sta_t *sta)
 {
     int i;
     *sta->name   ='\0';
-    *sta->marker ='\0';
+    *sta->markerno ='\0';
+    *sta->markertype ='\0';
+    *sta->observer = '\0';
+    *sta->agency = '\0';
     *sta->antdes ='\0';
     *sta->antsno ='\0';
     *sta->rectype='\0';
@@ -380,10 +383,17 @@ static void decode_obsh(FILE *fp, char *buff, double ver, int *tsys,
         if (sta) setstr(sta->name,buff,60);
     }
     else if (strstr(label,"MARKER NUMBER"       )) { /* opt */
-        if (sta) setstr(sta->marker,buff,20);
+        if (sta) setstr(sta->markerno,buff,20);
     }
-    else if (strstr(label,"MARKER TYPE"         )) ; /* ver.3 */
-    else if (strstr(label,"OBSERVER / AGENCY"   )) ;
+    else if (strstr(label,"MARKER TYPE"         )) { /* ver.3 */
+        if (sta) setstr(sta->markertype,buff,20);
+    }
+    else if (strstr(label,"OBSERVER / AGENCY"   )) {
+        if (sta) {
+            setstr(sta->observer, buff, 20);
+            setstr(sta->agency, buff+20, 40);
+        }
+    }
     else if (strstr(label,"REC # / TYPE / VERS" )) {
         if (sta) {
             setstr(sta->recsno, buff,   20);
@@ -1209,8 +1219,8 @@ static int decode_eph(double ver, int sat, gtime_t toc, const double *data,
         if (sys==SYS_GPS) {
             eph->fit=data[28];        /* fit interval (h) */
         }
-        else {
-            eph->fit=data[28]==0.0?1.0:2.0; /* fit interval (0:1h,1:>2h) */
+        else if (sys==SYS_QZS) {
+            eph->fit=data[28]==0.0?2:4; /* fit interval (0:2h,1:>2h) */
         }
     }
     else if (sys==SYS_GAL) { /* GAL ver.3 */
@@ -1637,6 +1647,45 @@ static int readrnxfile(const char *file, gtime_t ts, gtime_t te, double tint,
 
     return stat;
 }
+/* Add a RINEX comment, taking care of overflow ------------------------------
+* Returns 1 on success, and 0 if omitted or truncated.
+* The comment is append from the first empty comment, and it is assumed that
+* comments are added without empty comments. */
+extern int rnxcomment(rnxopt_t *opt, const char *format, ...) {
+    char buff[256];
+    va_list ap;
+    va_start(ap, format);
+    int req = vsnprintf(buff, sizeof(buff), format, ap);
+    va_end(ap);
+    if (req < 0) {
+        trace(2,"rnxcomment: format error in '%s'\n", format);
+        return 0;
+    }
+    if (req >= sizeof(buff)) {
+        trace(3, "rnxcomment: buffer overflow\n");
+    }
+    // Don't attempt to leave an empty comment
+    if (req == 0)
+        return 1;
+    // Find the start of empty comment lines.
+    int i;
+    for (i = 0; i < MAXCOMMENT; i++) {
+        if (!*opt->comment[i]) break;
+    }
+    // Copy while wrapping overflow into the next comment line.
+    for (int j = 0, rem = strlen(buff); rem > 0; i++) {
+        if (i >= MAXCOMMENT) return 0;
+        int indent = j > 0 ? 2 : 0; // Indent overflow lines
+        int n = rem > 60 - indent ? 60 - indent : rem;
+        if (indent > 0) strcpy(opt->comment[i], "    ");
+        memcpy(opt->comment[i] + indent, buff + j, n);
+        opt->comment[i][indent + n] = '\0';
+        rem -= n;
+        j += n;
+    }
+    return 1;
+}
+
 /* read RINEX OBS and NAV files ------------------------------------------------
 * read RINEX OBS and NAV files
 * args   : char *file    I      file (wild-card * expanded) ("": stdin)
@@ -1961,7 +2010,7 @@ extern int input_rnxctr(rnxctr_t *rnx, FILE *fp)
     }
     else { /* other ephemeris */
         sys=satsys(eph.sat,&prn);
-        set=(sys==SYS_GAL&&(eph.code&(1<<9)))?1:0; /* GAL 0:I/NAV,1:F/NAV */
+        set=(sys==SYS_GAL&&(eph.code&((1<<8)|(1<<1))))?1:0; /* GAL 0:I/NAV,1:F/NAV */
         rnx->nav.eph[eph.sat-1+MAXSAT*set]=eph;
         rnx->time=eph.ttr;
         rnx->ephsat=eph.sat;
@@ -2206,7 +2255,7 @@ static void outrnxobsf(FILE *fp, double obs, int lli, int std)
     else {
         fprintf(fp,"%1.1d",lli&(LLI_SLIP|LLI_HALFC|LLI_BOCTRK));
     }
-    if (std<=0) fprintf(fp," "); else fprintf(fp,"%1.1x",std);
+    if (std<=0) fprintf(fp," "); else fprintf(fp,"%1.1x", std > 9 ? 9 : std);
 }
 /* search observation data index -------------------------------------------*/
 static int obsindex(int rnxver, int sys, const uint8_t *code, const char *tobs,
@@ -2289,11 +2338,11 @@ static void outrinexevent(FILE *fp, const rnxopt_t *opt, const obsd_t *obs,
 
     if (opt->rnxver<=299) { /* ver.2 */
         if (epdiff < 0) fprintf(fp,"\n");
-        fprintf(fp," %02d %2.0f %2.0f %2.0f %2.0f%11.7f  %d%3d",
+        fprintf(fp," %02d %02.0f %02.0f %02.0f %02.0f%11.7f  %d%3d",
                 (int)epe[0]%100,epe[1],epe[2],epe[3],epe[4],epe[5],5,n);
         if (epdiff >= 0) fprintf(fp,"\n");
     } else { /* ver.3 */
-        fprintf(fp,"> %04.0f %2.0f %2.0f %2.0f %2.0f%11.7f  %d%3d\n",
+        fprintf(fp,"> %04.0f %02.0f %02.0f %02.0f %02.0f%11.7f  %d%3d\n",
                 epe[0],epe[1],epe[2],epe[3],epe[4],epe[5],5,n);
     }
     if (n) fprintf(fp,"%-60.60s%-20s\n"," Time mark is not valid","COMMENT");
@@ -2704,7 +2753,7 @@ extern int outrnxnavb(FILE *fp, const rnxopt_t *opt, const eph_t *eph)
         outnavf(fp,eph->fit);
     }
     else if (sys==SYS_QZS) {
-        outnavf(fp,eph->fit>2.0?1.0:0.0);
+        outnavf(fp,eph->fit>2?1.0:0.0);
     }
     else if (sys==SYS_CMP) {
         outnavf(fp,eph->iodc); /* AODC */
@@ -2868,13 +2917,13 @@ extern int outrnxhnavb(FILE *fp, const rnxopt_t *opt, const seph_t *seph)
     time2epoch(seph->t0,ep);
 
     if (opt->rnxver<=299) { /* ver.2 */
-        fprintf(fp,"%2d %02d %2.0f %2.0f %2.0f %2.0f %4.1f",prn-100,
+        fprintf(fp,"%2d %02d %02.0f %02.0f %02.0f %02.0f %04.1f",prn-100,
                 (int)ep[0]%100,ep[1],ep[2],ep[3],ep[4],ep[5]);
         sep="   ";
     }
     else { /* ver.3 */
         if (!sat2code(seph->sat,code)) return 0;
-        fprintf(fp,"%-3s %04.0f %2.0f %2.0f %2.0f %2.0f %2.0f",code,ep[0],ep[1],
+        fprintf(fp,"%-3s %04.0f %02.0f %02.0f %02.0f %02.0f %02.0f",code,ep[0],ep[1],
                 ep[2],ep[3],ep[4],ep[5]);
         sep="    ";
     }

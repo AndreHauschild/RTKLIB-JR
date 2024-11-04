@@ -511,8 +511,6 @@ static int decode_rxmrawx(raw_t *raw)
             }
             n++;
         }
-        prstd=prstd<=9?prstd:9;  /* limit to 9 to fit RINEX format */
-        cpstd=cpstd<=9?cpstd:9;  /* limit to 9 to fit RINEX format */
         raw->obs.data[j].L[idx]=L;
         raw->obs.data[j].P[idx]=P;
         raw->obs.data[j].Lstd[idx]=rcvstds?cpstd:0;
@@ -833,8 +831,8 @@ static void adj_utcweek(gtime_t time, double *utc)
 static int decode_eph(raw_t *raw, int sat)
 {
     eph_t eph={0};
-    
-    if (!decode_frame(raw->subfrm[sat-1],&eph,NULL,NULL,NULL)) return 0;
+    int sys = satsys(sat, NULL);
+    if (!decode_frame(raw->subfrm[sat-1],sys,&eph,NULL,NULL,NULL)) return 0;
     
     if (!strstr(raw->opt,"-EPHALL")) {
         if (eph.iode==raw->nav.eph[sat-1].iode&&
@@ -853,8 +851,7 @@ static int decode_ionutc(raw_t *raw, int sat)
 {
     double ion[8],utc[8];
     int sys=satsys(sat,NULL);
-    
-    if (!decode_frame(raw->subfrm[sat-1],NULL,NULL,ion,utc)) return 0;
+    if (!decode_frame(raw->subfrm[sat-1],sys,NULL,NULL,ion,utc)) return 0;
     
     adj_utcweek(raw->time,utc);
     if (sys==SYS_QZS) {

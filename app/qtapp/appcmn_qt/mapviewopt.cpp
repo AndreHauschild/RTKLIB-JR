@@ -1,6 +1,7 @@
 //---------------------------------------------------------------------------
 #include <QShowEvent>
 #include <QFile>
+#include <QDir>
 #include <QAction>
 
 #include "viewer.h"
@@ -25,18 +26,19 @@ MapViewOptDialog::MapViewOptDialog(QWidget* parent)
 //---------------------------------------------------------------------------
 void MapViewOptDialog::showNotes()
 {
-    QString file, dir;
+    QString filename, dir;
     TextViewer *viewer;
     
     dir = qApp->applicationDirPath(); // exe directory
-    file = dir + "/gmview_notes.txt";
-    if (!QFile::exists(file))
-        file = dir + "../appcmn_qt/gmview_notes.txt";
+    filename = QDir(dir).absoluteFilePath("gmview_notes.txt");
+    if (!QFile::exists(filename))
+        filename = QDir(dir).absoluteFilePath("../appcmn_qt/gmview_notes.txt");
+
     viewer = new TextViewer(this);
-    viewer->setWindowTitle(file);
+    viewer->setWindowTitle(filename);
     viewer->setOption(0);
     viewer->exec();
-    viewer->read(file);	
+    viewer->read(filename);
 }
 //---------------------------------------------------------------------------
 void MapViewOptDialog::setApiKey(const QString & apiKey)
@@ -62,6 +64,7 @@ void MapViewOptDialog::setMapStrings(int i, const QString &title, const QString 
 
     titles[i]->setText(title);
     urls[i]->setText(url);
+
     attrs[i] = attr;
 }
 //---------------------------------------------------------------------------

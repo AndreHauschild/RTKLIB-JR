@@ -76,7 +76,8 @@ extern int init_rtcm(rtcm_t *rtcm)
     
     rtcm->staid=rtcm->stah=rtcm->seqno=rtcm->outtype=0;
     rtcm->time=rtcm->time_s=time0;
-    rtcm->sta.name[0]=rtcm->sta.marker[0]='\0';
+    rtcm->sta.name[0]=rtcm->sta.markerno[0]=rtcm->sta.markertype[0]='\0';
+    rtcm->sta.observer[0]=rtcm->sta.agency[0]='\0';
     rtcm->sta.antdes[0]=rtcm->sta.antsno[0]='\0';
     rtcm->sta.rectype[0]=rtcm->sta.recver[0]=rtcm->sta.recsno[0]='\0';
     rtcm->sta.antsetup=rtcm->sta.itrf=rtcm->sta.deltype=0;
@@ -206,6 +207,7 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
 *          strings separated by spaces.
 *
 *          -EPHALL  : input all ephemerides (default: only new)
+*          -INVPRR  : invert polarity of PhaseRangeRate
 *          -STA=nnn : input only message with STAID=nnn (default: all)
 *          -GLss    : select signal ss for GPS MSM (ss=1C,1P,...)
 *          -RLss    : select signal ss for GLO MSM (ss=1C,1P,...)
@@ -215,6 +217,7 @@ extern int input_rtcm2(rtcm_t *rtcm, uint8_t data)
 *          -ILss    : select signal ss for IRN MSM (ss=5A,9A,...)
 *          -GALINAV : select I/NAV for Galileo ephemeris (default: all)
 *          -GALFNAV : select F/NAV for Galileo ephemeris (default: all)
+*          -RT_INP  : select real-time input
 *
 *          supported RTCM 3 messages (ref [7][10][15][16][17][18])
 *
