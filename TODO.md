@@ -124,6 +124,10 @@ QObject::connect:  (receiver name: 'Plot')
 
 The pre-fit measurement residuals in `ppp_res()` are not corrected for by common offset due to receiver clock errors. This requires a unreasonably large editing threshold to keep the observations in.
 
+## Ionospheric delay estimates
+
+The estimated ionospheric delays are *NOT* slant delays but mapped to vertical delays for each satellite. The mapping function uses a hard-coded ionospheric scale height 350 km.
+
 ## Variance of ionosphere-free combination
 
 A fixed scaling factor of 3 is used for the observation standard deviation of the IF combination.
