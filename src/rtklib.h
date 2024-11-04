@@ -423,10 +423,11 @@ extern "C" {
 #define TROPOPT_ESTG 4                  /* troposphere option: ZTD+grad estimation */
 
 #define EPHOPT_BRDC 0                   /* ephemeris option: broadcast ephemeris */
-#define EPHOPT_PREC 1                   /* ephemeris option: precise ephemeris */
+#define EPHOPT_PREC 1                   /* ephemeris option: precise ephemeris in APC */
 #define EPHOPT_SBAS 2                   /* ephemeris option: broadcast + SBAS */
 #define EPHOPT_SSRAPC 3                 /* ephemeris option: broadcast + SSR_APC */
 #define EPHOPT_SSRCOM 4                 /* ephemeris option: broadcast + SSR_COM */
+#define EPHOPT_PRECCOM 5                /* ephemeris option: precise ephemeris in CoM */
 
 #define ARMODE_OFF  0                   /* AR mode: off */
 #define ARMODE_CONT 1                   /* AR mode: continuous */
@@ -854,6 +855,11 @@ typedef struct {        /* navigation data type */
     double ion_cmp[8];  /* BeiDou iono model parameters {a0,a1,a2,a3,b0,b1,b2,b3} */
     double ion_irn[8];  /* IRNSS iono model parameters {a0,a1,a2,a3,b0,b1,b2,b3} */
     int glo_fcn[32];    /* GLONASS FCN + 8 */
+    int bias_type;      /* Type of biases [-1:unknown, 0:relative, 1:absolute] */
+    double osbias[MAXSAT][NFREQ][MAX_CODE_BIASES+1]; /* satellite OSBs (m) */
+    int    osbvld[MAXSAT][NFREQ][MAX_CODE_BIASES+1]; /* bias validity [0:invalid,1:valid] */
+    double fcbias[MAXSAT][NFREQ][MAX_CODE_BIASES+1]; /* satellite FCBs (m) */
+    int    fcbvld[MAXSAT][NFREQ][MAX_CODE_BIASES+1]; /* bias validity [0:invalid,1:valid] */
     double cbias[MAXSAT][MAX_CODE_BIAS_FREQS][MAX_CODE_BIASES]; /* satellite DCB [0:P1-C1,1:P2-C2][code] (m) */
     double rbias[MAXRCV][MAX_CODE_BIAS_FREQS][MAX_CODE_BIASES]; /* receiver DCB (0:P1-P2,1:P1-C1,2:P2-C2) (m) */
     pcv_t pcvs[MAXSAT]; /* satellite antenna pcv */
@@ -1026,6 +1032,7 @@ typedef struct {        /* processing options type */
     int tropopt;        /* troposphere option (TROPOPT_???) */
     int dynamics;       /* dynamics model (0:none,1:velocity,2:accel) */
     int tidecorr;       /* earth tide correction (0:off,1:solid,2:solid+otl+pole) */
+    int rcvBiasL5;      /* estimate L5 receiver bias (0:off,1:on) */
     int niter;          /* number of filter iteration */
     int codesmooth;     /* code smoothing window size (0:none) */
     int intpref;        /* interpolate reference obs (for post mission) */
@@ -1545,6 +1552,10 @@ EXPORT double tropmodel(gtime_t time, const double *pos, const double *azel,
                         double humi);
 EXPORT double tropmapf(gtime_t time, const double *pos, const double *azel,
                        double *mapfw);
+EXPORT double tropmodelHpf(gtime_t time, const double *pos, const double *azel,
+                           double humi, double *zwd);
+EXPORT double tropmapfHpf(gtime_t time, const double pos[], const double azel[],
+                          double *mapfw);
 EXPORT int iontec(gtime_t time, const nav_t *nav, const double *pos,
                   const double *azel, int opt, double *delay, double *var);
 EXPORT void readtec(const char *file, nav_t *nav, int opt);
@@ -1607,6 +1618,7 @@ EXPORT int  open_rnxctr (rnxctr_t *rnx, FILE *fp);
 EXPORT int  input_rnxctr(rnxctr_t *rnx, FILE *fp);
 
 /* ephemeris and clock functions ---------------------------------------------*/
+EXPORT int    pephclk (gtime_t time, int sat, const nav_t *nav, double *dts, double *varc);
 EXPORT double eph2clk (gtime_t time, const eph_t  *eph);
 EXPORT double geph2clk(gtime_t time, const geph_t *geph);
 EXPORT double seph2clk(gtime_t time, const seph_t *seph);
@@ -1620,6 +1632,8 @@ EXPORT int  peph2pos(gtime_t time, int sat, const nav_t *nav, int opt,
                      double *rs, double *dts, double *var);
 EXPORT void satantoff(gtime_t time, const double *rs, int sat, const nav_t *nav,
                       double *dant);
+EXPORT void satantoff_s(gtime_t time, const double *rs, int sat, const nav_t *nav,
+                        double *dant);
 EXPORT int  satpos(gtime_t time, gtime_t teph, int sat, int ephopt,
                    const nav_t *nav, double *rs, double *dts, double *var,
                    int *svh);

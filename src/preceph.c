@@ -35,7 +35,7 @@
 *                           move eci2ecef() to rtkcmn.c
 *           2013/05/08 1.9  fix bug on computing std-dev of precise clocks
 *           2013/11/20 1.10 modify option for api readsp3()
-*           2014/04/03 1.11 accept extenstion including sp3,eph,SP3,EPH
+*           2014/04/03 1.11 accept extension including sp3,eph,SP3,EPH
 *           2014/05/23 1.12 add function to read sp3 velocity records
 *                           change api: satantoff()
 *           2014/08/31 1.13 add member cov and vco in peph_t sturct
@@ -81,6 +81,9 @@ static void init_bias_ix(void) {
     code_bias_ix[0][CODE_L2L]=1;
     code_bias_ix[0][CODE_L2S]=2;
     code_bias_ix[0][CODE_L2X]=3;
+    code_bias_ix[0][CODE_L5Q]=0;
+    code_bias_ix[0][CODE_L5I]=1;
+    code_bias_ix[0][CODE_L5X]=2;
     /* GLONASS */
     code_bias_ix[1][CODE_L1P]=0;
     code_bias_ix[1][CODE_L1C]=1;
@@ -92,6 +95,15 @@ static void init_bias_ix(void) {
     code_bias_ix[2][CODE_L5Q]=0;
     code_bias_ix[2][CODE_L5I]=1;
     code_bias_ix[2][CODE_L5X]=2;
+    code_bias_ix[2][CODE_L6B]=0;
+    code_bias_ix[2][CODE_L6C]=1;
+    code_bias_ix[2][CODE_L6X]=2;
+    code_bias_ix[2][CODE_L7Q]=0;
+    code_bias_ix[2][CODE_L7I]=1;
+    code_bias_ix[2][CODE_L7X]=2;
+    code_bias_ix[2][CODE_L8Q]=0;
+    code_bias_ix[2][CODE_L8I]=1;
+    code_bias_ix[2][CODE_L8X]=2;
     /* Beidou */
     code_bias_ix[3][CODE_L2I]=0;
     code_bias_ix[3][CODE_L6I]=0;
@@ -457,23 +469,74 @@ static int readbiaf(const char *file, nav_t *nav)
         trace(2,"dcb parameters file open error: %s\n",file);
         return 0;
     }
+    /* read first line of file and check for '%=BIA' identifier */
+    fgets(buff,sizeof(buff),fp);
+    sscanf(buff,"%5s",bias);
+    if (strcmp(bias,"%=BIA")!=0) {
+      trace(3,"readbiaf: wrong format %s of file=%s\n",bias,file);
+      return 0;
+    }
+    /* read rest of file */ 
     while (fgets(buff,sizeof(buff),fp)) {
         if (sscanf(buff,"%4s %5s %4s %4s %4s",bias,svn,prn,obs1,obs2)<5) continue;
-        if (obs1[0]!='C') continue;  /* skip phase biases for now */
-        if ((cbias=str2num(buff,70,21))==0.0) continue;
+        cbias=str2num(buff,82,10);
         sat=satid2no(prn);
         sys=satsys(sat,NULL);
-        /* other code biases are L1/L2, Galileo is L1/L5 */
-        if (obs1[1]=='1')
-            freq=0;
-        else if ((sys!=SYS_GAL&&obs1[1]=='2')||(sys==SYS_GAL&&obs1[1]=='5'))
-            freq=1;
-        else continue;
-        
-        if (!(code1=obs2code(&obs1[1]))) continue; /* skip if code not valid */
+        /* skip if code not valid */
+        if (!(code1=obs2code(&obs1[1]))) continue;
+        /* skip GPS C1P biases */
+        if (sys==SYS_GPS&&strcmp(obs1,"C1P")==0) continue;
         bias_ix1=code2bias_ix(sys,code1);
         if (strcmp(bias,"OSB")==0) {
+            /* absolute biases are used */
+            if (nav->bias_type==-1 || nav->bias_type==1) {
+              nav->bias_type = 1;
+            }
+            else {
+              trace(0,"readbiaf: error, mix of absolute and relative biases!\n");
+              return 0;
+            };
+            /* Select frequency slot */
+            if ((sys!=SYS_CMP && obs1[1]=='1') ||
+                (sys==SYS_CMP && obs1[1]=='2')) /* TODO: check!! */
+                freq = 0;
+            else if ((sys==SYS_GPS && obs1[1]=='2') ||
+                     (sys==SYS_GLO && obs1[1]=='2') ||
+                     (sys==SYS_GAL && obs1[1]=='7') ||
+                     (sys==SYS_CMP && obs1[1]=='6') || /* TODO: check!! */
+                     (sys==SYS_QZS && obs1[1]=='2'))
+                freq = 1;
+            else if (obs1[1]=='5')
+                freq = 2;
+            else
+              continue;
+
+            /* check if max number of frequencies is exceeded */
+            if (freq>=NFREQ) continue;
+
+            if (obs1[0]=='C') {
+              nav->osbvld[sat-1][freq][bias_ix1]=1;
+              nav->osbias[sat-1][freq][bias_ix1]=cbias*1E-9*CLIGHT; /* ns -> m */
+            }
+            else if (obs1[0]=='L') {
+              nav->fcbvld[sat-1][freq][bias_ix1]=1;
+              nav->fcbias[sat-1][freq][bias_ix1]=cbias*1E-9*CLIGHT; /* ns -> m */
+            }
+            else {
+              continue;
+            }
+            /* ------------------- start obsolete --------------------------- */
+            /* other code biases are L1/L2, Galileo is L1/L5 */
+            if (obs1[1]=='1')
+                freq=0;
+            else if ((sys!=SYS_GAL&&obs1[1]=='2')||(sys==SYS_GAL&&obs1[1]=='5'))
+                freq=1;
+            else
+              continue;
+
             /* observed signal bias */
+            if (obs1[0]!='C') continue;  /* skip phase biases for now */
+            if (cbias==0.0) continue;
             if (bias_ix1==0) { /* this is ref code */
                 for (i=0;i<MAX_CODE_BIASES;i++)
                     /* adjust all other codes by ref code bias */
@@ -481,8 +544,17 @@ static int readbiaf(const char *file, nav_t *nav)
             } else {
                 nav->cbias[sat-1][freq][bias_ix1-1]-=cbias*1E-9*CLIGHT; /* ns -> m */
             }
+            /* ------------------- end obsolete --------------------------- */
         }
+        /* ------------------- start obsolete --------------------------- */
         else if (strcmp(bias,"DSB")==0) {
+            /* other code biases are L1/L2, Galileo is L1/L5 */
+            if (obs1[1]=='1')
+                freq=0;
+            else if ((sys!=SYS_GAL&&obs1[1]=='2')||(sys==SYS_GAL&&obs1[1]=='5'))
+                freq=1;
+            else
+              continue;
             /* differential signal bias */
             if (obs1[1]!=obs2[1]) continue; /* skip biases between freqs for now */
             if (!(code2=obs2code(&obs2[1]))) continue; /* skip if code not valid */
@@ -491,7 +563,16 @@ static int readbiaf(const char *file, nav_t *nav)
                 nav->cbias[sat-1][freq][bias_ix2-1]=cbias*1E-9*CLIGHT; /* ns -> m */
             else if (bias_ix2==0) /* this is ref code */
                 nav->cbias[sat-1][freq][bias_ix1-1]=-cbias*1E-9*CLIGHT; /* ns -> m */
+            /* relative biases are used */
+            if (nav->bias_type==-1 || nav->bias_type==0) {
+              nav->bias_type = 0;
+            }
+            else {
+              trace(0,"readbiaf: error, mix of absolute and relative biases!\n");
+              return 0;
+            };
         }
+        /* ------------------- end obsolete --------------------------- */
 
     }
     fclose(fp);
@@ -518,8 +599,15 @@ extern int readdcb(const char *file, nav_t *nav, const sta_t *sta)
 
     init_bias_ix(); /* init translation table from code to table column */
 
+    nav->bias_type = -1;
     for (i=0;i<MAXSAT;i++) for (j=0;j<MAX_CODE_BIAS_FREQS;j++) for (k=0;k<MAX_CODE_BIASES;k++) {
         nav->cbias[i][j][k]=0.0;
+    }
+    for (i=0;i<MAXSAT;i++) for (j=0;j<NFREQ;j++) for (k=0;k<MAX_CODE_BIASES+1;k++) {
+        nav->osbias[i][j][k]=0.0;
+        nav->osbvld[i][j][k]=0;
+        nav->fcbias[i][j][k]=0.0;
+        nav->fcbvld[i][j][k]=0;
     }
     for (i=0;i<MAXEXFILE;i++) {
         if (!(efiles[i]=(char *)malloc(1024))) {
@@ -636,7 +724,7 @@ static int pephpos(gtime_t time, int sat, const nav_t *nav, double *rs,
     return 1;
 }
 /* satellite clock by precise clock ------------------------------------------*/
-static int pephclk(gtime_t time, int sat, const nav_t *nav, double *dts,
+extern int pephclk(gtime_t time, int sat, const nav_t *nav, double *dts,
                    double *varc)
 {
     double t[2],c[2],std;
@@ -756,6 +844,50 @@ extern void satantoff(gtime_t time, const double *rs, int sat, const nav_t *nav,
         dant1=pcv->off[0][0]*ex[i]+pcv->off[0][1]*ey[i]+pcv->off[0][2]*ez[i];
         dant2=pcv->off[1][0]*ex[i]+pcv->off[1][1]*ey[i]+pcv->off[1][2]*ez[i];
         dant[i]=C1*dant1+C2*dant2;
+    }
+}
+/* satellite antenna phase center offset for single frequencies-----------------
+* compute satellite antenna phase center offset in ecef
+* args   : gtime_t time       I   time (gpst)
+*          double *rs         I   satellite position and velocity (ecef)
+*                                 {x,y,z,vx,vy,vz} (m|m/s)
+*          int    sat         I   satellite number
+*          nav_t  *nav        I   navigation data
+*          double *dant       O   satellite antenna phase center offsets (ecef)
+*                                 NFREQ*{dx,dy,dz} (m)
+* return : none
+*-----------------------------------------------------------------------------*/
+extern void satantoff_s(gtime_t time, const double *rs, int sat, const nav_t *nav,
+                        double *dant)
+{
+    const pcv_t *pcv=nav->pcvs+sat-1;
+    double ex[3],ey[3],ez[3],es[3],r[3],rsun[3],gmst,erpv[5]={0};
+    int i,j;
+
+    trace(4,"satantoff_s: time=%s sat=%2d\n",time_str(time,3),sat);
+
+    for (j=0;j<NFREQ;j++) {
+        for (i=0;i<3;i++) {
+            dant[j*3+i]=0.0;
+        }
+    }
+
+    /* sun position in ecef */
+    sunmoonpos(gpst2utc(time),erpv,rsun,NULL,&gmst);
+
+    /* unit vectors of satellite fixed coordinates */
+    for (i=0;i<3;i++) r[i]=-rs[i];
+    if (!normv3(r,ez)) return;
+    for (i=0;i<3;i++) r[i]=rsun[i]-rs[i];
+    if (!normv3(r,es)) return;
+    cross3(ez,es,r);
+    if (!normv3(r,ey)) return;
+    cross3(ey,ez,ex);
+
+    for (j=0;j<NFREQ;j++) {
+        for (i=0;i<3;i++) {
+            dant[j*3+i]=pcv->off[j][0]*ex[i]+pcv->off[j][1]*ey[i]+pcv->off[j][2]*ez[i];
+        }
     }
 }
 /* satellite position/clock by precise ephemeris/clock -------------------------

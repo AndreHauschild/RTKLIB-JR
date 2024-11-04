@@ -63,9 +63,9 @@ extern vt_t *vt_open(int sock, const char *dev)
     struct termios tio={0};
     vt_t *vt;
     int i;
-    
+
     trace(3,"vt_open: sock=%d dev=%s\n",sock,dev);
-    
+
     if (!(vt=(vt_t *)malloc(sizeof(vt_t)))) {
         return NULL;
     }
@@ -86,7 +86,7 @@ extern vt_t *vt_open(int sock, const char *dev)
     else {
         vt->type=1;
         vt->in=vt->out=sock;
-        
+
         /* send telnet character mode */
         if (write(sock,mode,6)!=6) {
             free(vt);
@@ -104,9 +104,9 @@ extern vt_t *vt_open(int sock, const char *dev)
 extern void vt_close(vt_t *vt)
 {
     int i;
-    
+
     trace(3,"vt_close:\n");
-    
+
     /* restore terminal mode */
     if (!vt->type) {
         tcsetattr(vt->in,TCSANOW,&vt->tio);
@@ -207,7 +207,7 @@ static int hist_next(vt_t *vt)
 static int seq_telnet(vt_t *vt)
 {
     char msg[3]={C_IAC};
-    
+
     if (vt->esc[1]==C_WILL) { /* option negotiation */
         if (vt->nesc<3) return 1;
         msg[1]=vt->esc[2]==C_ECHO||vt->esc[2]==C_SUPPGA?C_DO:C_DONT;
@@ -263,17 +263,17 @@ extern int vt_getc(vt_t *vt, char *c)
     struct timeval tv={0,1000}; /* timeout (us) */
     fd_set rs;
     int stat;
-    
+
     *c='\0';
-    
+
     if (!vt||!vt->state) return 0;
-    
+
     /* read character with timeout */
     FD_ZERO(&rs);
     FD_SET(vt->in,&rs);
     if (!(stat=select(vt->in+1,&rs,NULL,NULL,&tv))) return 1; /* no data */
     if (stat<0||read(vt->in,c,1)!=1) return 0; /* error */
-    
+
     if ((vt->type&&*c==C_IAC)||*c==C_ESC) { /* escape or telnet */
         vt->esc[0]=*c; *c='\0';
         vt->nesc=1;
@@ -308,16 +308,16 @@ extern int vt_getc(vt_t *vt, char *c)
 extern int vt_gets(vt_t *vt, char *buff, int n)
 {
     char c;
-    
+
     buff[0]='\0';
-    
+
     if (!vt||!vt->state) return 0;
-    
+
     vt->n=vt->cur=vt->nesc=vt->brk=0;
-    
+
     while (vt->state) {
         if (!vt_getc(vt,&c)) return 0;
-        
+
         if (c==C_CTRD&&vt->n==0) { /* logout */
             vt->state=0;
         }

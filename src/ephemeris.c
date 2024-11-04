@@ -742,6 +742,9 @@ extern int satpos(gtime_t time, gtime_t teph, int sat, int ephopt,
         case EPHOPT_SSRCOM: return satpos_ssr (time,teph,sat,nav, 1,rs,dts,var,svh);
         case EPHOPT_PREC  :
             if (!peph2pos(time,sat,nav,1,rs,dts,var)) break; else return 1;
+        case EPHOPT_PRECCOM:
+            if (!peph2pos(time,sat,nav,0,rs,dts,var)) break; else return 1;
+
     }
     *svh=-1;
     return 0;
@@ -795,7 +798,9 @@ extern void satposs(gtime_t teph, const obsd_t *obs, int n, const nav_t *nav,
         time[i]=timeadd(obs[i].time,-pr/CLIGHT);
 
         /* satellite clock bias by broadcast ephemeris */
-        if (!ephclk(time[i],teph,obs[i].sat,nav,&dt)) {
+        if ((ephopt!=EPHOPT_PRECCOM||
+             !pephclk(time[i],obs[i].sat,nav,&dt,NULL))&&
+             !ephclk(time[i],teph,obs[i].sat,nav,&dt)) {
             trace(3,"no broadcast clock %s sat=%2d\n",time_str(time[i],3),obs[i].sat);
             continue;
         }
@@ -808,11 +813,13 @@ extern void satposs(gtime_t teph, const obsd_t *obs, int n, const nav_t *nav,
             continue;
         }
         /* if no precise clock available, use broadcast clock instead */
+        /*
         if (dts[i*2]==0.0) {
             if (!ephclk(time[i],teph,obs[i].sat,nav,dts+i*2)) continue;
             dts[1+i*2]=0.0;
             *var=SQR(STD_BRDCCLK);
         }
+         */
         trace(4,"satposs: %d,time=%.9f dt=%.9f pr=%.3f rs=%13.3f %13.3f %13.3f dts=%12.3f var=%7.3f\n",
             obs[i].sat,time[i].sec,dt,pr,rs[i*6],rs[1+i*6],rs[2+i*6],dts[i*2]*1E9,
             var[i]);

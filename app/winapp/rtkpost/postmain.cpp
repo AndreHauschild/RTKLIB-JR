@@ -869,6 +869,7 @@ int __fastcall TMainForm::GetOption(prcopt_t &prcopt, solopt_t &solopt,
     prcopt.posopt[5]=PosOpt[5];
     prcopt.dynamics =DynamicModel;
     prcopt.tidecorr =TideCorr;
+    prcopt.rcvBiasL5=RcvBiasEst;
     prcopt.armaxiter=ARIter;
     prcopt.niter    =NumIter;
     prcopt.minfixsats=MinFixSats;
